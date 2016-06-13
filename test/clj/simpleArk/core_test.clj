@@ -15,3 +15,7 @@
 
 (println (compare uuid1 uuid2))
 (println (compare uuid2 uuid3))
+
+(println (uuid? uuid1))
+(def uuid0 (java.util.UUID/randomUUID))
+(println (uuid/uuid? uuid0))

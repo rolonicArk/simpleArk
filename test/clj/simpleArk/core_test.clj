@@ -13,5 +13,5 @@
 (println "uuid4" uuid3 (uuid/get-timestamp uuid4))
 (println "uuid5" uuid3 (uuid/get-timestamp uuid5))
 
-(println (.compareTo uuid1 uuid2))
-(println (.compareTo uuid2 uuid3))
+(println (compare uuid1 uuid2))
+(println (compare uuid2 uuid3))

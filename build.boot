@@ -12,5 +12,5 @@
    "Setup, compile and run the tests."
    []
    (comp
-     (run-tests)
+     (run-tests :namespaces '#{simpleArk.uuid-test})
      ))

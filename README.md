@@ -15,9 +15,12 @@ journal entry which created that value. The last value in the map is the current
 A rolon value is a record with the following:
 
 - ::journal-entry-uuid This is the same type 1 UUID which serves as the key to this rolon value.
-- ::descriptors A sorted map of the descriptors of the rolon value.
-- ::classifiers A sorted map of the classifiers of the rolon value.
-- ::previous-value The previous rolon value.
+- ::contents A sorted map of the descriptors and classifiers of the rolon value. 
+Classifier names begin with ! while descriptor names begin with `.
+The contents of the map is a vector holding the current value of the descriptor or classifier
+and the type 1 UUID of the journal entry which last changed. 
+A nil is used to represent a descriptor or classifier which has been removed.
+- ::previous-value The previous rolon value, or nil.
 
 ## A Journal Entry
 
@@ -32,4 +35,5 @@ rolon values whose creation is reflected by this journal entry.
 ## An Index
 
 An index is a rolon. Its UUID is created from the name of a classifier.
-An index has a classifier for each value assigned to that classifier.
+An index has a classifier which holds a map, keyed by classifier value,
+of all rolons which have ever been assigned that value.

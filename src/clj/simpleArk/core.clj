@@ -69,14 +69,19 @@
   [rolon-value]
   (:value-rolon rolon-value))
 
+(defn get-latest-rolon-value
+  "returns the latest rolon value"
+  [rolon]
+  (let [last-journal-entry-uuid (last (get-journal-entry-uuids rolon))]
+    (get-rolon-value rolon last-journal-entry-uuid)))
+
 (defn get-updated-rolon-uuids
   "returns the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
-  (let [last-journal-entry-uuid (last (get-journal-entry-uuids journal-entry))
-        latest-rolon-value (get-rolon-value journal-entry last-journal-entry-uuid)
+  (let [latest-rolon-value (get-latest-rolon-value journal-entry)
         updated-rolon-uuids (get-property-value latest-rolon-value :descriptor:updated-rolon-uuids)]
     (if (nil? updated-rolon-uuids)
-      #{}
+      (sorted-set)
       updated-rolon-uuids)))
 
 (defn get-previous-value
@@ -87,3 +92,12 @@
         journal-entry-uuids (get-journal-entry-uuids rolon)
         previous-journal-entry-uuids (rsubseq journal-entry-uuids < journal-entry-uuid)]
     (first previous-journal-entry-uuids)))
+
+(defn get-index
+  "returns a sorted map of lists of rolon uuids keyed by classifier value"
+  [index-rolon]
+  (let [latest-rolon-value (get-latest-rolon-value index-rolon)
+        index (get-property-value latest-rolon-value :descriptor:index)]
+    (if (nil? index)
+      (sorted-map)
+      index)))

@@ -1,4 +1,5 @@
-(ns simpleArk.core)
+(ns simpleArk.core
+  (:require [clj-uuid :as uuid]))
 
 (defprotocol ark
   (get-rolon [this uuid]

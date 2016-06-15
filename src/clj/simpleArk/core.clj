@@ -11,38 +11,32 @@
     "process a transaction with map of string properties,
     returning the new journal-entry uuid"))
 
-(defrecord Ark [get-rolon get-journal-entry-uuids get-rolon-uuids])
+(defrecord Ark [get-rolon get-journal-entries])
 
-(defrecord Rolon [rolon-uuid get-journal-entry-uuids get-rolon-value])
+(defrecord Rolon [rolon-uuid get-rolon-values])
 
 (defrecord Rolon-value [value-rolon journal-entry-uuid
-                        get-property-keys get-property-value get-property-journal-entry-uuid])
+                        get-property-values get-property-journal-entry-uuids])
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
   [ark uuid]
   ((:get-rolon ark) uuid))
 
-(defn get-journal-entry-uuids
-  "returns a sorted set of all the journal entry rolon uuids,
-  where rec is an ark or a rolon"
-  [rec]
-  ((:get-journal-entry-uuids rec)))
-
-(defn get-rolon-uuids
-  "returns a sorted set of all rolon uuids"
+(defn get-journal-entries
+  "returns a sorted set of all the journal entry rolons"
   [ark]
-  ((:get-rolon-uuids ark)))
+  ((:get-journal-entries ark)))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon"
   [rolon]
   (:rolon-uuid rolon))
 
-(defn get-rolon-value
-  "returns the rolon value keyed by the journal entry uuid"
-  [rolon journal-entry-uuid]
-  ((:get-rolon-value rolon) journal-entry-uuid))
+(defn get-rolon-values
+  "returns a sorted set of all the values of a rolon"
+  [rolon]
+  ((:get-rolon-values rolon)))
 
 (defn get-journal-entry-uuid
   "returns the type-1 uuid of the journal entry rolon which created this rolon value"
@@ -54,15 +48,15 @@
   [rolon-value]
   ((:get-property-keys rolon-value)))
 
-(defn get-property-value
-  "returns the value of a property, or nil"
-  [rolon-value property-name]
-  ((:get-property-value rolon-value) property-name))
+(defn get-property-values
+  "returns the values of the properties, nil indicating the property is no longer present"
+  [rolon-value]
+  ((:get-property-values rolon-value)))
 
-(defn get-property-journal-entry-uuid
-  "returns the type 1 uuid of the journal entry rolon which changed the property to the given value"
-  [rolon-value property-name]
-  ((:get-property-journal-entry-uuid rolon-value) property-name))
+(defn get-property-journal-entry-uuids
+  "returns the type 1 uuid of the journal entry rolons which changed each property"
+  [rolon-value]
+  ((get-property-journal-entry-uuids rolon-value)))
 
 (defn get-value-rolon
   "returns the rolon"
@@ -72,14 +66,13 @@
 (defn get-latest-rolon-value
   "returns the latest rolon value"
   [rolon]
-  (let [last-journal-entry-uuid (last (get-journal-entry-uuids rolon))]
-    (get-rolon-value rolon last-journal-entry-uuid)))
+  (val (last (get-rolon-values rolon))))
 
 (defn get-updated-rolon-uuids
   "returns the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
   (let [latest-rolon-value (get-latest-rolon-value journal-entry)
-        updated-rolon-uuids (get-property-value latest-rolon-value :descriptor:updated-rolon-uuids)]
+        updated-rolon-uuids (:descriptor:updated-rolon-uuids (get-property-values latest-rolon-value))]
     (if (nil? updated-rolon-uuids)
       (sorted-set)
       updated-rolon-uuids)))
@@ -89,15 +82,15 @@
   [rolon-value]
   (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
         rolon (get-value-rolon rolon-value)
-        journal-entry-uuids (get-journal-entry-uuids rolon)
-        previous-journal-entry-uuids (rsubseq journal-entry-uuids < journal-entry-uuid)]
-    (first previous-journal-entry-uuids)))
+        rolon-values (get-rolon-values rolon)
+        previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
+    (val (first previous-rolon-values))))
 
 (defn get-index
   "returns a sorted map of lists of rolon uuids keyed by classifier value"
   [index-rolon]
   (let [latest-rolon-value (get-latest-rolon-value index-rolon)
-        index (get-property-value latest-rolon-value :descriptor:index)]
+        index (:descriptor:index (get-property-values latest-rolon-value))]
     (if (nil? index)
       (sorted-map)
       index)))

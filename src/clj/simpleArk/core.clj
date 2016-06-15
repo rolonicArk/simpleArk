@@ -12,9 +12,9 @@
 
 (defrecord Ark [get-rolon get-journal-entry-uuids get-rolon-uuids])
 
-(defrecord Rolon [get-rolon-uuid get-rolon-values])
+(defrecord Rolon [rolon-uuid get-rolon-values])
 
-(defrecord Rolon-value [get-rolon-uuid get-journal-entry-uuid get-previous-value
+(defrecord Rolon-value [rolon journal-entry-uuid
                         get-property-keys get-property-value get-property-journal-entry-uuid])
 
 (defn get-rolon
@@ -33,10 +33,9 @@
   ((:get-rolon-uuids ark)))
 
 (defn get-rolon-uuid
-  "returns the uuid of the rolon,
-  where rec is a rolon or rolon-value"
-  [rec]
-  (:rolon-uuid rec))
+  "returns the uuid of the rolon"
+  [rolon]
+  (:rolon-uuid rolon))
 
 (defn get-rolon-values
   "returns a map of the rolon values keyed by journal entry uuid"
@@ -47,11 +46,6 @@
   "returns the type-1 uuid of the journal entry rolon which created this rolon value"
   [rolon-value]
   (:journal-entry-uuid rolon-value))
-
-(defn get-previous-value
-  "returns the previous rolon value for the same rolon, or nil"
-  [rolon-value]
-  ((:get-previous-value rolon-value)))
 
 (defn get-property-keys
   "returns a sorted set of the keys of all the properties assigned to this or a previous rolon value"
@@ -73,3 +67,17 @@
   [journal-entry]
   (let [current-value (last (get-rolon-values journal-entry))]
     (get-property-value current-value :journal-entry:updated-rolon-uuids)))
+
+(defn get-value-rolon
+  "returns the rolon"
+  [rolon-value]
+  (:rolon rolon-value))
+
+(defn get-previous-value
+  "returns the previous rolon value for the same rolon, or nil"
+  [rolon-value]
+  (let [rolon (get-value-rolon rolon-value)
+        rolon-values (get-rolon-values rolon)
+        journal-entry-uuid (get-journal-entry-uuid rolon-value)
+        previous-values (rsubseq rolon-values < journal-entry-uuid)]
+    (val (first previous-values))))

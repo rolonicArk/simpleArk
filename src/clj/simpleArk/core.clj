@@ -1,12 +1,18 @@
 (ns simpleArk.core
   (:require [clj-uuid :as uuid]))
 
-(defrecord Ark [get-rolon get-journal-entry-uuids])
+(defprotocol Ark-db
+  (get-ark [this]
+    "returns the current value of the ark")
+  (register-transaction! [this transaction-name p]
+    "defines a transaction,
+    where f takes an ark and a map of string properties")
+  (process-transaction [this transaction-name p]
+    "process a transaction with map of string properties"))
 
-(defrecord Rolon [get-journal-entry-uuids get-rolon-uuids get-rolon-uuid])
+(defrecord Ark [get-rolon get-journal-entry-uuids get-rolon-uuids])
 
-(defrecord Journal-entry [get-journal-entry-uuids get-rolon-uuids get-rolon-uuid
-                          get-rolon-values])
+(defrecord Rolon [get-rolon-uuid get-rolon-values])
 
 (defrecord Rolon-value [get-rolon-uuid get-journal-entry-uuid get-previous-value
                         get-property-keys get-property-value get-property-journal-entry-uuid])
@@ -17,10 +23,9 @@
   ((:get-rolon ark) uuid))
 
 (defn get-journal-entry-uuids
-  "returns a sorted set of all the journal entry rolon uuids,
-  where rec is an ark or a rolon"
-  [rec]
-  ((:get-journal-entry-uuids rec)))
+  "returns a sorted set of all the journal entry rolon uuids"
+  [ark]
+  ((:get-journal-entry-uuids ark)))
 
 (defn get-rolon-uuids
   "returns a sorted set of all rolon uuids"
@@ -34,9 +39,9 @@
   (:rolon-uuid rec))
 
 (defn get-rolon-values
-  "returns a set of the rolon values created by this journal-entry rolon"
-  [journal-entry]
-  ((:get-rolon-values journal-entry)))
+  "returns a map of the rolon values keyed by journal entry uuid"
+  [rolon]
+  ((:get-rolon-values rolon)))
 
 (defn get-journal-entry-uuid
   "returns the type-1 uuid of the journal entry rolon which created this rolon value"
@@ -44,30 +49,27 @@
   (:journal-entry-uuid rolon-value))
 
 (defn get-previous-value
-  [rolon-value]
   "returns the previous rolon value for the same rolon, or nil"
+  [rolon-value]
   ((:get-previous-value rolon-value)))
 
 (defn get-property-keys
-  [rolon-value]
   "returns a sorted set of the keys of all the properties assigned to this or a previous rolon value"
+  [rolon-value]
   ((:get-property-keys rolon-value)))
 
 (defn get-property-value
-  [rolon-value]
   "returns the value of a property, or nil"
-  ((:get-property-value rolon-value)))
+  [rolon-value property-name]
+  ((:get-property-value rolon-value property-name)))
 
 (defn get-property-journal-entry-uuid
-  [rolon-value]
   "returns the type 1 uuid of the journal entry rolon which changed the property to the given value"
+  [rolon-value]
   ((:get-property-journal-entry-uuid rolon-value)))
 
-(defprotocol Ark-db
-  (get-ark [this]
-    "returns the current value of the ark")
-  (register-transaction! [this transaction-name p]
-    "defines a transaction,
-    where f takes an ark and a map of string properties")
-  (process-transaction [this transaction-name p]
-    "process a transaction with map of string properties"))
+(defn get-updated-rolon-uuids
+  "returns the uuids of the rolons updated by a journal-entry rolon"
+  [journal-entry]
+  (let [current-value (last (get-rolon-values journal-entry))]
+    (get-property-value current-value :journal-entry:updated-rolon-uuids)))

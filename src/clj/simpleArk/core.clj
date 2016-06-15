@@ -47,3 +47,12 @@
     "returns the value of a property, or nil")
   (get-property-journal-entry-uuid [this]
     "returns the type 1 uuid of the journal entry rolon which changed the property to the given value"))
+
+(defprotocol ark-db
+  (get-ark [this]
+    "returns the current value of the ark")
+  (register-transaction! [this transaction-name p]
+    "defines a transaction,
+    where f takes an ark and a map of string properties")
+  (process-transaction [this transaction-name p]
+    "process a transaction with map of string properties"))

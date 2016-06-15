@@ -14,7 +14,7 @@
 
 (defrecord Rolon [rolon-uuid get-journal-entry-uuids get-rolon-value])
 
-(defrecord Rolon-value [rolon journal-entry-uuid
+(defrecord Rolon-value [value-rolon journal-entry-uuid
                         get-property-keys get-property-value get-property-journal-entry-uuid])
 
 (defn get-rolon
@@ -63,17 +63,17 @@
   [rolon-value property-name]
   ((:get-property-journal-entry-uuid rolon-value) property-name))
 
+(defn get-value-rolon
+  "returns the rolon"
+  [rolon-value]
+  (:value-rolon rolon-value))
+
 (defn get-updated-rolon-uuids
   "returns the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
   (let [last-journal-entry-uuid (last (get-journal-entry-uuids journal-entry))
-        current-value (get-rolon-value journal-entry last-journal-entry-uuid)]
-    (get-property-value current-value :journal-entry:updated-rolon-uuids)))
-
-(defn get-value-rolon
-  "returns the rolon"
-  [rolon-value]
-  (:rolon rolon-value))
+        latest-rolon-value (get-rolon-value journal-entry last-journal-entry-uuid)]
+    (get-property-value latest-rolon-value :descriptor:updated-rolon-uuids)))
 
 (defn get-previous-value
   "returns the previous rolon value for the same rolon, or nil"

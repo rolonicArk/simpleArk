@@ -6,12 +6,13 @@
     "returns the current value of the ark")
   (register-transaction! [this transaction-name p]
     "defines a transaction,
-    where f takes an ark, a new journal-entry rolon and a map of string properties")
+    where f takes an ark, a new journal-entry rolon and a map of string properties,
+    and then returns a revised ark")
   (process-transaction [this transaction-name p]
     "process a transaction with map of string properties,
     returning the new journal-entry uuid"))
 
-(defrecord Ark [get-rolon get-journal-entries])
+(defrecord Ark [get-rolon get-journal-entries create-rolon destroy-rolon update-property])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
@@ -27,6 +28,21 @@
   "returns a sorted set of all the journal entry rolons"
   [ark]
   ((:get-journal-entries ark)))
+
+(defn create-rolon
+  "returns a revised ark with the new rolon"
+  [ark rolon-uuid]
+  ((:create-rolon ark) rolon-uuid))
+
+(defn destroy-rolon
+  "deletes all the classifiers of a rolon"
+  [ark rolon-uuid]
+  ((:destroy-rolon ark) rolon-uuid))
+
+(defn update-property
+  "update the value of a property of a rolon"
+  [ark rolon-uuid property-name property-value]
+  ((:update-property ark) rolon-uuid property-name property-value))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon"

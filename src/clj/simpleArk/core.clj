@@ -6,9 +6,10 @@
     "returns the current value of the ark")
   (register-transaction! [this transaction-name p]
     "defines a transaction,
-    where f takes an ark and a map of string properties")
+    where f takes an ark, a new journal-entry rolon and a map of string properties")
   (process-transaction [this transaction-name p]
-    "process a transaction with map of string properties"))
+    "process a transaction with map of string properties,
+    returning the new journal-entry uuid"))
 
 (defrecord Ark [get-rolon get-journal-entry-uuids get-rolon-uuids])
 
@@ -72,8 +73,11 @@
   "returns the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
   (let [last-journal-entry-uuid (last (get-journal-entry-uuids journal-entry))
-        latest-rolon-value (get-rolon-value journal-entry last-journal-entry-uuid)]
-    (get-property-value latest-rolon-value :descriptor:updated-rolon-uuids)))
+        latest-rolon-value (get-rolon-value journal-entry last-journal-entry-uuid)
+        updated-rolon-uuids (get-property-value latest-rolon-value :descriptor:updated-rolon-uuids)]
+    (if (nil? updated-rolon-uuids)
+      #{}
+      updated-rolon-uuids)))
 
 (defn get-previous-value
   "returns the previous rolon value for the same rolon, or nil"

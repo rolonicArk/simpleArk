@@ -36,17 +36,30 @@
   [journal-entry]
   ((:ark:get-rolon-values journal-entry)))
 
-(defprotocol rolon-value-protocol
-  (get-journal-entry-uuid [this]
-    "returns the type-1 uuid of the journal entry rolon which created this rolon value")
-  (get-previous-value [this]
-    "returns the previous rolon value for the same rolon, or nil")
-  (get-property-keys [this]
-    "returns a sorted set of the keys of all the properties assigned to this or a previous rolon vale")
-  (get-property-value [this property-key]
-    "returns the value of a property, or nil")
-  (get-property-journal-entry-uuid [this]
-    "returns the type 1 uuid of the journal entry rolon which changed the property to the given value"))
+(defn get-journal-entry-uuid
+  "returns the type-1 uuid of the journal entry rolon which created this rolon value"
+  [rolon-value]
+  (:ark:journal-entry-uuid rolon-value))
+
+(defn get-previous-value
+  [rolon-value]
+  "returns the previous rolon value for the same rolon, or nil"
+  ((:ark:get-previous-value rolon-value)))
+
+(defn get-property-keys
+  [rolon-value]
+  "returns a sorted set of the keys of all the properties assigned to this or a previous rolon value"
+  ((:ark:get-property-keys rolon-value)))
+
+(defn get-property-value
+  [rolon-value]
+  "returns the value of a property, or nil"
+  ((:ark:get-property-value rolon-value)))
+
+(defn get-property-journal-entry-uuid
+  [rolon-value]
+  "returns the type 1 uuid of the journal entry rolon which changed the property to the given value"
+  ((:ark:get-property-journal-entry-uuid rolon-value)))
 
 (defprotocol ark-db
   (get-ark [this]

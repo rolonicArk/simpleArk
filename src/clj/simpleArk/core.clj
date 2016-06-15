@@ -12,31 +12,31 @@
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
   [ark uuid]
-  ((::get-rolon ark) uuid))
+  ((:ark:get-rolon ark) uuid))
 
 (defn get-journal-entry-uuids
-  "returns a sorted set of all the journal entry rolon uuids"
-  [ark]
-  ((::get-journal-entry-uuids ark)))
+  "returns a sorted set of all the journal entry rolon uuids,
+  where rec is an ark or a rolon"
+  [rec]
+  ((:ark:get-journal-entry-uuids rec)))
 
 (defn get-rolon-uuids
   "returns a sorted set of all rolon uuids"
   [ark]
-  ((::get-rolon-uuids ark)))
+  ((:ark:get-rolon-uuids ark)))
 
-(defprotocol rolon-protocol
-  (get-rolon-uuid [this]
-    "returns the uuid of the rolon")
-  (get-journal-entry-uuids-for-rolon [this]
-    "returns a sorted set of the uuids of all the journal entries which have updated this rolon"))
+(defn get-rolon-uuid
+  "returns the uuid of the rolon,
+  where rec is a rolon or rolon-value"
+  [rec]
+  (:ark:rolon-uuid rec))
 
-(defprotocol journal-entry-rolon-protocol
-  (get-updated-rolon-values [this]
-    "returns a sorted set of the rolon values created by this journal entry rolon"))
+(defn get-rolon-values
+  "returns a set of the rolon values created by this journal-entry rolon"
+  [journal-entry]
+  ((:ark:get-rolon-values journal-entry)))
 
 (defprotocol rolon-value-protocol
-  (get-rolon-uuid-for-value [this]
-    "returns the uuid of the rolon")
   (get-journal-entry-uuid [this]
     "returns the type-1 uuid of the journal entry rolon which created this rolon value")
   (get-previous-value [this]

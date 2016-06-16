@@ -8,7 +8,7 @@
     "defines a transaction,
     where f takes an ark, a new journal-entry rolon and an (edn) string,
     and then returns a revised ark")
-  (process-transaction [this transaction-name s]
+  (process-transaction! [this transaction-name s]
     "process a transaction with an (edn) string,
     returning the new journal-entry uuid"))
 
@@ -50,7 +50,7 @@
   (:rolon-uuid rolon))
 
 (defn get-rolon-values
-  "returns a sorted set of all the values of a rolon"
+  "returns a sorted map of all the values of a rolon"
   [rolon]
   ((:get-rolon-values rolon)))
 

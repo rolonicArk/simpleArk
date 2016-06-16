@@ -6,10 +6,10 @@
     "returns the current value of the ark")
   (register-transaction! [this transaction-name f]
     "defines a transaction,
-    where f takes an ark, a new journal-entry rolon and a map of string properties,
+    where f takes an ark, a new journal-entry rolon and an (edn) string,
     and then returns a revised ark")
-  (process-transaction [this transaction-name p]
-    "process a transaction with map of string properties,
+  (process-transaction [this transaction-name s]
+    "process a transaction with an (edn) string,
     returning the new journal-entry uuid"))
 
 (defrecord Ark [get-rolon get-journal-entries create-rolon destroy-rolon update-property])

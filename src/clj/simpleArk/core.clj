@@ -16,7 +16,7 @@
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
-(defrecord Rolon-value [value-rolon journal-entry-uuid
+(defrecord Rolon-value [journal-entry-uuid
                         get-property-values get-property-journal-entry-uuids])
 
 (defn get-rolon

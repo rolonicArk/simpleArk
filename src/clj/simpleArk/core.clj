@@ -25,7 +25,7 @@
   ((:get-rolon ark) uuid))
 
 (defn get-journal-entries
-  "returns a sorted set of all the journal entry rolons"
+  "returns a sorted map of all the journal entry rolons"
   [ark]
   ((:get-journal-entries ark)))
 
@@ -45,9 +45,10 @@
   ((:update-property ark) rolon-uuid property-name property-value))
 
 (defn get-rolon-uuid
-  "returns the uuid of the rolon"
-  [rolon]
-  (:rolon-uuid rolon))
+  "returns the uuid of the rolon,
+  where rec is a rolon or rolon-value"
+  [rec]
+  (:rolon-uuid rec))
 
 (defn get-rolon-values
   "returns a sorted map of all the values of a rolon"
@@ -59,11 +60,6 @@
   [rolon-value]
   (:journal-entry-uuid rolon-value))
 
-(defn get-property-keys
-  "returns a sorted set of the keys of all the properties assigned to this or a previous rolon value"
-  [rolon-value]
-  ((:get-property-keys rolon-value)))
-
 (defn get-property-values
   "returns the values of the properties, nil indicating the property is no longer present"
   [rolon-value]
@@ -74,30 +70,25 @@
   [rolon-value]
   ((get-property-journal-entry-uuids rolon-value)))
 
-(defn get-value-rolon
-  "returns the rolon"
-  [rolon-value]
-  (:value-rolon rolon-value))
-
 (defn get-latest-rolon-value
   "returns the latest rolon value"
   [rolon]
   (val (last (get-rolon-values rolon))))
 
 (defn get-updated-rolon-uuids
-  "returns the uuids of the rolons updated by a journal-entry rolon"
+  "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
   (let [latest-rolon-value (get-latest-rolon-value journal-entry)
         updated-rolon-uuids (:descriptor:updated-rolon-uuids (get-property-values latest-rolon-value))]
     (if (nil? updated-rolon-uuids)
-      (sorted-set)
+      (sorted-map)
       updated-rolon-uuids)))
 
 (defn get-previous-value
   "returns the previous rolon value for the same rolon, or nil"
-  [rolon-value]
+  [ark rolon-value]
   (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
-        rolon (get-value-rolon rolon-value)
+        rolon (get-rolon ark (get-rolon-uuid rolon-value))
         rolon-values (get-rolon-values rolon)
         previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
     (val (first previous-rolon-values))))

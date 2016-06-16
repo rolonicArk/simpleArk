@@ -17,7 +17,7 @@
   (::journal-entries ark))
 
 (defn create-rolon
-  [ark rolon-uuid]
+  [ark rolon-uuid property-values]
   (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
         rolon (assoc rolon ::rolon-values (sorted-map))
         ark (assoc ark rolon-uuid rolon)]
@@ -33,7 +33,7 @@
 (defn update-ark
   [ark registry transaction-name s]
   (let [je-uuid (uuid/v1)
-        ark (create-rolon ark je-uuid)
+        ark (create-rolon ark je-uuid {})
         je (get-rolon ark je-uuid)
         f (registry transaction-name)
         ark (f ark je s)]

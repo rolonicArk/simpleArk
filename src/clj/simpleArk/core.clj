@@ -31,7 +31,7 @@
 
 (defn create-rolon
   "returns a revised ark with the new rolon"
-  [ark rolon-uuid]
+  [ark rolon-uuid property-values]
   ((:create-rolon ark) rolon-uuid))
 
 (defn destroy-rolon

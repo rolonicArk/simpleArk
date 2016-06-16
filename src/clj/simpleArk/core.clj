@@ -4,7 +4,7 @@
 (defprotocol Ark-db
   (get-ark [this]
     "returns the current value of the ark")
-  (register-transaction! [this transaction-name p]
+  (register-transaction! [this transaction-name f]
     "defines a transaction,
     where f takes an ark, a new journal-entry rolon and a map of string properties,
     and then returns a revised ark")

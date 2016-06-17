@@ -79,9 +79,8 @@
   (let [ark (create-rolon ark je-uuid je-uuid
                           {:classifier:transaction-name transaction-name
                            :descriptor:transaction-argument s})
-        je (get-rolon ark je-uuid)
         f (registry transaction-name)
-        ark (f ark je s)]
+        ark (f ark je-uuid s)]
     ark))
 
 (defrecord Db [ark-atom registry-atom]

@@ -6,10 +6,9 @@
 
 (defn hello-world
   "simple transaction test"
-  [ark je s]
+  [ark je-uuid s]
   (println "Hello," s)
-  (let [je-uuid (get-rolon-uuid je)
-        ark (update-property ark je-uuid je-uuid :descriptor:headline "Just for fun!")]
+  (let [ark (update-property ark je-uuid je-uuid :descriptor:headline "Just for fun!")]
     ark))
 
 (defn test0

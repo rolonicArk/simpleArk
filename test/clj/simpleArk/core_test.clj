@@ -23,6 +23,9 @@
 (defn test0
   "tests that even work with impl0"
   [ark-db]
+  (println)
+  (println ">>>>>>>>>>>> hello-world")
+  (println)
   (register-transaction! ark-db ::hello-world hello-world)
   (let [je-uuid (process-transaction! ark-db ::hello-world "Fred")
         ark (get-ark ark-db)
@@ -32,6 +35,9 @@
     (println :je-uuid je-uuid)
     (println :transaction-properties properties))
 
+  (println)
+  (println ">>>>>>>>>>>> make-bob")
+  (println)
   (register-transaction! ark-db ::make-bob make-bob)
   (let [je-uuid (process-transaction! ark-db ::make-bob "")
         ark (get-ark ark-db)

@@ -105,6 +105,10 @@
   [ark]
   (::journal-entries ark))
 
+(defn get-other-rolons
+  [ark]
+  (::other-rolons ark))
+
 (defn create-rolon
   [ark je-uuid rolon-uuid property-values]
   (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
@@ -116,7 +120,7 @@
 
 (defn create-ark
   []
-  (let [ark (ark/->Ark get-rolon get-journal-entries create-rolon destroy-rolon update-property)
+  (let [ark (ark/->Ark get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-property)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::other-rolons {})]
     ark))

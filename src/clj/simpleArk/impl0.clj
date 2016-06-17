@@ -55,9 +55,8 @@
     ark))
 
 (defn update-ark
-  [ark registry transaction-name s]
-  (let [je-uuid (uuid/v1)
-        ark (create-rolon ark je-uuid je-uuid
+  [ark registry je-uuid transaction-name s]
+  (let [ark (create-rolon ark je-uuid je-uuid
                           {:classifier:transaction-name transaction-name
                            :descriptor:transaction-argument s})
         je (get-rolon ark je-uuid)
@@ -72,7 +71,9 @@
   (register-transaction! [this transaction-name f]
     (swap! registry-atom #(assoc % transaction-name f)))
   (process-transaction! [this transaction-name s]
-    (swap! ark-atom update-ark @registry-atom transaction-name s)))
+    (let [je-uuid (uuid/v1)]
+          (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s)
+          je-uuid)))
 
 (defn create-ark-db
   "returns an ark db"

@@ -14,7 +14,8 @@
   "tests that even work with impl0"
   [ark-db]
   (register-transaction! ark-db ::hello-world hello-world)
-  (process-transaction! ark-db ::hello-world "Fred"))
+  (let [jeuuid1 (process-transaction! ark-db ::hello-world "Fred")]
+    (println jeuuid1)))
 
 (deftest arks
           (println "impl0 tests")

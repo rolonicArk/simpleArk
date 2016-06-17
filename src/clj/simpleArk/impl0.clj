@@ -2,6 +2,29 @@
   (:require [clj-uuid :as uuid]
             [simpleArk.core :as ark]))
 
+(defn update-property-journal-entry-uuids
+  "where pjes is to be updated and ps are the new property values"
+  [pjes ps je-uuid]
+  (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
+
+(defn get-property-values
+  [rolon-value]
+  (::property-values rolon-value))
+
+(defn get-property-journal-entry-uuids
+  [rolon-value]
+  (::property-journal-entry-uuids rolon-value))
+
+(defn create-rolon-value
+  "returns a new rolon value"
+  [rolon-uuid je-uuid ps]
+  (let [rolon-value (ark/->Rolon-value rolon-uuid je-uuid
+                                       get-property-values get-property-journal-entry-uuids)
+        rolon-value (assoc rolon-value ::property-values ps)
+        rolon-value (assoc rolon-value ::property-journal-entry-uuids
+                      (update-property-journal-entry-uuids (sorted-map) ps je-uuid))]
+    rolon-value))
+
 (defn get-rolon-values
   [rolon]
   (::rolon-values rolon))
@@ -17,9 +40,10 @@
   (::journal-entries ark))
 
 (defn create-rolon
-  [ark rolon-uuid property-values]
+  [ark rolon-uuid je-uuid property-values]
   (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
-        rolon (assoc rolon ::rolon-values (sorted-map))
+        rolon (assoc rolon ::rolon-values (sorted-map je-uuid
+                                                      (create-rolon-value rolon-uuid je-uuid property-values)))
         ark (assoc ark rolon-uuid rolon)]
     ark))
 
@@ -33,7 +57,9 @@
 (defn update-ark
   [ark registry transaction-name s]
   (let [je-uuid (uuid/v1)
-        ark (create-rolon ark je-uuid {})
+        ark (create-rolon ark je-uuid je-uuid
+                          {:classifier:transaction-name transaction-name
+                           :descriptor:transaction-argument s})
         je (get-rolon ark je-uuid)
         f (registry transaction-name)
         ark (f ark je s)]

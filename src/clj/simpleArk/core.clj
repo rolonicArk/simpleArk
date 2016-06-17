@@ -22,27 +22,27 @@
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
   [ark uuid]
-  ((:get-rolon ark) uuid))
+  ((:get-rolon ark) ark uuid))
 
 (defn get-journal-entries
   "returns a sorted map of all the journal entry rolons"
   [ark]
-  ((:get-journal-entries ark)))
+  ((:get-journal-entries ark) ark))
 
 (defn create-rolon
   "returns a revised ark with the new rolon"
   [ark rolon-uuid property-values]
-  ((:create-rolon ark) rolon-uuid))
+  ((:create-rolon ark) ark rolon-uuid))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon"
   [ark rolon-uuid]
-  ((:destroy-rolon ark) rolon-uuid))
+  ((:destroy-rolon ark) ark rolon-uuid))
 
 (defn update-property
   "update the value of a property of a rolon"
   [ark rolon-uuid property-name property-value]
-  ((:update-property ark) rolon-uuid property-name property-value))
+  ((:update-property ark) ark rolon-uuid property-name property-value))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
@@ -53,22 +53,22 @@
 (defn get-rolon-values
   "returns a sorted map of all the values of a rolon"
   [rolon]
-  ((:get-rolon-values rolon)))
+  ((:get-rolon-values rolon) rolon))
 
 (defn get-journal-entry-uuid
   "returns the type-1 uuid of the journal entry rolon which created this rolon value"
   [rolon-value]
-  (:journal-entry-uuid rolon-value))
+  (:journal-entry-uuid rolon-value) rolon-value)
 
 (defn get-property-values
   "returns the values of the properties, nil indicating the property is no longer present"
   [rolon-value]
-  ((:get-property-values rolon-value)))
+  ((:get-property-values rolon-value) rolon-value))
 
 (defn get-property-journal-entry-uuids
   "returns the type 1 uuid of the journal entry rolons which changed each property"
   [rolon-value]
-  ((get-property-journal-entry-uuids rolon-value)))
+  ((get-property-journal-entry-uuids rolon-value) rolon-value))
 
 (defn get-latest-rolon-value
   "returns the latest rolon value"

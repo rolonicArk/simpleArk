@@ -62,7 +62,7 @@
         je-property-values (::property-values je-value)
         modified (:descriptor:modified je-property-values)
         modified (if modified
-                   (cons modified rolon-uuid)
+                   (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))
         ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
     ark))
@@ -109,8 +109,10 @@
   [ark je-uuid rolon-uuid property-values]
   (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
         rolon (assoc rolon ::rolon-values (sorted-map je-uuid
-                                                      (create-rolon-value je-uuid rolon-uuid property-values)))]
-    (assoc-rolon ark rolon-uuid rolon)))
+                                                      (create-rolon-value je-uuid rolon-uuid property-values)))
+        ark (assoc-rolon ark rolon-uuid rolon)
+        ark (je-modified ark je-uuid rolon-uuid)]
+    ark))
 
 (defn create-ark
   []
@@ -136,8 +138,8 @@
     (swap! registry-atom #(assoc % transaction-name f)))
   (process-transaction! [this transaction-name s]
     (let [je-uuid (uuid/v1)]
-          (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s)
-          je-uuid)))
+      (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s)
+      je-uuid)))
 
 (defn create-ark-db
   "returns an ark db"

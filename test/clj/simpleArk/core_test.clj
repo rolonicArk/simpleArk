@@ -11,15 +11,34 @@
   (let [ark (update-property ark je-uuid je-uuid :classifier:headline "Just for fun!")]
     ark))
 
+(defn make-bob
+  "creates the rolon, Bob"
+  [ark je-uuid s]
+  (let [ark (update-property ark je-uuid je-uuid :classifier:headline "creates the rolon, Bob")
+        bob-uuid (uuid/v5 uuid/+null+ "Bob")
+        ark (create-rolon ark je-uuid bob-uuid (sorted-map :descriptor:age 8 :classifier:name "Bob"))]
+    (println :bob-uuid bob-uuid)
+    ark))
+
 (defn test0
   "tests that even work with impl0"
   [ark-db]
   (register-transaction! ark-db ::hello-world hello-world)
-  (let [je1-uuid (process-transaction! ark-db ::hello-world "Fred")
+  (let [je-uuid (process-transaction! ark-db ::hello-world "Fred")
         ark (get-ark ark-db)
-        je1 (get-rolon ark je1-uuid)
-        latest-je1-value (get-latest-rolon-value je1)
-        properties (get-property-values latest-je1-value)]
+        je (get-rolon ark je-uuid)
+        latest-je-value (get-latest-rolon-value je)
+        properties (get-property-values latest-je-value)]
+    (println :je-uuid je-uuid)
+    (println :transaction-properties properties))
+
+  (register-transaction! ark-db ::make-bob make-bob)
+  (let [je-uuid (process-transaction! ark-db ::make-bob "")
+        ark (get-ark ark-db)
+        je (get-rolon ark je-uuid)
+        latest-je-value (get-latest-rolon-value je)
+        properties (get-property-values latest-je-value)]
+    (println :je-uuid je-uuid)
     (println :transaction-properties properties)))
 
 (deftest arks

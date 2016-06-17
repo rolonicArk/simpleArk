@@ -32,7 +32,7 @@
 (defn create-rolon
   "returns a revised ark with the new rolon"
   [ark journal-entry-uuid rolon-uuid property-values]
-  ((:create-rolon ark) ark journal-entry-uuid rolon-uuid))
+  ((:create-rolon ark) ark journal-entry-uuid rolon-uuid property-values))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon,

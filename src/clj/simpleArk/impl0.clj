@@ -7,6 +7,9 @@
   [pjes ps je-uuid]
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
+(defn update-property
+  [ark journal-entry-uuid rolon-uuid property-name property-value])
+
 (defn get-property-values
   [rolon-value]
   (::property-values rolon-value))
@@ -50,7 +53,7 @@
 
 (defn create-ark
   []
-  (let [ark (ark/->Ark get-rolon get-journal-entries create-rolon nil nil)
+  (let [ark (ark/->Ark get-rolon get-journal-entries create-rolon nil update-property)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::other-rolons {})]
     ark))

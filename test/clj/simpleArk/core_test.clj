@@ -8,7 +8,7 @@
   "simple transaction test"
   [ark je-uuid s]
   (println "Hello," s)
-  (let [ark (update-property ark je-uuid je-uuid :descriptor:headline "Just for fun!")]
+  (let [ark (update-property ark je-uuid je-uuid :classifier:headline "Just for fun!")]
     ark))
 
 (defn test0

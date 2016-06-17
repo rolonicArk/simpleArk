@@ -7,9 +7,26 @@
   [pjes ps je-uuid]
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
+(defn assoc-rolon
+  [ark rolon-uuid rolon]
+  (if (= (uuid/get-version rolon-uuid) 1)
+    (assoc-in ark [::journal-entries rolon-uuid] rolon)
+    (assoc-in ark [::other-rolons rolon-uuid] rolon)))
+
 (defn update-property
   [ark journal-entry-uuid rolon-uuid property-name property-value]
-  ark)
+  (let [rolon (ark/get-rolon ark rolon-uuid)
+        rolon-value (ark/get-latest-rolon-value rolon)
+        ps (sorted-map property-name property-value)
+        property-values (::property-values rolon-value)
+        property-values (into property-values ps)
+        rolon-value (assoc rolon-value ::property-values property-values)
+        pjes (::property-journal-entry-uuids rolon-value)
+        pjes (update-property-journal-entry-uuids pjes ps journal-entry-uuid)
+        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
+        rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)
+        ark (assoc-rolon ark rolon-uuid rolon)]
+    ark))
 
 (defn get-property-values
   [rolon-value]
@@ -48,9 +65,7 @@
   (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
         rolon (assoc rolon ::rolon-values (sorted-map je-uuid
                                                       (create-rolon-value je-uuid rolon-uuid property-values)))]
-    (if (= (uuid/get-version rolon-uuid) 1)
-      (assoc-in ark [::journal-entries rolon-uuid] rolon)
-      (assoc-in ark [::other-rolons rolon-uuid] rolon))))
+    (assoc-rolon ark rolon-uuid rolon)))
 
 (defn create-ark
   []

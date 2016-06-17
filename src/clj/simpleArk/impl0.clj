@@ -8,7 +8,8 @@
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
 (defn update-property
-  [ark journal-entry-uuid rolon-uuid property-name property-value])
+  [ark journal-entry-uuid rolon-uuid property-name property-value]
+  ark)
 
 (defn get-property-values
   [rolon-value]

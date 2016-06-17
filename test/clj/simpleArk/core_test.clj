@@ -8,7 +8,8 @@
   "simple transaction test"
   [ark je s]
   (println "Hello," s)
-  ark)
+  (let [ark (update-property ark je je :descriptor:headline "Just for fun!")]
+    ark))
 
 (defn test0
   "tests that even work with impl0"

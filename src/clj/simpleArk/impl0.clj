@@ -13,21 +13,7 @@
     (assoc-in ark [::journal-entries rolon-uuid] rolon)
     (assoc-in ark [::other-rolons rolon-uuid] rolon)))
 
-(defn destroy-rolon
-  [ark je-uuid rolon-uuid]
-  (let [rolon (ark/get-rolon ark rolon-uuid)
-        rolon-value (ark/get-latest-rolon-value rolon)
-        property-values (::property-values rolon-value)
-        property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys property-values))
-        rolon-value (assoc rolon-value ::property-values property-values)
-        pjes (::property-journal-entry-uuids rolon-value)
-        pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
-        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
-        rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)
-        ark (assoc-rolon ark rolon-uuid rolon)]
-    ark))
-
-(defn update-property
+(defn update-property-
   [ark journal-entry-uuid rolon-uuid property-name property-value]
   (let [rolon (ark/get-rolon ark rolon-uuid)
         rolon-value (ark/get-latest-rolon-value rolon)
@@ -40,6 +26,51 @@
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)
         ark (assoc-rolon ark rolon-uuid rolon)]
+    ark))
+
+(defn je-modified
+  [ark journal-entry-uuid rolon-uuid]
+  (let [je (ark/get-rolon ark journal-entry-uuid)
+        je-value (ark/get-latest-rolon-value je)
+        je-property-values (::property-values je-value)
+        modified (:descriptor:modified je-property-values)
+        modified (if modified
+                   (cons modified rolon-uuid)
+                   (sorted-set rolon-uuid))
+        ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
+    ark))
+
+(defn destroy-rolon
+  [ark je-uuid rolon-uuid]
+  (let [rolon (ark/get-rolon ark rolon-uuid)
+        rolon-value (ark/get-latest-rolon-value rolon)
+        property-values (::property-values rolon-value)
+        property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys property-values))
+        rolon-value (assoc rolon-value ::property-values property-values)
+        pjes (::property-journal-entry-uuids rolon-value)
+        pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
+        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
+        rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)
+        ark (assoc-rolon ark rolon-uuid rolon)
+        ark (je-modified ark je-uuid rolon-uuid)]
+    ark))
+
+(defn je-modified
+  [ark journal-entry-uuid rolon-uuid]
+  (let [je (ark/get-rolon ark journal-entry-uuid)
+        je-value (ark/get-latest-rolon-value je)
+        je-property-values (::property-values je-value)
+        modified (:descriptor:modified je-property-values)
+        modified (if modified
+                   (cons modified rolon-uuid)
+                   (sorted-set rolon-uuid))
+        ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
+    ark))
+
+(defn update-property
+  [ark journal-entry-uuid rolon-uuid property-name property-value]
+  (let [ark (update-property- ark journal-entry-uuid rolon-uuid property-name property-value)
+        ark (je-modified ark journal-entry-uuid rolon-uuid)]
     ark))
 
 (defn get-property-values

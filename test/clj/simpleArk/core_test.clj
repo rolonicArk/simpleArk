@@ -16,8 +16,10 @@
   (register-transaction! ark-db ::hello-world hello-world)
   (let [je1-uuid (process-transaction! ark-db ::hello-world "Fred")
         ark (get-ark ark-db)
-        je1 (get-rolon ark je1-uuid)]
-    (println je1-uuid)))
+        je1 (get-rolon ark je1-uuid)
+        latest-je1-value (get-latest-rolon-value je1)
+        properties (get-property-values latest-je1-value)]
+    (println :transaction-properties properties)))
 
 (deftest arks
           (println "impl0 tests")

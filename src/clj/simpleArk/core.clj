@@ -16,7 +16,7 @@
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
-(defrecord Rolon-value [rolon-uuid journal-entry-uuid
+(defrecord Rolon-value [journal-entry-uuid rolon-uuid
                         get-property-values get-property-journal-entry-uuids])
 
 (defn get-rolon
@@ -31,7 +31,7 @@
 
 (defn create-rolon
   "returns a revised ark with the new rolon"
-  [ark rolon-uuid journal-entry-uuid property-values]
+  [ark journal-entry-uuid rolon-uuid property-values]
   ((:create-rolon ark) ark rolon-uuid))
 
 (defn destroy-rolon
@@ -41,7 +41,7 @@
 
 (defn update-property
   "update the value of a property of a rolon"
-  [ark rolon-uuid journal-entry-uuid property-name property-value]
+  [ark journal-entry-uuid rolon-uuid property-name property-value]
   ((:update-property ark) ark rolon-uuid property-name property-value))
 
 (defn get-rolon-uuid

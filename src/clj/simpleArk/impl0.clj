@@ -17,8 +17,8 @@
 
 (defn create-rolon-value
   "returns a new rolon value"
-  [rolon-uuid je-uuid ps]
-  (let [rolon-value (ark/->Rolon-value rolon-uuid je-uuid
+  [je-uuid rolon-uuid ps]
+  (let [rolon-value (ark/->Rolon-value je-uuid rolon-uuid
                                        get-property-values get-property-journal-entry-uuids)
         rolon-value (assoc rolon-value ::property-values ps)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids
@@ -40,10 +40,10 @@
   (::journal-entries ark))
 
 (defn create-rolon
-  [ark rolon-uuid je-uuid property-values]
+  [ark je-uuid rolon-uuid property-values]
   (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
         rolon (assoc rolon ::rolon-values (sorted-map je-uuid
-                                                      (create-rolon-value rolon-uuid je-uuid property-values)))]
+                                                      (create-rolon-value je-uuid rolon-uuid property-values)))]
     (if (= (uuid/get-version rolon-uuid) 1)
       (assoc-in ark [::journal-entries rolon-uuid] rolon)
       (assoc-in ark [::other-rolons rolon-uuid] rolon))))

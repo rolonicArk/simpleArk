@@ -60,8 +60,25 @@
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
-    (println :bob-properties bob-properties)
-    ))
+    (println :bob-properties bob-properties))
+
+  (println)
+  (println ">>>>>>>>>>>> destroy-something")
+  (println)
+  (register-transaction! ark-db ::destroy-something destroy-something)
+  (let [je-uuid (process-transaction! ark-db ::destroy-something "")
+        ark (get-ark ark-db)
+        je (get-rolon ark je-uuid)
+        latest-je-value (get-latest-rolon-value je)
+        je-properties (get-property-values latest-je-value)
+        other (get-other-rolons ark)
+        [bob-uuid bob] (first other)
+        latest-bob (get-latest-rolon-value bob)
+        bob-properties (get-property-values latest-bob)]
+    (println :je-uuid je-uuid)
+    (println :transaction-properties je-properties)
+    (println :bob-uuid bob-uuid)
+    (println :bob-properties bob-properties)))
 
 (deftest arks
           (println "impl0 tests")

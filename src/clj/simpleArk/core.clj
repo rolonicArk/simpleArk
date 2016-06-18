@@ -90,8 +90,17 @@
 
 (defn get-latest-rolon-value
   "returns the latest rolon value"
-  [rolon]
+  ([rolon]
   (val (last (get-rolon-values rolon))))
+  ([ark rolon-uuid]
+   (get-latest-rolon-value (get-rolon ark rolon-uuid))))
+
+(defn get-latest-property-values
+  "returns the latest property values"
+  ([rolon]
+   (get-property-values (get-latest-rolon-value rolon)))
+  ([ark rolon-uuid]
+  (get-property-values (get-latest-rolon-value ark rolon-uuid))))
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"

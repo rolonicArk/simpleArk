@@ -42,8 +42,7 @@
   (let [je-uuid (process-transaction! ark-db ::hello-world "Fred")
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        latest-je-value (get-latest-rolon-value je)
-        je-properties (get-property-values latest-je-value)]
+        je-properties (get-latest-property-values je)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties))
 
@@ -54,12 +53,10 @@
   (let [je-uuid (process-transaction! ark-db ::make-bob "")
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        latest-je-value (get-latest-rolon-value je)
-        je-properties (get-property-values latest-je-value)
+        je-properties (get-latest-property-values je)
         other (get-other-rolons ark)
         [bob-uuid bob] (first other)
-        latest-bob (get-latest-rolon-value bob)
-        bob-properties (get-property-values latest-bob)]
+        bob-properties (get-latest-property-values bob)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
@@ -72,12 +69,10 @@
   (let [je-uuid (process-transaction! ark-db ::destroy-something "")
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        latest-je-value (get-latest-rolon-value je)
-        je-properties (get-property-values latest-je-value)
+        je-properties (get-latest-property-values je)
         other (get-other-rolons ark)
         [bob-uuid bob] (first other)
-        latest-bob (get-latest-rolon-value bob)
-        bob-properties (get-property-values latest-bob)]
+        bob-properties (get-latest-property-values bob)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)

@@ -105,8 +105,8 @@
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
-  (let [latest-rolon-value (get-latest-rolon-value journal-entry)
-        updated-rolon-uuids (:descriptor:updated-rolon-uuids (get-property-values latest-rolon-value))]
+  (let [latest-je-property-values (get-latest-property-values journal-entry)
+        updated-rolon-uuids (:descriptor:updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
       updated-rolon-uuids)))
@@ -123,8 +123,7 @@
 (defn get-index
   "returns a sorted map of lists of rolon uuids keyed by classifier value"
   [index-rolon]
-  (let [latest-rolon-value (get-latest-rolon-value index-rolon)
-        index (:descriptor:index (get-property-values latest-rolon-value))]
+  (let [index (:descriptor:index (get-latest-property-values index-rolon))]
     (if (nil? index)
       (sorted-map)
       index)))

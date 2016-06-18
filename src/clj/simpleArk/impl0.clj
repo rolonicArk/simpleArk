@@ -17,20 +17,23 @@
     (assoc-in ark [::journal-entries rolon-uuid] rolon)
     (assoc-in ark [::other-rolons rolon-uuid] rolon)))
 
-(defn update-property-
-  [ark journal-entry-uuid rolon-uuid property-name property-value]
+(defn update-properties-
+  [ark journal-entry-uuid rolon-uuid properties]
   (let [rolon (ark/get-rolon ark rolon-uuid)
         rolon-value (ark/get-latest-rolon-value rolon)
-        ps (sorted-map property-name property-value)
         property-values (::property-values rolon-value)
-        property-values (into property-values ps)
+        property-values (into property-values properties)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
-        pjes (update-property-journal-entry-uuids pjes ps journal-entry-uuid)
+        pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)
         ark (assoc-rolon ark rolon-uuid rolon)]
     ark))
+
+(defn update-property-
+  [ark journal-entry-uuid rolon-uuid property-name property-value]
+  (update-properties- ark journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
 
 (defn je-modified
   [ark journal-entry-uuid rolon-uuid]
@@ -72,10 +75,10 @@
         ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
     ark))
 
-(defn update-property
-  [ark rolon-uuid property-name property-value]
+(defn update-properties
+  [ark rolon-uuid properties]
   (let [journal-entry-uuid (get-latest-journal-entry-uuid ark)
-        ark (update-property- ark journal-entry-uuid rolon-uuid property-name property-value)
+        ark (update-properties- ark journal-entry-uuid rolon-uuid properties)
         ark (je-modified ark journal-entry-uuid rolon-uuid)]
     ark))
 
@@ -127,7 +130,7 @@
 
 (defn create-ark
   []
-  (let [ark (ark/->Ark get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-property
+  (let [ark (ark/->Ark get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-properties
                        get-latest-journal-entry-uuid)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::other-rolons {})]

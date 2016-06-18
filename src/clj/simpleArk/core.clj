@@ -12,7 +12,8 @@
     "process a transaction with an (edn) string,
     returning the new journal-entry uuid"))
 
-(defrecord Ark [get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-property get-latest-journal-entry-uuid])
+(defrecord Ark [get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-properties
+                get-latest-journal-entry-uuid])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
@@ -45,11 +46,17 @@
   [ark rolon-uuid]
   ((:destroy-rolon ark) ark rolon-uuid))
 
+(defn update-properties
+  "update the properties of a rolon,
+  returning an updated ark"
+  [ark rolon-uuid properties]
+  ((:update-properties ark) ark rolon-uuid properties))
+
 (defn update-property
   "update the value of a property of a rolon,
   returning an updated ark"
   [ark rolon-uuid property-name property-value]
-  ((:update-property ark) ark rolon-uuid property-name property-value))
+  (update-properties ark rolon-uuid (sorted-map property-name property-value)))
 
 (defn get-latest-journal-entry-uuid
   [ark]
@@ -112,3 +119,10 @@
     (if (nil? index)
       (sorted-map)
       index)))
+
+(defn make-rolon
+  "creates a rolon if it does not exist"
+  [ark rolon-uuid properties]
+  (if (get-rolon ark rolon-uuid)
+    (update-properties ark rolon-uuid properties)
+    (create-rolon ark rolon-uuid properties)))

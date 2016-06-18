@@ -42,8 +42,8 @@
 (defn destroy-rolon
   "deletes all the classifiers of a rolon,
   returning an updated ark"
-  [ark journal-entry-uuid rolon-uuid]
-  ((:destroy-rolon ark) ark journal-entry-uuid rolon-uuid))
+  [ark rolon-uuid]
+  ((:destroy-rolon ark) ark rolon-uuid))
 
 (defn update-property
   "update the value of a property of a rolon,

@@ -26,7 +26,7 @@
   (let [ark (update-property ark je-uuid je-uuid :classifier:headline "destroys a non-je rolon")
         other (get-other-rolons ark)
         [bob-uuid bob] (first other)
-        ark (destroy-rolon ark je-uuid bob-uuid)]
+        ark (destroy-rolon ark bob-uuid)]
     ark))
 
 (defn test0

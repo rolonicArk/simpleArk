@@ -2,6 +2,10 @@
   (:require [clj-uuid :as uuid]
             [simpleArk.core :as ark]))
 
+(defn get-latest-journal-entry-uuid
+  [ark]
+  (::latest-journal-entry-uuid ark))
+
 (defn update-property-journal-entry-uuids
   "where pjes is to be updated and ps are the new property values"
   [pjes ps je-uuid]
@@ -41,8 +45,9 @@
     ark))
 
 (defn destroy-rolon
-  [ark je-uuid rolon-uuid]
-  (let [rolon (ark/get-rolon ark rolon-uuid)
+  [ark rolon-uuid]
+  (let [je-uuid (get-latest-journal-entry-uuid ark)
+        rolon (ark/get-rolon ark rolon-uuid)
         rolon-value (ark/get-latest-rolon-value rolon)
         property-values (::property-values rolon-value)
         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys property-values))
@@ -117,10 +122,6 @@
         ark (assoc-rolon ark rolon-uuid rolon)
         ark (je-modified ark je-uuid rolon-uuid)]
     ark))
-
-(defn get-latest-journal-entry-uuid
-  [ark]
-  (::latest-journal-entry-uuid ark))
 
 (defn create-ark
   []

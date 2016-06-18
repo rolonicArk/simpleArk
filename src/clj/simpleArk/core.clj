@@ -6,7 +6,7 @@
     "returns the current value of the ark")
   (register-transaction! [this transaction-name f]
     "defines a transaction,
-    where f takes an ark, a new journal-entry uuid and an (edn) string,
+    where f takes an ark and an (edn) string,
     and then returns a revised ark")
   (process-transaction! [this transaction-name s]
     "process a transaction with an (edn) string,

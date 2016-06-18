@@ -6,15 +6,17 @@
 
 (defn hello-world
   "simple transaction test"
-  [ark je-uuid s]
+  [ark s]
   (println "Hello," s)
-  (let [ark (update-property ark je-uuid :classifier:headline "Just for fun!")]
+  (let [je-uuid (get-latest-journal-entry-uuid ark)
+        ark (update-property ark je-uuid :classifier:headline "Just for fun!")]
     ark))
 
 (defn make-bob
   "creates the rolon, Bob"
-  [ark je-uuid s]
-  (let [ark (update-property ark je-uuid :classifier:headline "creates the rolon, Bob")
+  [ark s]
+  (let [je-uuid (get-latest-journal-entry-uuid ark)
+        ark (update-property ark je-uuid :classifier:headline "creates the rolon, Bob")
         bob-uuid (uuid/v5 uuid/+null+ "Bob")
         ark (create-rolon ark bob-uuid (sorted-map :descriptor:age 8 :classifier:name "Bob"))]
     (println :bob-uuid bob-uuid)
@@ -22,8 +24,9 @@
 
 (defn destroy-something
   "destroys a rolon"
-  [ark je-uuid s]
-  (let [ark (update-property ark je-uuid :classifier:headline "destroys a non-je rolon")
+  [ark s]
+  (let [je-uuid (get-latest-journal-entry-uuid ark)
+        ark (update-property ark je-uuid :classifier:headline "destroys a non-je rolon")
         other (get-other-rolons ark)
         [bob-uuid bob] (first other)
         ark (destroy-rolon ark bob-uuid)]

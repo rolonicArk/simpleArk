@@ -140,7 +140,7 @@
                           {:classifier:transaction-name transaction-name
                            :descriptor:transaction-argument s})
         f (registry transaction-name)
-        ark (f ark je-uuid s)]
+        ark (f ark s)]
     ark))
 
 (defrecord Db [ark-atom registry-atom]

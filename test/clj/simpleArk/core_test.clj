@@ -20,6 +20,15 @@
     (println :bob-uuid bob-uuid)
     ark))
 
+(defn destroy-something
+  "destroys a rolon"
+  [ark je-uuid s]
+  (let [ark (update-property ark je-uuid je-uuid :classifier:headline "destroys a non-je rolon")
+        other (get-other-rolons ark)
+        [bob-uuid bob] (first other)
+        ark (destroy-rolon ark je-uuid bob-uuid)]
+    ark))
+
 (defn test0
   "tests that even work with impl0"
   [ark-db]
@@ -47,8 +56,7 @@
         other (get-other-rolons ark)
         [bob-uuid bob] (first other)
         latest-bob (get-latest-rolon-value bob)
-        bob-properties (get-property-values latest-bob)
-        ]
+        bob-properties (get-property-values latest-bob)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)

@@ -12,7 +12,7 @@
     "process a transaction with an (edn) string,
     returning the new journal-entry uuid"))
 
-(defrecord Ark [get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-property])
+(defrecord Ark [get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-property get-latest-journal-entry-uuid])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
@@ -50,6 +50,10 @@
   returning an updated ark"
   [ark journal-entry-uuid rolon-uuid property-name property-value]
   ((:update-property ark) ark journal-entry-uuid rolon-uuid property-name property-value))
+
+(defn get-latest-journal-entry-uuid
+  [ark]
+  ((:get-latest-journal-entry-uuid ark) ark))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,

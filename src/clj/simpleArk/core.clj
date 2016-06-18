@@ -48,8 +48,8 @@
 (defn update-property
   "update the value of a property of a rolon,
   returning an updated ark"
-  [ark journal-entry-uuid rolon-uuid property-name property-value]
-  ((:update-property ark) ark journal-entry-uuid rolon-uuid property-name property-value))
+  [ark rolon-uuid property-name property-value]
+  ((:update-property ark) ark rolon-uuid property-name property-value))
 
 (defn get-latest-journal-entry-uuid
   [ark]

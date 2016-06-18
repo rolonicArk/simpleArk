@@ -73,8 +73,9 @@
     ark))
 
 (defn update-property
-  [ark journal-entry-uuid rolon-uuid property-name property-value]
-  (let [ark (update-property- ark journal-entry-uuid rolon-uuid property-name property-value)
+  [ark rolon-uuid property-name property-value]
+  (let [journal-entry-uuid (get-latest-journal-entry-uuid ark)
+        ark (update-property- ark journal-entry-uuid rolon-uuid property-name property-value)
         ark (je-modified ark journal-entry-uuid rolon-uuid)]
     ark))
 

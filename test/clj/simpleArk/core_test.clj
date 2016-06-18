@@ -16,7 +16,7 @@
   [ark je-uuid s]
   (let [ark (update-property ark je-uuid :classifier:headline "creates the rolon, Bob")
         bob-uuid (uuid/v5 uuid/+null+ "Bob")
-        ark (create-rolon ark je-uuid bob-uuid (sorted-map :descriptor:age 8 :classifier:name "Bob"))]
+        ark (create-rolon ark bob-uuid (sorted-map :descriptor:age 8 :classifier:name "Bob"))]
     (println :bob-uuid bob-uuid)
     ark))
 

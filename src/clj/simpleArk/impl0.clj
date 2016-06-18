@@ -116,8 +116,9 @@
   (::other-rolons ark))
 
 (defn create-rolon
-  [ark je-uuid rolon-uuid property-values]
-  (let [rolon (ark/->Rolon rolon-uuid get-rolon-values)
+  [ark rolon-uuid property-values]
+  (let [je-uuid (get-latest-journal-entry-uuid ark)
+        rolon (ark/->Rolon rolon-uuid get-rolon-values)
         rolon (assoc rolon ::rolon-values (sorted-map je-uuid
                                                       (create-rolon-value je-uuid rolon-uuid property-values)))
         ark (assoc-rolon ark rolon-uuid rolon)
@@ -135,7 +136,7 @@
 (defn update-ark
   [ark registry je-uuid transaction-name s]
   (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
-        ark (create-rolon ark je-uuid je-uuid
+        ark (create-rolon ark je-uuid
                           {:classifier:transaction-name transaction-name
                            :descriptor:transaction-argument s})
         f (registry transaction-name)

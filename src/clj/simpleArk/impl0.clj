@@ -37,6 +37,7 @@
   (update-properties- ark journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
 
 (defn je-modified
+  "track the rolons modified by the journal entry"
   [ark journal-entry-uuid rolon-uuid]
   (let [je (ark/get-rolon ark journal-entry-uuid)
         je-value (ark/get-latest-rolon-value je)

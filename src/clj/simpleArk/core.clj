@@ -20,8 +20,10 @@
   (uuid/v4))
 
 (defn index-uuid
-  [classifier-keyword]
-  (uuid/v5 uuid/+null+ (name classifier-keyword)))
+  [classifier]
+  (if (not (classifier? classifier))
+    (throw (Exception. (str classifier " is not a classifier keyword"))))
+  (uuid/v5 uuid/+null+ (name classifier)))
 
 (defn journal-entry-uuid?
   [uuid]

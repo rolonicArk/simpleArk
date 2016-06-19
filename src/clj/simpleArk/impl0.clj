@@ -43,7 +43,7 @@
         je-property-values (::property-values je-value)
         modified (:descriptor:modified je-property-values)
         modified (if modified
-                   (cons modified rolon-uuid)
+                   (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))
         ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
     ark))
@@ -62,18 +62,6 @@
         rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)
         ark (assoc-rolon ark rolon-uuid rolon)
         ark (je-modified ark je-uuid rolon-uuid)]
-    ark))
-
-(defn je-modified
-  [ark journal-entry-uuid rolon-uuid]
-  (let [je (ark/get-rolon ark journal-entry-uuid)
-        je-value (ark/get-latest-rolon-value je)
-        je-property-values (::property-values je-value)
-        modified (:descriptor:modified je-property-values)
-        modified (if modified
-                   (conj modified rolon-uuid)
-                   (sorted-set rolon-uuid))
-        ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
     ark))
 
 (defn update-properties

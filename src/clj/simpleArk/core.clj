@@ -174,17 +174,32 @@
         previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
     (val (first previous-rolon-values))))
 
-(defn get-index
-  "returns a sorted map of lists of rolon uuids keyed by classifier value"
+(defn get-index-descriptor
+  "returns a sorted map of sets of rolon uuids keyed by classifier value"
   [index-rolon]
-  (let [index (:descriptor:index (get-latest-property-values index-rolon))]
+  (let [index (:descriptor/index (get-latest-property-values index-rolon))]
     (if (nil? index)
       (sorted-map)
       index)))
 
 (defn make-rolon
   "creates a rolon if it does not exist"
-  [ark rolon-uuid properties]
-  (if (get-rolon ark rolon-uuid)
-    (update-properties ark rolon-uuid properties)
-    (create-rolon ark rolon-uuid properties)))
+  ([ark rolon-uuid]
+   (make-rolon ark rolon-uuid (sorted-map)))
+  ([ark rolon-uuid properties]
+   (if (get-rolon ark rolon-uuid)
+     (update-properties ark rolon-uuid properties)
+     (create-rolon ark rolon-uuid properties))))
+
+(defn make-index-rolon
+  ([ark classifier]
+  (let [iuuid (index-uuid classifier)]
+    (make-rolon ark iuuid)))
+  ([ark classifier value uuid]
+   (let [index-rolon (make-index-rolon ark classifier)
+         index-descriptor (get-index-descriptor index-rolon)
+         value-set (index-descriptor value)
+         value-set (if value-set value-set #{})
+         value-set (conj value-set uuid)
+         index-descriptor (assoc index-descriptor value value-set)]
+     (update-property ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))

@@ -13,7 +13,7 @@
 
 (defn assoc-rolon
   [ark rolon-uuid rolon]
-  (if (= (uuid/get-version rolon-uuid) 1)
+  (if (ark/journal-entry-uuid? rolon-uuid)
     (assoc-in ark [::journal-entries rolon-uuid] rolon)
     (assoc-in ark [::other-rolons rolon-uuid] rolon)))
 
@@ -106,7 +106,7 @@
 
 (defn get-rolon
   [ark uuid]
-  (if (= (uuid/get-version uuid) 1)
+  (if (ark/journal-entry-uuid? uuid)
     ((::journal-entries ark) uuid)
     ((::other-rolons ark) uuid)))
 

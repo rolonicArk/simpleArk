@@ -11,6 +11,11 @@
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
 
+(defn journal-entry-uuid?
+  [uuid]
+  (and (uuid? uuid)
+       (= (uuid/get-version uuid) 1)))
+
 (defprotocol Ark-db
   (get-ark [this]
     "returns the current value of the ark")

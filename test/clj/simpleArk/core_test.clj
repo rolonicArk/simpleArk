@@ -18,6 +18,13 @@
 
   (validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
   (is (thrown? Exception (validate-property-keys {1 2})))
+
+  (def je-uuid0 (uuid/v1))
+  (def random-uuid0 (uuid/v4))
+
+  (is (journal-entry-uuid? je-uuid0))
+  (is (not (journal-entry-uuid? 42)))
+  (is (not (journal-entry-uuid? random-uuid0)))
   )
 
 (defn hello-world

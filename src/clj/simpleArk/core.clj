@@ -45,10 +45,18 @@
   [ark]
   ((:get-other-rolons ark) ark))
 
+(defn validate-property-keys
+  "properties must be classifiers or descriptors"
+  [properties]
+  (reduce #(if (not (or (classifier? %2) (descriptor? %2)))
+            (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
+          nil (keys properties)))
+
 (defn create-rolon
   "returns a revised ark with the new rolon"
-  [ark rolon-uuid property-values]
-  ((:create-rolon ark) ark rolon-uuid property-values))
+  [ark rolon-uuid properties]
+  (validate-property-keys properties)
+  ((:create-rolon ark) ark rolon-uuid properties))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon,
@@ -56,17 +64,11 @@
   [ark rolon-uuid]
   ((:destroy-rolon ark) ark rolon-uuid))
 
-(defn validate-property-types
-  "properties must be classifiers or descriptors"
-  [properties]
-  (reduce #(if (not (or (classifier? %2) (descriptor? %2)))
-            (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
-          nil (keys properties)))
-
 (defn update-properties
   "update the properties of a rolon,
   returning an updated ark"
   [ark rolon-uuid properties]
+  (validate-property-keys properties)
   ((:update-properties ark) ark rolon-uuid properties))
 
 (defn update-property

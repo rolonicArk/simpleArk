@@ -6,6 +6,7 @@
 
 (deftest basic
   "basic tests"
+
   (is (classifier? :classifier/x))
   (is (not (classifier? :descriptor/y)))
   (is (not (classifier? :x)))
@@ -14,6 +15,9 @@
   (is (not (descriptor? :classifier/y)))
   (is (not (descriptor? :x)))
   (is (not (descriptor? ":descriptor/x")))
+
+  (validate-property-types {:classifier/x 1 :descriptor/y "fred"})
+  (is (thrown? Exception (validate-property-types {1 2})))
   )
 
 (defn hello-world

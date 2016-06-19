@@ -4,6 +4,18 @@
             [simpleArk.core :refer :all]
             [simpleArk.impl0 :as impl0]))
 
+(deftest basic
+  "basic tests"
+  (is (classifier? :classifier/x))
+  (is (not (classifier? :descriptor/y)))
+  (is (not (classifier? :x)))
+  (is (not (classifier? ":classifier/x")))
+  (is (descriptor? :descriptor/x))
+  (is (not (descriptor? :classifier/y)))
+  (is (not (descriptor? :x)))
+  (is (not (descriptor? ":descriptor/x")))
+  )
+
 (defn hello-world
   "simple transaction test"
   [ark s]

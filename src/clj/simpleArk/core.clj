@@ -1,6 +1,16 @@
 (ns simpleArk.core
   (:require [clj-uuid :as uuid]))
 
+(defn classifier?
+  [kw]
+  (and (keyword? kw)
+       (= 0 (compare "classifier" (namespace kw)))))
+
+(defn descriptor?
+  [kw]
+  (and (keyword? kw)
+       (= 0 (compare "descriptor" (namespace kw)))))
+
 (defprotocol Ark-db
   (get-ark [this]
     "returns the current value of the ark")

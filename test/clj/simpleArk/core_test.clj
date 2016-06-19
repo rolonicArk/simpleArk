@@ -1,6 +1,5 @@
 (ns simpleArk.core-test
   (:require [clojure.test :refer :all]
-            [clj-uuid :as uuid]
             [simpleArk.core :refer :all]
             [simpleArk.impl0 :as impl0]))
 
@@ -22,6 +21,8 @@
   (def je-uuid0 (journal-entry-uuid))
   (def random-uuid0 (random-uuid))
   (def index-uuid0 (index-uuid :classifier/z))
+  (is (thrown? Exception (index-uuid 1)))
+  (is (thrown? Exception (index-uuid :descriptor/y)))
 
   (is (journal-entry-uuid? je-uuid0))
   (is (not (journal-entry-uuid? 42)))

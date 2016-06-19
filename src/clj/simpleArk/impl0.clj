@@ -11,6 +11,7 @@
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
 (defn assoc-rolon
+  "update the ark with the revised/new rolon"
   [ark rolon-uuid rolon]
   (cond
     (ark/journal-entry-uuid? rolon-uuid) (assoc-in ark [::journal-entries rolon-uuid] rolon)

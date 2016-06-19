@@ -11,10 +11,27 @@
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
 
+(defn journal-entry-uuid
+  []
+  (uuid/v1))
+
+(defn random-uuid
+  []
+  (uuid/v4))
+
+(defn index-uuid
+  [classifier-keyword]
+  (uuid/v5 uuid/+null+ (name classifier-keyword)))
+
 (defn journal-entry-uuid?
   [uuid]
   (and (uuid? uuid)
        (= (uuid/get-version uuid) 1)))
+
+(defn random-uuid?
+  [uuid]
+  (and (uuid? uuid)
+       (= (uuid/get-version uuid) 4)))
 
 (defprotocol Ark-db
   (get-ark [this]

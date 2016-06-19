@@ -1,6 +1,5 @@
 (ns simpleArk.impl0
-  (:require [clj-uuid :as uuid]
-            [simpleArk.core :as ark]))
+  (:require [simpleArk.core :as ark]))
 
 (defn get-latest-journal-entry-uuid
   [ark]
@@ -153,7 +152,7 @@
   (register-transaction! [this transaction-name f]
     (swap! registry-atom #(assoc % transaction-name f)))
   (process-transaction! [this transaction-name s]
-    (let [je-uuid (uuid/v1)]
+    (let [je-uuid (ark/journal-entry-uuid)]
       (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s)
       je-uuid)))
 

@@ -19,12 +19,15 @@
   (validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
   (is (thrown? Exception (validate-property-keys {1 2})))
 
-  (def je-uuid0 (uuid/v1))
-  (def random-uuid0 (uuid/v4))
+  (def je-uuid0 (journal-entry-uuid))
+  (def random-uuid0 (random-uuid))
 
   (is (journal-entry-uuid? je-uuid0))
   (is (not (journal-entry-uuid? 42)))
   (is (not (journal-entry-uuid? random-uuid0)))
+  (is (random-uuid? random-uuid0))
+  (is (not (random-uuid? 42)))
+  (is (not (random-uuid? je-uuid0)))
   )
 
 (defn hello-world
@@ -40,7 +43,7 @@
   [ark s]
   (let [je-uuid (get-latest-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline "creates the rolon, Bob")
-        bob-uuid (uuid/v5 uuid/+null+ "Bob")
+        bob-uuid (random-uuid)
         ark (create-rolon ark bob-uuid (sorted-map :descriptor/age 8 :classifier/name "Bob"))]
     (println :bob-uuid bob-uuid)
     ark))

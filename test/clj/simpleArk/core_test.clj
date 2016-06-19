@@ -21,13 +21,22 @@
 
   (def je-uuid0 (journal-entry-uuid))
   (def random-uuid0 (random-uuid))
+  (def index-uuid0 (index-uuid :classifier/z))
 
   (is (journal-entry-uuid? je-uuid0))
   (is (not (journal-entry-uuid? 42)))
   (is (not (journal-entry-uuid? random-uuid0)))
+  (is (not (journal-entry-uuid? index-uuid0)))
+
   (is (random-uuid? random-uuid0))
   (is (not (random-uuid? 42)))
   (is (not (random-uuid? je-uuid0)))
+  (is (not (random-uuid? index-uuid0)))
+
+  (is (index-uuid? index-uuid0))
+  (is (not (index-uuid? 42)))
+  (is (not (index-uuid? je-uuid0)))
+  (is (not (index-uuid? random-uuid0)))
   )
 
 (defn hello-world

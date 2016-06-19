@@ -33,6 +33,11 @@
   (and (uuid? uuid)
        (= (uuid/get-version uuid) 4)))
 
+(defn index-uuid?
+  [uuid]
+  (and (uuid? uuid)
+       (= (uuid/get-version uuid) 5)))
+
 (defprotocol Ark-db
   (get-ark [this]
     "returns the current value of the ark")

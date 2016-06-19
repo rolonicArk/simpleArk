@@ -192,6 +192,7 @@
      (create-rolon ark rolon-uuid properties))))
 
 (defn make-index-rolon
+  "create/update an index rolon, returning the updated ark"
   ([ark classifier]
   (let [iuuid (index-uuid classifier)]
     (make-rolon ark iuuid)))

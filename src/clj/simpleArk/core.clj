@@ -51,7 +51,8 @@
     "process a transaction with an (edn) string,
     returning the new journal-entry uuid"))
 
-(defrecord Ark [get-rolon get-journal-entries get-other-rolons create-rolon destroy-rolon update-properties
+(defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
+                create-rolon destroy-rolon update-properties
                 get-latest-journal-entry-uuid])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
@@ -69,10 +70,15 @@
   [ark]
   ((:get-journal-entries ark) ark))
 
-(defn get-other-rolons
-  "returns a map of all the other rolons"
+(defn get-indexes
+  "returns a sorted map of all the index rolons"
   [ark]
-  ((:get-other-rolons ark) ark))
+  ((:get-indexes ark) ark))
+
+(defn get-random-rolons
+  "returns a map of all the random rolons"
+  [ark]
+  ((:get-random-rolons ark) ark))
 
 (defn validate-property-keys
   "properties must be classifiers or descriptors"

@@ -203,4 +203,9 @@
          value-set (if value-set value-set #{})
          value-set (conj value-set uuid)
          index-descriptor (assoc index-descriptor value value-set)]
-     (update-property ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))
+     (update-property ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
+  ([ark uuid properties]
+   (reduce #(if (classifier? (key %2))
+             (make-index-rolon %1 (key %2) (val %2) uuid)
+             %1)
+           ark properties)))

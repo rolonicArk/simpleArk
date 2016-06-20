@@ -211,10 +211,12 @@
                   nv (val %2)
                   ov (old-properties k)
                   ark (if (classifier? k)
-                        (do
-                          (if ov
-                            (make-index-rolon ark k ov uuid false))
-                          (if nv
-                            (make-index-rolon ark k nv uuid true)))
+                        (let [ark (if ov
+                                    (make-index-rolon ark k ov uuid false)
+                                    ark)
+                              ark (if nv
+                                    (make-index-rolon ark k nv uuid true)
+                                    ark)]
+                          ark)
                         ark)])
            ark properties)))

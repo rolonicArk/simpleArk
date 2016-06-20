@@ -193,12 +193,10 @@
 
 (defn make-index-rolon
   "create/update an index rolon, returning the updated ark"
-  ([ark classifier]
-   (let [iuuid (index-uuid classifier)]
-     (make-rolon ark iuuid)))
   ([ark classifier value uuid adding]
-   (let [ark (make-index-rolon ark classifier)
-         index-rolon (get-rolon ark (index-uuid classifier))
+   (let [iuuid (index-uuid classifier)
+         ark (make-rolon ark iuuid)
+         index-rolon (get-rolon ark iuuid)
          index-descriptor (get-index-descriptor index-rolon)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})

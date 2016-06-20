@@ -145,7 +145,7 @@
 (defn get-latest-rolon-value
   "returns the latest rolon value"
   ([rolon]
-  (val (last (get-rolon-values rolon))))
+   (val (last (get-rolon-values rolon))))
   ([ark rolon-uuid]
    (get-latest-rolon-value (get-rolon ark rolon-uuid))))
 
@@ -154,7 +154,7 @@
   ([rolon]
    (get-property-values (get-latest-rolon-value rolon)))
   ([ark rolon-uuid]
-  (get-property-values (get-latest-rolon-value ark rolon-uuid))))
+   (get-property-values (get-latest-rolon-value ark rolon-uuid))))
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
@@ -194,18 +194,28 @@
 (defn make-index-rolon
   "create/update an index rolon, returning the updated ark"
   ([ark classifier]
-  (let [iuuid (index-uuid classifier)]
-    (make-rolon ark iuuid)))
-  ([ark classifier value uuid]
+   (let [iuuid (index-uuid classifier)]
+     (make-rolon ark iuuid)))
+  ([ark classifier value uuid adding]
    (let [index-rolon (make-index-rolon ark classifier)
          index-descriptor (get-index-descriptor index-rolon)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})
-         value-set (conj value-set uuid)
+         value-set (if adding
+                     (conj value-set uuid)
+                     (disj value-set uuid))
          index-descriptor (assoc index-descriptor value value-set)]
      (update-property ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
-  ([ark uuid properties]
-   (reduce #(if (classifier? (key %2))
-             (make-index-rolon %1 (key %2) (val %2) uuid)
-             %1)
+  ([ark uuid properties old-properties]
+   (reduce #(let [ark %1
+                  k (key %2)
+                  nv (val %2)
+                  ov (old-properties k)]
+             (if (classifier? k)
+               (do
+                 (if ov
+                   (make-index-rolon ark k ov uuid false))
+                 (if nv
+                   (make-index-rolon ark k nv uuid true)))
+               ark))
            ark properties)))

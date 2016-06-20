@@ -116,13 +116,15 @@
   (::random-rolons ark))
 
 (defn create-rolon
-  [ark rolon-uuid property-values]
+  [ark rolon-uuid properties]
   (let [je-uuid (get-latest-journal-entry-uuid ark)
         rolon (ark/->Rolon rolon-uuid get-rolon-values)
         rolon (assoc rolon ::rolon-values (sorted-map je-uuid
-                                                      (create-rolon-value je-uuid rolon-uuid property-values)))
+                                                      (create-rolon-value je-uuid rolon-uuid properties)))
         ark (assoc-rolon ark rolon-uuid rolon)
-        ark (je-modified ark je-uuid rolon-uuid)]
+        ark (je-modified ark je-uuid rolon-uuid)
+        ;ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))
+        ]
     ark))
 
 (defn create-ark

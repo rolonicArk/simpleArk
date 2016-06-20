@@ -197,7 +197,8 @@
    (let [iuuid (index-uuid classifier)]
      (make-rolon ark iuuid)))
   ([ark classifier value uuid adding]
-   (let [index-rolon (make-index-rolon ark classifier)
+   (let [ark (make-index-rolon ark classifier)
+         index-rolon (get-rolon ark (index-uuid classifier))
          index-descriptor (get-index-descriptor index-rolon)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})
@@ -210,12 +211,12 @@
    (reduce #(let [ark %1
                   k (key %2)
                   nv (val %2)
-                  ov (old-properties k)]
-             (if (classifier? k)
-               (do
-                 (if ov
-                   (make-index-rolon ark k ov uuid false))
-                 (if nv
-                   (make-index-rolon ark k nv uuid true)))
-               ark))
+                  ov (old-properties k)
+                  ark (if (classifier? k)
+                        (do
+                          (if ov
+                            (make-index-rolon ark k ov uuid false))
+                          (if nv
+                            (make-index-rolon ark k nv uuid true)))
+                        ark)])
            ark properties)))

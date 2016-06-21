@@ -156,13 +156,13 @@
 (defn get-property-journal-entry-uuids
   "returns the type 1 uuid of the journal entry rolons which changed each property"
   [rolon-value]
-  ((get-property-journal-entry-uuids rolon-value) rolon-value))
+  ((:get-property-journal-entry-uuids rolon-value) rolon-value))
 
 (defmethod print-method Rolon-value
   [rolon-value writer]
   (print-simple
-    (str "\n" :properties "\n" (get-property-values rolon-value) "\n\n")
-    ;(str "\n" :journal-entry-uuids "\n" (get-property-journal-entry-uuids rolon-value) "\n\n")
+    (str "\n" :properties "\n" (get-property-values rolon-value)
+         "\n" :journal-entry-uuids "\n" (get-property-journal-entry-uuids rolon-value) "\n\n")
     writer))
 
 (defn get-latest-rolon-value
@@ -218,7 +218,10 @@
   "create/update an index rolon, returning the updated ark"
   ([ark classifier value uuid adding]
    (let [iuuid (index-uuid classifier)
-         ark (make-rolon ark iuuid)
+         properties (if (get-rolon ark iuuid)
+                      (sorted-map)
+                      (sorted-map :classifier/name (name classifier)))
+         ark (make-rolon ark iuuid properties)
          index-rolon (get-rolon ark iuuid)
          index-descriptor (get-index-descriptor index-rolon)
          value-set (index-descriptor value)

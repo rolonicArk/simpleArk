@@ -80,6 +80,15 @@
   [ark]
   ((:get-random-rolons ark) ark))
 
+(defmethod print-method Ark
+  [ark writer]
+  (print-simple
+    (str "\n" :ark "\n"
+         "\n" :index-rolons "\n\n" (get-indexes ark) "\n"
+         "\n" :journal-entry-rolons "\n\n" (get-journal-entries ark) "\n"
+         "\n" :random-rolons "\n\n" (get-random-rolons ark))
+    writer))
+
 (defn validate-property-keys
   "properties must be classifiers or descriptors"
   [properties]
@@ -127,6 +136,13 @@
   [rolon]
   ((:get-rolon-values rolon) rolon))
 
+(defmethod print-method Rolon
+  [rolon writer]
+  (print-simple
+    (str "\n" :rolon "\n"
+         "\n" (get-rolon-values rolon) "\n\n")
+    writer))
+
 (defn get-journal-entry-uuid
   "returns the type-1 uuid of the journal entry rolon which created this rolon value"
   [rolon-value]
@@ -141,6 +157,13 @@
   "returns the type 1 uuid of the journal entry rolons which changed each property"
   [rolon-value]
   ((get-property-journal-entry-uuids rolon-value) rolon-value))
+
+(defmethod print-method Rolon-value
+  [rolon-value writer]
+  (print-simple
+    (str "\n" :properties "\n" (get-property-values rolon-value) "\n\n")
+    ;(str "\n" :journal-entry-uuids "\n" (get-property-journal-entry-uuids rolon-value) "\n\n")
+    writer))
 
 (defn get-latest-rolon-value
   "returns the latest rolon value"

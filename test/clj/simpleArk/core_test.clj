@@ -62,7 +62,7 @@
   "destroys a rolon"
   [ark s]
   (let [je-uuid (get-latest-journal-entry-uuid ark)
-        ark (update-property ark je-uuid :classifier/headline "destroys a non-je rolon")
+        ark (update-property ark je-uuid :classifier/headline "destroys a random rolon")
         random (get-random-rolons ark)
         [bob-uuid bob] (first random)
         ark (destroy-rolon ark bob-uuid)]
@@ -80,7 +80,8 @@
         je (get-rolon ark je-uuid)
         je-properties (get-latest-property-values je)]
     (println :je-uuid je-uuid)
-    (println :transaction-properties je-properties))
+    (println :transaction-properties je-properties)
+    (println ark))
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
@@ -96,7 +97,8 @@
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
-    (println :bob-properties bob-properties))
+    (println :bob-properties bob-properties)
+    (println ark))
 
   (println)
   (println ">>>>>>>>>>>> destroy-something")
@@ -112,7 +114,8 @@
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
-    (println :bob-properties bob-properties)))
+    (println :bob-properties bob-properties)
+    (println ark)))
 
 (deftest arks
           (println "impl0 tests")

@@ -24,6 +24,7 @@
   (let [rolon (ark/get-rolon ark rolon-uuid)
         rolon-value (ark/get-latest-rolon-value rolon)
         property-values (::property-values rolon-value)
+        ark (ark/make-index-rolon ark rolon-uuid properties property-values)
         property-values (into property-values properties)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)

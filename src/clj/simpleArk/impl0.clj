@@ -123,7 +123,7 @@
                                                       (create-rolon-value je-uuid rolon-uuid properties)))
         ark (assoc-rolon ark rolon-uuid rolon)
         ark (je-modified ark je-uuid rolon-uuid)
-        ;ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))
+        ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))
         ]
     ark))
 

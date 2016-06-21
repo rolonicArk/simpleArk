@@ -218,5 +218,6 @@
                                     (make-index-rolon ark k nv uuid true)
                                     ark)]
                           ark)
-                        ark)])
+                        ark)]
+             ark)
            ark properties)))

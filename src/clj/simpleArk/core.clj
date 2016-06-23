@@ -40,7 +40,7 @@
   (and (uuid? uuid)
        (= (uuid/get-version uuid) 5)))
 
-
+;;a well known uuid
 (def index-name-uuid (index-uuid :classifier/index.name))
 
 (defprotocol Ark-db
@@ -181,6 +181,25 @@
    (get-property-values (get-latest-rolon-value rolon)))
   ([ark rolon-uuid]
    (get-property-values (get-latest-rolon-value ark rolon-uuid))))
+
+(defn index-lookup
+  "returns the uuids for a given index-uuid and value"
+  [ark index-uuid value]
+  (let [index-rolon (get-rolon ark index-uuid)
+        properties (get-latest-property-values index-rolon)
+        index-map (:descriptor/index properties)]
+    (index-map value)))
+
+(defn get-index-uuid
+  "Looks up the index name in the index-name index rolon,
+  an indirectness that allows the name of an index to be changed."
+  [ark index-name]
+  (first (index-lookup ark index-name-uuid index-name)))
+
+(defn name-lookup
+  [ark rolon-name]
+  (let [name-index-uuid (get-index-uuid ark "name")]
+    (first (index-lookup ark name-index-uuid rolon-name))))
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"

@@ -115,7 +115,15 @@
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
     (println :bob-properties bob-properties)
-    (println ark)))
+    (println ark))
+
+  (println)
+  (println ">>>>>>>>>>>> misc")
+  (println)
+  (let [ark (get-ark ark-db)
+        name-index-uuid (get-index-uuid ark "name")]
+    (println :name-index-uuid name-index-uuid))
+  )
 
 (deftest arks
           (println "impl0 tests")

@@ -40,6 +40,9 @@
   (and (uuid? uuid)
        (= (uuid/get-version uuid) 5)))
 
+
+(def index-name-uuid (index-uuid :classifier/index.name))
+
 (defprotocol Ark-db
   (get-ark [this]
     "returns the current value of the ark")
@@ -220,7 +223,7 @@
    (let [iuuid (index-uuid classifier)
          properties (if (get-rolon ark iuuid)
                       (sorted-map)
-                      (sorted-map :classifier/name (name classifier)))
+                      (sorted-map :classifier/index.name (name classifier)))
          ark (make-rolon ark iuuid properties)
          index-rolon (get-rolon ark iuuid)
          index-descriptor (get-index-descriptor index-rolon)

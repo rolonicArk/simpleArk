@@ -48,16 +48,6 @@
         ark (update-property ark je-uuid :classifier/headline "Just for fun!")]
     ark))
 
-(defn make-bob
-  "creates the rolon, Bob"
-  [ark s]
-  (let [je-uuid (get-latest-journal-entry-uuid ark)
-        ark (update-property ark je-uuid :classifier/headline "creates the rolon, Bob")
-        bob-uuid (random-uuid)
-        ark (make-rolon ark bob-uuid (sorted-map :descriptor/age 8 :classifier/name "Bob"))]
-    (println :bob-uuid bob-uuid)
-    ark))
-
 (defn destroy-bob
   "destroys Bob"
   [ark s]
@@ -70,6 +60,7 @@
 (defn test0
   "tests that even work with impl0"
   [ark-db]
+  (register-transaction! ark-db ::make-rolon-transaction make-rolon-transaction)
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
@@ -85,8 +76,9 @@
   (println)
   (println ">>>>>>>>>>>> make-bob")
   (println)
-  (register-transaction! ark-db ::make-bob make-bob)
-  (let [je-uuid (process-transaction! ark-db ::make-bob "")
+  (let [je-uuid (process-transaction! ark-db ::make-rolon-transaction
+                                      (prn-str {:descriptor/age 8
+                                                :classifier/name "Bob"}))
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
         je-properties (get-latest-property-values je)
@@ -101,7 +93,6 @@
   (println)
   (println ">>>>>>>>>>>> make-sam")
   (println)
-  (register-transaction! ark-db ::make-rolon-transaction make-rolon-transaction)
   (let [je-uuid (process-transaction! ark-db ::make-rolon-transaction
                                       (prn-str {:descriptor/age 10
                                                 :classifier/name "Sam"
@@ -135,7 +126,7 @@
     )
 
   (println)
-  (println ">>>>>>>>>>>> misc")
+  (println ">>>>>>>>>>>> ark")
   (println)
   (println (get-ark ark-db))
   )

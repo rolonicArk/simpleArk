@@ -48,19 +48,12 @@
         ark (update-property ark je-uuid :classifier/headline "Just for fun!")]
     ark))
 
-(defn destroy-bob
-  "destroys Bob"
-  [ark s]
-  (let [je-uuid (get-latest-journal-entry-uuid ark)
-        ark (update-property ark je-uuid :classifier/headline "destroys a random rolon")
-        bob-uuid (name-lookup ark "Bob")
-        ark (destroy-rolon ark bob-uuid)]
-    ark))
-
 (defn test0
   "tests that even work with impl0"
   [ark-db]
   (register-transaction! ark-db ::make-rolon-transaction make-rolon-transaction)
+  (register-transaction! ark-db ::destroy-rolon-transaction destroy-rolon-transaction)
+
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
@@ -111,10 +104,10 @@
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
   (println)
-  (register-transaction! ark-db ::destroy-bob destroy-bob)
   (let [ark (get-ark ark-db)
         bob-uuid (name-lookup ark "Bob")
-        je-uuid (process-transaction! ark-db ::destroy-bob "")
+        je-uuid (process-transaction! ark-db ::destroy-rolon-transaction
+                                      (prn-str bob-uuid))
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
         je-properties (get-latest-property-values je)

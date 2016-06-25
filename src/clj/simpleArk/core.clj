@@ -276,5 +276,12 @@
         ark (update-property ark je-uuid :classifier/headline (str "make a rolon with " s))
         uuid (random-uuid)
         ark (make-rolon ark uuid (read-string s))]
-    (println :uuid uuid)
+    ark))
+
+(defn destroy-rolon-transaction
+  [ark s]
+  (let [je-uuid (get-latest-journal-entry-uuid ark)
+        ark (update-property ark je-uuid :classifier/headline (str "destroy rolon " s))
+        uuid (read-string s)
+        ark (destroy-rolon ark uuid)]
     ark))

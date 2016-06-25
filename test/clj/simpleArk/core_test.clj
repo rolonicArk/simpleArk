@@ -54,17 +54,16 @@
   (let [je-uuid (get-latest-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline "creates the rolon, Bob")
         bob-uuid (random-uuid)
-        ark (create-rolon ark bob-uuid (sorted-map :descriptor/age 8 :classifier/name "Bob"))]
+        ark (make-rolon ark bob-uuid (sorted-map :descriptor/age 8 :classifier/name "Bob"))]
     (println :bob-uuid bob-uuid)
     ark))
 
-(defn destroy-something
-  "destroys a rolon"
+(defn destroy-bob
+  "destroys Bob"
   [ark s]
   (let [je-uuid (get-latest-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline "destroys a random rolon")
-        random (get-random-rolons ark)
-        [bob-uuid bob] (first random)
+        bob-uuid (name-lookup ark "Bob")
         ark (destroy-rolon ark bob-uuid)]
     ark))
 
@@ -91,9 +90,8 @@
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
         je-properties (get-latest-property-values je)
-        random (get-random-rolons ark)
-        [bob-uuid bob] (first random)
-        bob-properties (get-latest-property-values bob)]
+        bob-uuid (name-lookup ark "Bob")
+        bob-properties (get-latest-property-values (get-rolon ark bob-uuid))]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
@@ -101,16 +99,35 @@
     (println ark))
 
   (println)
-  (println ">>>>>>>>>>>> destroy-something")
+  (println ">>>>>>>>>>>> make-sam")
   (println)
-  (register-transaction! ark-db ::destroy-something destroy-something)
-  (let [je-uuid (process-transaction! ark-db ::destroy-something "")
+  (register-transaction! ark-db ::make-rolon-transaction make-rolon-transaction)
+  (let [je-uuid (process-transaction! ark-db ::make-rolon-transaction
+                                      (prn-str {:descriptor/age 10
+                                                :classifier/name "Sam"
+                                                :classifier/headline "I hate green eggs and ham!"}))
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
         je-properties (get-latest-property-values je)
-        random (get-random-rolons ark)
-        [bob-uuid bob] (first random)
-        bob-properties (get-latest-property-values bob)]
+        sam-uuid (name-lookup ark "Sam")
+        sam-properties (get-latest-property-values (get-rolon ark sam-uuid))]
+    (println :je-uuid je-uuid)
+    (println :transaction-properties je-properties)
+    (println :sam-uuid sam-uuid)
+    (println :sam-properties sam-properties)
+    (println ark))
+
+  (println)
+  (println ">>>>>>>>>>>> destroy-bob")
+  (println)
+  (register-transaction! ark-db ::destroy-bob destroy-bob)
+  (let [ark (get-ark ark-db)
+        bob-uuid (name-lookup ark "Bob")
+        je-uuid (process-transaction! ark-db ::destroy-bob "")
+        ark (get-ark ark-db)
+        je (get-rolon ark je-uuid)
+        je-properties (get-latest-property-values je)
+        bob-properties (get-latest-property-values (get-rolon ark bob-uuid))]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
@@ -122,7 +139,8 @@
   (println)
   (let [ark (get-ark ark-db)
         name-index-uuid (get-index-uuid ark "name")]
-    (println :name-index-uuid name-index-uuid))
+    (println :name-index-uuid name-index-uuid)
+    (println :sam-uuid (name-lookup ark "Sam")))
   )
 
 (deftest arks

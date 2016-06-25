@@ -80,7 +80,7 @@
         je-properties (get-latest-property-values je)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
-    (println ark))
+    )
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
@@ -96,7 +96,7 @@
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
     (println :bob-properties bob-properties)
-    (println ark))
+    )
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
@@ -115,7 +115,7 @@
     (println :transaction-properties je-properties)
     (println :sam-uuid sam-uuid)
     (println :sam-properties sam-properties)
-    (println ark))
+    )
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
@@ -132,15 +132,12 @@
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
     (println :bob-properties bob-properties)
-    (println ark))
+    )
 
   (println)
   (println ">>>>>>>>>>>> misc")
   (println)
-  (let [ark (get-ark ark-db)
-        name-index-uuid (get-index-uuid ark "name")]
-    (println :name-index-uuid name-index-uuid)
-    (println :sam-uuid (name-lookup ark "Sam")))
+  (println (get-ark ark-db))
   )
 
 (deftest arks

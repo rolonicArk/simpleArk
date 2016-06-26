@@ -11,28 +11,28 @@ where each transaction creates or modifies one or more rolons.
 
 ## A Rolon
 
-There are 3 types of rolons: application rolons, journal entries
-and indexes.
-
 A rolon is a sorted map of values, ordered by time.
 Each rolon value is keyed by a type-1 UUID (timestamp), which is
 also the UUID of the transaction that created the value and the 
 UUID of the journal entry used to record how the transaction was processed.
 
-Type-4 UUID's (random) is used for application rolons while type-5
-UUID's (text) are used for index rolons.
+There are 3 types of rolons: application rolons, journal entries
+and indexes. Application rolons have a type-4 UUID (random), while 
+journal entries have a type-1 UUID (timestamp) and indexes have a
+type-4 UUID (text).
+
+Think of a rolon as having an immutable structure where all past values are accessible
+via the UUID's of the transactions that created them. And these are the same 
+UUID's used to identify the journal entries which record how a transaction was processed.
 
 ## A Rolon Value
 
-A rolon value is a record with the following:
+A rolon value preserves both the values of the rolon's properties at a given time, as well as
+the UUID of the transaction which assigned the value to that property.
 
-- ::journal-entry-uuid This is the same type 1 UUID which serves as the key to this rolon value.
-- ::contents A sorted map of the descriptors and classifiers of the rolon value. 
-Classifier names begin with ! while descriptor names begin with `.
-The contents of the map is a vector holding the current value of the descriptor or classifier
-and the type 1 UUID of the journal entry which last changed. 
-A nil is used to represent a descriptor or classifier which has been removed.
-- ::previous-value The previous rolon value, or nil.
+Rolon values may be persisted, but they may also be recreated given the transaction which
+created them and the previous state of the ark. Accessing an ark for a given time then may involve
+bring an earlier state forward by reprocessing selected transactions.
 
 ## A Journal Entry
 

@@ -3,12 +3,24 @@ A top-down implementation of a Rolonic Arc
 
 ## An Ark
 
-An ark is a sorted map of rolons, keyed by the UUID which identifies each rolon.
+An ark is a collection of rolons, each with a unique UUID which does not change over time.
+A UUID then establishes the identity of a rolon.
+
+The ark is updated by processing a series of transactions,
+where each transaction creates or modifies one or more rolons.
 
 ## A Rolon
 
-A rolon is a sorted map of rolon values, keyed by the type 1 UUID which identifies the
-journal entry which created that value. The last value in the map is the current value of the rolon.
+There are 3 types of rolons: application rolons, journal entries
+and indexes.
+
+A rolon is a sorted map of values, ordered by time.
+Each rolon value is keyed by a type-1 UUID (timestamp), which is
+also the UUID of the transaction that created the value and the 
+UUID of the journal entry used to record how the transaction was processed.
+
+Type-4 UUID's (random) is used for application rolons while type-5
+UUID's (text) are used for index rolons.
 
 ## A Rolon Value
 

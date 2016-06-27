@@ -133,11 +133,21 @@
           ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))]
       ark)))
 
+(defn select-time
+  [ark je-uuid]
+  (let [ark (assoc ark ::selected-time je-uuid)]
+    ark))
+
+(defn get-selected-time
+  [ark]
+  (::selected-time ark))
+
 (defn create-ark
   []
   (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon destroy-rolon update-properties
-                       get-latest-journal-entry-uuid)
+                       get-latest-journal-entry-uuid
+                       select-time get-selected-time)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
         ark (assoc ark ::random-rolons {})]
@@ -151,6 +161,8 @@
                            :descriptor/transaction-argument s})
         f (registry transaction-name)
         ark (f ark s)]
+    (if (::selected-time ark)
+      (throw (Exception. "Transaction can not update ark with a selected time")))
     ark))
 
 (defrecord Db [ark-atom registry-atom]

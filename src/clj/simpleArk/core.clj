@@ -57,7 +57,7 @@
     "process a transaction at a given time with an (edn) string"))
 
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
-                create-rolon destroy-rolon update-properties
+                make-rolon destroy-rolon update-properties
                 get-latest-journal-entry-uuid])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
@@ -101,11 +101,11 @@
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
           nil (keys properties)))
 
-(defn create-rolon
-  "returns a revised ark with the new rolon"
+(defn make-rolon
+  "returns a revised ark with the new rolon or updated"
   [ark rolon-uuid properties]
   (validate-property-keys properties)
-  ((:create-rolon ark) ark rolon-uuid properties))
+  ((:make-rolon ark) ark rolon-uuid properties))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon,
@@ -228,15 +228,6 @@
     (if (nil? index)
       (sorted-map)
       index)))
-
-(defn make-rolon
-  "creates a rolon if it does not exist"
-  ([ark rolon-uuid]
-   (make-rolon ark rolon-uuid (sorted-map)))
-  ([ark rolon-uuid properties]
-   (if (get-rolon ark rolon-uuid)
-     (update-properties ark rolon-uuid properties)
-     (create-rolon ark rolon-uuid properties))))
 
 (defn make-index-rolon
   "create/update an index rolon, returning the updated ark"

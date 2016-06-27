@@ -1,9 +1,9 @@
 (ns simpleArk.impl0
   (:require [simpleArk.core :as ark]))
 
-(defn get-latest-journal-entry-uuid
+(defn get-current-journal-entry-uuid
   [ark]
-  (::latest-journal-entry-uuid ark))
+  (::active-journal-entry-uuid ark))
 
 (defn update-property-journal-entry-uuids
   "where pjes is to be updated and ps are the new property values"
@@ -53,7 +53,7 @@
 
 (defn destroy-rolon
   [ark rolon-uuid]
-  (let [je-uuid (get-latest-journal-entry-uuid ark)
+  (let [je-uuid (get-current-journal-entry-uuid ark)
         rolon (ark/get-rolon ark rolon-uuid)
         rolon-value (ark/get-latest-rolon-value rolon)
         old-property-values (::property-values rolon-value)
@@ -70,7 +70,7 @@
 
 (defn update-properties
   [ark rolon-uuid properties]
-  (let [journal-entry-uuid (get-latest-journal-entry-uuid ark)
+  (let [journal-entry-uuid (get-current-journal-entry-uuid ark)
         ark (update-properties- ark journal-entry-uuid rolon-uuid properties)
         ark (je-modified ark journal-entry-uuid rolon-uuid)]
     ark))
@@ -121,7 +121,7 @@
   [ark rolon-uuid properties]
   (if (get-rolon ark rolon-uuid)
     (update-properties ark rolon-uuid properties)
-    (let [je-uuid (get-latest-journal-entry-uuid ark)
+    (let [je-uuid (get-current-journal-entry-uuid ark)
           rolon (ark/->Rolon rolon-uuid get-rolon-values)
           rolon (assoc rolon ::rolon-values
                              (sorted-map je-uuid
@@ -135,7 +135,9 @@
 
 (defn select-time
   [ark je-uuid]
-  (let [ark (assoc ark ::selected-time je-uuid)]
+  (let [je-uuid (key (first (rsubseq (get-journal-entries ark) <= je-uuid)))
+        ark (assoc ark ::selected-time je-uuid)
+        ark (assoc ark ::active-journal-entry-uuid je-uuid)]
     ark))
 
 (defn get-selected-time
@@ -146,7 +148,7 @@
   []
   (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon destroy-rolon update-properties
-                       get-latest-journal-entry-uuid
+                       get-current-journal-entry-uuid
                        select-time get-selected-time)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
@@ -156,6 +158,7 @@
 (defn update-ark
   [ark registry je-uuid transaction-name s]
   (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
+        ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark/make-rolon ark je-uuid
                           {:classifier/transaction-name transaction-name
                            :descriptor/transaction-argument s})

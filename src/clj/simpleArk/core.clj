@@ -58,7 +58,7 @@
 
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon destroy-rolon update-properties
-                get-latest-journal-entry-uuid
+                get-current-journal-entry-uuid
                 select-time get-selected-time])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
@@ -137,9 +137,9 @@
   [ark rolon-uuid property-name property-value]
   (update-properties ark rolon-uuid (sorted-map property-name property-value)))
 
-(defn get-latest-journal-entry-uuid
+(defn get-active-journal-entry-uuid
   [ark]
-  ((:get-latest-journal-entry-uuid ark) ark))
+  ((:active-journal-entry-uuid ark) ark))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
@@ -274,9 +274,13 @@
              ark)
            ark properties)))
 
+(defn get-current-journal-entry-uuid
+  [ark]
+  ((:get-current-journal-entry-uuid ark) ark))
+
 (defn make-rolon-transaction
   [ark s]
-  (let [je-uuid (get-latest-journal-entry-uuid ark)
+  (let [je-uuid (get-current-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline (str "make a rolon with " s))
         uuid (random-uuid)
         ark (make-rolon ark uuid (read-string s))]
@@ -284,7 +288,7 @@
 
 (defn destroy-rolon-transaction
   [ark s]
-  (let [je-uuid (get-latest-journal-entry-uuid ark)
+  (let [je-uuid (get-current-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline (str "destroy rolon " s))
         uuid (read-string s)
         ark (destroy-rolon ark uuid)]

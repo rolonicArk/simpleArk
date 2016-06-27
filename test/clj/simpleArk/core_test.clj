@@ -44,7 +44,7 @@
   "simple transaction test"
   [ark s]
   (println "Hello," s)
-  (let [je-uuid (get-latest-journal-entry-uuid ark)
+  (let [je-uuid (get-current-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline "Just for fun!")]
     ark))
 

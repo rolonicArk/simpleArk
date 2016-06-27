@@ -28,7 +28,7 @@ UUID's used to identify the journal entries which record how a transaction was p
 ## A Rolon Value
 
 A rolon value preserves both the values of the rolon's properties at a given time, as well as
-the UUID of the transaction which assigned the value to that property.
+the UUID of the transaction which assigned the value to each property.
 
 Rolon values may be persisted, but they may also be recreated given the transaction which
 created them and the previous state of the ark. Accessing an ark for a given time then may involve
@@ -36,16 +36,16 @@ bring an earlier state forward by reprocessing selected transactions.
 
 ## A Journal Entry
 
-A journal entry is a rolon which reflects the creation of one or more rolons.
+A journal entry is a rolon which reflects the processing of a transaction.
 Only journal entries have type 1 UUIDs, allowing all journal entries to be
-accessed in order via the sorted map of the ark.
-A non-performing journal entry reflects only its own creation.
+accessed in order (or reverse order) via the sorted map of the ark.
 
-Performing journal entries have a classifier which holds a list of all the other
-rolon values whose creation is reflected by this journal entry.
+A non-performing journal entry reflects only its own creation,
+while performing journal entries have a classifier which holds a list of UUID's
+of all the other rolons created or updated by this journal entry.
 
 ## An Index
 
 An index is a rolon. Its UUID is created from the name of a classifier.
-An index has a classifier which holds a map, keyed by classifier value,
-of all rolons which have ever been assigned that value.
+An index has a descriptor which holds a map, keyed by classifier value,
+of all rolons which are assigned that value.

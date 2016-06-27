@@ -60,8 +60,7 @@
   (register-transaction! ark-db ::hello-world hello-world)
   (let [je-uuid (process-transaction! ark-db ::hello-world "Fred")
         ark (get-ark ark-db)
-        je (get-rolon ark je-uuid)
-        je-properties (get-current-property-values je)]
+        je-properties (get-current-property-values ark je-uuid)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     )
@@ -73,10 +72,9 @@
                                       (prn-str {:descriptor/age 8
                                                 :classifier/name "Bob"}))
         ark (get-ark ark-db)
-        je (get-rolon ark je-uuid)
-        je-properties (get-current-property-values je)
+        je-properties (get-current-property-values ark je-uuid)
         bob-uuid (name-lookup ark "Bob")
-        bob-properties (get-current-property-values (get-rolon ark bob-uuid))]
+        bob-properties (get-current-property-values ark bob-uuid)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
@@ -91,10 +89,9 @@
                                                 :classifier/name "Sam"
                                                 :classifier/headline "I hate green eggs and ham!"}))
         ark (get-ark ark-db)
-        je (get-rolon ark je-uuid)
-        je-properties (get-current-property-values je)
+        je-properties (get-current-property-values ark je-uuid)
         sam-uuid (name-lookup ark "Sam")
-        sam-properties (get-current-property-values (get-rolon ark sam-uuid))]
+        sam-properties (get-current-property-values ark sam-uuid)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :sam-uuid sam-uuid)
@@ -109,9 +106,8 @@
         je-uuid (process-transaction! ark-db ::destroy-rolon-transaction
                                       (prn-str bob-uuid))
         ark (get-ark ark-db)
-        je (get-rolon ark je-uuid)
-        je-properties (get-current-property-values je)
-        bob-properties (get-current-property-values (get-rolon ark bob-uuid))]
+        je-properties (get-current-property-values ark je-uuid)
+        bob-properties (get-current-property-values ark bob-uuid)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)

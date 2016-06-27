@@ -181,25 +181,22 @@
          "\n" :journal-entry-uuids "\n" (get-property-journal-entry-uuids rolon-value) "\n\n")
     writer))
 
-(defn get-latest-rolon-value
-  "returns the latest rolon value"
-  ([rolon]
-   (val (last (get-rolon-values rolon))))
-  ([ark rolon-uuid]
-   (get-latest-rolon-value (get-rolon ark rolon-uuid))))
+(defn get-current-rolon-value
+  "returns the current rolon value"
+  [ark rolon-uuid]
+  (let [je-uuid (get-current-journal-entry-uuid ark)
+        rolon (get-rolon ark rolon-uuid)]
+    (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
 
 (defn get-current-property-values
   "returns the current property values"
-  ([rolon]
-   (get-property-values (get-latest-rolon-value rolon)))
   ([ark rolon-uuid]
-   (get-property-values (get-latest-rolon-value ark rolon-uuid))))
+   (get-property-values (get-current-rolon-value ark rolon-uuid))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
   [ark index-uuid value]
-  (let [index-rolon (get-rolon ark index-uuid)
-        properties (get-current-property-values index-rolon)
+  (let [properties (get-current-property-values ark index-uuid)
         index-map (:descriptor/index properties)]
     (index-map value)))
 
@@ -215,8 +212,8 @@
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
-  [journal-entry]
-  (let [latest-je-property-values (get-current-property-values journal-entry)
+  [ark je-uuid]
+  (let [latest-je-property-values (get-current-property-values ark je-uuid)
         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
@@ -233,8 +230,8 @@
 
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
-  [index-rolon]
-  (let [index (:descriptor/index (get-current-property-values index-rolon))]
+  [ark je-uuid]
+  (let [index (:descriptor/index (get-current-property-values ark je-uuid))]
     (if (nil? index)
       (sorted-map)
       index)))
@@ -248,7 +245,7 @@
                       (sorted-map :classifier/index.name (name classifier)))
          ark (make-rolon ark iuuid properties)
          index-rolon (get-rolon ark iuuid)
-         index-descriptor (get-index-descriptor index-rolon)
+         index-descriptor (get-index-descriptor ark iuuid)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})
          value-set (if adding

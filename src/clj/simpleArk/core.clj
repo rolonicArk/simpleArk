@@ -56,6 +56,10 @@
   (process-transaction-at! [this je-uuid transaction-name s]
     "process a transaction at a given time with an (edn) string"))
 
+(defn get-current-journal-entry-uuid
+  [ark]
+  ((:get-current-journal-entry-uuid ark) ark))
+
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon destroy-rolon update-properties
                 get-current-journal-entry-uuid
@@ -137,10 +141,6 @@
   [ark rolon-uuid property-name property-value]
   (update-properties ark rolon-uuid (sorted-map property-name property-value)))
 
-(defn get-active-journal-entry-uuid
-  [ark]
-  ((:active-journal-entry-uuid ark) ark))
-
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
   where rec is a rolon or rolon-value"
@@ -188,24 +188,23 @@
   ([ark rolon-uuid]
    (get-latest-rolon-value (get-rolon ark rolon-uuid))))
 
-(defn get-latest-property-values
-  "returns the latest property values"
+(defn get-current-property-values
+  "returns the current property values"
   ([rolon]
    (get-property-values (get-latest-rolon-value rolon)))
   ([ark rolon-uuid]
    (get-property-values (get-latest-rolon-value ark rolon-uuid))))
 
 (defn index-lookup
-  "returns the uuids for a given index-uuid and value"
+  "returns the uuids for a given index-uuid and value and time"
   [ark index-uuid value]
   (let [index-rolon (get-rolon ark index-uuid)
-        properties (get-latest-property-values index-rolon)
+        properties (get-current-property-values index-rolon)
         index-map (:descriptor/index properties)]
     (index-map value)))
 
 (defn get-index-uuid
-  "Looks up the index name in the index-name index rolon,
-  an indirectness that allows the name of an index to be changed."
+  "Looks up the index name in the index-name index rolon."
   [ark index-name]
   (first (index-lookup ark index-name-uuid index-name)))
 
@@ -217,7 +216,7 @@
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
-  (let [latest-je-property-values (get-latest-property-values journal-entry)
+  (let [latest-je-property-values (get-current-property-values journal-entry)
         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
@@ -235,7 +234,7 @@
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
   [index-rolon]
-  (let [index (:descriptor/index (get-latest-property-values index-rolon))]
+  (let [index (:descriptor/index (get-current-property-values index-rolon))]
     (if (nil? index)
       (sorted-map)
       index)))
@@ -273,10 +272,6 @@
                         ark)]
              ark)
            ark properties)))
-
-(defn get-current-journal-entry-uuid
-  [ark]
-  ((:get-current-journal-entry-uuid ark) ark))
 
 (defn make-rolon-transaction
   [ark s]

@@ -61,7 +61,7 @@
   (let [je-uuid (process-transaction! ark-db ::hello-world "Fred")
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        je-properties (get-latest-property-values je)]
+        je-properties (get-current-property-values je)]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     )
@@ -74,9 +74,9 @@
                                                 :classifier/name "Bob"}))
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        je-properties (get-latest-property-values je)
+        je-properties (get-current-property-values je)
         bob-uuid (name-lookup ark "Bob")
-        bob-properties (get-latest-property-values (get-rolon ark bob-uuid))]
+        bob-properties (get-current-property-values (get-rolon ark bob-uuid))]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)
@@ -92,9 +92,9 @@
                                                 :classifier/headline "I hate green eggs and ham!"}))
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        je-properties (get-latest-property-values je)
+        je-properties (get-current-property-values je)
         sam-uuid (name-lookup ark "Sam")
-        sam-properties (get-latest-property-values (get-rolon ark sam-uuid))]
+        sam-properties (get-current-property-values (get-rolon ark sam-uuid))]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :sam-uuid sam-uuid)
@@ -110,8 +110,8 @@
                                       (prn-str bob-uuid))
         ark (get-ark ark-db)
         je (get-rolon ark je-uuid)
-        je-properties (get-latest-property-values je)
-        bob-properties (get-latest-property-values (get-rolon ark bob-uuid))]
+        je-properties (get-current-property-values je)
+        bob-properties (get-current-property-values (get-rolon ark bob-uuid))]
     (println :je-uuid je-uuid)
     (println :transaction-properties je-properties)
     (println :bob-uuid bob-uuid)

@@ -44,11 +44,11 @@
   (let [je (ark/get-rolon ark journal-entry-uuid)
         je-value (ark/get-latest-rolon-value je)
         je-property-values (::property-values je-value)
-        modified (:descriptor:modified je-property-values)
+        modified (:descriptor/modified je-property-values)
         modified (if modified
                    (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))
-        ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor:modified modified)]
+        ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor/modified modified)]
     ark))
 
 (defn destroy-rolon
@@ -142,9 +142,9 @@
 (defn update-ark
   [ark registry je-uuid transaction-name s]
   (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
-        ark (create-rolon ark je-uuid
-                          {:classifier:transaction-name transaction-name
-                           :descriptor:transaction-argument s})
+        ark (ark/make-rolon ark je-uuid
+                          {:classifier/transaction-name transaction-name
+                           :descriptor/transaction-argument s})
         f (registry transaction-name)
         ark (f ark s)]
     ark))
@@ -158,7 +158,10 @@
   (process-transaction! [this transaction-name s]
     (let [je-uuid (ark/journal-entry-uuid)]
       (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s)
-      je-uuid)))
+      je-uuid))
+  (process-transaction-at! [this je-uuid transaction-name s]
+    (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s))
+  )
 
 (defn create-ark-db
   "returns an ark db"

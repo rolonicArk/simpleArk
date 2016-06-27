@@ -52,7 +52,9 @@
     and then returns a revised ark")
   (process-transaction! [this transaction-name s]
     "process a transaction with an (edn) string,
-    returning the new journal-entry uuid"))
+    returning the new journal-entry uuid")
+  (process-transaction-at! [this je-uuid transaction-name s]
+    "process a transaction at a given time with an (edn) string"))
 
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
                 create-rolon destroy-rolon update-properties
@@ -205,7 +207,7 @@
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [journal-entry]
   (let [latest-je-property-values (get-latest-property-values journal-entry)
-        updated-rolon-uuids (:descriptor:updated-rolon-uuids latest-je-property-values)]
+        updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
       updated-rolon-uuids)))

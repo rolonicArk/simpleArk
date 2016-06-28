@@ -49,3 +49,9 @@ of all the other rolons created or updated by this journal entry.
 An index is a rolon. Its UUID is created from the name of a classifier.
 An index has a descriptor which holds a map, keyed by classifier value,
 of all rolons which are assigned that value.
+
+## Time Navigation
+
+All queries are based on the current time, which by default is the time of the last
+transaction. But any time can be selected. But after a time has been selected, an ark
+can no longer be used as the result of a transaction.

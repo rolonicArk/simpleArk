@@ -273,9 +273,9 @@
 (defn make-rolon-transaction
   [ark s]
   (let [je-uuid (get-current-journal-entry-uuid ark)
+        [rolon-uuid properties] (read-string s)
         ark (update-property ark je-uuid :classifier/headline (str "make a rolon with " s))
-        uuid (random-uuid)
-        ark (make-rolon ark uuid (read-string s))]
+        ark (make-rolon ark rolon-uuid properties)]
     ark))
 
 (defn destroy-rolon-transaction

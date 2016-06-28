@@ -68,31 +68,30 @@
   (println)
   (println ">>>>>>>>>>>> make-bob")
   (println)
-  (let [je-uuid (process-transaction! ark-db ::make-rolon-transaction
-                                      (prn-str {:descriptor/age 8
-                                                :classifier/name "Bob"}))
-        ark (get-ark ark-db)]
-    (def make-bob-je-uuid je-uuid)
-    (def bob-uuid (name-lookup ark "Bob"))
-    (println :make-bob-je-uuid make-bob-je-uuid)
-    (println :je-properties (get-current-property-values ark je-uuid))
-    (println :bob-uuid bob-uuid)
+  (def bob-uuid (random-uuid))
+  (println :bob-uuid bob-uuid)
+  (def make-bob-je-uuid (process-transaction! ark-db ::make-rolon-transaction
+                                              (prn-str [bob-uuid
+                                                        {:descriptor/age 8 :classifier/name "Bob"}])))
+  (println :make-bob-je-uuid make-bob-je-uuid)
+  (let [ark (get-ark ark-db)]
+    (println :je-properties (get-current-property-values ark make-bob-je-uuid))
     (println :bob-properties (get-current-property-values ark bob-uuid))
     )
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
   (println)
-  (let [je-uuid (process-transaction! ark-db ::make-rolon-transaction
-                                      (prn-str {:descriptor/age 10
-                                                :classifier/name "Sam"
-                                                :classifier/headline "I hate green eggs and ham!"}))
-        ark (get-ark ark-db)]
-    (def make-sam-je-uuid je-uuid)
-    (def sam-uuid (name-lookup ark "Sam"))
-    (println :make-sam-je-uuid make-sam-je-uuid)
-    ;(println :je-properties (get-current-property-values ark je-uuid))
-    (println :sam-uuid sam-uuid)
+  (def sam-uuid (random-uuid))
+  (println :sam-uuid sam-uuid)
+  (def make-sam-je-uuid (process-transaction! ark-db ::make-rolon-transaction
+                                              (prn-str [sam-uuid
+                                                        {:descriptor/age 10
+                                                         :classifier/name "Sam"
+                                                         :classifier/headline "I hate green eggs and ham!"}])))
+  (println :make-sam-je-uuid make-sam-je-uuid)
+  (let [ark (get-ark ark-db)]
+    ;(println :je-properties (get-current-property-values ark make-sam-je-uuid))
     (println :sam-properties (get-current-property-values ark sam-uuid))
     )
 

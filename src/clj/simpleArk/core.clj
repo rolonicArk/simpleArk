@@ -273,15 +273,17 @@
 (defn make-rolon-transaction
   [ark s]
   (let [je-uuid (get-current-journal-entry-uuid ark)
-        [rolon-uuid properties] (read-string s)
-        ark (update-property ark je-uuid :classifier/headline (str "make a rolon with " s))
-        ark (make-rolon ark rolon-uuid properties)]
+        [rolon-uuid je-properties rolon-properties] (read-string s)
+        je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)
+        ark (update-properties ark je-uuid je-properties)
+        ark (make-rolon ark rolon-uuid rolon-properties)]
     ark))
 
 (defn destroy-rolon-transaction
   [ark s]
   (let [je-uuid (get-current-journal-entry-uuid ark)
-        ark (update-property ark je-uuid :classifier/headline (str "destroy rolon " s))
-        uuid (read-string s)
+        [uuid je-properties] (read-string s)
+        je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)
+        ark (update-properties ark je-uuid je-properties)
         ark (destroy-rolon ark uuid)]
     ark))

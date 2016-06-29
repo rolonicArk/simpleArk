@@ -59,10 +59,10 @@
 
 (def ^:dynamic *ark* nil)
 
-(defn -bind-ark
-  [ark-db f]
+(defn ark-binder
+  [ark f]
   (let [vark (volatile! nil)]
-    (binding [*ark* (volatile! (get-ark ark-db))]
+    (binding [*ark* (volatile! ark)]
       (f)
       (vreset! vark @*ark*))
     @vark))
@@ -71,7 +71,7 @@
   "binds a volatile holding an ark value to *ark* while body is evaluated,
   returning the last bound value of ark"
   [ark-db & body]
-  `(-bind-ark ~ark-db (fn [] ~@body)))
+  `(ark-binder (get-ark ~ark-db) (fn [] ~@body)))
 
 (defn get-current-journal-entry-uuid
   [ark]

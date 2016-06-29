@@ -109,7 +109,7 @@
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
   (bind-ark ark-db
-            (vreset! *ark* (select-time @*ark* make-bob-je-uuid))
+            (select-time make-bob-je-uuid)
             (println :bob-properties (get-current-property-values @*ark* bob-uuid))
             (println :lookup-bob (name-lookup @*ark* "Bob")))
 

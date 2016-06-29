@@ -79,9 +79,9 @@
                         get-property-values get-property-journal-entry-uuids])
 
 (defn select-time
-  "Returns the ark navigated to the time of the journal entry uuid"
-  [ark je-uuid]
-  ((:select-time ark) ark je-uuid))
+  "Sets the ark to the time of the journal entry uuid"
+  [je-uuid]
+  (vswap! *ark* #((:select-time %) % je-uuid)))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"

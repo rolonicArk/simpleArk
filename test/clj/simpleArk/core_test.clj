@@ -58,12 +58,10 @@
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
-  (let [je-uuid (process-transaction! ark-db ::hello-world "Fred")
-        ark (get-ark ark-db)]
-    (def hello-je-uuid je-uuid)
-    (println :hello-je-uuid hello-je-uuid)
-    (println :je-properties (get-current-property-values ark je-uuid))
-    )
+  (def hello-je-uuid (process-transaction! ark-db ::hello-world "Fred"))
+  (println :hello-je-uuid hello-je-uuid)
+  (bind-ark ark-db
+            (println :je-properties (get-current-property-values @*ark* hello-je-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
@@ -75,9 +73,9 @@
                                                         {:classifier/headline "make bob"}
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
   (println :make-bob-je-uuid make-bob-je-uuid)
-  (let [ark (get-ark ark-db)]
-    (println :je-properties (get-current-property-values ark make-bob-je-uuid))
-    (println :bob-properties (get-current-property-values ark bob-uuid)))
+  (bind-ark ark-db
+    (println :je-properties (get-current-property-values @*ark* make-bob-je-uuid))
+    (println :bob-properties (get-current-property-values @*ark* bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
@@ -91,31 +89,29 @@
                                                          :classifier/name "Sam"
                                                          :classifier/headline "I hate green eggs and ham!"}])))
   (println :make-sam-je-uuid make-sam-je-uuid)
-  (let [ark (get-ark ark-db)]
-    ;(println :je-properties (get-current-property-values ark make-sam-je-uuid))
-    (println :sam-properties (get-current-property-values ark sam-uuid)))
+  (bind-ark ark-db
+    ;(println :je-properties (get-current-property-values @*ark* make-sam-je-uuid))
+    (println :sam-properties (get-current-property-values @*ark* sam-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
   (println)
-  (let [je-uuid (process-transaction! ark-db ::destroy-rolon-transaction
+  (def destroy-bob-je-uuid (process-transaction! ark-db ::destroy-rolon-transaction
                                       (prn-str [bob-uuid
-                                                {:classifier/headline "destroy bob"}]))
-        ark (get-ark ark-db)]
-    (def destroy-bob-je-uuid je-uuid)
-    ;(println :destroy-bob-je-uuid destroy-bob-je-uuid)
-    ;(println :je-properties (get-current-property-values ark je-uuid))
-    ;(println :bob-uuid bob-uuid)
-    (println :bob-properties (get-current-property-values ark bob-uuid))
-    (println :lookup-bob (name-lookup ark "Bob")))
+                                                {:classifier/headline "destroy bob"}])))
+  (println :destroy-bob-je-uuid destroy-bob-je-uuid)
+  (bind-ark ark-db
+            ;(println :je-properties (get-current-property-values @*ark* je-uuid))
+            (println :bob-properties (get-current-property-values @*ark* bob-uuid))
+            (println :lookup-bob (name-lookup @*ark* "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
-  (let [ark (get-ark ark-db)
-        ark (select-time ark make-bob-je-uuid)]
-    (println :bob-properties (get-current-property-values ark bob-uuid))
-    (println :lookup-bob (name-lookup ark "Bob")))
+  (bind-ark ark-db
+            (vreset! *ark* (select-time @*ark* make-bob-je-uuid))
+            (println :bob-properties (get-current-property-values @*ark* bob-uuid))
+            (println :lookup-bob (name-lookup @*ark* "Bob")))
 
   (println)
   ;(println ">>>>>>>>>>>> ark")

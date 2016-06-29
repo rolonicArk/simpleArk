@@ -56,6 +56,14 @@
   (process-transaction-at! [this je-uuid transaction-name s]
     "process a transaction at a given time with an (edn) string"))
 
+
+(def ^:dynamic *ark* nil)
+
+(defmacro bind-ark
+  "binds a volatile holding an ark value to *ark* while f is evaluated"
+  [ark-db & body]
+  `(binding [*ark* (volatile! (get-ark ~ark-db))] ~@body))
+
 (defn get-current-journal-entry-uuid
   [ark]
   ((:get-current-journal-entry-uuid ark) ark))

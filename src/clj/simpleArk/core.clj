@@ -237,9 +237,9 @@
 
 (defn get-previous-value
   "returns the previous rolon value for the same rolon, or nil"
-  [ark rolon-value]
+  [rolon-value]
   (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
-        rolon (get-rolon ark (get-rolon-uuid rolon-value))
+        rolon (get-rolon @*ark* (get-rolon-uuid rolon-value))
         rolon-values (get-rolon-values rolon)
         previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
     (val (first previous-rolon-values))))

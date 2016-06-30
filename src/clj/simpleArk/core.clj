@@ -108,8 +108,8 @@
 
 (defn get-indexes
   "returns a sorted map of all the index rolons"
-  [ark]
-  ((:get-indexes ark) ark))
+  []
+  ((:get-indexes @*ark*) @*ark*))
 
 (defn get-random-rolons
   "returns a map of all the random rolons"
@@ -121,7 +121,7 @@
     (vreset! *ark* ark)
     (try
       (let [s (str "\n" :ark "\n"
-                   "\n" :index-rolons "\n\n" (get-indexes @*ark*) "\n"
+                   "\n" :index-rolons "\n\n" (get-indexes) "\n"
                    "\n" :journal-entry-rolons "\n\n" (get-journal-entries @*ark*) "\n"
                    "\n" :random-rolons "\n\n" (get-random-rolons))]
         s)

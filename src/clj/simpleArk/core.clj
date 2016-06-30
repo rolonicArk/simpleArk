@@ -139,10 +139,9 @@
   ((:make-rolon ark) ark rolon-uuid properties))
 
 (defn destroy-rolon
-  "deletes all the classifiers of a rolon,
-  returning an updated ark"
-  [ark rolon-uuid]
-  ((:destroy-rolon ark) ark rolon-uuid))
+  "deletes all the classifiers of a rolon"
+  [rolon-uuid]
+  (vreset! *ark* ((:destroy-rolon @*ark*) @*ark* rolon-uuid)))
 
 (defn update-properties
   "update the properties of a rolon,
@@ -298,10 +297,8 @@
 
 (defn destroy-rolon-transaction
   [s]
-  (let [ark @*ark*
-        je-uuid (get-current-journal-entry-uuid ark)
+  (let [je-uuid (get-current-journal-entry-uuid @*ark*)
         [uuid je-properties] (read-string s)
-        je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)
-        ark (update-properties ark je-uuid je-properties)
-        ark (destroy-rolon ark uuid)]
-    (vreset! *ark*  ark)))
+        je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
+    (vreset! *ark*  (update-properties @*ark* je-uuid je-properties))
+    (destroy-rolon uuid)))

@@ -116,14 +116,20 @@
   [ark]
   ((:get-random-rolons ark) ark))
 
+(defn ark-str [ark]
+  (let [old-ark @*ark*]
+    (vreset! *ark* ark)
+    (try
+      (let [s (str "\n" :ark "\n"
+                   "\n" :index-rolons "\n\n" (get-indexes @*ark*) "\n"
+                   "\n" :journal-entry-rolons "\n\n" (get-journal-entries @*ark*) "\n"
+                   "\n" :random-rolons "\n\n" (get-random-rolons @*ark*))]
+        s)
+      (finally (vreset! *ark* old-ark)))))
+
 (defmethod print-method Ark
   [ark writer]
-  (print-simple
-    (str "\n" :ark "\n"
-         "\n" :index-rolons "\n\n" (get-indexes ark) "\n"
-         "\n" :journal-entry-rolons "\n\n" (get-journal-entries ark) "\n"
-         "\n" :random-rolons "\n\n" (get-random-rolons ark))
-    writer))
+  (print-simple (ark-str ark) writer))
 
 (defn validate-property-keys
   "properties must be classifiers or descriptors"

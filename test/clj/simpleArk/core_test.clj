@@ -115,7 +115,8 @@
   (println)
   ;(println ">>>>>>>>>>>> ark")
   (println)
-  ;(println (get-ark ark-db))
+  (comment bind-ark ark-db
+            (println (get-ark ark-db)))
   )
 
 (deftest arks

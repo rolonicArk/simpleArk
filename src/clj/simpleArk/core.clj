@@ -287,11 +287,10 @@
 
 (defn make-rolon-transaction
   [s]
-  (let [ark @*ark*
-        je-uuid (get-current-journal-entry-uuid ark)
+  (let [je-uuid (get-current-journal-entry-uuid @*ark*)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)
-        ark (update-properties ark je-uuid je-properties)
+        ark (update-properties @*ark* je-uuid je-properties)
         ark (make-rolon ark rolon-uuid rolon-properties)]
     (vreset! *ark*  ark)))
 

@@ -93,8 +93,8 @@
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
-  [ark]
-  ((:get-selected-time ark) ark))
+  []
+  ((:get-selected-time @*ark*) @*ark*))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"

@@ -218,12 +218,12 @@
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
-  [ark index-name]
-  (first (index-lookup ark index-name-uuid index-name)))
+  [index-name]
+  (first (index-lookup @*ark* index-name-uuid index-name)))
 
 (defn name-lookup
   [rolon-name]
-  (let [name-index-uuid (get-index-uuid @*ark* "name")]
+  (let [name-index-uuid (get-index-uuid "name")]
     (first (index-lookup @*ark* name-index-uuid rolon-name))))
 
 (defn get-updated-rolon-uuids

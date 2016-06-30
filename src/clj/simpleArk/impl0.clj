@@ -140,8 +140,8 @@
     ark))
 
 (defn get-selected-time
-  [ark]
-  (::selected-time ark))
+  []
+  (::selected-time @ark/*ark*))
 
 (defn create-ark
   []

@@ -94,7 +94,7 @@
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
   []
-  ((:get-selected-time @*ark*) @*ark*))
+  ((:get-selected-time @*ark*)))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
@@ -116,7 +116,8 @@
   []
   ((:get-random-rolons @*ark*) @*ark*))
 
-(defn ark-str [ark]
+(defn ark-str
+  [ark]
   (let [old-ark @*ark*]
     (vreset! *ark* ark)
     (try

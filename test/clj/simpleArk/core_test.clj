@@ -104,7 +104,7 @@
   (bind-ark ark-db
             ;(println :je-properties (get-current-property-values @*ark* je-uuid))
             (println :bob-properties (get-current-property-values @*ark* bob-uuid))
-            (println :lookup-bob (name-lookup @*ark* "Bob")))
+            (println :lookup-bob (name-lookup "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
@@ -112,7 +112,7 @@
   (bind-ark ark-db
             (select-time make-bob-je-uuid)
             (println :bob-properties (get-current-property-values @*ark* bob-uuid))
-            (println :lookup-bob (name-lookup @*ark* "Bob")))
+            (println :lookup-bob (name-lookup "Bob")))
 
   (println)
   ;(println ">>>>>>>>>>>> ark")

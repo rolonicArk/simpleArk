@@ -162,8 +162,7 @@
                           {:classifier/transaction-name transaction-name
                            :descriptor/transaction-argument s})
         f (registry transaction-name)
-        ark (ark/ark-binder ark (fn []
-                                  (vreset! ark/*ark* (f ark s))))]
+        ark (ark/ark-binder ark (fn [] (f s)))]
     (if (::selected-time ark)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark))

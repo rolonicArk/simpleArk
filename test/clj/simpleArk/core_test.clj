@@ -42,11 +42,12 @@
 
 (defn hello-world
   "simple transaction test"
-  [ark s]
+  [s]
   (println "Hello," s)
-  (let [je-uuid (get-current-journal-entry-uuid ark)
+  (let [ark @*ark*
+        je-uuid (get-current-journal-entry-uuid ark)
         ark (update-property ark je-uuid :classifier/headline "Just for fun!")]
-    ark))
+    (vreset! *ark*  ark)))
 
 (defn test0
   "tests that even work with impl0"

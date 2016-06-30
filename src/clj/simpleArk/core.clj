@@ -48,8 +48,7 @@
     "returns the current value of the ark")
   (register-transaction! [this transaction-name f]
     "defines a transaction,
-    where f takes an ark and an (edn) string,
-    and then returns a revised ark")
+    where f takes an (edn) string")
   (process-transaction! [this transaction-name s]
     "process a transaction with an (edn) string,
     returning the new journal-entry uuid")
@@ -288,19 +287,21 @@
            ark properties)))
 
 (defn make-rolon-transaction
-  [ark s]
-  (let [je-uuid (get-current-journal-entry-uuid ark)
+  [s]
+  (let [ark @*ark*
+        je-uuid (get-current-journal-entry-uuid ark)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)
         ark (update-properties ark je-uuid je-properties)
         ark (make-rolon ark rolon-uuid rolon-properties)]
-    ark))
+    (vreset! *ark*  ark)))
 
 (defn destroy-rolon-transaction
-  [ark s]
-  (let [je-uuid (get-current-journal-entry-uuid ark)
+  [s]
+  (let [ark @*ark*
+        je-uuid (get-current-journal-entry-uuid ark)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)
         ark (update-properties ark je-uuid je-properties)
         ark (destroy-rolon ark uuid)]
-    ark))
+    (vreset! *ark*  ark)))

@@ -113,8 +113,8 @@
 
 (defn get-random-rolons
   "returns a map of all the random rolons"
-  [ark]
-  ((:get-random-rolons ark) ark))
+  []
+  ((:get-random-rolons @*ark*) @*ark*))
 
 (defn ark-str [ark]
   (let [old-ark @*ark*]
@@ -123,7 +123,7 @@
       (let [s (str "\n" :ark "\n"
                    "\n" :index-rolons "\n\n" (get-indexes @*ark*) "\n"
                    "\n" :journal-entry-rolons "\n\n" (get-journal-entries @*ark*) "\n"
-                   "\n" :random-rolons "\n\n" (get-random-rolons @*ark*))]
+                   "\n" :random-rolons "\n\n" (get-random-rolons))]
         s)
       (finally (vreset! *ark* old-ark)))))
 

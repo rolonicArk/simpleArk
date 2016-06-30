@@ -133,11 +133,10 @@
       ark)))
 
 (defn select-time
-  [ark je-uuid]
-  (let [je-uuid (key (first (rsubseq (get-journal-entries ark) <= je-uuid)))
-        ark (assoc ark ::selected-time je-uuid)
-        ark (assoc ark ::active-journal-entry-uuid je-uuid)]
-    ark))
+  [je-uuid]
+  (let [je-uuid (key (first (rsubseq (get-journal-entries @ark/*ark*) <= je-uuid)))
+        ark (assoc @ark/*ark* ::selected-time je-uuid)]
+    (vreset! ark/*ark* (assoc ark ::active-journal-entry-uuid je-uuid))))
 
 (defn get-selected-time
   []

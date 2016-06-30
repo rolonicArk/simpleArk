@@ -89,7 +89,7 @@
 (defn select-time
   "Sets the ark to the time of the journal entry uuid"
   [je-uuid]
-  (vswap! *ark* #((:select-time %) % je-uuid)))
+  ((:select-time @*ark*) je-uuid))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"

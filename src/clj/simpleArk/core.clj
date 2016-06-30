@@ -211,20 +211,20 @@
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
-  [ark index-uuid value]
-  (let [properties (get-current-property-values ark index-uuid)
+  [index-uuid value]
+  (let [properties (get-current-property-values @*ark* index-uuid)
         index-map (:descriptor/index properties)]
     (index-map value)))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
   [index-name]
-  (first (index-lookup @*ark* index-name-uuid index-name)))
+  (first (index-lookup index-name-uuid index-name)))
 
 (defn name-lookup
   [rolon-name]
   (let [name-index-uuid (get-index-uuid "name")]
-    (first (index-lookup @*ark* name-index-uuid rolon-name))))
+    (first (index-lookup name-index-uuid rolon-name))))
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"

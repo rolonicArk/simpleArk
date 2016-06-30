@@ -228,8 +228,8 @@
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
-  [ark je-uuid]
-  (let [latest-je-property-values (get-current-property-values ark je-uuid)
+  [je-uuid]
+  (let [latest-je-property-values (get-current-property-values @*ark* je-uuid)
         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)

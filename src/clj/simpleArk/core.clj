@@ -301,7 +301,7 @@
         ark (make-rolon ark rolon-uuid rolon-properties)]
     (vreset! *ark*  ark)))
 
-(defn destroy-rolon-transaction
+(defn destroy-rolon-transaction!
   [s]
   (let [je-uuid (get-current-journal-entry-uuid @*ark*)
         [uuid je-properties] (read-string s)

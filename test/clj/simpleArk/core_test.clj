@@ -52,7 +52,7 @@
   [ark-db]
   (register-transaction! ark-db ::hello-world! hello-world!)
   (register-transaction! ark-db ::make-rolon-transaction! make-rolon-transaction!)
-  (register-transaction! ark-db ::destroy-rolon-transaction destroy-rolon-transaction)
+  (register-transaction! ark-db ::destroy-rolon-transaction! destroy-rolon-transaction!)
 
   (println)
   (println ">>>>>>>>>>>> hello-world")
@@ -95,8 +95,8 @@
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
   (println)
-  (def destroy-bob-je-uuid (process-transaction! ark-db ::destroy-rolon-transaction
-                                      (prn-str [bob-uuid
+  (def destroy-bob-je-uuid (process-transaction! ark-db ::destroy-rolon-transaction!
+                                                 (prn-str [bob-uuid
                                                 {:classifier/headline "destroy bob"}])))
   (println :destroy-bob-je-uuid destroy-bob-je-uuid)
   (bind-ark ark-db

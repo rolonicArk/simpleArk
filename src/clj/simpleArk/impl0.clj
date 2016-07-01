@@ -12,8 +12,7 @@
 
 (defn assoc-rolon!
   "update the ark with the revised/new rolon"
-  [ark rolon-uuid rolon]
-  (vreset! ark/*ark* ark)
+  [rolon-uuid rolon]
   (vreset! ark/*ark* (cond
                        (ark/journal-entry-uuid? rolon-uuid)
                        (assoc-in @ark/*ark* [::journal-entries rolon-uuid] rolon)
@@ -35,7 +34,7 @@
         pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)]
-    (vreset! ark/*ark* (assoc-rolon! @ark/*ark* rolon-uuid rolon))))
+    (vreset! ark/*ark* (assoc-rolon! rolon-uuid rolon))))
 
 (defn update-property-!
   [journal-entry-uuid rolon-uuid property-name property-value]
@@ -43,8 +42,7 @@
 
 (defn je-modified!
   "track the rolons modified by the journal entry"
-  [ark journal-entry-uuid rolon-uuid]
-  (vreset! ark/*ark* ark)
+  [journal-entry-uuid rolon-uuid]
   (let [je-value (ark/get-current-rolon-value @ark/*ark* journal-entry-uuid)
         je-property-values (::property-values je-value)
         modified (:descriptor/modified je-property-values)
@@ -66,15 +64,15 @@
         pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)]
-    (assoc-rolon! @ark/*ark* rolon-uuid rolon)
-    (je-modified! @ark/*ark* je-uuid rolon-uuid)))
+    (assoc-rolon! rolon-uuid rolon)
+    (je-modified! je-uuid rolon-uuid)))
 
 (defn update-properties!
   [ark rolon-uuid properties]
   (vreset! ark/*ark* ark)
   (let [journal-entry-uuid (::active-journal-entry-uuid @ark/*ark*)]
     (update-properties-! journal-entry-uuid rolon-uuid properties)
-    (je-modified! @ark/*ark* journal-entry-uuid rolon-uuid)))
+    (je-modified! journal-entry-uuid rolon-uuid)))
 
 (defn get-property-values
   [rolon-value]
@@ -118,21 +116,21 @@
   []
   (::random-rolons @ark/*ark*))
 
-(defn make-rolon
+(defn make-rolon!
   [ark rolon-uuid properties]
-  (if (get-rolon ark rolon-uuid)
-    (update-properties! ark rolon-uuid properties)
-    (let [je-uuid (::active-journal-entry-uuid ark)
+  (vreset! ark/*ark* ark)
+  (if (get-rolon @ark/*ark* rolon-uuid)
+    (update-properties! @ark/*ark* rolon-uuid properties)
+    (let [je-uuid (::active-journal-entry-uuid @ark/*ark*)
           rolon (ark/->Rolon rolon-uuid get-rolon-values)
           rolon (assoc rolon ::rolon-values
                              (sorted-map je-uuid
                                          (create-rolon-value je-uuid
                                                              rolon-uuid
-                                                             properties)))
-          ark (assoc-rolon! ark rolon-uuid rolon)
-          ark (je-modified! ark je-uuid rolon-uuid)
-          ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))]
-      ark)))
+                                                             properties)))]
+      (assoc-rolon! rolon-uuid rolon)
+      (je-modified! je-uuid rolon-uuid)
+      (vreset! ark/*ark* (ark/make-index-rolon @ark/*ark* rolon-uuid properties (sorted-map))))))
 
 (defn select-time!
   [je-uuid]
@@ -147,7 +145,7 @@
 (defn create-ark
   []
   (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
-                       make-rolon destroy-rolon! update-properties!
+                       make-rolon! destroy-rolon! update-properties!
                        get-current-journal-entry-uuid
                        select-time! get-selected-time)
         ark (assoc ark ::journal-entries (sorted-map))

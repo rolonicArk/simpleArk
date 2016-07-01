@@ -155,13 +155,15 @@
 
 (defn update-ark
   [ark registry je-uuid transaction-name s]
-  (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
+  (let [f (registry transaction-name)
+        ark (assoc ark ::latest-journal-entry-uuid je-uuid)
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
-        ark (ark/make-rolon ark je-uuid
-                          {:classifier/transaction-name transaction-name
-                           :descriptor/transaction-argument s})
-        f (registry transaction-name)
-        ark (ark/ark-binder ark (fn [] (f s)))]
+        ark (ark/ark-binder ark
+                            (fn []
+                              (vreset! ark/*ark* (ark/make-rolon @ark/*ark* je-uuid
+                                                  {:classifier/transaction-name transaction-name
+                                                   :descriptor/transaction-argument s}))
+                              (f s)))]
     (if (::selected-time ark)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark))

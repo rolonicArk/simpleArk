@@ -77,7 +77,7 @@
   ((:get-current-journal-entry-uuid ark) ark))
 
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
-                make-rolon destroy-rolon! update-properties
+                make-rolon! destroy-rolon! update-properties!
                 get-current-journal-entry-uuid
                 select-time! get-selected-time])
 
@@ -143,7 +143,7 @@
   "returns a revised ark with the new rolon or updated"
   [ark rolon-uuid properties]
   (validate-property-keys properties)
-  ((:make-rolon ark) ark rolon-uuid properties))
+  ((:make-rolon! ark) ark rolon-uuid properties))
 
 (defn destroy-rolon!
   "deletes all the classifiers of a rolon"
@@ -155,7 +155,7 @@
   returning an updated ark"
   [ark rolon-uuid properties]
   (validate-property-keys properties)
-  ((:update-properties ark) ark rolon-uuid properties))
+  ((:update-properties! ark) ark rolon-uuid properties))
 
 (defn update-property
   "update the value of a property of a rolon,

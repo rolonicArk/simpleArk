@@ -79,17 +79,17 @@
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon destroy-rolon update-properties
                 get-current-journal-entry-uuid
-                select-time get-selected-time])
+                select-time! get-selected-time])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid
                         get-property-values get-property-journal-entry-uuids])
 
-(defn select-time
+(defn select-time!
   "Sets the ark to the time of the journal entry uuid"
   [je-uuid]
-  ((:select-time @*ark*) je-uuid))
+  ((:select-time! @*ark*) je-uuid))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
@@ -104,7 +104,7 @@
 (defn get-journal-entries
   "returns a sorted map of all the journal entry rolons"
   []
-  ((:get-journal-entries @*ark*) @*ark*))
+  ((:get-journal-entries @*ark*)))
 
 (defn get-indexes
   "returns a sorted map of all the index rolons"

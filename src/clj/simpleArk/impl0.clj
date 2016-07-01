@@ -105,8 +105,8 @@
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn get-journal-entries
-  [ark]
-  (::journal-entries ark))
+  []
+  (::journal-entries @ark/*ark*))
 
 (defn get-indexes
   [ark]
@@ -132,9 +132,9 @@
           ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))]
       ark)))
 
-(defn select-time
+(defn select-time!
   [je-uuid]
-  (let [je-uuid (key (first (rsubseq (get-journal-entries @ark/*ark*) <= je-uuid)))
+  (let [je-uuid (key (first (rsubseq (get-journal-entries) <= je-uuid)))
         ark (assoc @ark/*ark* ::selected-time je-uuid)]
     (vreset! ark/*ark* (assoc ark ::active-journal-entry-uuid je-uuid))))
 
@@ -147,7 +147,7 @@
   (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon destroy-rolon update-properties
                        get-current-journal-entry-uuid
-                       select-time get-selected-time)
+                       select-time! get-selected-time)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
         ark (assoc ark ::random-rolons {})]

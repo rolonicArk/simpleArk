@@ -249,8 +249,8 @@
 
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
-  [ark je-uuid]
-  (let [index (:descriptor/index (get-current-property-values ark je-uuid))]
+  [je-uuid]
+  (let [index (:descriptor/index (get-current-property-values @*ark* je-uuid))]
     (if (nil? index)
       (sorted-map)
       index)))
@@ -264,7 +264,7 @@
                       (sorted-map :classifier/index.name (name classifier)))
          _ (make-rolon! iuuid properties)
          index-rolon (get-rolon @*ark* iuuid)
-         index-descriptor (get-index-descriptor @*ark* iuuid)
+         index-descriptor (get-index-descriptor iuuid)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})
          value-set (if adding

@@ -68,8 +68,7 @@
     (je-modified! je-uuid rolon-uuid)))
 
 (defn update-properties!
-  [ark rolon-uuid properties]
-  (vreset! ark/*ark* ark)
+  [rolon-uuid properties]
   (let [journal-entry-uuid (::active-journal-entry-uuid @ark/*ark*)]
     (update-properties-! journal-entry-uuid rolon-uuid properties)
     (je-modified! journal-entry-uuid rolon-uuid)))
@@ -120,7 +119,7 @@
   [ark rolon-uuid properties]
   (vreset! ark/*ark* ark)
   (if (get-rolon @ark/*ark* rolon-uuid)
-    (update-properties! @ark/*ark* rolon-uuid properties)
+    (update-properties! rolon-uuid properties)
     (let [je-uuid (::active-journal-entry-uuid @ark/*ark*)
           rolon (ark/->Rolon rolon-uuid get-rolon-values)
           rolon (assoc rolon ::rolon-values

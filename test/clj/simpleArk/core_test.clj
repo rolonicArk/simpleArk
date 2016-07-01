@@ -45,7 +45,7 @@
   [s]
   (println "Hello," s)
   (let [je-uuid (get-current-journal-entry-uuid @*ark*)]
-    (vreset! *ark*  (update-property @*ark* je-uuid :classifier/headline "Just for fun!"))))
+    (vreset! *ark* (update-property! @*ark* je-uuid :classifier/headline "Just for fun!"))))
 
 (defn test0
   "tests that even work with impl0"

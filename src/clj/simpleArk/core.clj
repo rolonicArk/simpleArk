@@ -150,18 +150,17 @@
   [rolon-uuid]
   ((:destroy-rolon! @*ark*) rolon-uuid))
 
-(defn update-properties
-  "update the properties of a rolon,
-  returning an updated ark"
-  [ark rolon-uuid properties]
+(defn update-properties!
+  "update the properties of a rolon"
+  [rolon-uuid properties]
   (validate-property-keys properties)
-  ((:update-properties! ark) ark rolon-uuid properties))
+  ((:update-properties! @*ark*) rolon-uuid properties))
 
-(defn update-property
-  "update the value of a property of a rolon,
-  returning an updated ark"
+(defn update-property!
+  "update the value of a property of a rolon"
   [ark rolon-uuid property-name property-value]
-  (update-properties ark rolon-uuid (sorted-map property-name property-value)))
+  (vreset! *ark* ark)
+  (update-properties! rolon-uuid (sorted-map property-name property-value)))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
@@ -274,7 +273,7 @@
                      (conj value-set uuid)
                      (disj value-set uuid))
          index-descriptor (assoc index-descriptor value value-set)]
-     (update-property ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
+     (update-property! ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
   ([ark uuid properties old-properties]
    (reduce #(let [ark %1
                   k (key %2)
@@ -297,7 +296,7 @@
   (let [je-uuid (get-current-journal-entry-uuid @*ark*)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)]
-    (vreset! *ark* (update-properties @*ark* je-uuid je-properties))
+    (update-properties! je-uuid je-properties)
     (vreset! *ark*  (make-rolon @*ark* rolon-uuid rolon-properties))))
 
 (defn destroy-rolon-transaction!
@@ -305,5 +304,5 @@
   (let [je-uuid (get-current-journal-entry-uuid @*ark*)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
-    (vreset! *ark*  (update-properties @*ark* je-uuid je-properties))
+    (update-properties! je-uuid je-properties)
     (destroy-rolon! uuid)))

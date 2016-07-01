@@ -109,7 +109,7 @@
 (defn get-indexes
   "returns a sorted map of all the index rolons"
   []
-  ((:get-indexes @*ark*) @*ark*))
+  ((:get-indexes @*ark*)))
 
 (defn get-random-rolons
   "returns a map of all the random rolons"

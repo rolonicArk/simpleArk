@@ -52,7 +52,7 @@
 
 (defn destroy-rolon
   [ark rolon-uuid]
-  (let [je-uuid (get-current-journal-entry-uuid ark)
+  (let [je-uuid (::active-journal-entry-uuid ark)
         rolon (ark/get-rolon ark rolon-uuid)
         rolon-value (ark/get-current-rolon-value ark rolon-uuid)
         old-property-values (::property-values rolon-value)
@@ -69,7 +69,7 @@
 
 (defn update-properties
   [ark rolon-uuid properties]
-  (let [journal-entry-uuid (get-current-journal-entry-uuid ark)
+  (let [journal-entry-uuid (::active-journal-entry-uuid ark)
         ark (update-properties- ark journal-entry-uuid rolon-uuid properties)
         ark (je-modified ark journal-entry-uuid rolon-uuid)]
     ark))
@@ -109,8 +109,8 @@
   (::journal-entries @ark/*ark*))
 
 (defn get-indexes
-  [ark]
-  (::indexes ark))
+  []
+  (::indexes @ark/*ark*))
 
 (defn get-random-rolons
   [ark]
@@ -120,7 +120,7 @@
   [ark rolon-uuid properties]
   (if (get-rolon ark rolon-uuid)
     (update-properties ark rolon-uuid properties)
-    (let [je-uuid (get-current-journal-entry-uuid ark)
+    (let [je-uuid (::active-journal-entry-uuid ark)
           rolon (ark/->Rolon rolon-uuid get-rolon-values)
           rolon (assoc rolon ::rolon-values
                              (sorted-map je-uuid

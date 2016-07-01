@@ -60,7 +60,7 @@
   (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
   (println :hello-je-uuid hello-je-uuid)
   (bind-ark ark-db
-            (println :je-properties (get-current-property-values @*ark* hello-je-uuid)))
+            (println :je-properties (get-current-property-values hello-je-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
@@ -73,8 +73,8 @@
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
   (println :make-bob-je-uuid make-bob-je-uuid)
   (bind-ark ark-db
-    (println :je-properties (get-current-property-values @*ark* make-bob-je-uuid))
-    (println :bob-properties (get-current-property-values @*ark* bob-uuid)))
+    (println :je-properties (get-current-property-values make-bob-je-uuid))
+    (println :bob-properties (get-current-property-values bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
@@ -90,7 +90,7 @@
   (println :make-sam-je-uuid make-sam-je-uuid)
   (bind-ark ark-db
     ;(println :je-properties (get-current-property-values @*ark* make-sam-je-uuid))
-    (println :sam-properties (get-current-property-values @*ark* sam-uuid)))
+    (println :sam-properties (get-current-property-values sam-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
@@ -100,8 +100,8 @@
                                                 {:classifier/headline "destroy bob"}])))
   (println :destroy-bob-je-uuid destroy-bob-je-uuid)
   (bind-ark ark-db
-            ;(println :je-properties (get-current-property-values @*ark* je-uuid))
-            (println :bob-properties (get-current-property-values @*ark* bob-uuid))
+            ;(println :je-properties (get-current-property-values je-uuid))
+            (println :bob-properties (get-current-property-values bob-uuid))
             (println :lookup-bob (name-lookup "Bob")))
 
   (println)
@@ -109,7 +109,7 @@
   (println)
   (bind-ark ark-db
             (select-time! make-bob-je-uuid)
-            (println :bob-properties (get-current-property-values @*ark* bob-uuid))
+            (println :bob-properties (get-current-property-values bob-uuid))
             (println :lookup-bob (name-lookup "Bob")))
 
   (println)

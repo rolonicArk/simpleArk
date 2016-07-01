@@ -209,13 +209,13 @@
 
 (defn get-current-property-values
   "returns the current property values"
-  ([ark rolon-uuid]
-   (get-property-values (get-current-rolon-value ark rolon-uuid))))
+  ([rolon-uuid]
+   (get-property-values (get-current-rolon-value @*ark* rolon-uuid))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
   [index-uuid value]
-  (let [properties (get-current-property-values @*ark* index-uuid)
+  (let [properties (get-current-property-values index-uuid)
         index-map (:descriptor/index properties)]
     (index-map value)))
 
@@ -232,7 +232,7 @@
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [je-uuid]
-  (let [latest-je-property-values (get-current-property-values @*ark* je-uuid)
+  (let [latest-je-property-values (get-current-property-values je-uuid)
         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
@@ -250,7 +250,7 @@
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
   [je-uuid]
-  (let [index (:descriptor/index (get-current-property-values @*ark* je-uuid))]
+  (let [index (:descriptor/index (get-current-property-values je-uuid))]
     (if (nil? index)
       (sorted-map)
       index)))

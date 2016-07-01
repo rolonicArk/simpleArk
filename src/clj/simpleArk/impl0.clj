@@ -25,7 +25,7 @@
 (defn update-properties-!
   [journal-entry-uuid rolon-uuid properties]
   (let [rolon (ark/get-rolon @ark/*ark* rolon-uuid)
-        rolon-value (ark/get-current-rolon-value @ark/*ark* rolon-uuid)
+        rolon-value (ark/get-current-rolon-value rolon-uuid)
         property-values (::property-values rolon-value)
         _ (ark/make-index-rolon! rolon-uuid properties property-values)
         property-values (into property-values properties)
@@ -43,7 +43,7 @@
 (defn je-modified!
   "track the rolons modified by the journal entry"
   [journal-entry-uuid rolon-uuid]
-  (let [je-value (ark/get-current-rolon-value @ark/*ark* journal-entry-uuid)
+  (let [je-value (ark/get-current-rolon-value journal-entry-uuid)
         je-property-values (::property-values je-value)
         modified (:descriptor/modified je-property-values)
         modified (if modified
@@ -55,7 +55,7 @@
   [rolon-uuid]
   (let [je-uuid (::active-journal-entry-uuid @ark/*ark*)
         rolon (ark/get-rolon @ark/*ark* rolon-uuid)
-        rolon-value (ark/get-current-rolon-value @ark/*ark* rolon-uuid)
+        rolon-value (ark/get-current-rolon-value rolon-uuid)
         old-property-values (::property-values rolon-value)
         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
         _ (ark/make-index-rolon! rolon-uuid property-values old-property-values)

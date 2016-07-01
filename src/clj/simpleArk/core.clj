@@ -202,15 +202,15 @@
 
 (defn get-current-rolon-value
   "returns the current rolon value"
-  [ark rolon-uuid]
-  (let [je-uuid (get-current-journal-entry-uuid ark)
-        rolon (get-rolon ark rolon-uuid)]
+  [rolon-uuid]
+  (let [je-uuid (get-current-journal-entry-uuid @*ark*)
+        rolon (get-rolon @*ark* rolon-uuid)]
     (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
 
 (defn get-current-property-values
   "returns the current property values"
   ([rolon-uuid]
-   (get-property-values (get-current-rolon-value @*ark* rolon-uuid))))
+   (get-property-values (get-current-rolon-value rolon-uuid))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"

@@ -145,7 +145,7 @@
   (validate-property-keys properties)
   ((:make-rolon ark) ark rolon-uuid properties))
 
-(defn destroy-rolon
+(defn destroy-rolon!
   "deletes all the classifiers of a rolon"
   [rolon-uuid]
   (vreset! *ark* ((:destroy-rolon @*ark*) @*ark* rolon-uuid)))
@@ -307,4 +307,4 @@
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (vreset! *ark*  (update-properties @*ark* je-uuid je-properties))
-    (destroy-rolon uuid)))
+    (destroy-rolon! uuid)))

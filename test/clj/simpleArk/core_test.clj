@@ -40,7 +40,7 @@
   (is (not (index-uuid? random-uuid0)))
   )
 
-(defn hello-world
+(defn hello-world!
   "simple transaction test"
   [s]
   (println "Hello," s)
@@ -50,14 +50,14 @@
 (defn test0
   "tests that even work with impl0"
   [ark-db]
-  (register-transaction! ark-db ::hello-world hello-world)
+  (register-transaction! ark-db ::hello-world! hello-world!)
   (register-transaction! ark-db ::make-rolon-transaction make-rolon-transaction)
   (register-transaction! ark-db ::destroy-rolon-transaction destroy-rolon-transaction)
 
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
-  (def hello-je-uuid (process-transaction! ark-db ::hello-world "Fred"))
+  (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
   (println :hello-je-uuid hello-je-uuid)
   (bind-ark ark-db
             (println :je-properties (get-current-property-values @*ark* hello-je-uuid)))

@@ -114,7 +114,7 @@
 (defn get-random-rolons
   "returns a map of all the random rolons"
   []
-  ((:get-random-rolons @*ark*) @*ark*))
+  ((:get-random-rolons @*ark*)))
 
 (defn ark-str
   [ark]

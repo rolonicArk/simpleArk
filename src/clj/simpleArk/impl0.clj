@@ -113,8 +113,8 @@
   (::indexes @ark/*ark*))
 
 (defn get-random-rolons
-  [ark]
-  (::random-rolons ark))
+  []
+  (::random-rolons @ark/*ark*))
 
 (defn make-rolon
   [ark rolon-uuid properties]

@@ -52,13 +52,12 @@
 
 (defn destroy-rolon!
   [rolon-uuid]
-  (let [ark @ark/*ark*
-        je-uuid (::active-journal-entry-uuid ark)
-        rolon (ark/get-rolon ark rolon-uuid)
-        rolon-value (ark/get-current-rolon-value ark rolon-uuid)
+  (let [je-uuid (::active-journal-entry-uuid @ark/*ark*)
+        rolon (ark/get-rolon @ark/*ark* rolon-uuid)
+        rolon-value (ark/get-current-rolon-value @ark/*ark* rolon-uuid)
         old-property-values (::property-values rolon-value)
         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
-        ark (ark/make-index-rolon ark rolon-uuid property-values old-property-values)
+        ark (ark/make-index-rolon @ark/*ark* rolon-uuid property-values old-property-values)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
         pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))

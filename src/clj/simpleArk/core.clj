@@ -73,8 +73,8 @@
   `(ark-binder (get-ark ~ark-db) (fn [] ~@body)))
 
 (defn get-current-journal-entry-uuid
-  [ark]
-  ((:get-current-journal-entry-uuid ark) ark))
+  []
+  ((:get-current-journal-entry-uuid @*ark*)))
 
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties!
@@ -203,7 +203,7 @@
 (defn get-current-rolon-value
   "returns the current rolon value"
   [rolon-uuid]
-  (let [je-uuid (get-current-journal-entry-uuid @*ark*)
+  (let [je-uuid (get-current-journal-entry-uuid)
         rolon (get-rolon @*ark* rolon-uuid)]
     (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
 
@@ -286,7 +286,7 @@
 
 (defn make-rolon-transaction!
   [s]
-  (let [je-uuid (get-current-journal-entry-uuid @*ark*)
+  (let [je-uuid (get-current-journal-entry-uuid)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)]
     (update-properties! je-uuid je-properties)
@@ -294,7 +294,7 @@
 
 (defn destroy-rolon-transaction!
   [s]
-  (let [je-uuid (get-current-journal-entry-uuid @*ark*)
+  (let [je-uuid (get-current-journal-entry-uuid)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (update-properties! je-uuid je-properties)

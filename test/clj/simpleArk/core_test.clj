@@ -44,8 +44,8 @@
   "simple transaction test"
   [s]
   (println "Hello," s)
-  (let [je-uuid (get-current-journal-entry-uuid @*ark*)]
-    (vreset! *ark* (update-property! je-uuid :classifier/headline "Just for fun!"))))
+  (let [je-uuid (get-current-journal-entry-uuid)]
+    (update-property! je-uuid :classifier/headline "Just for fun!")))
 
 (defn test0
   "tests that even work with impl0"

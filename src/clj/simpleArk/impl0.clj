@@ -2,8 +2,8 @@
   (:require [simpleArk.core :as ark]))
 
 (defn get-current-journal-entry-uuid
-  [ark]
-  (::active-journal-entry-uuid ark))
+  []
+  (::active-journal-entry-uuid @ark/*ark*))
 
 (defn update-property-journal-entry-uuids
   "where pjes is to be updated and ps are the new property values"

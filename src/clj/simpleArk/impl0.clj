@@ -23,24 +23,25 @@
                        (assoc-in @ark/*ark* [::random-rolons rolon-uuid] rolon)
                        :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
 
-(defn update-properties-
+(defn update-properties-!
   [ark journal-entry-uuid rolon-uuid properties]
-  (let [rolon (ark/get-rolon ark rolon-uuid)
-        rolon-value (ark/get-current-rolon-value ark rolon-uuid)
+  (vreset! ark/*ark* ark)
+  (let [rolon (ark/get-rolon @ark/*ark* rolon-uuid)
+        rolon-value (ark/get-current-rolon-value @ark/*ark* rolon-uuid)
         property-values (::property-values rolon-value)
-        ark (ark/make-index-rolon ark rolon-uuid properties property-values)
+        _ (vreset! ark/*ark* (ark/make-index-rolon @ark/*ark* rolon-uuid properties property-values))
         property-values (into property-values properties)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
         pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
-        rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)
-        ark (assoc-rolon! ark rolon-uuid rolon)]
-    ark))
+        rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)]
+    (vreset! ark/*ark* (assoc-rolon! @ark/*ark* rolon-uuid rolon))
+    ))
 
 (defn update-property-
   [ark journal-entry-uuid rolon-uuid property-name property-value]
-  (update-properties- ark journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
+  (update-properties-! ark journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
@@ -74,7 +75,7 @@
 (defn update-properties
   [ark rolon-uuid properties]
   (let [journal-entry-uuid (::active-journal-entry-uuid ark)
-        ark (update-properties- ark journal-entry-uuid rolon-uuid properties)
+        ark (update-properties-! ark journal-entry-uuid rolon-uuid properties)
         ark (je-modified ark journal-entry-uuid rolon-uuid)]
     ark))
 

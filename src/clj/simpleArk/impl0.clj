@@ -39,9 +39,10 @@
     (vreset! ark/*ark* (assoc-rolon! @ark/*ark* rolon-uuid rolon))
     ))
 
-(defn update-property-
+(defn update-property-!
   [ark journal-entry-uuid rolon-uuid property-name property-value]
-  (update-properties-! ark journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
+  (vreset! ark/*ark* ark)
+  (update-properties-! @ark/*ark* journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
@@ -52,7 +53,7 @@
         modified (if modified
                    (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))
-        ark (update-property- ark journal-entry-uuid journal-entry-uuid :descriptor/modified modified)]
+        ark (update-property-! ark journal-entry-uuid journal-entry-uuid :descriptor/modified modified)]
     ark))
 
 (defn destroy-rolon!

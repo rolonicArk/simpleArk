@@ -139,11 +139,11 @@
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
           nil (keys properties)))
 
-(defn make-rolon
-  "returns a revised ark with the new rolon or updated"
+(defn make-rolon!
   [ark rolon-uuid properties]
+  (vreset! *ark* ark)
   (validate-property-keys properties)
-  ((:make-rolon! ark) ark rolon-uuid properties))
+  ((:make-rolon! @*ark*) rolon-uuid properties))
 
 (defn destroy-rolon!
   "deletes all the classifiers of a rolon"
@@ -257,14 +257,14 @@
       (sorted-map)
       index)))
 
-(defn make-index-rolon
-  "create/update an index rolon, returning the updated ark"
+(defn make-index-rolon!
+  "create/update an index rolon"
   ([ark classifier value uuid adding]
    (let [iuuid (index-uuid classifier)
          properties (if (get-rolon ark iuuid)
                       (sorted-map)
                       (sorted-map :classifier/index.name (name classifier)))
-         ark (make-rolon ark iuuid properties)
+         ark (make-rolon! ark iuuid properties)
          index-rolon (get-rolon ark iuuid)
          index-descriptor (get-index-descriptor ark iuuid)
          value-set (index-descriptor value)
@@ -281,10 +281,10 @@
                   ov (old-properties k)
                   ark (if (classifier? k)
                         (let [ark (if ov
-                                    (make-index-rolon ark k ov uuid false)
+                                    (make-index-rolon! ark k ov uuid false)
                                     ark)
                               ark (if nv
-                                    (make-index-rolon ark k nv uuid true)
+                                    (make-index-rolon! ark k nv uuid true)
                                     ark)]
                           ark)
                         ark)]
@@ -297,7 +297,7 @@
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)]
     (update-properties! je-uuid je-properties)
-    (vreset! *ark*  (make-rolon @*ark* rolon-uuid rolon-properties))))
+    (vreset! *ark* (make-rolon! @*ark* rolon-uuid rolon-properties))))
 
 (defn destroy-rolon-transaction!
   [s]

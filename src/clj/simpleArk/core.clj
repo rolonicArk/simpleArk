@@ -292,7 +292,7 @@
              ark)
            ark properties)))
 
-(defn make-rolon-transaction
+(defn make-rolon-transaction!
   [s]
   (let [je-uuid (get-current-journal-entry-uuid @*ark*)
         [rolon-uuid je-properties rolon-properties] (read-string s)

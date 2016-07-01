@@ -10,14 +10,18 @@
   [pjes ps je-uuid]
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
-(defn assoc-rolon
+(defn assoc-rolon!
   "update the ark with the revised/new rolon"
   [ark rolon-uuid rolon]
-  (cond
-    (ark/journal-entry-uuid? rolon-uuid) (assoc-in ark [::journal-entries rolon-uuid] rolon)
-    (ark/index-uuid? rolon-uuid) (assoc-in ark [::indexes rolon-uuid] rolon)
-    (ark/random-uuid? rolon-uuid) (assoc-in ark [::random-rolons rolon-uuid] rolon)
-    :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
+  (vreset! ark/*ark* ark)
+  (vreset! ark/*ark* (cond
+                       (ark/journal-entry-uuid? rolon-uuid)
+                       (assoc-in @ark/*ark* [::journal-entries rolon-uuid] rolon)
+                       (ark/index-uuid? rolon-uuid)
+                       (assoc-in @ark/*ark* [::indexes rolon-uuid] rolon)
+                       (ark/random-uuid? rolon-uuid)
+                       (assoc-in @ark/*ark* [::random-rolons rolon-uuid] rolon)
+                       :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
 
 (defn update-properties-
   [ark journal-entry-uuid rolon-uuid properties]
@@ -31,7 +35,7 @@
         pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)
-        ark (assoc-rolon ark rolon-uuid rolon)]
+        ark (assoc-rolon! ark rolon-uuid rolon)]
     ark))
 
 (defn update-property-
@@ -63,7 +67,7 @@
         pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)
-        ark (assoc-rolon ark rolon-uuid rolon)
+        ark (assoc-rolon! ark rolon-uuid rolon)
         ark (je-modified ark je-uuid rolon-uuid)]
     (vreset! ark/*ark* ark)))
 
@@ -127,7 +131,7 @@
                                          (create-rolon-value je-uuid
                                                              rolon-uuid
                                                              properties)))
-          ark (assoc-rolon ark rolon-uuid rolon)
+          ark (assoc-rolon! ark rolon-uuid rolon)
           ark (je-modified ark je-uuid rolon-uuid)
           ark (ark/make-index-rolon ark rolon-uuid properties (sorted-map))]
       ark)))

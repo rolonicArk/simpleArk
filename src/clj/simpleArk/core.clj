@@ -140,8 +140,7 @@
           nil (keys properties)))
 
 (defn make-rolon!
-  [ark rolon-uuid properties]
-  (vreset! *ark* ark)
+  [rolon-uuid properties]
   (validate-property-keys properties)
   ((:make-rolon! @*ark*) rolon-uuid properties))
 
@@ -158,8 +157,7 @@
 
 (defn update-property!
   "update the value of a property of a rolon"
-  [ark rolon-uuid property-name property-value]
-  (vreset! *ark* ark)
+  [rolon-uuid property-name property-value]
   (update-properties! rolon-uuid (sorted-map property-name property-value)))
 
 (defn get-rolon-uuid
@@ -259,37 +257,32 @@
 
 (defn make-index-rolon!
   "create/update an index rolon"
-  ([ark classifier value uuid adding]
+  ([classifier value uuid adding]
    (let [iuuid (index-uuid classifier)
-         properties (if (get-rolon ark iuuid)
+         properties (if (get-rolon @*ark* iuuid)
                       (sorted-map)
                       (sorted-map :classifier/index.name (name classifier)))
-         ark (make-rolon! ark iuuid properties)
-         index-rolon (get-rolon ark iuuid)
-         index-descriptor (get-index-descriptor ark iuuid)
+         _ (make-rolon! iuuid properties)
+         index-rolon (get-rolon @*ark* iuuid)
+         index-descriptor (get-index-descriptor @*ark* iuuid)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})
          value-set (if adding
                      (conj value-set uuid)
                      (disj value-set uuid))
          index-descriptor (assoc index-descriptor value value-set)]
-     (update-property! ark (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
-  ([ark uuid properties old-properties]
-   (reduce #(let [ark %1
-                  k (key %2)
+     (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
+  ([uuid properties old-properties]
+   (reduce #(let [k (key %2)
                   nv (val %2)
-                  ov (old-properties k)
-                  ark (if (classifier? k)
-                        (let [ark (if ov
-                                    (make-index-rolon! ark k ov uuid false)
-                                    ark)
-                              ark (if nv
-                                    (make-index-rolon! ark k nv uuid true)
-                                    ark)]
-                          ark)
-                        ark)]
-             ark)
-           ark properties)))
+                  ov (old-properties k)]
+             (when (classifier? k)
+               (if ov
+                 (make-index-rolon! k ov uuid false))
+               (if nv
+                 (make-index-rolon! k nv uuid true))))
+           nil properties)
+    @*ark*))
 
 (defn make-rolon-transaction!
   [s]
@@ -297,7 +290,7 @@
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)]
     (update-properties! je-uuid je-properties)
-    (vreset! *ark* (make-rolon! @*ark* rolon-uuid rolon-properties))))
+    (vreset! *ark* (make-rolon! rolon-uuid rolon-properties))))
 
 (defn destroy-rolon-transaction!
   [s]

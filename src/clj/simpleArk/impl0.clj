@@ -27,7 +27,7 @@
   (let [rolon (ark/get-rolon @ark/*ark* rolon-uuid)
         rolon-value (ark/get-current-rolon-value @ark/*ark* rolon-uuid)
         property-values (::property-values rolon-value)
-        _ (vreset! ark/*ark* (ark/make-index-rolon! @ark/*ark* rolon-uuid properties property-values))
+        _ (ark/make-index-rolon! rolon-uuid properties property-values)
         property-values (into property-values properties)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
@@ -58,7 +58,7 @@
         rolon-value (ark/get-current-rolon-value @ark/*ark* rolon-uuid)
         old-property-values (::property-values rolon-value)
         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
-        _ (vreset! ark/*ark* (ark/make-index-rolon! @ark/*ark* rolon-uuid property-values old-property-values))
+        _ (ark/make-index-rolon! rolon-uuid property-values old-property-values)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
         pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
@@ -128,7 +128,7 @@
                                                              properties)))]
       (assoc-rolon! rolon-uuid rolon)
       (je-modified! je-uuid rolon-uuid)
-      (vreset! ark/*ark* (ark/make-index-rolon! @ark/*ark* rolon-uuid properties (sorted-map))))))
+      (ark/make-index-rolon! rolon-uuid properties (sorted-map)))))
 
 (defn select-time!
   [je-uuid]
@@ -158,7 +158,7 @@
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark/ark-binder ark
                             (fn []
-                              (vreset! ark/*ark* (ark/make-rolon! @ark/*ark* je-uuid
+                              (vreset! ark/*ark* (ark/make-rolon! je-uuid
                                                                   {:classifier/transaction-name transaction-name
                                                    :descriptor/transaction-argument s}))
                               (f s)))]

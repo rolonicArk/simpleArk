@@ -98,8 +98,8 @@
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
-  [ark uuid]
-  ((:get-rolon ark) ark uuid))
+  [uuid]
+  ((:get-rolon @*ark*) uuid))
 
 (defn get-journal-entries
   "returns a sorted map of all the journal entry rolons"
@@ -204,7 +204,7 @@
   "returns the current rolon value"
   [rolon-uuid]
   (let [je-uuid (get-current-journal-entry-uuid)
-        rolon (get-rolon @*ark* rolon-uuid)]
+        rolon (get-rolon rolon-uuid)]
     (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
 
 (defn get-current-property-values
@@ -242,7 +242,7 @@
   "returns the previous rolon value for the same rolon, or nil"
   [rolon-value]
   (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
-        rolon (get-rolon @*ark* (get-rolon-uuid rolon-value))
+        rolon (get-rolon (get-rolon-uuid rolon-value))
         rolon-values (get-rolon-values rolon)
         previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
     (val (first previous-rolon-values))))
@@ -259,11 +259,11 @@
   "create/update an index rolon"
   ([classifier value uuid adding]
    (let [iuuid (index-uuid classifier)
-         properties (if (get-rolon @*ark* iuuid)
+         properties (if (get-rolon iuuid)
                       (sorted-map)
                       (sorted-map :classifier/index.name (name classifier)))
          _ (make-rolon! iuuid properties)
-         index-rolon (get-rolon @*ark* iuuid)
+         index-rolon (get-rolon iuuid)
          index-descriptor (get-index-descriptor iuuid)
          value-set (index-descriptor value)
          value-set (if value-set value-set #{})

@@ -22,9 +22,17 @@
                        (assoc-in @ark/*ark* [::random-rolons rolon-uuid] rolon)
                        :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
 
+(defn get-rolon
+  [uuid]
+  (cond
+    (ark/journal-entry-uuid? uuid) ((::journal-entries @ark/*ark*) uuid)
+    (ark/index-uuid? uuid) ((::indexes @ark/*ark*) uuid)
+    (ark/random-uuid? uuid) ((::random-rolons @ark/*ark*) uuid)
+    :else (throw (Exception. (str uuid " was not recognized")))))
+
 (defn update-properties-!
   [journal-entry-uuid rolon-uuid properties]
-  (let [rolon (ark/get-rolon @ark/*ark* rolon-uuid)
+  (let [rolon (get-rolon rolon-uuid)
         rolon-value (ark/get-current-rolon-value rolon-uuid)
         property-values (::property-values rolon-value)
         _ (ark/make-index-rolon! rolon-uuid properties property-values)
@@ -54,7 +62,7 @@
 (defn destroy-rolon!
   [rolon-uuid]
   (let [je-uuid (::active-journal-entry-uuid @ark/*ark*)
-        rolon (ark/get-rolon @ark/*ark* rolon-uuid)
+        rolon (get-rolon rolon-uuid)
         rolon-value (ark/get-current-rolon-value rolon-uuid)
         old-property-values (::property-values rolon-value)
         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
@@ -95,14 +103,6 @@
   [rolon]
   (::rolon-values rolon))
 
-(defn get-rolon
-  [ark uuid]
-  (cond
-    (ark/journal-entry-uuid? uuid) ((::journal-entries ark) uuid)
-    (ark/index-uuid? uuid) ((::indexes ark) uuid)
-    (ark/random-uuid? uuid) ((::random-rolons ark) uuid)
-    :else (throw (Exception. (str uuid " was not recognized")))))
-
 (defn get-journal-entries
   []
   (::journal-entries @ark/*ark*))
@@ -117,7 +117,7 @@
 
 (defn make-rolon!
   [rolon-uuid properties]
-  (if (get-rolon @ark/*ark* rolon-uuid)
+  (if (get-rolon rolon-uuid)
     (update-properties! rolon-uuid properties)
     (let [je-uuid (::active-journal-entry-uuid @ark/*ark*)
           rolon (ark/->Rolon rolon-uuid get-rolon-values)

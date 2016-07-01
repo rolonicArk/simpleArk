@@ -77,7 +77,7 @@
   ((:get-current-journal-entry-uuid ark) ark))
 
 (defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
-                make-rolon destroy-rolon update-properties
+                make-rolon destroy-rolon! update-properties
                 get-current-journal-entry-uuid
                 select-time! get-selected-time])
 
@@ -148,7 +148,7 @@
 (defn destroy-rolon!
   "deletes all the classifiers of a rolon"
   [rolon-uuid]
-  (vreset! *ark* ((:destroy-rolon @*ark*) @*ark* rolon-uuid)))
+  ((:destroy-rolon! @*ark*) rolon-uuid))
 
 (defn update-properties
   "update the properties of a rolon,

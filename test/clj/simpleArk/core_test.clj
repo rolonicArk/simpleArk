@@ -89,7 +89,7 @@
                                                          :classifier/headline "I hate green eggs and ham!"}])))
   (println :make-sam-je-uuid make-sam-je-uuid)
   (bind-ark ark-db
-    ;(println :je-properties (get-current-property-values @*ark* make-sam-je-uuid))
+    ;(println :je-properties (get-current-property-values make-sam-je-uuid))
     (println :sam-properties (get-current-property-values sam-uuid)))
 
   (println)
@@ -113,11 +113,11 @@
             (println :lookup-bob (name-lookup "Bob")))
 
   (println)
-  ;(println ">>>>>>>>>>>> ark")
+  (println ">>>>>>>>>>>> journal entry headlines")
   (println)
-  (comment bind-ark ark-db
-           (println (get-ark ark-db)))
-  )
+  (bind-ark ark-db
+            (first (keep (fn [x] (println (get-current-property-value (key x) :classifier/headline)))
+                         (get-journal-entries)))))
 
 (deftest arks
           (println "impl0 tests")

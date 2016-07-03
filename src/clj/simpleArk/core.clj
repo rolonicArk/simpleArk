@@ -209,8 +209,13 @@
 
 (defn get-current-property-values
   "returns the current property values"
-  ([rolon-uuid]
-   (get-property-values (get-current-rolon-value rolon-uuid))))
+  [rolon-uuid]
+   (get-property-values (get-current-rolon-value rolon-uuid)))
+
+(defn get-current-property-value
+  "returns the current value of a property"
+  [rolon-uuid key]
+  ((get-current-property-values rolon-uuid) key))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"

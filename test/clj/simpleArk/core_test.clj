@@ -76,20 +76,27 @@
     (println :je-properties (get-current-property-values make-bob-je-uuid))
     (println :bob-properties (get-current-property-values bob-uuid)))
 
+  (println)
+  (println ">>>>>>>>>>>> 3 updates to bob")
+  (println)
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
-                                  {:classifier/headline "update 1"}
+                                  {:classifier/headline "bob update 1"}
                                   {:classifier/headline "kissing is gross!"}]))
-
+  (bind-ark ark-db
+            (println :bob-properties (get-current-property-values bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
-                                  {:classifier/headline "update 2"}
+                                  {:classifier/headline "bob update 2"}
                                   {:classifier/headline "who likes girls?"}]))
-
+  (bind-ark ark-db
+            (println :bob-properties (get-current-property-values bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
-                                  {:classifier/headline "update 3"}
+                                  {:classifier/headline "bob update 3"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
+  (bind-ark ark-db
+            (println :bob-properties (get-current-property-values bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-sam")

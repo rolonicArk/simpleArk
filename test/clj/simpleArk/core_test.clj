@@ -76,6 +76,21 @@
     (println :je-properties (get-current-property-values make-bob-je-uuid))
     (println :bob-properties (get-current-property-values bob-uuid)))
 
+  (process-transaction! ark-db ::update-rolon-transaction!
+                        (prn-str [bob-uuid
+                                  {:classifier/headline "update 1"}
+                                  {:classifier/headline "kissing is gross!"}]))
+
+  (process-transaction! ark-db ::update-rolon-transaction!
+                        (prn-str [bob-uuid
+                                  {:classifier/headline "update 2"}
+                                  {:classifier/headline "who likes girls?"}]))
+
+  (process-transaction! ark-db ::update-rolon-transaction!
+                        (prn-str [bob-uuid
+                                  {:classifier/headline "update 3"}
+                                  {:classifier/headline "when do I get my own mobile!"}]))
+
   (println)
   (println ">>>>>>>>>>>> make-sam")
   (println)
@@ -126,7 +141,10 @@
           (let [headline-index-uuid (get-index-uuid "headline")
                 current-rolon-value (get-current-property-values headline-index-uuid)
                 descriptor-index (:descriptor/index current-rolon-value)]
-            (first (keep (fn [x] (println (key x))) descriptor-index))
+            (first (keep (fn [x]
+                           (if (first (val x))
+                             (println (key x))))
+                         descriptor-index))
             )))
 
 (deftest arks

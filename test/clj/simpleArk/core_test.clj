@@ -117,7 +117,17 @@
   (println)
   (bind-ark ark-db
             (first (keep (fn [x] (println (get-current-property-value (key x) :classifier/headline)))
-                         (get-journal-entries)))))
+                         (get-journal-entries))))
+
+(println)
+(println ">>>>>>>>>>>> all the latest headlines")
+(println)
+(bind-ark ark-db
+          (let [headline-index-uuid (get-index-uuid "headline")
+                current-rolon-value (get-current-property-values headline-index-uuid)
+                descriptor-index (:descriptor/index current-rolon-value)]
+            (first (keep (fn [x] (println (key x))) descriptor-index))
+            )))
 
 (deftest arks
           (println "impl0 tests")

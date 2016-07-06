@@ -289,11 +289,11 @@
            nil properties)
     @*ark*))
 
-(defn make-rolon-transaction!
+(defn update-rolon-transaction!
   [s]
   (let [je-uuid (get-current-journal-entry-uuid)
         [rolon-uuid je-properties rolon-properties] (read-string s)
-        je-properties (into {:classifier/headline (str "make a rolon with " s)} je-properties)]
+        je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
     (update-properties! je-uuid je-properties)
     (vreset! *ark* (make-rolon! rolon-uuid rolon-properties))))
 

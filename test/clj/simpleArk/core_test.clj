@@ -51,7 +51,7 @@
   "tests that even work with impl0"
   [ark-db]
   (register-transaction! ark-db ::hello-world! hello-world!)
-  (register-transaction! ark-db ::make-rolon-transaction! make-rolon-transaction!)
+  (register-transaction! ark-db ::update-rolon-transaction! update-rolon-transaction!)
   (register-transaction! ark-db ::destroy-rolon-transaction! destroy-rolon-transaction!)
 
   (println)
@@ -67,7 +67,7 @@
   (println)
   (def bob-uuid (random-uuid))
   (println :bob-uuid bob-uuid)
-  (def make-bob-je-uuid (process-transaction! ark-db ::make-rolon-transaction!
+  (def make-bob-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
                                               (prn-str [bob-uuid
                                                         {:classifier/headline "make bob"}
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
@@ -81,7 +81,7 @@
   (println)
   (def sam-uuid (random-uuid))
   (println :sam-uuid sam-uuid)
-  (def make-sam-je-uuid (process-transaction! ark-db ::make-rolon-transaction!
+  (def make-sam-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
                                               (prn-str [sam-uuid
                                                         {:classifier/headline "make sam"}
                                                         {:descriptor/age 10

@@ -249,25 +249,29 @@
 
 (defn locate-next-je-uuid-for-property
   [[rolon-uuid key je-uuid]]
-  (if je-uuid
-    (let [je-uuid2 (get-property-je-uuid-at rolon-uuid key je-uuid)]
-      (if (= je-uuid je-uuid2)
-        (let [rolon-value (get-previous-rolon-je-uuid rolon-uuid je-uuid)]
-          (if rolon-value
-            [rolon-uuid key (get-journal-entry-uuid rolon-value)]
-            nil))
-        [rolon-uuid key je-uuid2]))
-    (let [je-uuid (get-property-je-uuid-at rolon-uuid key)]
-      (if je-uuid
-        [rolon-uuid key je-uuid]
-        nil))))
+  (let [je-uuid2 (get-property-je-uuid-at rolon-uuid key je-uuid)]
+    (if (= je-uuid je-uuid2)
+      (let [rolon-value (get-previous-rolon-je-uuid rolon-uuid je-uuid)]
+        (if rolon-value
+          [rolon-uuid key (get-journal-entry-uuid rolon-value)]
+          nil))
+      (if je-uuid2
+        [rolon-uuid key je-uuid2]
+        nil)))
+  )
 
-(defn je-uuids-for-property
+(defn je-uuids-for-rolon-property
   "returns a lazy sequence of journal entry uuids which changed a property"
   ([rolon-uuid key]
-   (first (iterate locate-next-je-uuid-for-property [rolon-uuid key nil])))
+   (let [first-je-uuid (get-property-je-uuid-at rolon-uuid key)]
+     (if first-je-uuid
+       (je-uuids-for-rolon-property rolon-uuid key first-je-uuid)
+       nil)))
   ([rolon-uuid key je-uuid]
-   (first (iterate locate-next-je-uuid-for-property [rolon-uuid key je-uuid]))))
+   (map #(if %
+          (% 2)
+          nil)
+        (take-while identity (iterate locate-next-je-uuid-for-property [rolon-uuid key je-uuid])))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"

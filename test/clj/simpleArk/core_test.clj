@@ -77,7 +77,7 @@
             (println :bob-properties (get-property-values-at bob-uuid)))
 
   (println)
-  (println ">>>>>>>>>>>> 3 updates to bob")
+  (println ">>>>>>>>>>>> 4 updates to bob")
   (println)
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
@@ -88,12 +88,18 @@
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 2"}
-                                  {:classifier/headline "who likes girls?"}]))
+                                  {:descriptor/age 9}]))
   (bind-ark ark-db
             (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 3"}
+                                  {:classifier/headline "who likes girls?"}]))
+  (bind-ark ark-db
+            (println :bob-properties (get-property-values-at bob-uuid)))
+  (process-transaction! ark-db ::update-rolon-transaction!
+                        (prn-str [bob-uuid
+                                  {:classifier/headline "bob update 4"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
   (bind-ark ark-db
             (println :bob-properties (get-property-values-at bob-uuid)))
@@ -152,7 +158,22 @@
                            (if (first (val x))
                              (println (key x))))
                          descriptor-index))
-            )))
+            ))
+
+  (println)
+  (println ">>>>>>>>>>>> bob values")
+  (println)
+  (bind-ark ark-db
+            (println (get-rolon-values (get-rolon bob-uuid)))
+            )
+
+  (println)
+  (println ">>>>>>>>>>>> iterate on bob's headline changes")
+  (println)
+  (bind-ark ark-db
+            (first (keep #(println (get-property-value-at bob-uuid :classifier/headline %))
+                          (je-uuids-for-rolon-property bob-uuid :classifier/headline))))
+  )
 
 (deftest arks
           (println "impl0 tests")

@@ -239,21 +239,20 @@
   ([rolon-uuid key je-uuid]
    (key (get-property-je-uuids-at rolon-uuid je-uuid))))
 
-(defn get-previous-rolon-value
-  "returns the previous rolon value for the same rolon, or nil"
-  [rolon-value]
-  (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
-        rolon (get-rolon (get-rolon-uuid rolon-value))
+(defn get-previous-rolon-je-uuid
+  "returns the uuid of the prior journal entry updating the same rolon"
+  [rolon-uuid je-uuid]
+  (let [rolon (get-rolon rolon-uuid)
         rolon-values (get-rolon-values rolon)
-        previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
-    (val (first previous-rolon-values))))
+        previous-rolon-values (rsubseq rolon-values < je-uuid)]
+    (key (first previous-rolon-values))))
 
 (defn locate-next-je-uuid-for-property
   [[rolon-uuid key je-uuid]]
   (if je-uuid
     (let [je-uuid2 (get-property-je-uuid-at rolon-uuid key je-uuid)]
       (if (= je-uuid je-uuid2)
-        (let [rolon-value (get-previous-rolon-value (get-rolon-value-at rolon-uuid je-uuid))]
+        (let [rolon-value (get-previous-rolon-je-uuid rolon-uuid je-uuid)]
           (if rolon-value
             [rolon-uuid key (get-journal-entry-uuid rolon-value)]
             nil))

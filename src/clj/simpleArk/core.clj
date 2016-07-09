@@ -188,7 +188,7 @@
   [rolon-value]
   ((:get-property-values rolon-value) rolon-value))
 
-(defn get-property-journal-entry-uuids
+(defn get-property-je-uuids
   "returns the type 1 uuid of the journal entry rolons which changed each property"
   [rolon-value]
   ((:get-property-journal-entry-uuids rolon-value) rolon-value))
@@ -197,30 +197,60 @@
   [rolon-value writer]
   (print-simple
     (str "\n" :properties "\n" (get-property-values rolon-value)
-         "\n" :journal-entry-uuids "\n" (get-property-journal-entry-uuids rolon-value) "\n\n")
+         "\n" :journal-entry-uuids "\n" (get-property-je-uuids rolon-value) "\n\n")
     writer))
 
-(defn get-current-rolon-value
-  "returns the current rolon value"
-  [rolon-uuid]
-  (let [je-uuid (get-current-journal-entry-uuid)
-        rolon (get-rolon rolon-uuid)]
-    (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
+(defn get-rolon-value-at
+  "returns the rolon value for the selected time"
+  ([rolon-uuid]
+  (let [je-uuid (get-current-journal-entry-uuid)]
+    (get-rolon-value-at rolon-uuid je-uuid)))
+  ([rolon-uuid je-uuid]
+   (let [rolon (get-rolon rolon-uuid)]
+     (val (first (rsubseq (get-rolon-values rolon) <= je-uuid))))))
 
-(defn get-current-property-values
-  "returns the current property values"
-  [rolon-uuid]
-   (get-property-values (get-current-rolon-value rolon-uuid)))
+(defn get-property-values-at
+  "returns the property values at the selected time"
+  ([rolon-uuid]
+   (get-property-values (get-rolon-value-at rolon-uuid)))
+  ([rolon-uuid je-uuid]
+   (get-property-values (get-rolon-value-at rolon-uuid je-uuid))))
 
-(defn get-current-property-value
+(defn get-property-je-uuids-at
+  "returns the journal entries which last changed each property
+  at the selected time"
+  ([rolon-uuid]
+   (get-property-je-uuids (get-rolon-value-at rolon-uuid)))
+  ([rolon-uuid je-uuid]
+   (get-property-je-uuids (get-rolon-value-at rolon-uuid je-uuid))))
+
+(defn get-property-value-at
   "returns the current value of a property"
-  [rolon-uuid key]
-  ((get-current-property-values rolon-uuid) key))
+  ([rolon-uuid key]
+  ((get-property-values-at rolon-uuid) key))
+  ([rolon-uuid key je-uuid]
+   ((get-property-values-at rolon-uuid je-uuid) key)))
+
+(defn get-property-je-uuid-at
+  "returns the uuid of the last je that changed the property
+  at the selected time"
+  [rolon-uuid key je-uuid]
+  (let [pjes (get-property-je-uuids-at rolon-uuid je-uuid)]
+    (key pjes)))
+
+(defn get-previous-rolon-value
+  "returns the previous rolon value for the same rolon, or nil"
+  [rolon-value]
+  (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
+        rolon (get-rolon (get-rolon-uuid rolon-value))
+        rolon-values (get-rolon-values rolon)
+        previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
+    (val (first previous-rolon-values))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
   [index-uuid value]
-  (let [properties (get-current-property-values index-uuid)
+  (let [properties (get-property-values-at index-uuid)
         index-map (:descriptor/index properties)]
     (index-map value)))
 
@@ -237,25 +267,16 @@
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [je-uuid]
-  (let [latest-je-property-values (get-current-property-values je-uuid)
+  (let [latest-je-property-values (get-property-values-at je-uuid)
         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
       updated-rolon-uuids)))
 
-(defn get-previous-value
-  "returns the previous rolon value for the same rolon, or nil"
-  [rolon-value]
-  (let [journal-entry-uuid (get-journal-entry-uuid rolon-value)
-        rolon (get-rolon (get-rolon-uuid rolon-value))
-        rolon-values (get-rolon-values rolon)
-        previous-rolon-values (rsubseq rolon-values < journal-entry-uuid)]
-    (val (first previous-rolon-values))))
-
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
   [je-uuid]
-  (let [index (:descriptor/index (get-current-property-values je-uuid))]
+  (let [index (:descriptor/index (get-property-values-at je-uuid))]
     (if (nil? index)
       (sorted-map)
       index)))

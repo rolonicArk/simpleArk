@@ -60,7 +60,7 @@
   (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
   (println :hello-je-uuid hello-je-uuid)
   (bind-ark ark-db
-            (println :je-properties (get-current-property-values hello-je-uuid)))
+            (println :je-properties (get-property-values-at hello-je-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
@@ -73,8 +73,8 @@
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
   (println :make-bob-je-uuid make-bob-je-uuid)
   (bind-ark ark-db
-    (println :je-properties (get-current-property-values make-bob-je-uuid))
-    (println :bob-properties (get-current-property-values bob-uuid)))
+            (println :je-properties (get-property-values-at make-bob-je-uuid))
+            (println :bob-properties (get-property-values-at bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> 3 updates to bob")
@@ -84,19 +84,19 @@
                                   {:classifier/headline "bob update 1"}
                                   {:classifier/headline "kissing is gross!"}]))
   (bind-ark ark-db
-            (println :bob-properties (get-current-property-values bob-uuid)))
+            (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 2"}
                                   {:classifier/headline "who likes girls?"}]))
   (bind-ark ark-db
-            (println :bob-properties (get-current-property-values bob-uuid)))
+            (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 3"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
   (bind-ark ark-db
-            (println :bob-properties (get-current-property-values bob-uuid)))
+            (println :bob-properties (get-property-values-at bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
@@ -111,8 +111,8 @@
                                                          :classifier/headline "I hate green eggs and ham!"}])))
   (println :make-sam-je-uuid make-sam-je-uuid)
   (bind-ark ark-db
-    ;(println :je-properties (get-current-property-values make-sam-je-uuid))
-    (println :sam-properties (get-current-property-values sam-uuid)))
+            ;(println :je-properties (get-current-property-values make-sam-je-uuid))
+            (println :sam-properties (get-property-values-at sam-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
@@ -123,7 +123,7 @@
   (println :destroy-bob-je-uuid destroy-bob-je-uuid)
   (bind-ark ark-db
             ;(println :je-properties (get-current-property-values je-uuid))
-            (println :bob-properties (get-current-property-values bob-uuid))
+            (println :bob-properties (get-property-values-at bob-uuid))
             (println :lookup-bob (name-lookup "Bob")))
 
   (println)
@@ -131,14 +131,14 @@
   (println)
   (bind-ark ark-db
             (select-time! make-bob-je-uuid)
-            (println :bob-properties (get-current-property-values bob-uuid))
+            (println :bob-properties (get-property-values-at bob-uuid))
             (println :lookup-bob (name-lookup "Bob")))
 
   (println)
   (println ">>>>>>>>>>>> journal entry headlines")
   (println)
   (bind-ark ark-db
-            (first (keep (fn [x] (println (get-current-property-value (key x) :classifier/headline)))
+            (first (keep (fn [x] (println (get-property-value-at (key x) :classifier/headline)))
                          (get-journal-entries))))
 
 (println)
@@ -146,7 +146,7 @@
 (println)
 (bind-ark ark-db
           (let [headline-index-uuid (get-index-uuid "headline")
-                current-rolon-value (get-current-property-values headline-index-uuid)
+                current-rolon-value (get-property-values-at headline-index-uuid)
                 descriptor-index (:descriptor/index current-rolon-value)]
             (first (keep (fn [x]
                            (if (first (val x))

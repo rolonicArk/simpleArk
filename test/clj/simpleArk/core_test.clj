@@ -161,17 +161,12 @@
             ))
 
   (println)
-  (println ">>>>>>>>>>>> bob values")
+  (println ">>>>>>>>>>>> bob's headlines over time")
   (println)
   (bind-ark ark-db
-            (println (get-rolon-values (get-rolon bob-uuid)))
-            )
-
-  (println)
-  (println ">>>>>>>>>>>> iterate on bob's headline changes")
-  (println)
-  (bind-ark ark-db
-            (first (keep #(println (get-property-value-at bob-uuid :classifier/headline %))
+            (first (keep #(println (get-property-value-at bob-uuid :classifier/headline %)
+                                   "-"
+                                   (get-property-value-at % :classifier/headline))
                           (je-uuids-for-rolon-property bob-uuid :classifier/headline))))
   )
 

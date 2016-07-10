@@ -253,7 +253,11 @@
     (if (= je-uuid je-uuid2)
       (let [rolon-value (get-previous-rolon-je-uuid rolon-uuid je-uuid)]
         (if rolon-value
-          [rolon-uuid key (get-journal-entry-uuid rolon-value)]
+          (let [je-uuid2 (get-journal-entry-uuid rolon-value)
+                je-uuid2 (get-property-je-uuid-at rolon-uuid key je-uuid2)]
+            (if je-uuid2
+              [rolon-uuid key je-uuid2]
+              nil))
           nil))
       (if je-uuid2
         [rolon-uuid key je-uuid2]

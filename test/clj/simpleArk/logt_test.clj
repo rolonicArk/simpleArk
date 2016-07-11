@@ -12,6 +12,4 @@
              (logt/set-log-chan (async/chan 3))))
   (warn c 1 2 3)
   (def l1 (logt/get-msg c))
-  (is (= (l1 0) :log/warn))
-  (is (= (list 1 2 3) (l1 1)))
-  )
+  (is (= [:log/warn 1 2 3] l1)))

@@ -20,22 +20,22 @@
 (defn info
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) [:log/info msg])))
+    (async/>!! (::chan this) (into [:log/info] msg))))
 
 (defn warn
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) [:log/warn msg])))
+    (async/>!! (::chan this) (into [:log/warn] msg))))
 
 (defn debug
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) [:log/debug msg])))
+    (async/>!! (::chan this) (into [:log/debug] msg))))
 
 (defn error
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) [:log/error msg])))
+    (async/>!! (::chan this) (into [:log/error] msg))))
 
 (defn build
   "build a logt component"

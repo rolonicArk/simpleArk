@@ -5,7 +5,7 @@
 
 (defn open-component [this name f]
   (log/info this (str "opening " name))
-  (if-let [fsa (:closer-fsa this)]
+  (if-let [fsa (::fsa this)]
     (do
       (swap! fsa
              (fn [fs]
@@ -13,7 +13,7 @@
                  (conj fs [f name])
                  (atom (list [f name])))))
       this)
-    (assoc this :closer-fsa (atom (list [f name])))))
+    (assoc this ::fsa (atom (list [f name])))))
 
 (defn- do-closer [this fs]
   (when fs
@@ -23,12 +23,12 @@
       (try
         (log/info this (str "closing " name))
         (f this)
-        (catch #?(:clj Exception :cljs js/Object) e
+        (catch Exception e
           (log/warn this e (str "exception on close of " name)))))
     (recur this (next fs))))
 
-(defn close-component [this]
-  (if-let [fsa (:closer-fsa this)]
+(defn close-all [this]
+  (if-let [fsa (::fsa this)]
     (let [fs @fsa]
       (if fs
         (if (compare-and-set! fsa fs nil)

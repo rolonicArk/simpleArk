@@ -7,35 +7,35 @@
 (defn fmt
   "format a log message"
   [this msgs]
-  (apply str (interpose " " (map pr-str msgs))))
+  (first msgs))
 
 (defn set-log-chan
   [this chan]
-  (assoc this :log/chan chan))
+  (assoc this ::chan chan))
 
 (defn get-msg
   [this]
-  (async/<!! (:log/chan this)))
+  (async/<!! (::chan this)))
 
 (defn info
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (:log/chan this) [:log/info msg])))
+    (async/>!! (::chan this) [:log/info msg])))
 
 (defn warn
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (:log/chan this) [:log/warn msg])))
+    (async/>!! (::chan this) [:log/warn msg])))
 
 (defn debug
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (:log/chan this) [:log/debug msg])))
+    (async/>!! (::chan this) [:log/debug msg])))
 
 (defn error
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (:log/chan this) [:log/error msg])))
+    (async/>!! (::chan this) [:log/error msg])))
 
 (defn build
   "build a logt component"

@@ -1,5 +1,5 @@
 (set-env!
-  :dependencies '[[org.clojure/clojure                       "1.9.0-alpha9"  :scope "provided"]
+  :dependencies '[[org.clojure/clojure                       "1.9.0-alpha10"  :scope "provided"]
                   [danlentz/clj-uuid                         "0.1.6"]
                   [adzerk/boot-test                          "1.1.2"         :scope "test"]
                   [org.clojure/core.async                    "0.2.385"]]

@@ -1,7 +1,8 @@
 (set-env!
   :dependencies '[[org.clojure/clojure                       "1.9.0-alpha9"  :scope "provided"]
                   [danlentz/clj-uuid                         "0.1.6"]
-                  [adzerk/boot-test                          "1.1.1"         :scope "test"]]
+                  [adzerk/boot-test                          "1.1.2"         :scope "test"]
+                  [org.clojure/core.async                    "0.2.385"]]
   :source-paths #{"src/clj" "test/clj"})
 
 (require
@@ -13,6 +14,7 @@
    (comp
      (run-tests :namespaces '#{
                                 simpleArk.log0-test
+                                simpleArk.logt-test
                                 ;simpleArk.uuid-test
                                 ;simpleArk.core-test
                                 })))

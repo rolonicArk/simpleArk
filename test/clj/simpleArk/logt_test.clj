@@ -4,6 +4,8 @@
             [simpleArk.log :refer :all]
             [simpleArk.logt :as logt]))
 
+(set! *warn-on-reflection* true)
+
 (deftest logt
   (def c (-> {}
              (logt/build)

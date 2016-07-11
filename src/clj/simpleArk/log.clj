@@ -1,6 +1,8 @@
 ;;Log component api
 (ns simpleArk.log)
 
+(set! *warn-on-reflection* true)
+
 (defn fmt
   "format a log message"
   [this msgs]

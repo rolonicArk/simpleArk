@@ -1,6 +1,8 @@
 (ns simpleArk.log0
   (:require [simpleArk.log :as log]))
 
+(set! *warn-on-reflection* true)
+
 (defn fmt
   "format a log message"
   [this msgs]

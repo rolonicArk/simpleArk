@@ -2,6 +2,8 @@
   (:require [simpleArk.log :as log]
             [clojure.core.async :as async]))
 
+(set! *warn-on-reflection* true)
+
 (defn fmt
   "format a log message"
   [this msgs]

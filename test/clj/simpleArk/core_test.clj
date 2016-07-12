@@ -1,7 +1,8 @@
 (ns simpleArk.core-test
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
-            [simpleArk.impl0 :as impl0]))
+            [simpleArk.impl0 :as impl0]
+            [simpleArk.log0 :as log0]))
 
 (deftest basic
   "basic tests"
@@ -172,4 +173,6 @@
 
 (deftest arks
   (println "impl0 tests")
-  (test0 (impl0/build {})))
+  (test0 (-> {}
+             log0/build
+             impl0/build)))

@@ -1,5 +1,6 @@
 (ns simpleArk.impl0
-  (:require [simpleArk.core :as ark]))
+  (:require [simpleArk.core :as ark]
+            [simpleArk.log :as log]))
 
 (defn get-current-journal-entry-uuid
   []
@@ -178,11 +179,14 @@
   [ark-db transaction-name s]
   (let [je-uuid (ark/journal-entry-uuid)]
     (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
+    (log/info! ark-db :transaction transaction-name s)
     je-uuid))
 
 (defn process-transaction-at!
   [ark-db je-uuid transaction-name s]
-  (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s))
+  (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
+  (log/info! ark-db :transaction transaction-name s))
+
 
 (defn build
   "returns an ark db"

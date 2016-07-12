@@ -4,7 +4,7 @@
 (set! *warn-on-reflection* true)
 
 (defn open-component [this name f]
-  (log/info this (str "opening " name))
+  (log/info! this (str "opening " name))
   (if-let [fsa (::fsa this)]
     (do
       (swap! fsa
@@ -21,10 +21,10 @@
           f (nth fv 0)
           name (nth fv 1)]
       (try
-        (log/info this (str "closing " name))
+        (log/info! this (str "closing " name))
         (f this)
         (catch Exception e
-          (log/warn this e (str "exception on close of " name)))))
+          (log/warn! this e (str "exception on close of " name)))))
     (recur this (next fs))))
 
 (defn close-all [this]

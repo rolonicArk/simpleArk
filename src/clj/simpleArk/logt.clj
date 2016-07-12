@@ -17,32 +17,32 @@
   [this]
   (async/<!! (::chan this)))
 
-(defn info
+(defn info!
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) (into [:log/info] msg))))
+    (async/>!! (::chan this) (into [:log/info!] msg))))
 
-(defn warn
+(defn warn!
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) (into [:log/warn] msg))))
+    (async/>!! (::chan this) (into [:log/warn!] msg))))
 
-(defn debug
+(defn debug!
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) (into [:log/debug] msg))))
+    (async/>!! (::chan this) (into [:log/debug!] msg))))
 
-(defn error
+(defn error!
   [this & s]
   (let [msg (log/fmt this s)]
-    (async/>!! (::chan this) (into [:log/error] msg))))
+    (async/>!! (::chan this) (into [:log/error!] msg))))
 
 (defn build
   "build a logt component"
   [m]
   (-> m
       (assoc :log/fmt fmt)
-      (assoc :log/info info)
-      (assoc :log/warn warn)
-      (assoc :log/debug debug)
-      (assoc :log/error error)))
+      (assoc :log/info! info!)
+      (assoc :log/warn! warn!)
+      (assoc :log/debug! debug!)
+      (assoc :log/error! error!)))

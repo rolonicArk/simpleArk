@@ -8,18 +8,18 @@
   [this msgs]
   ((:log/fmt this) this msgs))
 
-(defn info
+(defn info!
   [this & s]
-  ((:log/info this) this s))
+  ((:log/info! this) this s))
 
-(defn warn
+(defn warn!
   [this & s]
-  ((:log/warn this) this s))
+  ((:log/warn! this) this s))
 
-(defn debug
+(defn debug!
   [this & s]
-  ((:log/debug this) this s))
+  ((:log/debug! this) this s))
 
-(defn error
+(defn error!
   [this & s]
-  ((:log/error this) this s))
+  ((:log/error! this) this s))

@@ -8,5 +8,5 @@
 (deftest log0
   (def c (log0/build {}))
   (println (keys c))
-  (error c 1 2 3)
+  (error! c 1 2 3)
   )

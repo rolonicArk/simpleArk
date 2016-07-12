@@ -10,6 +10,6 @@
   (def c (-> {}
              (logt/build)
              (logt/set-log-chan (async/chan 3))))
-  (warn c 1 2 3)
+  (warn! c 1 2 3)
   (def l1 (logt/get-msg c))
-  (is (= [:log/warn 1 2 3] l1)))
+  (is (= [:log/warn! 1 2 3] l1)))

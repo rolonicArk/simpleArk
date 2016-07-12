@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
             [simpleArk.impl0 :as impl0]
-            [simpleArk.log0 :as log0]))
+            [simpleArk.logt :as logt]
+            [clojure.core.async :as async]))
 
 (deftest basic
   "basic tests"
@@ -59,6 +60,7 @@
   (println ">>>>>>>>>>>> hello-world")
   (println)
   (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (println :hello-je-uuid hello-je-uuid)
   (bind-ark ark-db
             (println :je-properties (get-property-values-at hello-je-uuid)))
@@ -72,6 +74,7 @@
                                               (prn-str [bob-uuid
                                                         {:classifier/headline "make bob"}
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (println :make-bob-je-uuid make-bob-je-uuid)
   (bind-ark ark-db
             (println :je-properties (get-property-values-at make-bob-je-uuid))
@@ -84,24 +87,28 @@
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 1"}
                                   {:classifier/headline "kissing is gross!"}]))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (bind-ark ark-db
             (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 2"}
                                   {:descriptor/age 9}]))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (bind-ark ark-db
             (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 3"}
                                   {:classifier/headline "who likes girls?"}]))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (bind-ark ark-db
             (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 4"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (bind-ark ark-db
             (println :bob-properties (get-property-values-at bob-uuid)))
 
@@ -116,6 +123,7 @@
                                                         {:descriptor/age 10
                                                          :classifier/name "Sam"
                                                          :classifier/headline "I hate green eggs and ham!"}])))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (println :make-sam-je-uuid make-sam-je-uuid)
   (bind-ark ark-db
             ;(println :je-properties (get-current-property-values make-sam-je-uuid))
@@ -127,9 +135,9 @@
   (def destroy-bob-je-uuid (process-transaction! ark-db ::destroy-rolon-transaction!
                                                  (prn-str [bob-uuid
                                                 {:classifier/headline "destroy bob"}])))
+  (is (= :transaction ((logt/get-msg ark-db) 1)))
   (println :destroy-bob-je-uuid destroy-bob-je-uuid)
   (bind-ark ark-db
-            ;(println :je-properties (get-current-property-values je-uuid))
             (println :bob-properties (get-property-values-at bob-uuid))
             (println :lookup-bob (name-lookup "Bob")))
 
@@ -174,5 +182,6 @@
 (deftest arks
   (println "impl0 tests")
   (test0 (-> {}
-             log0/build
-             impl0/build)))
+             (logt/build)
+             (logt/set-log-chan (async/chan 3))
+             (impl0/build))))

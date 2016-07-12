@@ -9,8 +9,6 @@
 (def uuid1 (uuid/v1))
 (def uuid2 (uuid/v1))
 (def uuid3 (uuid/v1))
-(def uuid4 (uuid/v1))
-(def uuid5 (uuid/v1))
 
 (deftest uuids
   (is (= (uuid/get-version uuid0) 4))

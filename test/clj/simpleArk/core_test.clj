@@ -61,24 +61,16 @@
   (println)
   (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (println :hello-je-uuid hello-je-uuid)
-  (bind-ark ark-db
-            (println :je-properties (get-property-values-at hello-je-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
   (println)
   (def bob-uuid (random-uuid))
-  (println :bob-uuid bob-uuid)
   (def make-bob-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
                                               (prn-str [bob-uuid
                                                         {:classifier/headline "make bob"}
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (println :make-bob-je-uuid make-bob-je-uuid)
-  (bind-ark ark-db
-            (println :je-properties (get-property-values-at make-bob-je-uuid))
-            (println :bob-properties (get-property-values-at bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> 4 updates to bob")
@@ -88,35 +80,26 @@
                                   {:classifier/headline "bob update 1"}
                                   {:classifier/headline "kissing is gross!"}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (bind-ark ark-db
-            (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 2"}
                                   {:descriptor/age 9}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (bind-ark ark-db
-            (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 3"}
                                   {:classifier/headline "who likes girls?"}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (bind-ark ark-db
-            (println :bob-properties (get-property-values-at bob-uuid)))
   (process-transaction! ark-db ::update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 4"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (bind-ark ark-db
-            (println :bob-properties (get-property-values-at bob-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
   (println)
   (def sam-uuid (random-uuid))
-  (println :sam-uuid sam-uuid)
   (def make-sam-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
                                               (prn-str [sam-uuid
                                                         {:classifier/headline "make sam"}
@@ -124,10 +107,6 @@
                                                          :classifier/name "Sam"
                                                          :classifier/headline "I hate green eggs and ham!"}])))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (println :make-sam-je-uuid make-sam-je-uuid)
-  (bind-ark ark-db
-            ;(println :je-properties (get-current-property-values make-sam-je-uuid))
-            (println :sam-properties (get-property-values-at sam-uuid)))
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
@@ -136,10 +115,6 @@
                                                  (prn-str [bob-uuid
                                                 {:classifier/headline "destroy bob"}])))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (println :destroy-bob-je-uuid destroy-bob-je-uuid)
-  (bind-ark ark-db
-            (println :bob-properties (get-property-values-at bob-uuid))
-            (println :lookup-bob (name-lookup "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")

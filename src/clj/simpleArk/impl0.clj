@@ -166,25 +166,36 @@
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark))
 
-(defrecord Db [ark-atom registry-atom]
-  ark/Ark-db
-  (get-ark [this]
-    @ark-atom)
-  (register-transaction! [this transaction-name f]
-    (swap! registry-atom #(assoc % transaction-name f)))
-  (process-transaction! [this transaction-name s]
-    (let [je-uuid (ark/journal-entry-uuid)]
-      (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s)
-      je-uuid))
-  (process-transaction-at! [this je-uuid transaction-name s]
-    (swap! ark-atom update-ark @registry-atom je-uuid transaction-name s))
-  )
+(defn get-ark
+  [ark-db]
+  @(::ark-atom ark-db))
 
-(defn create-ark-db
+(defn register-transaction!
+  [ark-db transaction-name f]
+  (swap! (::registry-atom ark-db) #(assoc % transaction-name f)))
+
+(defn process-transaction!
+  [ark-db transaction-name s]
+  (let [je-uuid (ark/journal-entry-uuid)]
+    (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
+    je-uuid))
+
+(defn process-transaction-at!
+  [ark-db je-uuid transaction-name s]
+  (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s))
+
+(defn build
   "returns an ark db"
-  []
+  [m]
   (let [ark (create-ark)
         ark-atom (atom ark)
         registry-atom (atom (sorted-map))
-        ark-db (->Db ark-atom registry-atom)]
+        ark-db (-> m
+                   (assoc ::ark-atom ark-atom)
+                   (assoc ::registry-atom registry-atom)
+                   (assoc :ark-db/get-ark get-ark)
+                   (assoc :ark-db/register-transaction! register-transaction!)
+                   (assoc :ark-db/process-transaction! process-transaction!)
+                   (assoc :ark-db/process-transaction-at! process-transaction-at!)
+                   )]
     ark-db))

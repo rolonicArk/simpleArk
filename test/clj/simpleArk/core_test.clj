@@ -171,5 +171,5 @@
   )
 
 (deftest arks
-          (println "impl0 tests")
-          (test0 (impl0/create-ark-db)))
+  (println "impl0 tests")
+  (test0 (impl0/build {})))

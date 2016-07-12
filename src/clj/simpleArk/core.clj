@@ -43,18 +43,27 @@
 ;;a well known uuid
 (def index-name-uuid (index-uuid :classifier/index.name))
 
-(defprotocol Ark-db
-  (get-ark [this]
-    "returns the current value of the ark")
-  (register-transaction! [this transaction-name f]
-    "defines a transaction,
-    where f takes an (edn) string")
-  (process-transaction! [this transaction-name s]
-    "process a transaction with an (edn) string,
-    returning the new journal-entry uuid")
-  (process-transaction-at! [this je-uuid transaction-name s]
-    "process a transaction at a given time with an (edn) string"))
+(defn get-ark
+  "returns the current value of the ark"
+  [ark-db]
+  ((:ark-db/get-ark ark-db) ark-db))
 
+(defn register-transaction!
+  "defines a transaction,
+    where f takes an (edn) string"
+  [ark-db transaction-name f]
+  ((:ark-db/register-transaction! ark-db) ark-db transaction-name f))
+
+(defn process-transaction!
+  "process a transaction with an (edn) string,
+    returning the new journal-entry uuid"
+  [ark-db transaction-name s]
+  ((:ark-db/process-transaction! ark-db) ark-db transaction-name s))
+
+(defn process-transaction-at!
+  "process a transaction at a given time with an (edn) string"
+  [ark-db je-uuid transaction-name s]
+  ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s))
 
 (def ^:dynamic *ark* nil)
 

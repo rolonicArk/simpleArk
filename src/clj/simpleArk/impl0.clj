@@ -142,7 +142,7 @@
   (::selected-time @ark/*ark*))
 
 (defn create-ark
-  []
+  [ark-db]
   (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon! destroy-rolon! update-properties!
                        get-current-journal-entry-uuid
@@ -150,6 +150,7 @@
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
         ark (assoc ark ::random-rolons {})]
+    (reset! (::ark-atom ark-db) ark)
     ark))
 
 (defn update-ark
@@ -191,8 +192,7 @@
 (defn build
   "returns an ark db"
   [m]
-  (let [ark (create-ark)
-        ark-atom (atom ark)
+  (let [ark-atom (atom nil)
         registry-atom (atom (sorted-map))
         ark-db (-> m
                    (assoc ::ark-atom ark-atom)

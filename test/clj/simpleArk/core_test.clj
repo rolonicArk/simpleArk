@@ -160,5 +160,5 @@
                   (logt/build)
                   (logt/set-log-chan (async/chan 3))
                   (impl0/build)))
-  (impl0/create-ark ark-db)
+  (open-ark ark-db)
   (test0 ark-db))

@@ -43,6 +43,11 @@
 ;;a well known uuid
 (def index-name-uuid (index-uuid :classifier/index.name))
 
+(defn open-ark
+  [ark-db]
+  "Open the ark after ark-db is finalized."
+  ((:ark-db/open-ark ark-db) ark-db))
+
 (defn get-ark
   "returns the current value of the ark"
   [ark-db]

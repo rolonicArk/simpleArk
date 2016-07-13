@@ -141,7 +141,7 @@
   []
   (::selected-time @ark/*ark*))
 
-(defn create-ark
+(defn open-ark
   [ark-db]
   (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon! destroy-rolon! update-properties!
@@ -197,6 +197,7 @@
         ark-db (-> m
                    (assoc ::ark-atom ark-atom)
                    (assoc ::registry-atom registry-atom)
+                   (assoc :ark-db/open-ark open-ark)
                    (assoc :ark-db/get-ark get-ark)
                    (assoc :ark-db/register-transaction! register-transaction!)
                    (assoc :ark-db/process-transaction! process-transaction!)

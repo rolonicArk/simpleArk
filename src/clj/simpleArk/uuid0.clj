@@ -1,6 +1,5 @@
 (ns simpleArk.uuid0
-  (:require [simpleArk.core :as ark]
-            [simpleArk.uuid :as uuid]))
+  (:require [simpleArk.core :as ark]))
 
 (defn journal-entry-uuid
   [_]

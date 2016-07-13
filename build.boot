@@ -13,9 +13,10 @@
    []
    (comp
      (run-tests :namespaces '#{
-                                ;simpleArk.log0-test
-                                ;simpleArk.logt-test
-                                ;simpleArk.closer-test
-                                ;simpleArk.uuid-test
-                                simpleArk.core-test
+                                simpleArk.log0-test
+                                simpleArk.logt-test
+                                simpleArk.closer-test
+                                simpleArk.uuid-test
+                                simpleArk.uuid0-test
+                                ;simpleArk.core-test
                                 })))

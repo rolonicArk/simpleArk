@@ -10,38 +10,6 @@
 (comment deftest basic
   "basic tests"
 
-  (is (classifier? :classifier/x))
-  (is (not (classifier? :descriptor/y)))
-  (is (not (classifier? :x)))
-  (is (not (classifier? ":classifier/x")))
-  (is (descriptor? :descriptor/x))
-  (is (not (descriptor? :classifier/y)))
-  (is (not (descriptor? :x)))
-  (is (not (descriptor? ":descriptor/x")))
-
-  (validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
-  (is (thrown? Exception (validate-property-keys {1 2})))
-
-  (def je-uuid0 (journal-entry-uuid))
-  (def random-uuid0 (random-uuid))
-  (def index-uuid0 (index-uuid :classifier/z))
-  (is (thrown? Exception (index-uuid 1)))
-  (is (thrown? Exception (index-uuid :descriptor/y)))
-
-  (is (journal-entry-uuid? je-uuid0))
-  (is (not (journal-entry-uuid? 42)))
-  (is (not (journal-entry-uuid? random-uuid0)))
-  (is (not (journal-entry-uuid? index-uuid0)))
-
-  (is (random-uuid? random-uuid0))
-  (is (not (random-uuid? 42)))
-  (is (not (random-uuid? je-uuid0)))
-  (is (not (random-uuid? index-uuid0)))
-
-  (is (index-uuid? index-uuid0))
-  (is (not (index-uuid? 42)))
-  (is (not (index-uuid? je-uuid0)))
-  (is (not (index-uuid? random-uuid0)))
   )
 
 (defn hello-world!
@@ -54,6 +22,19 @@
 (defn test0
   "tests that even work with impl0"
   [ark-db]
+
+  (is (classifier? :classifier/x))
+  (is (not (classifier? :descriptor/y)))
+  (is (not (classifier? :x)))
+  (is (not (classifier? ":classifier/x")))
+  (is (descriptor? :descriptor/x))
+  (is (not (descriptor? :classifier/y)))
+  (is (not (descriptor? :x)))
+  (is (not (descriptor? ":descriptor/x")))
+
+  (validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
+  (is (thrown? Exception (validate-property-keys {1 2})))
+
   (register-transaction! ark-db ::hello-world! hello-world!)
   (register-transaction! ark-db ::update-rolon-transaction! update-rolon-transaction!)
   (register-transaction! ark-db ::destroy-rolon-transaction! destroy-rolon-transaction!)

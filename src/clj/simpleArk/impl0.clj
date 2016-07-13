@@ -1,6 +1,7 @@
 (ns simpleArk.impl0
   (:require [simpleArk.core :as ark]
-            [simpleArk.log :as log]))
+            [simpleArk.log :as log]
+            [simpleArk.uuid :as uuid]))
 
 (defn get-current-journal-entry-uuid
   []
@@ -15,20 +16,20 @@
   "update the ark with the revised/new rolon"
   [rolon-uuid rolon]
   (vreset! ark/*ark* (cond
-                       (ark/journal-entry-uuid? rolon-uuid)
+                       (uuid/journal-entry-uuid? rolon-uuid)
                        (assoc-in @ark/*ark* [::journal-entries rolon-uuid] rolon)
-                       (ark/index-uuid? rolon-uuid)
+                       (uuid/index-uuid? rolon-uuid)
                        (assoc-in @ark/*ark* [::indexes rolon-uuid] rolon)
-                       (ark/random-uuid? rolon-uuid)
+                       (uuid/random-uuid? rolon-uuid)
                        (assoc-in @ark/*ark* [::random-rolons rolon-uuid] rolon)
                        :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
 
 (defn get-rolon
   [uuid]
   (cond
-    (ark/journal-entry-uuid? uuid) ((::journal-entries @ark/*ark*) uuid)
-    (ark/index-uuid? uuid) ((::indexes @ark/*ark*) uuid)
-    (ark/random-uuid? uuid) ((::random-rolons @ark/*ark*) uuid)
+    (uuid/journal-entry-uuid? uuid) ((::journal-entries @ark/*ark*) uuid)
+    (uuid/index-uuid? uuid) ((::indexes @ark/*ark*) uuid)
+    (uuid/random-uuid? uuid) ((::random-rolons @ark/*ark*) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn update-properties-!
@@ -141,15 +142,20 @@
   []
   (::selected-time @ark/*ark*))
 
+(defn index-name-uuid
+  []
+  (::index-name-uuid @ark/*ark*))
+
 (defn open-ark
   [ark-db]
   (let [ark (ark/->Ark ark-db get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon! destroy-rolon! update-properties!
                        get-current-journal-entry-uuid
-                       select-time! get-selected-time)
+                       select-time! get-selected-time index-name-uuid)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
-        ark (assoc ark ::random-rolons {})]
+        ark (assoc ark ::random-rolons {})
+        ark (assoc ark ::index-name-uuid (uuid/index-uuid ark-db :classifier/index.name))]
     (reset! (::ark-atom ark-db) ark)
     ark))
 
@@ -178,7 +184,7 @@
 
 (defn process-transaction!
   [ark-db transaction-name s]
-  (let [je-uuid (ark/journal-entry-uuid)]
+  (let [je-uuid (uuid/journal-entry-uuid ark-db)]
     (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
     (log/info! ark-db :transaction transaction-name s)
     je-uuid))
@@ -187,7 +193,6 @@
   [ark-db je-uuid transaction-name s]
   (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
   (log/info! ark-db :transaction transaction-name s))
-
 
 (defn build
   "returns an ark db"

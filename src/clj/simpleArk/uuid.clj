@@ -1,34 +1,29 @@
 (ns simpleArk.uuid
-  (:require [clj-uuid :as uuid]))
+  (require [clj-uuid :refer [get-version]]))
 
 (defn journal-entry-uuid
-  [_]
-  (uuid/v1))
+  [ark-db]
+  ((:uuid/journal-entry-uuid ark-db) ark-db))
 
 (defn random-uuid
-  [_]
-  (uuid/v4))
+  [ark-db]
+  ((:uuid/random-uuid ark-db) ark-db))
 
 (defn index-uuid
-  [_ classifier]
-  (if (not (classifier? classifier))
-    (throw (Exception. (str classifier " is not a classifier keyword"))))
-  (uuid/v5 uuid/+null+ (name classifier)))
+  [ark-db classifier]
+  ((:uuid/index-uuid ark-db) ark-db classifier))
 
 (defn journal-entry-uuid?
-  [_ uuid]
+  [uuid]
   (and (uuid? uuid)
-       (= (uuid/get-version uuid) 1)))
+       (= (get-version uuid) 1)))
 
 (defn random-uuid?
-  [_ uuid]
+  [uuid]
   (and (uuid? uuid)
-       (= (uuid/get-version uuid) 4)))
+       (= (get-version uuid) 4)))
 
 (defn index-uuid?
-  [_ uuid]
+  [uuid]
   (and (uuid? uuid)
-       (= (uuid/get-version uuid) 5)))
-
-;;a well known uuid
-(def index-name-uuid (index-uuid _ :classifier/index.name))
+       (= (get-version uuid) 5)))

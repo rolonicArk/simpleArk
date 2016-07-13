@@ -3,9 +3,11 @@
             [simpleArk.core :refer :all]
             [simpleArk.impl0 :as impl0]
             [simpleArk.logt :as logt]
+            [simpleArk.uuid :as uuid]
+            [simpleArk.uuid0 :as uuid0]
             [clojure.core.async :as async]))
 
-(deftest basic
+(comment deftest basic
   "basic tests"
 
   (is (classifier? :classifier/x))
@@ -65,7 +67,7 @@
   (println)
   (println ">>>>>>>>>>>> make-bob")
   (println)
-  (def bob-uuid (random-uuid))
+  (def bob-uuid (uuid/random-uuid ark-db))
   (def make-bob-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
                                               (prn-str [bob-uuid
                                                         {:classifier/headline "make bob"}
@@ -99,7 +101,7 @@
   (println)
   (println ">>>>>>>>>>>> make-sam")
   (println)
-  (def sam-uuid (random-uuid))
+  (def sam-uuid (uuid/random-uuid ark-db))
   (def make-sam-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
                                               (prn-str [sam-uuid
                                                         {:classifier/headline "make sam"}
@@ -159,6 +161,7 @@
   (def ark-db (-> {}
                   (logt/build)
                   (logt/set-log-chan (async/chan 3))
+                  (uuid0/build)
                   (impl0/build)))
   (open-ark ark-db)
   (test0 ark-db))

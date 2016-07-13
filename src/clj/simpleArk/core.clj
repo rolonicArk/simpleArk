@@ -1,5 +1,5 @@
 (ns simpleArk.core
-  (:require [clj-uuid :as uuid]))
+  (:require [simpleArk.uuid :as uuid]))
 
 (defn classifier?
   [kw]
@@ -10,38 +10,6 @@
   [kw]
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
-
-(defn journal-entry-uuid
-  []
-  (uuid/v1))
-
-(defn random-uuid
-  []
-  (uuid/v4))
-
-(defn index-uuid
-  [classifier]
-  (if (not (classifier? classifier))
-    (throw (Exception. (str classifier " is not a classifier keyword"))))
-  (uuid/v5 uuid/+null+ (name classifier)))
-
-(defn journal-entry-uuid?
-  [uuid]
-  (and (uuid? uuid)
-       (= (uuid/get-version uuid) 1)))
-
-(defn random-uuid?
-  [uuid]
-  (and (uuid? uuid)
-       (= (uuid/get-version uuid) 4)))
-
-(defn index-uuid?
-  [uuid]
-  (and (uuid? uuid)
-       (= (uuid/get-version uuid) 5)))
-
-;;a well known uuid
-(def index-name-uuid (index-uuid :classifier/index.name))
 
 (defn open-ark
   [ark-db]
@@ -90,10 +58,14 @@
   []
   ((:get-current-journal-entry-uuid @*ark*)))
 
+(defn index-name-uuid
+  []
+  ((:index-name-uuid @*ark*)))
+
 (defrecord Ark [ark-db get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties!
                 get-current-journal-entry-uuid
-                select-time! get-selected-time])
+                select-time! get-selected-time index-name-uuid])
 
 (defrecord Rolon [rolon-uuid get-rolon-values])
 
@@ -308,7 +280,7 @@
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
   [index-name]
-  (first (index-lookup index-name-uuid index-name)))
+  (first (index-lookup (index-name-uuid) index-name)))
 
 (defn name-lookup
   [rolon-name]
@@ -335,7 +307,7 @@
 (defn make-index-rolon!
   "create/update an index rolon"
   ([classifier value uuid adding]
-   (let [iuuid (index-uuid classifier)
+   (let [iuuid (uuid/index-uuid (get-ark-db) classifier)
          properties (if (get-rolon iuuid)
                       (sorted-map)
                       (sorted-map :classifier/index.name (name classifier)))

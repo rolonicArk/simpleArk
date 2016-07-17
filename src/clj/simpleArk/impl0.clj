@@ -209,3 +209,10 @@
                    (assoc :ark-db/process-transaction-at! process-transaction-at!)
                    )]
     ark-db))
+
+(defn builder
+  []
+  (fn [m]
+    (let [ark-db (build m)]
+      (ark/open-ark ark-db)
+      ark-db)))

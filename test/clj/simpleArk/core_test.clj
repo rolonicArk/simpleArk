@@ -139,10 +139,9 @@
 
 (deftest arks
   (println "impl0 tests")
-  (def ark-db (-> {}
-                  (logt/build)
-                  (logt/set-log-chan (async/chan 3))
-                  (uuid0/build)
-                  (impl0/build)))
-  (open-ark ark-db)
+  (def ark-db ((comp
+                 (impl0/builder)
+                 (uuid0/builder)
+                 (logt/builder))
+                {}))
   (test0 ark-db))

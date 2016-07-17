@@ -46,3 +46,8 @@
       (assoc :log/warn! warn!)
       (assoc :log/debug! debug!)
       (assoc :log/error! error!)))
+
+(defn builder [& {:keys [chan]
+                  :or {chan (async/chan 100)}}]
+  (fn [m]
+    (build (set-log-chan m chan))))

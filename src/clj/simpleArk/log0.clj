@@ -37,3 +37,8 @@
       (assoc :log/warn! warn!)
       (assoc :log/debug! debug!)
       (assoc :log/error! error!)))
+
+(defn builder
+  "returns build"
+  []
+  build)

@@ -7,17 +7,18 @@
 
 (set! *warn-on-reflection* true)
 
-(deftest closer
-  (defn close-a [this] (info! this "close a"))
-  (defn close-b [this] (info! this "close b"))
-  (defn close-c [this] (info! this "close c"))
+(defn dummy-builder [& {:keys [name]}]
+  (fn [m]
+    (open-component m
+                    name
+                    #(info! % (str "close " name)))))
 
-  (let [this (-> {}
-                 (logt/build)
-                 (logt/set-log-chan (async/chan 100))
-                 (open-component "a" close-a)
-                 (open-component "b" close-b)
-                 (open-component "c" close-c))]
+(deftest closer
+  (let [this ((comp
+                (dummy-builder :name "c")
+                (dummy-builder :name "b")
+                (dummy-builder :name "a")
+                (logt/builder)) {})]
     (is (= [:log/info! "opening a"] (logt/get-msg this)))
     (is (= [:log/info! "opening b"] (logt/get-msg this)))
     (is (= [:log/info! "opening c"] (logt/get-msg this)))

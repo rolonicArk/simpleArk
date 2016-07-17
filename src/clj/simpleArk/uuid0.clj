@@ -21,3 +21,7 @@
       (assoc :uuid/journal-entry-uuid journal-entry-uuid)
       (assoc :uuid/random-uuid random-uuid)
       (assoc :uuid/index-uuid index-uuid)))
+
+(defn builder
+  []
+  build)

@@ -3,10 +3,12 @@
             [simpleArk.uuid :refer :all]
             [simpleArk.uuid0 :as uuid0]))
 
+(set! *warn-on-reflection* true)
+
 (deftest uuid0
-  (println "uuid0 tests")
-  (def ark-db (-> {}
-                  (uuid0/build)))
+  (def ark-db ((comp
+                 (uuid0/builder))
+                {}))
 
   (def je-uuid0 (journal-entry-uuid ark-db))
   (def random-uuid0 (random-uuid ark-db))

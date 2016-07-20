@@ -1,6 +1,8 @@
 (ns simpleArk.uuid0
   (:require [simpleArk.core :as ark]))
 
+(set! *warn-on-reflection* true)
+
 (defn journal-entry-uuid
   [_]
   (clj-uuid/v1))

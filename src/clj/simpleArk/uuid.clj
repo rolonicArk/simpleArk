@@ -1,6 +1,8 @@
 (ns simpleArk.uuid
   (require [clj-uuid :refer [get-version]]))
 
+(set! *warn-on-reflection* true)
+
 (defn journal-entry-uuid
   [ark-db]
   ((:uuid/journal-entry-uuid ark-db) ark-db))

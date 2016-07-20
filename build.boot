@@ -18,5 +18,6 @@
                                 simpleArk.closer-test
                                 simpleArk.uuid-test
                                 simpleArk.uuid0-test
+                                simpleArk.uuidi-test
                                 simpleArk.core-test
                                 })))

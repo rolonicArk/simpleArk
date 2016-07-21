@@ -74,8 +74,8 @@
   []
   ((:index-name-uuid @*ark*)))
 
-(defrecord Ark [ark-db get-rolon get-journal-entries get-indexes get-random-rolons
-                make-rolon! destroy-rolon! update-properties!
+(defrecord Ark [this-db get-rolon get-journal-entries get-indexes get-random-rolons
+                make-rolon! destroy-rolon! update-properties! update-ark
                 get-current-journal-entry-uuid
                 select-time! get-selected-time index-name-uuid])
 
@@ -93,6 +93,10 @@
   "returns the journal entry uuid of the selected time"
   []
   ((:get-selected-time @*ark*)))
+
+(defn update-ark
+  [ark je-uuid transaction-name s]
+  ((:update-ark ark) ark je-uuid transaction-name s))
 
 (defn get-ark-db
   "returns the ark-db"

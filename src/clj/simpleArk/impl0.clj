@@ -149,8 +149,10 @@
   (::index-name-uuid @ark/*ark*))
 
 (defn update-ark
-  [ark f je-uuid transaction-name s]
-  (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
+  [ark je-uuid transaction-name s]
+  (let [ark-db (:this-db ark)
+        f (ark/get-transaction ark-db transaction-name)
+        ark (assoc ark ::latest-journal-entry-uuid je-uuid)
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark/ark-binder ark
                             (fn []
@@ -169,25 +171,25 @@
 (defn process-transaction!
   [ark-db transaction-name s]
   (let [je-uuid (uuid/journal-entry-uuid ark-db)]
-    (swap! (::ark-atom ark-db) update-ark (ark/get-transaction ark-db transaction-name) je-uuid transaction-name s)
+    (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
     (log/info! ark-db :transaction transaction-name s)
     je-uuid))
 
 (defn process-transaction-at!
   [ark-db je-uuid transaction-name s]
-  (swap! (::ark-atom ark-db) update-ark (ark/get-transaction ark-db transaction-name) je-uuid transaction-name s)
+  (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
   (log/info! ark-db :transaction transaction-name s))
 
 (defn create-ark
-  [ark-db]
-  (let [ark (ark/->Ark ark-db get-rolon get-journal-entries get-indexes get-random-rolons
-                       make-rolon! destroy-rolon! update-properties!
+  [this-db]
+  (let [ark (ark/->Ark this-db get-rolon get-journal-entries get-indexes get-random-rolons
+                       make-rolon! destroy-rolon! update-properties! update-ark
                        get-current-journal-entry-uuid
                        select-time! get-selected-time index-name-uuid)
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
         ark (assoc ark ::random-rolons {})
-        ark (assoc ark ::index-name-uuid (uuid/index-uuid ark-db :classifier/index.name))]
+        ark (assoc ark ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))]
     ark))
 
 (defn open-ark

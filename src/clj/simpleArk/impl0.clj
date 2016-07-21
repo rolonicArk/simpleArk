@@ -214,5 +214,5 @@
   []
   (fn [m]
     (let [ark-db (build m)]
-      (ark/open-ark ark-db)
+      (open-ark ark-db)
       ark-db)))

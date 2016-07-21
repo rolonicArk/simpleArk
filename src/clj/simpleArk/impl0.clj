@@ -190,8 +190,7 @@
         ark (assoc ark ::journal-entries (sorted-map))
         ark (assoc ark ::indexes (sorted-map))
         ark (assoc ark ::random-rolons {})
-        ark (assoc ark ::index-name-uuid (uuid/index-uuid ark-db :classifier/index.name))
-        ark (assoc ark :ark-db ark-db)]
+        ark (assoc ark ::index-name-uuid (uuid/index-uuid ark-db :classifier/index.name))]
     (reset! (::ark-atom ark-db) ark)
     ark))
 

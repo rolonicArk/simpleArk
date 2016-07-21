@@ -13,13 +13,10 @@
 
 (defn- build
   [m]
-  (let [registry-atom (atom (sorted-map))
-        reg (-> m
-                (assoc ::registry-atom registry-atom)
-                (assoc :reg/register-transaction! register-transaction!)
-                (assoc :reg/get-transaction get-transaction)
-                )]
-    reg))
+  (-> m
+      (assoc ::registry-atom (atom (sorted-map)))
+      (assoc :reg/register-transaction! register-transaction!)
+      (assoc :reg/get-transaction get-transaction)))
 
 (defn builder
   []

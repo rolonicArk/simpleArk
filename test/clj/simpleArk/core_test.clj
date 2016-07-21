@@ -5,7 +5,8 @@
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
-            [simpleArk.reg0 :as reg0]))
+            [simpleArk.reg0 :as reg0]
+            [simpleArk.ark-db0 :as ark-db0]))
 
 (comment deftest basic
   "basic tests"
@@ -140,6 +141,7 @@
 (deftest arks
   (println "impl0 tests")
   (def ark-db ((comp
+                 (ark-db0/builder)
                  (impl0/builder)
                  (reg0/builder)
                  (uuidi/builder)

@@ -103,7 +103,7 @@
   ([]
    (get-ark-db @*ark*))
   ([ark]
-   (:ark-db ark)))
+   (:this-db ark)))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"

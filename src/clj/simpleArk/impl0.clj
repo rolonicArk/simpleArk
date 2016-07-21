@@ -164,22 +164,6 @@
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark))
 
-(defn get-ark
-  [ark-db]
-  @(::ark-atom ark-db))
-
-(defn process-transaction!
-  [ark-db transaction-name s]
-  (let [je-uuid (uuid/journal-entry-uuid ark-db)]
-    (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
-    (log/info! ark-db :transaction transaction-name s)
-    je-uuid))
-
-(defn process-transaction-at!
-  [ark-db je-uuid transaction-name s]
-  (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
-  (log/info! ark-db :transaction transaction-name s))
-
 (defn create-ark
   [this-db]
   (let [ark (ark/->Ark this-db get-rolon get-journal-entries get-indexes get-random-rolons
@@ -192,21 +176,11 @@
         ark (assoc ark ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))]
     ark))
 
-(defn open-ark
-  [ark-db]
-  (reset! (::ark-atom ark-db) (ark/create-ark ark-db)))
-
 (defn- build
   "returns an ark db"
   [m]
-  (let [ark-atom (atom nil)
-        ark-db (-> m
+  (let [ark-db (-> m
                    (assoc :ark/create-ark create-ark)
-                   (assoc ::ark-atom ark-atom)
-                   (assoc :ark-db/open-ark open-ark)
-                   (assoc :ark-db/get-ark get-ark)
-                   (assoc :ark-db/process-transaction! process-transaction!)
-                   (assoc :ark-db/process-transaction-at! process-transaction-at!)
                    )]
     ark-db))
 

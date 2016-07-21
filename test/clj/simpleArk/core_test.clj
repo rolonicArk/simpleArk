@@ -145,4 +145,5 @@
                  (uuidi/builder)
                  (logt/builder))
                 {}))
+  (open-ark ark-db)
   (test0 ark-db))

@@ -194,7 +194,7 @@
   [ark-db]
   (reset! (::ark-atom ark-db) (ark/create-ark ark-db)))
 
-(defn build
+(defn- build
   "returns an ark db"
   [m]
   (let [ark-atom (atom nil)
@@ -210,7 +210,4 @@
 
 (defn builder
   []
-  (fn [m]
-    (let [ark-db (build m)]
-      (ark/open-ark ark-db)
-      ark-db)))
+  build)

@@ -5,7 +5,7 @@
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
-            [clojure.core.async :as async]))
+            [simpleArk.reg0 :as reg0]))
 
 (comment deftest basic
   "basic tests"
@@ -141,6 +141,7 @@
   (println "impl0 tests")
   (def ark-db ((comp
                  (impl0/builder)
+                 (reg0/builder)
                  (uuidi/builder)
                  (logt/builder))
                 {}))

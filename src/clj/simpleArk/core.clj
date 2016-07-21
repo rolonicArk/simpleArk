@@ -1,6 +1,8 @@
 (ns simpleArk.core
   (:require [simpleArk.uuid :as uuid]))
 
+(set! *warn-on-reflection* true)
+
 (defn classifier?
   [kw]
   (and (keyword? kw)
@@ -10,6 +12,17 @@
   [kw]
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
+
+(defn register-transaction!
+  "defines a transaction,
+    where f takes an (edn) string"
+  [reg transaction-name f]
+  ((:reg/register-transaction! reg) reg transaction-name f))
+
+(defn get-transaction
+  "returns a transaction function"
+  [reg transaction-name]
+  ((:reg/get-transaction reg) reg transaction-name))
 
 (defn create-ark
   [m]
@@ -25,12 +38,6 @@
   "returns the current value of the ark"
   [ark-db]
   ((:ark-db/get-ark ark-db) ark-db))
-
-(defn register-transaction!
-  "defines a transaction,
-    where f takes an (edn) string"
-  [ark-db transaction-name f]
-  ((:ark-db/register-transaction! ark-db) ark-db transaction-name f))
 
 (defn process-transaction!
   "process a transaction with an (edn) string,

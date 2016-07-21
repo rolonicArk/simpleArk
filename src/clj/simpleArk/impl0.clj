@@ -3,6 +3,8 @@
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]))
 
+(set! *warn-on-reflection* true)
+
 (defn get-current-journal-entry-uuid
   []
   (::active-journal-entry-uuid @ark/*ark*))
@@ -147,9 +149,8 @@
   (::index-name-uuid @ark/*ark*))
 
 (defn update-ark
-  [ark registry je-uuid transaction-name s]
-  (let [f (registry transaction-name)
-        ark (assoc ark ::latest-journal-entry-uuid je-uuid)
+  [ark f je-uuid transaction-name s]
+  (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark/ark-binder ark
                             (fn []
@@ -165,20 +166,16 @@
   [ark-db]
   @(::ark-atom ark-db))
 
-(defn register-transaction!
-  [ark-db transaction-name f]
-  (swap! (::registry-atom ark-db) #(assoc % transaction-name f)))
-
 (defn process-transaction!
   [ark-db transaction-name s]
   (let [je-uuid (uuid/journal-entry-uuid ark-db)]
-    (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
+    (swap! (::ark-atom ark-db) update-ark (ark/get-transaction ark-db transaction-name) je-uuid transaction-name s)
     (log/info! ark-db :transaction transaction-name s)
     je-uuid))
 
 (defn process-transaction-at!
   [ark-db je-uuid transaction-name s]
-  (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
+  (swap! (::ark-atom ark-db) update-ark (ark/get-transaction ark-db transaction-name) je-uuid transaction-name s)
   (log/info! ark-db :transaction transaction-name s))
 
 (defn create-ark
@@ -201,14 +198,11 @@
   "returns an ark db"
   [m]
   (let [ark-atom (atom nil)
-        registry-atom (atom (sorted-map))
         ark-db (-> m
                    (assoc :ark/create-ark create-ark)
                    (assoc ::ark-atom ark-atom)
-                   (assoc ::registry-atom registry-atom)
                    (assoc :ark-db/open-ark open-ark)
                    (assoc :ark-db/get-ark get-ark)
-                   (assoc :ark-db/register-transaction! register-transaction!)
                    (assoc :ark-db/process-transaction! process-transaction!)
                    (assoc :ark-db/process-transaction-at! process-transaction-at!)
                    )]

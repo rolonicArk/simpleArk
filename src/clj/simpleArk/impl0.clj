@@ -1,6 +1,5 @@
 (ns simpleArk.impl0
   (:require [simpleArk.core :as ark]
-            [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]))
 
 (set! *warn-on-reflection* true)

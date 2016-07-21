@@ -183,7 +183,7 @@
 
 (defn open-ark
   [ark-db]
-  (let [ark (ark/->Ark get-rolon get-journal-entries get-indexes get-random-rolons
+  (let [ark (ark/->Ark ark-db get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon! destroy-rolon! update-properties!
                        get-current-journal-entry-uuid
                        select-time! get-selected-time index-name-uuid)

@@ -12,7 +12,6 @@
   (transaction-name @(::registry-atom reg)))
 
 (defn- build
-  "returns an ark db"
   [m]
   (let [registry-atom (atom (sorted-map))
         reg (-> m

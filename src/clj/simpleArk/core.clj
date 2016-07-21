@@ -62,7 +62,7 @@
   []
   ((:index-name-uuid @*ark*)))
 
-(defrecord Ark [ark-db get-rolon get-journal-entries get-indexes get-random-rolons
+(defrecord Ark [get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties!
                 get-current-journal-entry-uuid
                 select-time! get-selected-time index-name-uuid])

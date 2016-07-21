@@ -11,6 +11,11 @@
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
 
+(defn create-ark
+  [m]
+  "returns a new ark"
+  ((:ark/create-ark m) m))
+
 (defn open-ark
   [ark-db]
   "Open the ark after ark-db is finalized."

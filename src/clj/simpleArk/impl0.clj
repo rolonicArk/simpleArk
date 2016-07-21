@@ -181,7 +181,7 @@
   (swap! (::ark-atom ark-db) update-ark @(::registry-atom ark-db) je-uuid transaction-name s)
   (log/info! ark-db :transaction transaction-name s))
 
-(defn open-ark
+(defn create-ark
   [ark-db]
   (let [ark (ark/->Ark ark-db get-rolon get-journal-entries get-indexes get-random-rolons
                        make-rolon! destroy-rolon! update-properties!
@@ -191,8 +191,11 @@
         ark (assoc ark ::indexes (sorted-map))
         ark (assoc ark ::random-rolons {})
         ark (assoc ark ::index-name-uuid (uuid/index-uuid ark-db :classifier/index.name))]
-    (reset! (::ark-atom ark-db) ark)
     ark))
+
+(defn open-ark
+  [ark-db]
+  (reset! (::ark-atom ark-db) (ark/create-ark ark-db)))
 
 (defn build
   "returns an ark db"
@@ -200,6 +203,7 @@
   (let [ark-atom (atom nil)
         registry-atom (atom (sorted-map))
         ark-db (-> m
+                   (assoc :ark/create-ark create-ark)
                    (assoc ::ark-atom ark-atom)
                    (assoc ::registry-atom registry-atom)
                    (assoc :ark-db/open-ark open-ark)

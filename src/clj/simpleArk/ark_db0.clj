@@ -22,7 +22,7 @@
   ([ark-db je-uuid transaction-name s]
    (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
-    je-uuid))
+   je-uuid))
 
 (defn- build
   "returns an ark db"

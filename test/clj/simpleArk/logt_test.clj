@@ -7,9 +7,6 @@
 (set! *warn-on-reflection* true)
 
 (deftest logt
-  (comment def c (-> {}
-             (logt/build)
-             (logt/set-log-chan (async/chan 3))))
   (def c ((comp
             (logt/builder :chan (async/chan 3)))
            {}))

@@ -42,13 +42,10 @@
 (defn process-transaction!
   "process a transaction with an (edn) string,
     returning the new journal-entry uuid"
-  [ark-db transaction-name s]
-  ((:ark-db/process-transaction! ark-db) ark-db transaction-name s))
-
-(defn process-transaction-at!
-  "process a transaction at a given time with an (edn) string"
-  [ark-db je-uuid transaction-name s]
-  ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s))
+  ([ark-db transaction-name s]
+   ((:ark-db/process-transaction! ark-db) ark-db transaction-name s))
+  ([ark-db je-uuid transaction-name s]
+   ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s)))
 
 (def ^:dynamic *ark* nil)
 

@@ -50,4 +50,6 @@
 (defn builder [& {:keys [chan]
                   :or {chan (async/chan 100)}}]
   (fn [m]
-    (build (set-log-chan m chan))))
+    (-> m
+        (set-log-chan chan)
+        (build))))

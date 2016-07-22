@@ -20,4 +20,5 @@
                                 simpleArk.uuid0-test
                                 simpleArk.uuidi-test
                                 simpleArk.core-test
+                                simpleArk.ark-dba0-test
                                 })))

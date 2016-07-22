@@ -8,6 +8,8 @@
             [simpleArk.reg0 :as reg0]
             [simpleArk.ark-db0 :as ark-db0]))
 
+(set! *warn-on-reflection* true)
+
 (comment deftest basic
   "basic tests"
 

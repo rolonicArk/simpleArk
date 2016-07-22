@@ -2,13 +2,28 @@
   (:require [simpleArk.core :as ark]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
-            [clojure.core.async :as async]))
+            [clojure.core.async :as async]
+            [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)
 
+(defn close
+  [ark-db]
+  (let [tran-chan (::tran-chan ark-db)]
+    (async/close! tran-chan)
+    (println "closed")))
+
+(defn process-transactions
+  [ark-db]
+  (let [tran-chan (::tran-chan ark-db)]
+    (println "Hello Jack!")))
+
 (defn open-ark
   [ark-db]
-  (reset! (::ark-atom ark-db) (ark/create-ark ark-db)))
+  (reset! (::ark-atom ark-db) (ark/create-ark ark-db))
+  (async/thread (process-transactions ark-db))
+  (closer/open-component ark-db (::name ark-db) #(close ark-db))
+  )
 
 (defn get-ark
   [ark-db]
@@ -25,12 +40,14 @@
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 
-(defn builder [& {:keys [tran-chan]
-                  :or {tran-chan (async/chan 100)}}]
+(defn builder [& {:keys [tran-chan name]
+                  :or {tran-chan (async/chan 100)
+                       name "ark-dba0"}}]
   (fn [m]
     (-> m
-        (assoc ::tran-chan chan)
+        (assoc ::tran-chan tran-chan)
         (assoc ::ark-atom (atom nil))
+        (assoc ::name name)
         (assoc :ark-db/open-ark open-ark)
         (assoc :ark-db/get-ark get-ark)
         (assoc :ark-db/process-transaction! process-transaction!))))

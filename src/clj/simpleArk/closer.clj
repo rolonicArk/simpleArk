@@ -5,15 +5,12 @@
 
 (defn open-component [this name f]
   (log/info! this (str "opening " name))
-  (if-let [fsa (::fsa this)]
-    (do
-      (swap! fsa
-             (fn [fs]
-               (if fs
-                 (conj fs [f name])
-                 (atom (list [f name])))))
-      this)
-    (assoc this ::fsa (atom (list [f name])))))
+  (swap! (::fsa this)
+         (fn [fs]
+           (if fs
+             (conj fs [f name])
+             (list [f name]))))
+  this)
 
 (defn- do-closer [this fs]
   (when fs
@@ -34,3 +31,7 @@
         (if (compare-and-set! fsa fs nil)
           (do-closer this fs)
           (recur this))))))
+
+(defn builder
+  []
+  (fn [m] (assoc m ::fsa (atom nil))))

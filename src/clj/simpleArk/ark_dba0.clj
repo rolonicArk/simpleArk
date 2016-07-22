@@ -7,7 +7,7 @@
 
 (set! *warn-on-reflection* true)
 
-(defn close
+(defn close-tran-chan
   [ark-db]
   (let [tran-chan (::tran-chan ark-db)]
     (async/close! tran-chan)
@@ -22,7 +22,7 @@
   [ark-db]
   (reset! (::ark-atom ark-db) (ark/create-ark ark-db))
   (async/thread (process-transactions ark-db))
-  (closer/open-component ark-db (::name ark-db) #(close ark-db))
+  (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )
 
 (defn get-ark

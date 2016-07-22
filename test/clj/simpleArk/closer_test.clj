@@ -3,13 +3,13 @@
             [simpleArk.log :refer :all]
             [simpleArk.logt :as logt]
             [clojure.core.async :as async]
-            [simpleArk.closer :refer :all]))
+            [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)
 
 (defn dummy-builder [& {:keys [name]}]
   (fn [m]
-    (open-component m
+    (closer/open-component m
                     name
                     #(info! % (str "close " name)))))
 
@@ -18,11 +18,12 @@
                 (dummy-builder :name "c")
                 (dummy-builder :name "b")
                 (dummy-builder :name "a")
+                (closer/builder)
                 (logt/builder)) {})]
     (is (= [:log/info! "opening a"] (logt/get-msg this)))
     (is (= [:log/info! "opening b"] (logt/get-msg this)))
     (is (= [:log/info! "opening c"] (logt/get-msg this)))
-    (close-all this)
+    (closer/close-all this)
     (is (= [:log/info! "closing c"] (logt/get-msg this)))
     (is (= [:log/info! "close c"] (logt/get-msg this)))
     (is (= [:log/info! "closing b"] (logt/get-msg this)))

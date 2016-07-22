@@ -2,7 +2,6 @@
   (:require [clojure.test :refer :all]
             [simpleArk.log :refer :all]
             [simpleArk.logt :as logt]
-            [clojure.core.async :as async]
             [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)

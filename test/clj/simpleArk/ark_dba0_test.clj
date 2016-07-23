@@ -11,6 +11,19 @@
 
 (set! *warn-on-reflection* true)
 
+(defn hello-world!
+  "simple transaction test"
+  [s]
+  (println "Hello," s)
+  (let [je-uuid (get-current-journal-entry-uuid)]
+    (update-property! je-uuid :classifier/headline "Just for fun!")))
+
+(defn ark-dba0-test
+  [ark-db]
+  (register-transaction! ark-db ::hello-world! hello-world!)
+  (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
+  )
+
 (deftest ark-dba0
   (def ark-db ((comp
                  (ark-dba0/builder)
@@ -21,6 +34,6 @@
                  (log0/builder))
                 {}))
   (open-ark ark-db)
-  ;(test0 ark-db)
+  (ark-dba0-test ark-db)
   (closer/close-all ark-db)
   )

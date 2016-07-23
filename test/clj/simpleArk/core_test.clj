@@ -10,11 +10,6 @@
 
 (set! *warn-on-reflection* true)
 
-(comment deftest basic
-  "basic tests"
-
-  )
-
 (defn hello-world!
   "simple transaction test"
   [s]

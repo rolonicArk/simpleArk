@@ -16,8 +16,13 @@
 (defn process-transactions
   [ark-db]
   (let [tran (async/<!! (::tran-chan ark-db))]
-    (if tran
-      (println "Hello Jack!"))))
+    (when tran
+      (println tran)
+      (let [[transaction-name s rsp-chan] tran
+            je-uuid (uuid/journal-entry-uuid ark-db)]
+        (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+        (log/info! ark-db :transaction transaction-name s)
+        (async/>!! rsp-chan je-uuid)))))
 
 (defn open-ark
   [ark-db]

@@ -21,7 +21,9 @@
 (defn ark-dba0-test
   [ark-db]
   (register-transaction! ark-db ::hello-world! hello-world!)
-  (def hello-je-uuid (process-transaction! ark-db ::hello-world! "Fred"))
+  (process-transaction! ark-db ::hello-world! "Fred")
+  (process-transaction! ark-db ::hello-world! "Sam")
+  (process-transaction! ark-db ::hello-world! "Ruth")
   )
 
 (deftest ark-dba0

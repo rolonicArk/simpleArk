@@ -17,12 +17,12 @@
   [ark-db]
   (let [tran (async/<!! (::tran-chan ark-db))]
     (when tran
-      (println tran)
       (let [[transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
         (log/info! ark-db :transaction transaction-name s)
-        (async/>!! rsp-chan je-uuid)))))
+        (async/>!! rsp-chan je-uuid)
+        (recur ark-db)))))
 
 (defn open-ark
   [ark-db]
@@ -37,10 +37,9 @@
 
 (defn process-transaction!
   ([ark-db transaction-name s]
-   (let [je-uuid (uuid/journal-entry-uuid ark-db)]
-     (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
-     (log/info! ark-db :transaction transaction-name s)
-     je-uuid))
+   (let [rsp-chan (async/chan)]
+     (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan])
+     (async/<!! rsp-chan)))
   ([ark-db je-uuid transaction-name s]
    (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)

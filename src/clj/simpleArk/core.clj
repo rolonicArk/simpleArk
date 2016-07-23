@@ -361,3 +361,23 @@
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (update-properties! je-uuid je-properties)
     (destroy-rolon! uuid)))
+
+(defn add-tran
+  "appends to the transaction logger and returns the position"
+  [m je-uuid transaction-name s]
+  ((:tran-logger/add-tran m) m je-uuid transaction-name s))
+
+(defn tran-seq
+  "returns a sequence of transactions with the position of the next transaction,
+  e.g. [je-uuid, transaction-name, s, position].
+  The optional position parameter allows you to resume the sequence at any point"
+  ([m] (tran-seq m 0))
+  ([m position]
+  ((:tran-logger/tran-seq m) m position)))
+
+(defn reprocess-trans
+  [m seq]
+  (reduce (fn [_ [je-uuid transaction-name s _]]
+            (process-transaction! m je-uuid transaction-name s))
+          nil
+          seq))

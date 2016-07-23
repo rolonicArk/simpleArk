@@ -11,12 +11,13 @@
   [ark-db]
   (let [tran-chan (::tran-chan ark-db)]
     (async/close! tran-chan)
-    (println "closed")))
+    (log/info! ark-db "transaction channel closed")))
 
 (defn process-transactions
   [ark-db]
-  (let [tran-chan (::tran-chan ark-db)]
-    (println "Hello Jack!")))
+  (let [tran (async/<!! (::tran-chan ark-db))]
+    (if tran
+      (println "Hello Jack!"))))
 
 (defn open-ark
   [ark-db]

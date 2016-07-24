@@ -8,7 +8,10 @@
 
 (defn tran-seq
   [m position]
-  (seq (subvec @(::va m) position))
+  (def vi (volatile! position))
+  (map (fn [v]
+         (conj v (vswap! vi inc)))
+       (subvec @(::va m) position)))
 
 (defn builder
   []

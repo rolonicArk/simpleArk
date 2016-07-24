@@ -21,4 +21,5 @@
                                 simpleArk.uuidi-test
                                 simpleArk.core-test
                                 simpleArk.ark-dba0-test
+                                simpleArk.tlog0-test
                                 })))

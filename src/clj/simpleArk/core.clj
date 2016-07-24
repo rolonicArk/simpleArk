@@ -362,7 +362,7 @@
     (update-properties! je-uuid je-properties)
     (destroy-rolon! uuid)))
 
-(defn add-tran
+(defn add-tran!
   "appends to the transaction logger and returns the position"
   [m je-uuid transaction-name s]
   ((:tran-logger/add-tran m) m je-uuid transaction-name s))

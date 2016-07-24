@@ -6,7 +6,6 @@
 (set! *warn-on-reflection* true)
 
 (deftest log0
-  ;(def c (log0/build {}))
   (def c ((comp
             (log0/builder))
            {}))

@@ -2,7 +2,7 @@
 
 (set! *warn-on-reflection* true)
 
-(defn add-tran
+(defn add-tran!
   [m je-uuid transaction-name s]
   (swap! (::va m) conj [je-uuid transaction-name s]))
 
@@ -18,5 +18,5 @@
   (fn [m]
     (-> m
         (assoc ::va (atom []))
-        (assoc :tran-logger/add-tran add-tran)
+        (assoc :tran-logger/add-tran add-tran!)
         (assoc :tran-logger/tran-seq tran-seq))))

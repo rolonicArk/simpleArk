@@ -8,15 +8,15 @@
 
 (deftest tlog0
   (let [c ((comp
-            (tlog0/builder))
+            (tlog0/builder :initial-ark "_"))
            {})
         rsp-chan (async/chan 1)]
-    (ark/add-tran! c 1 "a" "-" rsp-chan)
-    (println (async/<!! rsp-chan))
-    (ark/add-tran! c 2 "b" "-" rsp-chan)
-    (println (async/<!! rsp-chan))
-    (ark/add-tran! c 3 "c" "-" rsp-chan)
-    (println (async/<!! rsp-chan))
+    (ark/add-tran! c 1 "a" "-" rsp-chan "x")
+    (println (async/<!! rsp-chan) (ark/get-ark c))
+    (ark/add-tran! c 2 "b" "-" rsp-chan "y")
+    (println (async/<!! rsp-chan) (ark/get-ark c))
+    (ark/add-tran! c 3 "c" "-" rsp-chan "z")
+    (println (async/<!! rsp-chan) (ark/get-ark c))
     (println (ark/tran-seq c))
     (println (ark/tran-seq c 2))
     ))

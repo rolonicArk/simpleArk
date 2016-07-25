@@ -45,9 +45,10 @@
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 
-(defn builder [& {:keys [tran-chan name]
-                  :or {tran-chan (async/chan 100)
-                       name "ark-dba0"}}]
+(defn builder
+  [& {:keys [tran-chan name]
+      :or {tran-chan (async/chan 100)
+           name "ark-dba0"}}]
   (fn [m]
     (-> m
         (assoc ::tran-chan tran-chan)

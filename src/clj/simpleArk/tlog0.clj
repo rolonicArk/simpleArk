@@ -3,9 +3,14 @@
 
 (set! *warn-on-reflection* true)
 
+(defn get-ark
+  [ark-db]
+  @(::ark-atom ark-db))
+
 (defn add-tran!
-  [m je-uuid transaction-name s rsp-chan]
+  [m je-uuid transaction-name s rsp-chan ark]
   (swap! (::va m) conj [je-uuid transaction-name s])
+  (reset! (::ark-atom m) ark)
   (async/>!! rsp-chan je-uuid))
 
 (defn tran-seq
@@ -16,9 +21,11 @@
        (subvec @(::va m) position)))
 
 (defn builder
-  []
+  [& {:keys [initial-ark]}]
   (fn [m]
     (-> m
         (assoc ::va (atom []))
+        (assoc ::ark-atom (atom initial-ark))
+        (assoc :ark-db/get-ark get-ark)
         (assoc :tran-logger/add-tran add-tran!)
         (assoc :tran-logger/tran-seq tran-seq))))

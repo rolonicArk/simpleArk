@@ -3,7 +3,6 @@
             [simpleArk.core :refer :all]
             [simpleArk.impl0 :as impl0]
             [simpleArk.log0 :as log0]
-            [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.reg0 :as reg0]
             [simpleArk.ark-dba0 :as ark-dba0]

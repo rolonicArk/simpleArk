@@ -1,0 +1,55 @@
+(ns simpleArk.ark-dba1
+  (:require [simpleArk.core :as ark]
+            [simpleArk.log :as log]
+            [simpleArk.uuid :as uuid]
+            [clojure.core.async :as async]
+            [simpleArk.closer :as closer]))
+
+(set! *warn-on-reflection* true)
+
+(defn close-tran-chan
+  [ark-db]
+  (let [tran-chan (::tran-chan ark-db)]
+    (async/close! tran-chan)
+    (log/info! ark-db "transaction channel closed")))
+
+(defn process-transactions
+  [ark-db]
+  (let [tran (async/<!! (::tran-chan ark-db))]
+    (when tran
+      (let [[transaction-name s rsp-chan] tran
+            je-uuid (uuid/journal-entry-uuid ark-db)]
+        (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+        (ark/add-tran! ark-db je-uuid transaction-name s rsp-chan
+                       @(::ark-atom ark-db))
+        (recur ark-db)))))
+
+(defn open-ark
+  [ark-db]
+  (reset! (::ark-atom ark-db) (ark/create-ark ark-db))
+  (ark/init-ark! ark-db @(::ark-atom ark-db))
+  (async/thread (process-transactions ark-db))
+  (closer/open-component ark-db (::name ark-db) close-tran-chan)
+  )
+
+(defn process-transaction!
+  ([ark-db transaction-name s]
+   (let [rsp-chan (async/chan)]
+     (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan])
+     (async/<!! rsp-chan)))
+  ([ark-db je-uuid transaction-name s]
+   (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+   (log/info! ark-db :transaction transaction-name s)
+   je-uuid))
+
+(defn builder
+  [& {:keys [tran-chan name]
+      :or {tran-chan (async/chan 100)
+           name "ark-dba0"}}]
+  (fn [m]
+    (-> m
+        (assoc ::tran-chan tran-chan)
+        (assoc ::ark-atom (atom nil))
+        (assoc ::name name)
+        (assoc :ark-db/open-ark open-ark)
+        (assoc :ark-db/process-transaction! process-transaction!))))

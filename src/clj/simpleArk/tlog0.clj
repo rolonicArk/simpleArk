@@ -1,5 +1,6 @@
 (ns simpleArk.tlog0
-  (:require [clojure.core.async :as async]))
+  (:require [clojure.core.async :as async]
+            [simpleArk.log :as log]))
 
 (set! *warn-on-reflection* true)
 
@@ -15,6 +16,7 @@
   [m je-uuid transaction-name s rsp-chan ark]
   (swap! (::va m) conj [je-uuid transaction-name s])
   (reset! (::ark-atom m) ark)
+  (log/info! m :transaction transaction-name s)
   (async/>!! rsp-chan je-uuid))
 
 (defn tran-seq

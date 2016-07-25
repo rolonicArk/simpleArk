@@ -2,13 +2,15 @@
   (:require [clojure.test :refer :all]
             [simpleArk.core :as ark]
             [simpleArk.tlog0 :as tlog0]
+            [simpleArk.log0 :as log0]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)
 
 (deftest tlog0
   (let [c ((comp
-            (tlog0/builder))
+            (tlog0/builder)
+            (log0/builder))
            {})
         rsp-chan (async/chan 1)]
     (ark/init-ark! c "_")

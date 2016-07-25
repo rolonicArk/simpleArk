@@ -1,10 +1,12 @@
-(ns simpleArk.tlog0)
+(ns simpleArk.tlog0
+  (:require [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)
 
 (defn add-tran!
-  [m je-uuid transaction-name s]
-  (swap! (::va m) conj [je-uuid transaction-name s]))
+  [m je-uuid transaction-name s rsp-chan]
+  (swap! (::va m) conj [je-uuid transaction-name s])
+  (async/>!! rsp-chan je-uuid))
 
 (defn tran-seq
   [m position]

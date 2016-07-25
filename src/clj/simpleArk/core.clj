@@ -363,9 +363,10 @@
     (destroy-rolon! uuid)))
 
 (defn add-tran!
-  "appends to the transaction logger and returns the position"
-  [m je-uuid transaction-name s]
-  ((:tran-logger/add-tran m) m je-uuid transaction-name s))
+  "appends to the transaction logger and returns the position.
+  Asynchronously replys with the je-uuid once a transaction is flushed"
+  [m je-uuid transaction-name s rsp-chan]
+  ((:tran-logger/add-tran m) m je-uuid transaction-name s rsp-chan))
 
 (defn tran-seq
   "returns a sequence of transactions with the position of the next transaction,

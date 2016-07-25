@@ -8,9 +8,10 @@
 
 (deftest tlog0
   (let [c ((comp
-            (tlog0/builder :initial-ark "_"))
+            (tlog0/builder))
            {})
         rsp-chan (async/chan 1)]
+    (ark/init-ark! c "_")
     (ark/add-tran! c 1 "a" "-" rsp-chan "x")
     (println (async/<!! rsp-chan) (ark/get-ark c))
     (ark/add-tran! c 2 "b" "-" rsp-chan "y")

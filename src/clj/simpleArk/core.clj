@@ -362,6 +362,11 @@
     (update-properties! je-uuid je-properties)
     (destroy-rolon! uuid)))
 
+(defn init-ark!
+  "initialize the ark"
+  [m ark]
+  ((:ark-db/init-ark! m) m ark))
+
 (defn add-tran!
   "appends to the transaction logger and returns the position.
   Publishes the updated ark and

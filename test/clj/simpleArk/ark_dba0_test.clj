@@ -10,6 +10,12 @@
 
 (set! *warn-on-reflection* true)
 
+(defn trouble!
+  "transaction throws an exception"
+  [s]
+  (println "throwing exception")
+  (throw (new IllegalArgumentException)))
+
 (defn hello-world!
   "simple transaction test"
   [s]
@@ -19,10 +25,12 @@
 
 (defn ark-dba0-test
   [ark-db]
+  (register-transaction! ark-db ::trouble! trouble!)
   (register-transaction! ark-db ::hello-world! hello-world!)
-  (process-transaction! ark-db ::hello-world! "Fred")
-  (process-transaction! ark-db ::hello-world! "Sam")
-  (process-transaction! ark-db ::hello-world! "Ruth")
+  (println ">>>" (.toString (process-transaction! ark-db ::trouble! "eek!")))
+  (println ">>>" (process-transaction! ark-db ::hello-world! "Fred"))
+  (println ">>>" (process-transaction! ark-db ::hello-world! "Sam"))
+  (println ">>>" (process-transaction! ark-db ::hello-world! "Ruth"))
   )
 
 (deftest ark-dba0

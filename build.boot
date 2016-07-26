@@ -22,4 +22,5 @@
                                 simpleArk.core-test
                                 simpleArk.ark-dba0-test
                                 simpleArk.tlog0-test
+                                simpleArk.ark-dba1-test
                                 })))

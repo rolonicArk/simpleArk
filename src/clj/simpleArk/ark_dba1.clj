@@ -19,10 +19,15 @@
     (when tran
       (let [[transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
-        (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
-        (ark/add-tran! ark-db je-uuid transaction-name s rsp-chan
-                       @(::ark-atom ark-db))
-        (recur ark-db)))))
+        (try
+          (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+          (ark/add-tran! ark-db je-uuid transaction-name s rsp-chan
+                         @(::ark-atom ark-db))
+          (catch Exception e
+            (log/warn! ark-db "transaction failure" transaction-name s
+                       (.toString e))
+            (async/>!! rsp-chan e))))
+      (recur ark-db))))
 
 (defn open-ark
   [ark-db]

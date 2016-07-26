@@ -24,10 +24,10 @@
           (log/info! ark-db :transaction transaction-name s)
           (async/>!! rsp-chan je-uuid)
           (catch Exception e
-            (log/warn! ark-db "transaction failure" transaction-name s (.toString e))
-            (async/>!! rsp-chan e)
-            ))
-        (recur ark-db)))))
+            (log/warn! ark-db "transaction failure" transaction-name s
+                       (.toString e))
+            (async/>!! rsp-chan e))))
+      (recur ark-db))))
 
 (defn open-ark
   [ark-db]

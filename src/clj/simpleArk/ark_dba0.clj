@@ -19,9 +19,14 @@
     (when tran
       (let [[transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
-        (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
-        (log/info! ark-db :transaction transaction-name s)
-        (async/>!! rsp-chan je-uuid)
+        (try
+          (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+          (log/info! ark-db :transaction transaction-name s)
+          (async/>!! rsp-chan je-uuid)
+          (catch Exception e
+            (log/warn! (str "transaction failure " transaction-name s e))
+            (async/>!! rsp-chan e)
+            ))
         (recur ark-db)))))
 
 (defn open-ark

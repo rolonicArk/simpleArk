@@ -15,7 +15,8 @@
   [ark-db ark v]
   (reset! (::ark-atom ark-db) ark)
   (reduce (fn [_ [chan je-uuid]]
-            (async/>!! chan je-uuid))
+            (async/>!! chan je-uuid)
+            nil)
           nil v))
 
 (defn builder
@@ -26,4 +27,4 @@
         (assoc ::ark-atom (atom nil))
         (assoc :ark-db/init-ark! init-ark!)
         (assoc :ark-db/get-ark get-ark)
-        (assoc :tran-logger/tran-seq publish))))
+        (assoc :pub/publish publish))))

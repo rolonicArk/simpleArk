@@ -384,7 +384,8 @@
 
 (defn publish
   "publish the updated ark and returns the je-uuids"
-  [ark-db ark v])
+  [ark-db ark v]
+  ((:pub/publish ark-db) ark-db ark v))
 
 (defn reprocess-trans
   [m seq]

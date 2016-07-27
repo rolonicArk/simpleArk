@@ -9,7 +9,7 @@
   [m je-uuid transaction-name s rsp-chan ark]
   (swap! (::va m) conj [je-uuid transaction-name s])
   (log/info! m :transaction transaction-name s)
-  (ark/publish m ark [[rsp-chan ark]]))
+  (ark/publish m ark [[rsp-chan je-uuid]]))
 
 (defn tran-seq
   [m position]

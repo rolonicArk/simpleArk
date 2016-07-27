@@ -24,4 +24,5 @@
                                 simpleArk.tlog0-test
                                 simpleArk.ark-dba1-test
                                 simpleArk.pub0-test
+                                simpleArk.tlog1-test
                                 })))

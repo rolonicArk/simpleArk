@@ -6,7 +6,7 @@
 
 (set! *warn-on-reflection* true)
 
-(deftest tlog0
+(deftest pub0
   (let [c ((comp
              (pub0/builder))
             {})

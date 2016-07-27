@@ -382,6 +382,10 @@
   ([m position]
   ((:tran-logger/tran-seq m) m position)))
 
+(defn publish
+  "publish the updated ark and returns the je-uuids"
+  [ark-db ark v])
+
 (defn reprocess-trans
   [m seq]
   (reduce (fn [_ [je-uuid transaction-name s _]]

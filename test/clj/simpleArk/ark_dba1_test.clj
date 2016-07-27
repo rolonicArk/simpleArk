@@ -28,10 +28,13 @@
   [ark-db]
   (register-transaction! ark-db ::trouble! trouble!)
   (register-transaction! ark-db ::hello-world! hello-world!)
-  (println ">>>" (.toString (process-transaction! ark-db ::trouble! "eek!")))
-  (println ">>>" (process-transaction! ark-db ::hello-world! "Fred"))
-  (println ">>>" (process-transaction! ark-db ::hello-world! "Sam"))
-  (println ">>>" (process-transaction! ark-db ::hello-world! "Ruth"))
+  (try
+    (process-transaction! ark-db ::trouble! "eek!")
+    (println ">>> did not receive expected exception")
+    (catch Exception e))
+  (process-transaction! ark-db ::hello-world! "Fred")
+  (process-transaction! ark-db ::hello-world! "Sam")
+  (process-transaction! ark-db ::hello-world! "Ruth")
 
   (first (keep println (tran-seq ark-db)))
   )

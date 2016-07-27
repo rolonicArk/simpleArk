@@ -39,9 +39,12 @@
 
 (defn process-transaction!
   ([ark-db transaction-name s]
-   (let [rsp-chan (async/chan)]
-     (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan])
-     (async/<!! rsp-chan)))
+   (let [rsp-chan (async/chan)
+         _ (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan])
+         rsp (async/<!! rsp-chan)]
+     (if (instance? Exception rsp)
+       (throw rsp)
+       rsp)))
   ([ark-db je-uuid transaction-name s]
    (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)

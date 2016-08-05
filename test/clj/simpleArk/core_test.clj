@@ -5,14 +5,12 @@
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
-            [simpleArk.reg0 :as reg0]
             [simpleArk.ark-db0 :as ark-db0]))
 
 (set! *warn-on-reflection* true)
 
-(defn hello-world!
-  "simple transaction test"
-  [s]
+(defmethod eval-transaction ::hello-world!
+  [n s]
   (println "Hello," s)
   (let [je-uuid (get-current-journal-entry-uuid)]
     (update-property! je-uuid :classifier/headline "Just for fun!")))
@@ -33,10 +31,6 @@
   (validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
   (is (thrown? Exception (validate-property-keys {1 2})))
 
-  (register-transaction! ark-db ::hello-world! hello-world!)
-  (register-transaction! ark-db ::update-rolon-transaction! update-rolon-transaction!)
-  (register-transaction! ark-db ::destroy-rolon-transaction! destroy-rolon-transaction!)
-
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
@@ -47,7 +41,7 @@
   (println ">>>>>>>>>>>> make-bob")
   (println)
   (def bob-uuid (uuid/random-uuid ark-db))
-  (def make-bob-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
+  (def make-bob-je-uuid (process-transaction! ark-db :ark/update-rolon-transaction!
                                               (prn-str [bob-uuid
                                                         {:classifier/headline "make bob"}
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
@@ -56,22 +50,22 @@
   (println)
   (println ">>>>>>>>>>>> 4 updates to bob")
   (println)
-  (process-transaction! ark-db ::update-rolon-transaction!
+  (process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 1"}
                                   {:classifier/headline "kissing is gross!"}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (process-transaction! ark-db ::update-rolon-transaction!
+  (process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 2"}
                                   {:descriptor/age 9}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (process-transaction! ark-db ::update-rolon-transaction!
+  (process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 3"}
                                   {:classifier/headline "who likes girls?"}]))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
-  (process-transaction! ark-db ::update-rolon-transaction!
+  (process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 4"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
@@ -81,7 +75,7 @@
   (println ">>>>>>>>>>>> make-sam")
   (println)
   (def sam-uuid (uuid/random-uuid ark-db))
-  (def make-sam-je-uuid (process-transaction! ark-db ::update-rolon-transaction!
+  (def make-sam-je-uuid (process-transaction! ark-db :ark/update-rolon-transaction!
                                               (prn-str [sam-uuid
                                                         {:classifier/headline "make sam"}
                                                         {:descriptor/age 10
@@ -92,7 +86,7 @@
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
   (println)
-  (def destroy-bob-je-uuid (process-transaction! ark-db ::destroy-rolon-transaction!
+  (def destroy-bob-je-uuid (process-transaction! ark-db :ark/destroy-rolon-transaction!
                                                  (prn-str [bob-uuid
                                                 {:classifier/headline "destroy bob"}])))
   (is (= :transaction ((logt/get-msg ark-db) 1)))
@@ -140,7 +134,6 @@
   (def ark-db ((comp
                  (ark-db0/builder)
                  (impl0/builder)
-                 (reg0/builder)
                  (uuidi/builder)
                  (logt/builder))
                 {}))

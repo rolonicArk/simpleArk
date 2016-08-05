@@ -150,7 +150,6 @@
 (defn update-ark
   [ark je-uuid transaction-name s]
   (let [ark-db (:this-db ark)
-        f (ark/get-transaction ark-db transaction-name)
         ark (assoc ark ::latest-journal-entry-uuid je-uuid)
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark/ark-binder ark
@@ -158,7 +157,8 @@
                               (vreset! ark/*ark* (ark/make-rolon! je-uuid
                                                                   {:classifier/transaction-name transaction-name
                                                    :descriptor/transaction-argument s}))
-                              (f s)))]
+                              (ark/eval-transaction transaction-name s)
+                              ))]
     (if (::selected-time ark)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark))

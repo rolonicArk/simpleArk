@@ -13,17 +13,6 @@
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
 
-(defn register-transaction!
-  "defines a transaction,
-    where f takes an (edn) string"
-  [reg transaction-name f]
-  ((:reg/register-transaction! reg) reg transaction-name f))
-
-(defn get-transaction
-  "returns a transaction function"
-  [reg transaction-name]
-  ((:reg/get-transaction reg) reg transaction-name))
-
 (defn create-ark
   [m]
   "returns a new ark"
@@ -346,16 +335,18 @@
            nil properties)
     @*ark*))
 
-(defn update-rolon-transaction!
-  [s]
+(defmulti eval-transaction (fn [n s] n))
+
+(defmethod eval-transaction :ark/update-rolon-transaction!
+  [n s]
   (let [je-uuid (get-current-journal-entry-uuid)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
     (update-properties! je-uuid je-properties)
     (vreset! *ark* (make-rolon! rolon-uuid rolon-properties))))
 
-(defn destroy-rolon-transaction!
-  [s]
+(defmethod eval-transaction :ark/destroy-rolon-transaction!
+  [n s]
   (let [je-uuid (get-current-journal-entry-uuid)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]

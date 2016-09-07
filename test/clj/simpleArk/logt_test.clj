@@ -6,10 +6,11 @@
 
 (set! *warn-on-reflection* true)
 
+(def c ((comp
+          (logt/builder :chan (async/chan 3)))
+         {}))
+
 (deftest logt
-  (def c ((comp
-            (logt/builder :chan (async/chan 3)))
-           {}))
   (warn! c 1 2 3)
   (def l1 (logt/get-msg c))
   (is (= [:log/warn! 1 2 3] l1)))

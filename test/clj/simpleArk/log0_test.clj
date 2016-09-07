@@ -9,6 +9,5 @@
   (def c ((comp
             (log0/builder))
            {}))
-  (println (keys c))
   (error! c 1 2 3)
   )

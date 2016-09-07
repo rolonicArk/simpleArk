@@ -9,13 +9,13 @@
   [this msgs]
   (first msgs))
 
-(defn set-log-chan
-  [this chan]
-  (assoc this ::chan chan))
+(defn get-chan
+  [this]
+  (::chan this))
 
 (defn get-msg
   [this]
-  (async/<!! (::chan this)))
+  (async/<!! (get-chan this)))
 
 (defn info!
   [this & s]

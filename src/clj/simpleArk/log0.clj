@@ -6,7 +6,7 @@
 (defn fmt
   "format a log message"
   [this msgs]
-  (apply str (interpose " " (map pr-str msgs))))
+  (first msgs))
 
 (defn info!
   [this & s]
@@ -28,7 +28,7 @@
   (let [msg (log/fmt this s)]
     (println :log/error! msg)))
 
-(defn build
+(defn- build
   "build a log0 component"
   [m]
   (-> m

@@ -17,7 +17,7 @@
     (throw (Exception. (str classifier " is not a classifier keyword"))))
   (clj-uuid/v5 clj-uuid/+null+ (name classifier)))
 
-(defn build
+(defn- build
   [m]
   (-> m
       (assoc :uuid/journal-entry-uuid journal-entry-uuid)

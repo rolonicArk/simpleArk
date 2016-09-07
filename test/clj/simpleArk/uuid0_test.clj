@@ -5,11 +5,11 @@
 
 (set! *warn-on-reflection* true)
 
-(deftest uuid0
-  (def ark-db ((comp
-                 (uuid0/builder))
-                {}))
+(def ark-db ((comp
+               (uuid0/builder))
+              {}))
 
+(deftest uuid0
   (def je-uuid0 (journal-entry-uuid ark-db))
   (def random-uuid0 (random-uuid ark-db))
   (def index-uuid0 (index-uuid ark-db :classifier/z))

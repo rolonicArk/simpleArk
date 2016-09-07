@@ -1,7 +1,7 @@
 (ns simpleArk.core-test
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
-            [simpleArk.impl0 :as impl0]
+            [simpleArk.ark-value0 :as impl0]
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]

@@ -1,7 +1,7 @@
 (ns simpleArk.core-test
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
-            [simpleArk.ark-value0 :as impl0]
+            [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
@@ -133,7 +133,7 @@
   (println "impl0 tests")
   (def ark-db ((comp
                  (ark-db0/builder)
-                 (impl0/builder)
+                 (ark-value0/builder)
                  (uuidi/builder)
                  (logt/builder))
                 {}))

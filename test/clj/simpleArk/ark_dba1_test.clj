@@ -1,7 +1,7 @@
 (ns simpleArk.ark-dba1-test
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
-            [simpleArk.ark-value0 :as impl0]
+            [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.log0 :as log0]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-dba1 :as ark-dba1]
@@ -38,7 +38,7 @@
   (def ark-db ((comp
                  (ark-dba1/builder)
                  (tlog0/builder)
-                 (impl0/builder)
+                 (ark-value0/builder)
                  (uuidi/builder)
                  (closer/builder)
                  (log0/builder))

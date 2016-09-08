@@ -1,7 +1,16 @@
 ;;Log component api
-(ns simpleArk.log)
+(ns simpleArk.log
+  (:require [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)
+
+(defn get-chan
+  [this]
+  (:log/chan this))
+
+(defn get-msg
+  [this]
+  (async/<!! (get-chan this)))
 
 (defn fmt
   "format a log message"

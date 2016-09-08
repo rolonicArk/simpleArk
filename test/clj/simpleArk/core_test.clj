@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
             [simpleArk.ark-value0 :as ark-value0]
+            [simpleArk.log :as log]
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
@@ -36,7 +37,7 @@
   (println ">>>>>>>>>>>> hello-world")
   (println)
   (def hello-je-uuid (ark-db/process-transaction! ark-db ::hello-world! "Fred"))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>>>> make-bob")
@@ -46,7 +47,7 @@
                                               (prn-str [bob-uuid
                                                         {:classifier/headline "make bob"}
                                                         {:descriptor/age 8 :classifier/name "Bob"}])))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>>>> 4 updates to bob")
@@ -55,22 +56,22 @@
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 1"}
                                   {:classifier/headline "kissing is gross!"}]))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 2"}
                                   {:descriptor/age 9}]))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 3"}
                                   {:classifier/headline "who likes girls?"}]))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                         (prn-str [bob-uuid
                                   {:classifier/headline "bob update 4"}
                                   {:classifier/headline "when do I get my own mobile!"}]))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>>>> make-sam")
@@ -82,7 +83,7 @@
                                                         {:descriptor/age 10
                                                          :classifier/name "Sam"
                                                          :classifier/headline "I hate green eggs and ham!"}])))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
@@ -90,7 +91,7 @@
   (def destroy-bob-je-uuid (ark-db/process-transaction! ark-db :ark/destroy-rolon-transaction!
                                                  (prn-str [bob-uuid
                                                 {:classifier/headline "destroy bob"}])))
-  (is (= :transaction ((logt/get-msg ark-db) 1)))
+  (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")

@@ -44,6 +44,7 @@
                  (log0/builder))
                 {}))
   (open-ark ark-db)
-  (ark-dba0-test ark-db)
-  (closer/close-all ark-db)
-  )
+  (try
+    (ark-dba0-test ark-db)
+    (finally
+      (closer/close-all ark-db))))

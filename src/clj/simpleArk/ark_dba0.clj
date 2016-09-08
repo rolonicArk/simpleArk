@@ -29,9 +29,13 @@
             (async/>!! rsp-chan e))))
       (recur ark-db))))
 
+(defn init-ark!
+  [ark-db ark]
+  (reset! (::ark-atom ark-db) ark))
+
 (defn open-ark
   [ark-db]
-  (reset! (::ark-atom ark-db) (ark/create-ark ark-db))
+  (ark/init-ark! ark-db (ark/create-ark ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )
@@ -62,6 +66,7 @@
         (assoc ::tran-chan tran-chan)
         (assoc ::ark-atom (atom nil))
         (assoc ::name name)
+        (assoc :ark-db/init-ark! init-ark!)
         (assoc :ark-db/open-ark open-ark)
         (assoc :ark-db/get-ark get-ark)
         (assoc :ark-db/process-transaction! process-transaction!))))

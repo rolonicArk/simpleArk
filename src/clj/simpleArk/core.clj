@@ -18,6 +18,11 @@
   "returns a new ark"
   ((:ark/create-ark m) m))
 
+(defn init-ark!
+  "initialize the ark"
+  [m ark]
+  ((:ark-db/init-ark! m) m ark))
+
 (defn open-ark
   [ark-db]
   "Open the ark after ark-db is finalized."
@@ -352,11 +357,6 @@
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (update-properties! je-uuid je-properties)
     (destroy-rolon! uuid)))
-
-(defn init-ark!
-  "initialize the ark"
-  [m ark]
-  ((:ark-db/init-ark! m) m ark))
 
 (defn add-tran!
   "appends to the transaction logger and returns the position.

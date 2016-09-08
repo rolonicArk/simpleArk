@@ -2,6 +2,7 @@
   (:require [simpleArk.core :as ark]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
+            [simpleArk.ark-db :as ark-db]
             [clojure.core.async :as async]
             [simpleArk.closer :as closer]))
 
@@ -29,10 +30,10 @@
             (async/>!! rsp-chan e))))
       (recur ark-db))))
 
-(defn open-ark
+(defn open-ark!
   [ark-db]
   (reset! (::ark-atom ark-db) (ark/create-ark ark-db))
-  (ark/init-ark! ark-db @(::ark-atom ark-db))
+  (ark-db/init-ark! ark-db @(::ark-atom ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )
@@ -59,5 +60,5 @@
         (assoc ::tran-chan tran-chan)
         (assoc ::ark-atom (atom nil))
         (assoc ::name name)
-        (assoc :ark-db/open-ark open-ark)
+        (assoc :ark-db/open-ark! open-ark!)
         (assoc :ark-db/process-transaction! process-transaction!))))

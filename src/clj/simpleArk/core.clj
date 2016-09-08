@@ -1,5 +1,6 @@
 (ns simpleArk.core
-  (:require [simpleArk.uuid :as uuid]))
+  (:require [simpleArk.uuid :as uuid]
+            [simpleArk.ark-db :as ark-db]))
 
 (set! *warn-on-reflection* true)
 
@@ -18,29 +19,6 @@
   "returns a new ark"
   ((:ark/create-ark m) m))
 
-(defn init-ark!
-  "initialize the ark"
-  [m ark]
-  ((:ark-db/init-ark! m) m ark))
-
-(defn open-ark
-  [ark-db]
-  "Open the ark after ark-db is finalized."
-  ((:ark-db/open-ark ark-db) ark-db))
-
-(defn get-ark
-  "returns the current value of the ark"
-  [ark-db]
-  ((:ark-db/get-ark ark-db) ark-db))
-
-(defn process-transaction!
-  "process a transaction with an (edn) string,
-    returning the new journal-entry uuid"
-  ([ark-db transaction-name s]
-   ((:ark-db/process-transaction! ark-db) ark-db transaction-name s))
-  ([ark-db je-uuid transaction-name s]
-   ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s)))
-
 (def ^:dynamic *ark* nil)
 
 (defn ark-binder
@@ -55,7 +33,7 @@
   "binds a volatile holding an ark value to *ark* while body is evaluated,
   returning the last bound value of ark"
   [ark-db & body]
-  `(ark-binder (get-ark ~ark-db) (fn [] ~@body)))
+  `(ark-binder (ark-db/get-ark ~ark-db) (fn [] ~@body)))
 
 (defn get-current-journal-entry-uuid
   []
@@ -381,6 +359,6 @@
 (defn reprocess-trans
   [m seq]
   (reduce (fn [_ [je-uuid transaction-name s _]]
-            (process-transaction! m je-uuid transaction-name s))
+            (ark-db/process-transaction! m je-uuid transaction-name s))
           nil
           seq))

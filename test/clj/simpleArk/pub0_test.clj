@@ -13,7 +13,7 @@
              (pub0/builder))
             {})
         rsp-chan (async/chan 10)]
-    (ark-db/reset-ark! c "_")
+    (ark-db/init-ark! c "_")
     (ark/publish c "x" [[rsp-chan 1]])
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
     (ark/publish c "z" [[rsp-chan 2] [rsp-chan 3]])

@@ -6,7 +6,7 @@
 
 (defn publish
   [ark-db ark v]
-  (ark-db/reset-ark! ark-db ark)
+  (ark-db/init-ark! ark-db ark)
   (reduce (fn [_ [chan je-uuid]]
             (async/>!! chan je-uuid)
             nil)

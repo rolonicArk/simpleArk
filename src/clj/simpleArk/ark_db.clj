@@ -15,11 +15,6 @@
   ([ark-db je-uuid transaction-name s]
    ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s)))
 
-(defn get-ark-atom
-  "returns the atom holding the value of the ark."
-  [ark-db]
-  (::ark-atom ark-db))
-
 (defn update-ark-db
   "applies a transaction to the ark-atom"
   [ark-db je-uuid transaction-name s]
@@ -27,15 +22,15 @@
          (fn [ark-value]
            ((:update-ark ark-value) ark-value je-uuid transaction-name s))))
 
-(defn reset-ark!
+(defn init-ark!
   "initializes the ark-atom with the value of the ark."
   [ark-db ark-value]
-  (reset! (get-ark-atom ark-db) ark-value))
+  (reset! (::ark-atom ark-db) ark-value))
 
 (defn get-ark-value
   "returns the value of the ark"
   [ark-db]
-  @(get-ark-atom ark-db))
+  @(::ark-atom ark-db))
 
 (defn- build
   "returns the ark db common data"

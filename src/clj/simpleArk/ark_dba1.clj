@@ -32,7 +32,7 @@
 
 (defn open-ark!
   [ark-db]
-  (ark-db/reset-ark! ark-db (ark/create-ark ark-db))
+  (ark-db/init-ark! ark-db (ark/create-ark ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )

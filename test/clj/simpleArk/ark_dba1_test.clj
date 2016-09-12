@@ -6,6 +6,7 @@
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-dba1 :as ark-dba1]
+            [simpleArk.tlog :as tlog]
             [simpleArk.tlog0 :as tlog0]
             [simpleArk.closer :as closer]))
 
@@ -32,7 +33,7 @@
   (ark-db/process-transaction! ark-db ::hello-world! "Sam")
   (ark-db/process-transaction! ark-db ::hello-world! "Ruth")
 
-  (first (keep println (tran-seq ark-db)))
+  (first (keep println (tlog/tran-seq ark-db)))
   )
 
 (deftest ark-dba0

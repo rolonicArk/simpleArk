@@ -1,7 +1,7 @@
 (ns simpleArk.tlog1-test
   (:require [clojure.test :refer :all]
-            [simpleArk.core :as ark]
             [simpleArk.ark-db :as ark-db]
+            [simpleArk.tlog :as tlog]
             [simpleArk.tlog1 :as tlog1]
             [simpleArk.log0 :as log0]
             [simpleArk.pub0 :as pub0]
@@ -18,12 +18,12 @@
             {})
         rsp-chan (async/chan 1)]
     (ark-db/init-ark! c "_")
-    (ark/add-tran! c 1 "a" "-" rsp-chan "x")
+    (tlog/add-tran! c 1 "a" "-" rsp-chan "x")
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
-    (ark/add-tran! c 2 "b" "-" rsp-chan "y")
+    (tlog/add-tran! c 2 "b" "-" rsp-chan "y")
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
-    (ark/add-tran! c 3 "c" "-" rsp-chan "z")
+    (tlog/add-tran! c 3 "c" "-" rsp-chan "z")
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
-    (println (ark/tran-seq c))
-    (println (ark/tran-seq c 2))
+    (println (tlog/tran-seq c))
+    (println (tlog/tran-seq c 2))
     ))

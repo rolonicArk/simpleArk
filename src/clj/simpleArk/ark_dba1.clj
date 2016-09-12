@@ -1,6 +1,7 @@
 (ns simpleArk.ark-dba1
   (:require [simpleArk.core :as ark]
             [simpleArk.log :as log]
+            [simpleArk.tlog :as tlog]
             [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
             [clojure.core.async :as async]
@@ -22,7 +23,7 @@
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
           (ark-db/update-ark-db ark-db je-uuid transaction-name s)
-          (ark/add-tran! ark-db je-uuid transaction-name s rsp-chan
+          (tlog/add-tran! ark-db je-uuid transaction-name s rsp-chan
                          (ark-db/get-ark-value ark-db))
           (catch Exception e
             (log/warn! ark-db "transaction failure" transaction-name s

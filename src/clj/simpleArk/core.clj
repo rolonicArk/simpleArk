@@ -332,26 +332,6 @@
     (update-properties! je-uuid je-properties)
     (destroy-rolon! uuid)))
 
-(defn add-tran!
-  "appends to the transaction logger and returns the position.
-  Publishes the updated ark and
-  asynchronously replys with the je-uuid once a transaction is flushed"
-  [m je-uuid transaction-name s rsp-chan ark]
-  ((:tran-logger/add-tran m) m je-uuid transaction-name s rsp-chan ark))
-
-(defn tran-seq
-  "returns a sequence of transactions with the position of the next transaction,
-  e.g. [je-uuid, transaction-name, s, position].
-  The optional position parameter allows you to resume the sequence at any point"
-  ([m] (tran-seq m 0))
-  ([m position]
-  ((:tran-logger/tran-seq m) m position)))
-
-(defn publish
-  "publish the updated ark and returns the je-uuids"
-  [ark-db ark v]
-  ((:pub/publish ark-db) ark-db ark v))
-
 (defn reprocess-trans
   [m seq]
   (reduce (fn [_ [je-uuid transaction-name s _]]

@@ -11,6 +11,7 @@
 
 (deftest tlog1
   (let [c ((comp
+             (ark-db/builder)
              (tlog1/builder)
              (pub0/builder)
              (log0/builder))

@@ -9,6 +9,7 @@
 
 (deftest pub0
   (let [c ((comp
+             (ark-db/builder)
              (pub0/builder))
             {})
         rsp-chan (async/chan 10)]

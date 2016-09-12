@@ -21,7 +21,7 @@
       (let [[transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
-          (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+          (swap! (ark-db/get-ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
           (log/info! ark-db :transaction transaction-name s)
           (async/>!! rsp-chan je-uuid)
           (catch Exception e
@@ -30,20 +30,12 @@
             (async/>!! rsp-chan e))))
       (recur ark-db))))
 
-(defn init-ark!
-  [ark-db ark]
-  (reset! (::ark-atom ark-db) ark))
-
 (defn open-ark!
   [ark-db]
   (ark-db/init-ark! ark-db (ark/create-ark ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )
-
-(defn get-ark
-  [ark-db]
-  @(::ark-atom ark-db))
 
 (defn process-transaction!
   ([ark-db transaction-name s]
@@ -54,7 +46,7 @@
        (throw rsp)
        rsp)))
   ([ark-db je-uuid transaction-name s]
-   (swap! (::ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+   (swap! (ark-db/get-ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 
@@ -65,9 +57,6 @@
   (fn [m]
     (-> m
         (assoc ::tran-chan tran-chan)
-        (assoc ::ark-atom (atom nil))
         (assoc ::name name)
-        (assoc :ark-db/init-ark! init-ark!)
         (assoc :ark-db/open-ark! open-ark!)
-        (assoc :ark-db/get-ark get-ark)
         (assoc :ark-db/process-transaction! process-transaction!))))

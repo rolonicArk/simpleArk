@@ -10,9 +10,10 @@
 
 (deftest tlog0
   (let [c ((comp
-            (tlog0/builder)
-            (log0/builder))
-           {})
+             (ark-db/builder)
+             (tlog0/builder)
+             (log0/builder))
+            {})
         rsp-chan (async/chan 1)]
     (ark-db/init-ark! c "_")
     (ark/add-tran! c 1 "a" "-" rsp-chan "x")

@@ -34,6 +34,7 @@
 
 (deftest ark-dba0
   (def ark-db ((comp
+                 (ark-db/builder)
                  (ark-dba0/builder)
                  (ark-value0/builder)
                  (uuidi/builder)

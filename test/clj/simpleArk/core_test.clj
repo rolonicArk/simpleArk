@@ -134,6 +134,7 @@
 (deftest arks
   (println "impl0 tests")
   (def ark-db ((comp
+                 (ark-db/builder)
                  (ark-db0/builder)
                  (ark-value0/builder)
                  (uuidi/builder)

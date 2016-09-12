@@ -1,21 +1,14 @@
 (ns simpleArk.tlog0
   (:require [clojure.core.async :as async]
-            [simpleArk.log :as log]))
+            [simpleArk.log :as log]
+            [simpleArk.ark-db :as ark-db]))
 
 (set! *warn-on-reflection* true)
-
-(defn init-ark!
-  [ark-db ark]
-  (reset! (::ark-atom ark-db) ark))
-
-(defn get-ark
-  [ark-db]
-  @(::ark-atom ark-db))
 
 (defn add-tran!
   [m je-uuid transaction-name s rsp-chan ark]
   (swap! (::va m) conj [je-uuid transaction-name s])
-  (reset! (::ark-atom m) ark)
+  (reset! (ark-db/get-ark-atom m) ark)
   (log/info! m :transaction transaction-name s)
   (async/>!! rsp-chan je-uuid))
 
@@ -31,8 +24,5 @@
   (fn [m]
     (-> m
         (assoc ::va (atom []))
-        (assoc ::ark-atom (atom nil))
-        (assoc :ark-db/init-ark! init-ark!)
-        (assoc :ark-db/get-ark get-ark)
         (assoc :tran-logger/add-tran add-tran!)
         (assoc :tran-logger/tran-seq tran-seq))))

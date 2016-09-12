@@ -1,5 +1,5 @@
 (ns simpleArk.ark-db0
-  (:require [simpleArk.core :as ark]
+  (:require [simpleArk.core :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]))
@@ -8,7 +8,7 @@
 
 (defn open-ark!
   [ark-db]
-  (ark-db/init-ark! ark-db (ark/create-ark ark-db)))
+  (ark-db/init-ark! ark-db (ark-value/create-ark ark-db)))
 
 (defn process-transaction!
   ([ark-db transaction-name s]

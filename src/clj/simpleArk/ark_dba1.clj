@@ -1,5 +1,5 @@
 (ns simpleArk.ark-dba1
-  (:require [simpleArk.core :as ark]
+  (:require [simpleArk.core :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.tlog :as tlog]
             [simpleArk.uuid :as uuid]
@@ -33,7 +33,7 @@
 
 (defn open-ark!
   [ark-db]
-  (ark-db/init-ark! ark-db (ark/create-ark ark-db))
+  (ark-db/init-ark! ark-db (ark-value/create-ark ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )

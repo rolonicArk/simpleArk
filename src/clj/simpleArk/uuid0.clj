@@ -1,5 +1,5 @@
 (ns simpleArk.uuid0
-  (:require [simpleArk.core :as ark]))
+  (:require [simpleArk.core :as ark-value]))
 
 (set! *warn-on-reflection* true)
 
@@ -13,7 +13,7 @@
 
 (defn index-uuid
   [_ classifier]
-  (if (not (ark/classifier? classifier))
+  (if (not (ark-value/classifier? classifier))
     (throw (Exception. (str classifier " is not a classifier keyword"))))
   (clj-uuid/v5 clj-uuid/+null+ (name classifier)))
 

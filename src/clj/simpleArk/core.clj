@@ -33,7 +33,7 @@
   "binds a volatile holding an ark value to *ark* while body is evaluated,
   returning the last bound value of ark"
   [ark-db & body]
-  `(ark-binder (ark-db/get-ark ~ark-db) (fn [] ~@body)))
+  `(ark-binder (ark-db/get-ark-value ~ark-db) (fn [] ~@body)))
 
 (defn get-current-journal-entry-uuid
   []
@@ -62,10 +62,6 @@
   "returns the journal entry uuid of the selected time"
   []
   ((:get-selected-time @*ark*)))
-
-(defn update-ark
-  [ark je-uuid transaction-name s]
-  ((:update-ark ark) ark je-uuid transaction-name s))
 
 (defn get-ark-db
   "returns the ark-db"

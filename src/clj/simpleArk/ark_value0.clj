@@ -1,5 +1,5 @@
 (ns simpleArk.ark-value0
-  (:require [simpleArk.core :as ark-value]
+  (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.uuid :as uuid]))
 
 (set! *warn-on-reflection* true)

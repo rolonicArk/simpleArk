@@ -1,6 +1,6 @@
 (ns simpleArk.ark-dba0-test
   (:require [clojure.test :refer :all]
-            [simpleArk.core :refer :all]
+            [simpleArk.ark-value :as ark-value]
             [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.log0 :as log0]
             [simpleArk.uuidi :as uuidi]
@@ -10,16 +10,16 @@
 
 (set! *warn-on-reflection* true)
 
-(defmethod eval-transaction ::trouble!
+(defmethod ark-value/eval-transaction ::trouble!
   [n s]
   (println "throwing exception")
   (throw (new IllegalArgumentException)))
 
-(defmethod eval-transaction ::hello-world!
+(defmethod ark-value/eval-transaction ::hello-world!
   [n s]
   (println "Hello," s)
-  (let [je-uuid (get-current-journal-entry-uuid)]
-    (update-property! je-uuid :classifier/headline "Just for fun!")))
+  (let [je-uuid (ark-value/get-current-journal-entry-uuid)]
+    (ark-value/update-property! je-uuid :classifier/headline "Just for fun!")))
 
 (defn ark-dba0-test
   [ark-db]

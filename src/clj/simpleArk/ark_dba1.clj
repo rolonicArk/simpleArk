@@ -1,5 +1,5 @@
 (ns simpleArk.ark-dba1
-  (:require [simpleArk.core :as ark-value]
+  (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.tlog :as tlog]
             [simpleArk.uuid :as uuid]

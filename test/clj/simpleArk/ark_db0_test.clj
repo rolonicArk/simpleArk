@@ -1,6 +1,6 @@
 (ns simpleArk.ark-db0-test
   (:require [clojure.test :refer :all]
-            [simpleArk.core :refer :all]
+            [simpleArk.ark-value :as ark-value]
             [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.log :as log]
             [simpleArk.logt :as logt]
@@ -11,27 +11,27 @@
 
 (set! *warn-on-reflection* true)
 
-(defmethod eval-transaction ::hello-world!
+(defmethod ark-value/eval-transaction ::hello-world!
   [n s]
   (println "Hello," s)
-  (let [je-uuid (get-current-journal-entry-uuid)]
-    (update-property! je-uuid :classifier/headline "Just for fun!")))
+  (let [je-uuid (ark-value/get-current-journal-entry-uuid)]
+    (ark-value/update-property! je-uuid :classifier/headline "Just for fun!")))
 
 (defn test0
   "tests that even work with impl0"
   [ark-db]
 
-  (is (classifier? :classifier/x))
-  (is (not (classifier? :descriptor/y)))
-  (is (not (classifier? :x)))
-  (is (not (classifier? ":classifier/x")))
-  (is (descriptor? :descriptor/x))
-  (is (not (descriptor? :classifier/y)))
-  (is (not (descriptor? :x)))
-  (is (not (descriptor? ":descriptor/x")))
+  (is (ark-value/classifier? :classifier/x))
+  (is (not (ark-value/classifier? :descriptor/y)))
+  (is (not (ark-value/classifier? :x)))
+  (is (not (ark-value/classifier? ":classifier/x")))
+  (is (ark-value/descriptor? :descriptor/x))
+  (is (not (ark-value/descriptor? :classifier/y)))
+  (is (not (ark-value/descriptor? :x)))
+  (is (not (ark-value/descriptor? ":descriptor/x")))
 
-  (validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
-  (is (thrown? Exception (validate-property-keys {1 2})))
+  (ark-value/validate-property-keys {:classifier/x 1 :descriptor/y "fred"})
+  (is (thrown? Exception (ark-value/validate-property-keys {1 2})))
 
   (println)
   (println ">>>>>>>>>>>> hello-world")
@@ -96,24 +96,24 @@
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
-  (bind-ark ark-db
-            (select-time! make-bob-je-uuid)
-            (println :bob-properties (get-property-values-at bob-uuid))
-            (println :lookup-bob (name-lookup "Bob")))
+  (ark-value/bind-ark ark-db
+            (ark-value/select-time! make-bob-je-uuid)
+            (println :bob-properties (ark-value/get-property-values-at bob-uuid))
+            (println :lookup-bob (ark-value/name-lookup "Bob")))
 
   (println)
   (println ">>>>>>>>>>>> journal entry headlines")
   (println)
-  (bind-ark ark-db
-            (first (keep (fn [x] (println (get-property-value-at (key x) :classifier/headline)))
-                         (get-journal-entries))))
+  (ark-value/bind-ark ark-db
+            (first (keep (fn [x] (println (ark-value/get-property-value-at (key x) :classifier/headline)))
+                         (ark-value/get-journal-entries))))
 
 (println)
 (println ">>>>>>>>>>>> all the latest headlines")
 (println)
-(bind-ark ark-db
-          (let [headline-index-uuid (get-index-uuid "headline")
-                current-rolon-value (get-property-values-at headline-index-uuid)
+(ark-value/bind-ark ark-db
+          (let [headline-index-uuid (ark-value/get-index-uuid "headline")
+                current-rolon-value (ark-value/get-property-values-at headline-index-uuid)
                 descriptor-index (:descriptor/index current-rolon-value)]
             (first (keep (fn [x]
                            (if (first (val x))
@@ -124,11 +124,11 @@
   (println)
   (println ">>>>>>>>>>>> bob's headlines over time")
   (println)
-  (bind-ark ark-db
-            (first (keep #(println (get-property-value-at bob-uuid :classifier/headline %)
+  (ark-value/bind-ark ark-db
+            (first (keep #(println (ark-value/get-property-value-at bob-uuid :classifier/headline %)
                                    "-"
-                                   (get-property-value-at % :classifier/headline))
-                          (je-uuids-for-rolon-property bob-uuid :classifier/headline))))
+                                   (ark-value/get-property-value-at % :classifier/headline))
+                          (ark-value/je-uuids-for-rolon-property bob-uuid :classifier/headline))))
   )
 
 (deftest arks

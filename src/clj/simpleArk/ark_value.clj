@@ -1,4 +1,4 @@
-(ns simpleArk.core
+(ns simpleArk.ark-value
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]))
 

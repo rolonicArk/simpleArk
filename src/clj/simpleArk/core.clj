@@ -17,7 +17,7 @@
 (defn create-ark
   [m]
   "returns a new ark"
-  ((:ark/create-ark m) m))
+  ((:ark-value/create-ark m) m))
 
 (def ^:dynamic *ark* nil)
 

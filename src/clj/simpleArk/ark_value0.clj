@@ -178,7 +178,7 @@
   "returns an ark db"
   [m]
   (let [ark-db (-> m
-                   (assoc :ark/create-ark create-ark)
+                   (assoc :ark-value/create-ark create-ark)
                    )]
     ark-db))
 

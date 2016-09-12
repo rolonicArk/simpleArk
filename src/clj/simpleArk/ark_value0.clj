@@ -6,7 +6,7 @@
 
 (defn get-current-journal-entry-uuid
   []
-  (::active-journal-entry-uuid @ark-value/*ark*))
+  (::active-journal-entry-uuid @ark-value/*volatile-ark-value*))
 
 (defn update-property-journal-entry-uuids
   "where pjes is to be updated and ps are the new property values"
@@ -16,21 +16,21 @@
 (defn assoc-rolon!
   "update the ark with the revised/new rolon"
   [rolon-uuid rolon]
-  (vreset! ark-value/*ark* (cond
+  (vreset! ark-value/*volatile-ark-value* (cond
                        (uuid/journal-entry-uuid? rolon-uuid)
-                       (assoc-in @ark-value/*ark* [::journal-entries rolon-uuid] rolon)
+                       (assoc-in @ark-value/*volatile-ark-value* [::journal-entries rolon-uuid] rolon)
                        (uuid/index-uuid? rolon-uuid)
-                       (assoc-in @ark-value/*ark* [::indexes rolon-uuid] rolon)
+                       (assoc-in @ark-value/*volatile-ark-value* [::indexes rolon-uuid] rolon)
                        (uuid/random-uuid? rolon-uuid)
-                       (assoc-in @ark-value/*ark* [::random-rolons rolon-uuid] rolon)
+                       (assoc-in @ark-value/*volatile-ark-value* [::random-rolons rolon-uuid] rolon)
                        :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
 
 (defn get-rolon
   [uuid]
   (cond
-    (uuid/journal-entry-uuid? uuid) ((::journal-entries @ark-value/*ark*) uuid)
-    (uuid/index-uuid? uuid) ((::indexes @ark-value/*ark*) uuid)
-    (uuid/random-uuid? uuid) ((::random-rolons @ark-value/*ark*) uuid)
+    (uuid/journal-entry-uuid? uuid) ((::journal-entries @ark-value/*volatile-ark-value*) uuid)
+    (uuid/index-uuid? uuid) ((::indexes @ark-value/*volatile-ark-value*) uuid)
+    (uuid/random-uuid? uuid) ((::random-rolons @ark-value/*volatile-ark-value*) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn update-properties-!
@@ -45,7 +45,7 @@
         pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)]
-    (vreset! ark-value/*ark* (assoc-rolon! rolon-uuid rolon))))
+    (vreset! ark-value/*volatile-ark-value* (assoc-rolon! rolon-uuid rolon))))
 
 (defn update-property-!
   [journal-entry-uuid rolon-uuid property-name property-value]
@@ -64,7 +64,7 @@
 
 (defn destroy-rolon!
   [rolon-uuid]
-  (let [je-uuid (::active-journal-entry-uuid @ark-value/*ark*)
+  (let [je-uuid (::active-journal-entry-uuid @ark-value/*volatile-ark-value*)
         rolon (get-rolon rolon-uuid)
         rolon-value (ark-value/get-rolon-value-at rolon-uuid)
         old-property-values (::property-values rolon-value)
@@ -80,7 +80,7 @@
 
 (defn update-properties!
   [rolon-uuid properties]
-  (let [journal-entry-uuid (::active-journal-entry-uuid @ark-value/*ark*)]
+  (let [journal-entry-uuid (::active-journal-entry-uuid @ark-value/*volatile-ark-value*)]
     (update-properties-! journal-entry-uuid rolon-uuid properties)
     (je-modified! journal-entry-uuid rolon-uuid)))
 
@@ -108,21 +108,21 @@
 
 (defn get-journal-entries
   []
-  (::journal-entries @ark-value/*ark*))
+  (::journal-entries @ark-value/*volatile-ark-value*))
 
 (defn get-indexes
   []
-  (::indexes @ark-value/*ark*))
+  (::indexes @ark-value/*volatile-ark-value*))
 
 (defn get-random-rolons
   []
-  (::random-rolons @ark-value/*ark*))
+  (::random-rolons @ark-value/*volatile-ark-value*))
 
 (defn make-rolon!
   [rolon-uuid properties]
   (if (get-rolon rolon-uuid)
     (update-properties! rolon-uuid properties)
-    (let [je-uuid (::active-journal-entry-uuid @ark-value/*ark*)
+    (let [je-uuid (::active-journal-entry-uuid @ark-value/*volatile-ark-value*)
           rolon (ark-value/->Rolon rolon-uuid get-rolon-values)
           rolon (assoc rolon ::rolon-values
                              (sorted-map je-uuid
@@ -136,16 +136,16 @@
 (defn select-time!
   [je-uuid]
   (let [je-uuid (key (first (rsubseq (get-journal-entries) <= je-uuid)))
-        ark (assoc @ark-value/*ark* ::selected-time je-uuid)]
-    (vreset! ark-value/*ark* (assoc ark ::active-journal-entry-uuid je-uuid))))
+        ark (assoc @ark-value/*volatile-ark-value* ::selected-time je-uuid)]
+    (vreset! ark-value/*volatile-ark-value* (assoc ark ::active-journal-entry-uuid je-uuid))))
 
 (defn get-selected-time
   []
-  (::selected-time @ark-value/*ark*))
+  (::selected-time @ark-value/*volatile-ark-value*))
 
 (defn index-name-uuid
   []
-  (::index-name-uuid @ark-value/*ark*))
+  (::index-name-uuid @ark-value/*volatile-ark-value*))
 
 (defn update-ark
   [ark je-uuid transaction-name s]
@@ -153,8 +153,8 @@
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark-value/ark-binder ark
                                   (fn []
-                              (vreset! ark-value/*ark* (ark-value/make-rolon! je-uuid
-                                                                              {:classifier/transaction-name transaction-name
+                              (vreset! ark-value/*volatile-ark-value* (ark-value/make-rolon! je-uuid
+                                                                                             {:classifier/transaction-name transaction-name
                                                    :descriptor/transaction-argument s}))
                               (ark-value/eval-transaction transaction-name s)
                               ))]

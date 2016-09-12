@@ -19,14 +19,14 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(def ^:dynamic *ark* nil)
+(def ^:dynamic *volatile-ark-value* nil)
 
 (defn ark-binder
-  [ark f]
+  [ark-value f]
   (let [vark (volatile! nil)]
-    (binding [*ark* (volatile! ark)]
+    (binding [*volatile-ark-value* (volatile! ark-value)]
       (f)
-      (vreset! vark @*ark*))
+      (vreset! vark @*volatile-ark-value*))
     @vark))
 
 (defmacro bind-ark
@@ -36,12 +36,14 @@
   `(ark-binder (ark-db/get-ark-value ~ark-db) (fn [] ~@body)))
 
 (defn get-current-journal-entry-uuid
-  []
-  ((:get-current-journal-entry-uuid @*ark*)))
+  ([]
+   ((:get-current-journal-entry-uuid @*volatile-ark-value*)))
+  ([ark-value]
+   ((:get-current-journal-entry-uuid ark-value))))
 
 (defn index-name-uuid
   []
-  ((:index-name-uuid @*ark*)))
+  ((:index-name-uuid @*volatile-ark-value*)))
 
 (defrecord Ark [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties! update-ark
@@ -56,51 +58,51 @@
 (defn select-time!
   "Sets the ark to the time of the journal entry uuid"
   [je-uuid]
-  ((:select-time! @*ark*) je-uuid))
+  ((:select-time! @*volatile-ark-value*) je-uuid))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
   []
-  ((:get-selected-time @*ark*)))
+  ((:get-selected-time @*volatile-ark-value*)))
 
 (defn get-ark-db
   "returns the ark-db"
   ([]
-   (get-ark-db @*ark*))
+   (get-ark-db @*volatile-ark-value*))
   ([ark]
    (:this-db ark)))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
   [uuid]
-  ((:get-rolon @*ark*) uuid))
+  ((:get-rolon @*volatile-ark-value*) uuid))
 
 (defn get-journal-entries
   "returns a sorted map of all the journal entry rolons"
   []
-  ((:get-journal-entries @*ark*)))
+  ((:get-journal-entries @*volatile-ark-value*)))
 
 (defn get-indexes
   "returns a sorted map of all the index rolons"
   []
-  ((:get-indexes @*ark*)))
+  ((:get-indexes @*volatile-ark-value*)))
 
 (defn get-random-rolons
   "returns a map of all the random rolons"
   []
-  ((:get-random-rolons @*ark*)))
+  ((:get-random-rolons @*volatile-ark-value*)))
 
 (defn ark-str
   [ark]
-  (let [old-ark @*ark*]
-    (vreset! *ark* ark)
+  (let [old-ark @*volatile-ark-value*]
+    (vreset! *volatile-ark-value* ark)
     (try
       (let [s (str "\n" :ark "\n"
                    "\n" :index-rolons "\n\n" (get-indexes) "\n"
                    "\n" :journal-entry-rolons "\n\n" (get-journal-entries) "\n"
                    "\n" :random-rolons "\n\n" (get-random-rolons))]
         s)
-      (finally (vreset! *ark* old-ark)))))
+      (finally (vreset! *volatile-ark-value* old-ark)))))
 
 (defmethod print-method Ark
   [ark writer]
@@ -116,18 +118,18 @@
 (defn make-rolon!
   [rolon-uuid properties]
   (validate-property-keys properties)
-  ((:make-rolon! @*ark*) rolon-uuid properties))
+  ((:make-rolon! @*volatile-ark-value*) rolon-uuid properties))
 
 (defn destroy-rolon!
   "deletes all the classifiers of a rolon"
   [rolon-uuid]
-  ((:destroy-rolon! @*ark*) rolon-uuid))
+  ((:destroy-rolon! @*volatile-ark-value*) rolon-uuid))
 
 (defn update-properties!
   "update the properties of a rolon"
   [rolon-uuid properties]
   (validate-property-keys properties)
-  ((:update-properties! @*ark*) rolon-uuid properties))
+  ((:update-properties! @*volatile-ark-value*) rolon-uuid properties))
 
 (defn update-property!
   "update the value of a property of a rolon"
@@ -312,7 +314,7 @@
                (if nv
                  (make-index-rolon! k nv uuid true))))
            nil properties)
-    @*ark*))
+    @*volatile-ark-value*))
 
 (defmulti eval-transaction (fn [n s] n))
 
@@ -322,7 +324,7 @@
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
     (update-properties! je-uuid je-properties)
-    (vreset! *ark* (make-rolon! rolon-uuid rolon-properties))))
+    (vreset! *volatile-ark-value* (make-rolon! rolon-uuid rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [n s]

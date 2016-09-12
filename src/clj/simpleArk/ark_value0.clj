@@ -149,8 +149,7 @@
 
 (defn update-ark
   [ark je-uuid transaction-name s]
-  (let [ark-db (:this-db ark)
-        ark (assoc ark ::latest-journal-entry-uuid je-uuid)
+  (let [ark (assoc ark ::latest-journal-entry-uuid je-uuid)
         ark (assoc ark ::active-journal-entry-uuid je-uuid)
         ark (ark/ark-binder ark
                             (fn []

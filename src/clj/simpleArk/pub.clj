@@ -1,6 +1,7 @@
 (ns simpleArk.pub)
 
 (defn publish
-  "publish the updated ark and returns the je-uuids"
-  [ark-db ark v]
-  ((:pub/publish ark-db) ark-db ark v))
+  "publishs the updated ark value and returns the je-uuids,
+  where v is [response-channel je-uuid]"
+  [ark-db ark-value v]
+  ((:pub/publish ark-db) ark-db ark-value v))

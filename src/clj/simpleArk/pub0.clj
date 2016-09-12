@@ -5,8 +5,8 @@
 (set! *warn-on-reflection* true)
 
 (defn publish
-  [ark-db ark v]
-  (ark-db/init-ark! ark-db ark)
+  [ark-db ark-value v]
+  (ark-db/init-ark! ark-db ark-value)
   (reduce (fn [_ [chan je-uuid]]
             (async/>!! chan je-uuid)
             nil)

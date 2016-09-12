@@ -3,8 +3,8 @@
 (set! *warn-on-reflection* true)
 
 (defn open-ark!
-  [ark-db]
   "Open the ark after ark-db is finalized."
+  [ark-db]
   ((:ark-db/open-ark! ark-db) ark-db))
 
 (defn process-transaction!
@@ -16,14 +16,24 @@
    ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s)))
 
 (defn get-ark-atom
-  [this]
-  (::ark-atom this))
+  "returns the atom holding the value of the ark."
+  [ark-db]
+  (::ark-atom ark-db))
 
-(defn init-ark!
-  [ark-db ark]
-  (reset! (get-ark-atom ark-db) ark))
+(defn update-ark-db
+  "applies a transaction to the ark-atom"
+  [ark-db je-uuid transaction-name s]
+  (swap! (::ark-atom ark-db)
+         (fn [ark-value]
+           ((:update-ark ark-value) ark-value je-uuid transaction-name s))))
 
-(defn get-ark
+(defn reset-ark!
+  "initializes the ark-atom with the value of the ark."
+  [ark-db ark-value]
+  (reset! (get-ark-atom ark-db) ark-value))
+
+(defn get-ark-value
+  "returns the value of the ark"
   [ark-db]
   @(get-ark-atom ark-db))
 

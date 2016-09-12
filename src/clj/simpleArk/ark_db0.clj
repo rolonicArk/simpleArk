@@ -8,16 +8,16 @@
 
 (defn open-ark!
   [ark-db]
-  (ark-db/init-ark! ark-db (ark/create-ark ark-db)))
+  (ark-db/reset-ark! ark-db (ark/create-ark ark-db)))
 
 (defn process-transaction!
   ([ark-db transaction-name s]
   (let [je-uuid (uuid/journal-entry-uuid ark-db)]
-    (swap! (ark-db/get-ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+    (ark-db/update-ark-db ark-db je-uuid transaction-name s)
     (log/info! ark-db :transaction transaction-name s)
     je-uuid))
   ([ark-db je-uuid transaction-name s]
-   (swap! (ark-db/get-ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+   (ark-db/update-ark-db ark-db je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 

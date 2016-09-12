@@ -21,9 +21,9 @@
       (let [[transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
-          (swap! (ark-db/get-ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+          (ark-db/update-ark-db ark-db je-uuid transaction-name s)
           (ark/add-tran! ark-db je-uuid transaction-name s rsp-chan
-                         (ark-db/get-ark ark-db))
+                         (ark-db/get-ark-value ark-db))
           (catch Exception e
             (log/warn! ark-db "transaction failure" transaction-name s
                        (.toString e))
@@ -32,8 +32,7 @@
 
 (defn open-ark!
   [ark-db]
-  (reset! (ark-db/get-ark-atom ark-db) (ark/create-ark ark-db))
-  (ark-db/init-ark! ark-db (ark-db/get-ark ark-db))
+  (ark-db/reset-ark! ark-db (ark/create-ark ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )
@@ -47,7 +46,7 @@
        (throw rsp)
        rsp)))
   ([ark-db je-uuid transaction-name s]
-   (swap! (ark-db/get-ark-atom ark-db) ark/update-ark je-uuid transaction-name s)
+   (ark-db/update-ark-db ark-db je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 

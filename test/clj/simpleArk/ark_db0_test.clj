@@ -1,4 +1,4 @@
-(ns simpleArk.core-test
+(ns simpleArk.ark-db0-test
   (:require [clojure.test :refer :all]
             [simpleArk.core :refer :all]
             [simpleArk.ark-value0 :as ark-value0]

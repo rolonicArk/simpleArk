@@ -73,8 +73,8 @@
   "returns the ark-db"
   ([]
    (get-ark-db @*volatile-ark-value*))
-  ([ark]
-   (:this-db ark)))
+  ([ark-value]
+   (:this-db ark-value)))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"

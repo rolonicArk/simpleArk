@@ -98,7 +98,7 @@
   (println)
   (ark-value/bind-ark ark-db
             (ark-value/select-time! make-bob-je-uuid)
-            (println :bob-properties (ark-value/get-property-values-at bob-uuid))
+            (println :bob-properties (ark-value/get-current-property-values bob-uuid))
             (println :lookup-bob (ark-value/name-lookup "Bob")))
 
   (println)
@@ -113,7 +113,7 @@
 (println)
 (ark-value/bind-ark ark-db
           (let [headline-index-uuid (ark-value/get-index-uuid "headline")
-                current-rolon-value (ark-value/get-property-values-at headline-index-uuid)
+                current-rolon-value (ark-value/get-current-property-values headline-index-uuid)
                 descriptor-index (:descriptor/index current-rolon-value)]
             (first (keep (fn [x]
                            (if (first (val x))

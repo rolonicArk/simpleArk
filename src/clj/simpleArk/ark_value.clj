@@ -208,10 +208,17 @@
 
 (defn get-property-values-at
   "returns the property values at the selected time"
-  ([rolon-uuid]
-   (get-property-values (get-current-rolon-value rolon-uuid)))
   ([rolon-uuid je-uuid]
-   (get-property-values (get-rolon-value-at rolon-uuid je-uuid))))
+   (get-property-values-at @*volatile-ark-value* rolon-uuid je-uuid))
+  ([ark-value rolon-uuid je-uuid]
+   (get-property-values (get-rolon-value-at ark-value rolon-uuid je-uuid))))
+
+(defn get-current-property-values
+  "returns the property values at the selected time"
+  ([rolon-uuid]
+   (get-current-property-values @*volatile-ark-value* rolon-uuid))
+  ([ark-value rolon-uuid]
+   (get-property-values (get-current-rolon-value ark-value rolon-uuid))))
 
 (defn get-property-je-uuids-at
   "returns the journal entries which last changed each property
@@ -224,7 +231,7 @@
 (defn get-property-value-at
   "returns the current value of a property"
   ([rolon-uuid key]
-  ((get-property-values-at rolon-uuid) key))
+  ((get-current-property-values rolon-uuid) key))
   ([rolon-uuid key je-uuid]
    ((get-property-values-at rolon-uuid je-uuid) key)))
 
@@ -277,7 +284,7 @@
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
   [index-uuid value]
-  (let [properties (get-property-values-at index-uuid)
+  (let [properties (get-current-property-values index-uuid)
         index-map (:descriptor/index properties)]
     (index-map value)))
 
@@ -294,7 +301,7 @@
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
   [je-uuid]
-  (let [latest-je-property-values (get-property-values-at je-uuid)
+  (let [latest-je-property-values (get-current-property-values je-uuid)
         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
     (if (nil? updated-rolon-uuids)
       (sorted-map)
@@ -303,7 +310,7 @@
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
   [je-uuid]
-  (let [index (:descriptor/index (get-property-values-at je-uuid))]
+  (let [index (:descriptor/index (get-current-property-values je-uuid))]
     (if (nil? index)
       (sorted-map)
       index)))

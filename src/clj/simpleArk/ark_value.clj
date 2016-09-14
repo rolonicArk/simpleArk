@@ -192,17 +192,24 @@
 
 (defn get-rolon-value-at
   "returns the rolon value for the selected time"
-  ([rolon-uuid]
-  (let [je-uuid (get-current-journal-entry-uuid)]
-    (get-rolon-value-at rolon-uuid je-uuid)))
   ([rolon-uuid je-uuid]
-   (let [rolon (get-rolon rolon-uuid)]
+   (get-rolon-value-at @*volatile-ark-value* rolon-uuid je-uuid))
+  ([ark-value rolon-uuid je-uuid]
+   (let [rolon (get-rolon ark-value rolon-uuid)]
      (val (first (rsubseq (get-rolon-values rolon) <= je-uuid))))))
+
+(defn get-current-rolon-value
+  "returns the rolon value for the selected time"
+  ([rolon-uuid]
+   (get-current-rolon-value @*volatile-ark-value* rolon-uuid))
+  ([ark-value rolon-uuid]
+   (let [je-uuid (get-current-journal-entry-uuid)]
+     (get-rolon-value-at ark-value rolon-uuid je-uuid))))
 
 (defn get-property-values-at
   "returns the property values at the selected time"
   ([rolon-uuid]
-   (get-property-values (get-rolon-value-at rolon-uuid)))
+   (get-property-values (get-current-rolon-value rolon-uuid)))
   ([rolon-uuid je-uuid]
    (get-property-values (get-rolon-value-at rolon-uuid je-uuid))))
 
@@ -210,7 +217,7 @@
   "returns the journal entries which last changed each property
   at the selected time"
   ([rolon-uuid]
-   (get-property-je-uuids (get-rolon-value-at rolon-uuid)))
+   (get-property-je-uuids (get-current-rolon-value rolon-uuid)))
   ([rolon-uuid je-uuid]
    (get-property-je-uuids (get-rolon-value-at rolon-uuid je-uuid))))
 

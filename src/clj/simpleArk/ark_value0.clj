@@ -141,8 +141,8 @@
         (assoc ::active-journal-entry-uuid je-uuid))))
 
 (defn get-selected-time
-  []
-  (::selected-time @ark-value/*volatile-ark-value*))
+  [ark-value]
+  (::selected-time ark-value))
 
 (defn index-name-uuid
   [ark-value]

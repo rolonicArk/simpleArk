@@ -66,8 +66,10 @@
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
-  []
-  ((:get-selected-time @*volatile-ark-value*)))
+  ([]
+   (get-selected-time @*volatile-ark-value*))
+  ([ark-value]
+   ((:get-selected-time ark-value) ark-value)))
 
 (defn get-ark-db
   "returns the ark-db"

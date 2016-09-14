@@ -8,11 +8,6 @@
   [ark-value]
   (::active-journal-entry-uuid ark-value))
 
-(defn update-property-journal-entry-uuids
-  "where pjes is to be updated and ps are the new property values"
-  [pjes ps je-uuid]
-  (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
-
 (defn get-journal-entries
   [ark-value]
   (::journal-entries ark-value))
@@ -26,11 +21,11 @@
   (::random-rolons ark-value))
 
 (defn get-rolon
-  [uuid]
+  [ark-value uuid]
   (cond
-    (uuid/journal-entry-uuid? uuid) ((ark-value/get-journal-entries) uuid)
-    (uuid/index-uuid? uuid) ((ark-value/get-indexes) uuid)
-    (uuid/random-uuid? uuid) ((ark-value/get-random-rolons) uuid)
+    (uuid/journal-entry-uuid? uuid) ((ark-value/get-journal-entries ark-value) uuid)
+    (uuid/index-uuid? uuid) ((ark-value/get-indexes ark-value) uuid)
+    (uuid/random-uuid? uuid) ((ark-value/get-random-rolons ark-value) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn assoc-rolon!
@@ -44,6 +39,11 @@
                                             (uuid/random-uuid? rolon-uuid)
                                             (assoc-in @ark-value/*volatile-ark-value* [::random-rolons rolon-uuid] rolon)
                                             :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
+
+(defn update-property-journal-entry-uuids
+  "where pjes is to be updated and ps are the new property values"
+  [pjes ps je-uuid]
+  (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
 (defn update-properties-!
   [journal-entry-uuid rolon-uuid properties]

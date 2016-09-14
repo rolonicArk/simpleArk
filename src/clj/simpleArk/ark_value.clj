@@ -101,8 +101,10 @@
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
-  [uuid]
-  ((:get-rolon @*volatile-ark-value*) uuid))
+  ([uuid]
+   (get-rolon @*volatile-ark-value* uuid))
+  ([ark-value uuid]
+   ((:get-rolon ark-value) ark-value uuid)))
 
 (defn ark-str
   [ark]

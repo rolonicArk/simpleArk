@@ -223,10 +223,18 @@
 (defn get-property-je-uuids-at
   "returns the journal entries which last changed each property
   at the selected time"
-  ([rolon-uuid]
-   (get-property-je-uuids (get-current-rolon-value rolon-uuid)))
   ([rolon-uuid je-uuid]
-   (get-property-je-uuids (get-rolon-value-at rolon-uuid je-uuid))))
+   (get-property-je-uuids-at @*volatile-ark-value* rolon-uuid je-uuid))
+  ([ark-value rolon-uuid je-uuid]
+   (get-property-je-uuids (get-rolon-value-at ark-value rolon-uuid je-uuid))))
+
+(defn get-current-property-je-uuids
+  "returns the journal entries which last changed each property
+  at the selected time"
+  ([rolon-uuid]
+   (get-current-property-je-uuids @*volatile-ark-value* rolon-uuid))
+  ([ark-value rolon-uuid]
+   (get-property-je-uuids (get-current-rolon-value ark-value rolon-uuid))))
 
 (defn get-property-value-at
   "returns the current value of a property"
@@ -239,7 +247,7 @@
   "returns the uuid of the last je that changed the property
   at the selected time"
   ([rolon-uuid key]
-   (key (get-property-je-uuids-at rolon-uuid)))
+   (key (get-current-property-je-uuids rolon-uuid)))
   ([rolon-uuid key je-uuid]
    (key (get-property-je-uuids-at rolon-uuid je-uuid))))
 

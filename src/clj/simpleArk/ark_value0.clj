@@ -5,8 +5,8 @@
 (set! *warn-on-reflection* true)
 
 (defn get-current-journal-entry-uuid
-  []
-  (::active-journal-entry-uuid @ark-value/*volatile-ark-value*))
+  [ark-value]
+  (::active-journal-entry-uuid ark-value))
 
 (defn update-property-journal-entry-uuids
   "where pjes is to be updated and ps are the new property values"

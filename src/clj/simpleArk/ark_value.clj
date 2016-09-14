@@ -37,9 +37,9 @@
 
 (defn get-current-journal-entry-uuid
   ([]
-   ((:get-current-journal-entry-uuid @*volatile-ark-value*)))
+   (get-current-journal-entry-uuid @*volatile-ark-value*))
   ([ark-value]
-   ((:get-current-journal-entry-uuid ark-value))))
+   ((:get-current-journal-entry-uuid ark-value) ark-value)))
 
 (defn index-name-uuid
   []

@@ -237,11 +237,18 @@
    (get-property-je-uuids (get-current-rolon-value ark-value rolon-uuid))))
 
 (defn get-property-value-at
+  "returns the value of a property"
+  ([rolon-uuid key je-uuid]
+   (get-property-value-at @*volatile-ark-value* rolon-uuid key je-uuid))
+  ([ark-value rolon-uuid key je-uuid]
+   ((get-property-values-at ark-value rolon-uuid je-uuid) key)))
+
+(defn get-current-property-value
   "returns the current value of a property"
   ([rolon-uuid key]
-  ((get-current-property-values rolon-uuid) key))
-  ([rolon-uuid key je-uuid]
-   ((get-property-values-at rolon-uuid je-uuid) key)))
+   (get-current-property-value @*volatile-ark-value* rolon-uuid key))
+  ([ark-value rolon-uuid key]
+   ((get-current-property-values ark-value rolon-uuid) key)))
 
 (defn get-property-je-uuid-at
   "returns the uuid of the last je that changed the property

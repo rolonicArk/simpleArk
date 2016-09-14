@@ -105,7 +105,7 @@
   (println ">>>>>>>>>>>> journal entry headlines")
   (println)
   (ark-value/bind-ark ark-db
-            (first (keep (fn [x] (println (ark-value/get-property-value-at (key x) :classifier/headline)))
+            (first (keep (fn [x] (println (ark-value/get-current-property-value (key x) :classifier/headline)))
                          (ark-value/get-journal-entries))))
 
 (println)
@@ -127,7 +127,7 @@
   (ark-value/bind-ark ark-db
             (first (keep #(println (ark-value/get-property-value-at bob-uuid :classifier/headline %)
                                    "-"
-                                   (ark-value/get-property-value-at % :classifier/headline))
+                                   (ark-value/get-current-property-value % :classifier/headline))
                           (ark-value/je-uuids-for-rolon-property bob-uuid :classifier/headline))))
   )
 

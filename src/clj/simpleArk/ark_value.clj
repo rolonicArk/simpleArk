@@ -268,11 +268,14 @@
 
 (defn get-previous-rolon-je-uuid
   "returns the uuid of the prior journal entry updating the same rolon"
-  [rolon-uuid je-uuid]
-  (let [rolon (get-rolon rolon-uuid)
-        rolon-values (get-rolon-values rolon)
-        previous-rolon-values (rsubseq rolon-values < je-uuid)]
-    (key (first previous-rolon-values))))
+  ([rolon-uuid je-uuid]
+   (get-previous-rolon-je-uuid @*volatile-ark-value* rolon-uuid je-uuid))
+  ([ark-value rolon-uuid je-uuid]
+   (let [rolon (get-rolon ark-value rolon-uuid)
+         rolon-values (get-rolon-values rolon)
+         previous-rolon-values (rsubseq rolon-values < je-uuid)]
+     (key (first previous-rolon-values))))
+  )
 
 (defn locate-next-je-uuid-for-property
   [[rolon-uuid key je-uuid]]

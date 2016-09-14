@@ -94,8 +94,10 @@
 
 (defn get-random-rolons
   "returns a map of all the random rolons"
-  []
-  ((:get-random-rolons @*volatile-ark-value*)))
+  ([]
+   (get-random-rolons @*volatile-ark-value*))
+  ([ark-value]
+   ((:get-random-rolons ark-value) ark-value)))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"

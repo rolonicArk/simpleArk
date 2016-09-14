@@ -22,15 +22,15 @@
   (::indexes ark-value))
 
 (defn get-random-rolons
-  []
-  (::random-rolons @ark-value/*volatile-ark-value*))
+  [ark-value]
+  (::random-rolons ark-value))
 
 (defn get-rolon
   [uuid]
   (cond
     (uuid/journal-entry-uuid? uuid) ((ark-value/get-journal-entries) uuid)
     (uuid/index-uuid? uuid) ((ark-value/get-indexes) uuid)
-    (uuid/random-uuid? uuid) ((::random-rolons @ark-value/*volatile-ark-value*) uuid)
+    (uuid/random-uuid? uuid) ((ark-value/get-random-rolons) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn assoc-rolon!

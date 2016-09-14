@@ -134,18 +134,19 @@
       (ark-value/make-index-rolon! rolon-uuid properties (sorted-map)))))
 
 (defn select-time!
-  [je-uuid]
-  (let [je-uuid (key (first (rsubseq (get-journal-entries) <= je-uuid)))
-        ark (assoc @ark-value/*volatile-ark-value* ::selected-time je-uuid)]
-    (vreset! ark-value/*volatile-ark-value* (assoc ark ::active-journal-entry-uuid je-uuid))))
+  [ark-value je-uuid]
+  (let [je-uuid (key (first (rsubseq (get-journal-entries) <= je-uuid)))]
+    (-> ark-value
+        (assoc ::selected-time je-uuid)
+        (assoc ::active-journal-entry-uuid je-uuid))))
 
 (defn get-selected-time
   []
   (::selected-time @ark-value/*volatile-ark-value*))
 
 (defn index-name-uuid
-  []
-  (::index-name-uuid @ark-value/*volatile-ark-value*))
+  [ark-value]
+  (::index-name-uuid ark-value))
 
 (defn update-ark
   [ark je-uuid transaction-name s]

@@ -42,8 +42,10 @@
    ((:get-current-journal-entry-uuid ark-value) ark-value)))
 
 (defn index-name-uuid
-  []
-  ((:index-name-uuid @*volatile-ark-value*)))
+  ([]
+   (index-name-uuid @*volatile-ark-value*))
+  ([ark-value]
+   ((:index-name-uuid ark-value) ark-value)))
 
 (defrecord Ark [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties! update-ark
@@ -57,8 +59,10 @@
 
 (defn select-time!
   "Sets the ark to the time of the journal entry uuid"
-  [je-uuid]
-  ((:select-time! @*volatile-ark-value*) je-uuid))
+  ([je-uuid]
+   (vswap! *volatile-ark-value* select-time! je-uuid))
+  ([ark-value je-uuid]
+   ((:select-time! ark-value) ark-value je-uuid)))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"

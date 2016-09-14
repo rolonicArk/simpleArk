@@ -274,25 +274,25 @@
    (let [rolon (get-rolon ark-value rolon-uuid)
          rolon-values (get-rolon-values rolon)
          previous-rolon-values (rsubseq rolon-values < je-uuid)]
-     (key (first previous-rolon-values))))
-  )
+     (key (first previous-rolon-values)))))
 
 (defn locate-next-je-uuid-for-property
-  [[rolon-uuid key je-uuid]]
-  (let [je-uuid2 (get-property-je-uuid-at rolon-uuid key je-uuid)]
-    (if (= je-uuid je-uuid2)
-      (let [rolon-value (get-previous-rolon-je-uuid rolon-uuid je-uuid)]
-        (if rolon-value
-          (let [je-uuid2 (get-journal-entry-uuid rolon-value)
-                je-uuid2 (get-property-je-uuid-at rolon-uuid key je-uuid2)]
-            (if je-uuid2
-              [rolon-uuid key je-uuid2]
-              nil))
-          nil))
-      (if je-uuid2
-        [rolon-uuid key je-uuid2]
-        nil)))
-  )
+  ([v]
+   (locate-next-je-uuid-for-property @*volatile-ark-value* v))
+  ([ark-value [rolon-uuid key je-uuid]]
+   (let [je-uuid2 (get-property-je-uuid-at ark-value rolon-uuid key je-uuid)]
+     (if (= je-uuid je-uuid2)
+       (let [rolon-value (get-previous-rolon-je-uuid ark-value rolon-uuid je-uuid)]
+         (if rolon-value
+           (let [je-uuid2 (get-journal-entry-uuid rolon-value)
+                 je-uuid2 (get-property-je-uuid-at ark-value rolon-uuid key je-uuid2)]
+             (if je-uuid2
+               [rolon-uuid key je-uuid2]
+               nil))
+           nil))
+       (if je-uuid2
+         [rolon-uuid key je-uuid2]
+         nil)))))
 
 (defn je-uuids-for-rolon-property
   "returns a lazy sequence of journal entry uuids which changed a property"

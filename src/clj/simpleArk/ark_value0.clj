@@ -30,15 +30,17 @@
 
 (defn assoc-rolon!
   "update the ark with the revised/new rolon"
-  [rolon-uuid rolon]
-  (vreset! ark-value/*volatile-ark-value* (cond
-                                            (uuid/journal-entry-uuid? rolon-uuid)
-                                            (assoc-in @ark-value/*volatile-ark-value* [::journal-entries rolon-uuid] rolon)
-                                            (uuid/index-uuid? rolon-uuid)
-                                            (assoc-in @ark-value/*volatile-ark-value* [::indexes rolon-uuid] rolon)
-                                            (uuid/random-uuid? rolon-uuid)
-                                            (assoc-in @ark-value/*volatile-ark-value* [::random-rolons rolon-uuid] rolon)
-                                            :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
+  ([rolon-uuid rolon]
+   (vswap! ark-value/*volatile-ark-value* assoc-rolon! rolon-uuid rolon))
+  ([ark-value rolon-uuid rolon]
+   (cond
+     (uuid/journal-entry-uuid? rolon-uuid)
+     (assoc-in ark-value [::journal-entries rolon-uuid] rolon)
+     (uuid/index-uuid? rolon-uuid)
+     (assoc-in ark-value [::indexes rolon-uuid] rolon)
+     (uuid/random-uuid? rolon-uuid)
+     (assoc-in ark-value [::random-rolons rolon-uuid] rolon)
+     :else (throw (Exception. (str rolon-uuid " is unrecognized"))))))
 
 (defn update-property-journal-entry-uuids
   "where pjes is to be updated and ps are the new property values"
@@ -46,33 +48,39 @@
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
 (defn update-properties-!
-  [journal-entry-uuid rolon-uuid properties]
-  (let [rolon (ark-value/get-rolon rolon-uuid)
-        rolon-value (ark-value/get-current-rolon-value rolon-uuid)
-        property-values (::property-values rolon-value)
-        _ (ark-value/make-index-rolon! rolon-uuid properties property-values)
-        property-values (into property-values properties)
-        rolon-value (assoc rolon-value ::property-values property-values)
-        pjes (::property-journal-entry-uuids rolon-value)
-        pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
-        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
-        rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)]
-    (assoc-rolon! rolon-uuid rolon)))
+  ([journal-entry-uuid rolon-uuid properties]
+   (vswap! ark-value/*volatile-ark-value* update-properties-! journal-entry-uuid rolon-uuid properties))
+  ([ark-value journal-entry-uuid rolon-uuid properties]
+   (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
+         rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
+         property-values (::property-values rolon-value)
+         _ (ark-value/make-index-rolon! rolon-uuid properties property-values)
+         property-values (into property-values properties)
+         rolon-value (assoc rolon-value ::property-values property-values)
+         pjes (::property-journal-entry-uuids rolon-value)
+         pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
+         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
+         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)]
+     (assoc-rolon! ark-value rolon-uuid rolon))))
 
 (defn update-property-!
-  [journal-entry-uuid rolon-uuid property-name property-value]
-  (update-properties-! journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
+  ([journal-entry-uuid rolon-uuid property-name property-value]
+   (vswap! ark-value/*volatile-ark-value* update-property-! journal-entry-uuid rolon-uuid property-name property-value))
+  ([ark-value journal-entry-uuid rolon-uuid property-name property-value]
+   (update-properties-! ark-value journal-entry-uuid rolon-uuid (sorted-map property-name property-value))))
 
 (defn je-modified!
   "track the rolons modified by the journal entry"
-  [journal-entry-uuid rolon-uuid]
-  (let [je-value (ark-value/get-current-rolon-value journal-entry-uuid)
-        je-property-values (::property-values je-value)
-        modified (:descriptor/modified je-property-values)
-        modified (if modified
-                   (conj modified rolon-uuid)
-                   (sorted-set rolon-uuid))]
-    (update-property-! journal-entry-uuid journal-entry-uuid :descriptor/modified modified)))
+  ([journal-entry-uuid rolon-uuid]
+   (vswap! ark-value/*volatile-ark-value* je-modified! journal-entry-uuid rolon-uuid))
+  ([ark-value journal-entry-uuid rolon-uuid]
+   (let [je-value (ark-value/get-current-rolon-value ark-value journal-entry-uuid)
+         je-property-values (::property-values je-value)
+         modified (:descriptor/modified je-property-values)
+         modified (if modified
+                    (conj modified rolon-uuid)
+                    (sorted-set rolon-uuid))]
+     (update-property-! ark-value journal-entry-uuid journal-entry-uuid :descriptor/modified modified))))
 
 (defn destroy-rolon!
   [rolon-uuid]

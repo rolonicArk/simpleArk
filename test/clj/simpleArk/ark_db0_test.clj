@@ -125,10 +125,10 @@
   (println ">>>>>>>>>>>> bob's headlines over time")
   (println)
   (ark-value/bind-ark ark-db
-            (first (keep #(println (ark-value/get-property-value-at bob-uuid :classifier/headline %)
+                      (first (keep #(println (ark-value/get-property-value-at bob-uuid :classifier/headline %)
                                    "-"
                                    (ark-value/get-current-property-value % :classifier/headline))
-                          (ark-value/je-uuids-for-rolon-property bob-uuid :classifier/headline))))
+                                   (ark-value/rolon-property-current-je-uuids bob-uuid :classifier/headline))))
   )
 
 (deftest arks

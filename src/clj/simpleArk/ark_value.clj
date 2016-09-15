@@ -330,9 +330,11 @@
    (first (index-lookup ark-value (index-name-uuid ark-value) index-name))))
 
 (defn name-lookup
-  [rolon-name]
-  (let [name-index-uuid (get-index-uuid "name")]
-    (first (index-lookup name-index-uuid rolon-name))))
+  ([rolon-name]
+   (name-lookup @*volatile-ark-value* rolon-name))
+  ([ark-value rolon-name]
+   (let [name-index-uuid (get-index-uuid ark-value "name")]
+     (first (index-lookup ark-value name-index-uuid rolon-name)))))
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"

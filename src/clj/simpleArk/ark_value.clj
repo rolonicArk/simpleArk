@@ -285,11 +285,11 @@
            (let [je-uuid2 (get-journal-entry-uuid rolon-value)
                  je-uuid2 (get-property-je-uuid-at ark-value rolon-uuid key je-uuid2)]
              (if je-uuid2
-               [rolon-uuid key je-uuid2]
+               [ark-value rolon-uuid key je-uuid2]
                nil))
            nil))
        (if je-uuid2
-         [rolon-uuid key je-uuid2]
+         [ark-value rolon-uuid key je-uuid2]
          nil)))))
 
 (defn rolon-property-je-uuids-at
@@ -298,7 +298,7 @@
    (rolon-property-je-uuids-at @*volatile-ark-value* rolon-uuid key je-uuid))
   ([ark-value rolon-uuid key je-uuid]
    (map #(if %
-          (% 2)
+          (% 3)
           nil)
         (take-while identity (iterate locate-next-je-uuid-for-property [ark-value rolon-uuid key je-uuid])))))
 
@@ -314,10 +314,13 @@
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
-  [index-uuid value]
-  (let [properties (get-current-property-values index-uuid)
-        index-map (:descriptor/index properties)]
-    (index-map value)))
+  ([index-uuid value]
+   (index-lookup @*volatile-ark-value* index-uuid value))
+  ([ark-value index-uuid value]
+   (let [properties (get-current-property-values ark-value index-uuid)
+         index-map (:descriptor/index properties)]
+     (index-map value)))
+  )
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."

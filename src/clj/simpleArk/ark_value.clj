@@ -324,8 +324,10 @@
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
-  [index-name]
-  (first (index-lookup (index-name-uuid) index-name)))
+  ([index-name]
+   (get-index-uuid @*volatile-ark-value* index-name))
+  ([ark-value index-name]
+   (first (index-lookup ark-value (index-name-uuid ark-value) index-name))))
 
 (defn name-lookup
   [rolon-name]

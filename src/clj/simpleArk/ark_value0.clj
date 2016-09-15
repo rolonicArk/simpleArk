@@ -57,7 +57,7 @@
         pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon (assoc-in rolon [::rolon-values journal-entry-uuid] rolon-value)]
-    (vreset! ark-value/*volatile-ark-value* (assoc-rolon! rolon-uuid rolon))))
+    (assoc-rolon! rolon-uuid rolon)))
 
 (defn update-property-!
   [journal-entry-uuid rolon-uuid property-name property-value]

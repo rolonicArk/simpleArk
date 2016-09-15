@@ -338,20 +338,24 @@
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
-  [je-uuid]
-  (let [latest-je-property-values (get-current-property-values je-uuid)
-        updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
-    (if (nil? updated-rolon-uuids)
-      (sorted-map)
-      updated-rolon-uuids)))
+  ([je-uuid]
+   (get-updated-rolon-uuids @*volatile-ark-value* je-uuid))
+  ([ark-value je-uuid]
+   (let [latest-je-property-values (get-current-property-values ark-value je-uuid)
+         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
+     (if (nil? updated-rolon-uuids)
+       (sorted-map)
+       updated-rolon-uuids))))
 
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
-  [je-uuid]
-  (let [index (:descriptor/index (get-current-property-values je-uuid))]
-    (if (nil? index)
-      (sorted-map)
-      index)))
+  ([je-uuid]
+   (get-index-descriptor @*volatile-ark-value* je-uuid))
+  ([ark-value je-uuid]
+   (let [index (:descriptor/index (get-current-property-values ark-value je-uuid))]
+     (if (nil? index)
+       (sorted-map)
+      index))))
 
 (defn make-index-rolon!
   "create/update an index rolon"

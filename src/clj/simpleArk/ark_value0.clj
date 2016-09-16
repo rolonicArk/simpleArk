@@ -54,7 +54,7 @@
    (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
          rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
          property-values (::property-values rolon-value)
-         _ (ark-value/make-index-rolon! rolon-uuid properties property-values)
+         ark-value (ark-value/make-index-rolon! rolon-uuid properties property-values)
          property-values (into property-values properties)
          rolon-value (assoc rolon-value ::property-values property-values)
          pjes (::property-journal-entry-uuids rolon-value)
@@ -83,20 +83,22 @@
      (update-property-! ark-value journal-entry-uuid journal-entry-uuid :descriptor/modified modified))))
 
 (defn destroy-rolon!
-  [rolon-uuid]
-  (let [je-uuid (::active-journal-entry-uuid @ark-value/*volatile-ark-value*)
-        rolon (ark-value/get-rolon rolon-uuid)
-        rolon-value (ark-value/get-current-rolon-value rolon-uuid)
-        old-property-values (::property-values rolon-value)
-        property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
-        _ (ark-value/make-index-rolon! rolon-uuid property-values old-property-values)
-        rolon-value (assoc rolon-value ::property-values property-values)
-        pjes (::property-journal-entry-uuids rolon-value)
-        pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
-        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
-        rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)]
-    (assoc-rolon! rolon-uuid rolon)
-    (je-modified! je-uuid rolon-uuid)))
+  ([rolon-uuid]
+   (vswap! ark-value/*volatile-ark-value* destroy-rolon! rolon-uuid))
+  ([ark-value rolon-uuid]
+   (let [je-uuid (::active-journal-entry-uuid ark-value)
+         rolon (ark-value/get-rolon ark-value rolon-uuid)
+         rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
+         old-property-values (::property-values rolon-value)
+         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
+         ark-value (ark-value/make-index-rolon! rolon-uuid property-values old-property-values)
+         rolon-value (assoc rolon-value ::property-values property-values)
+         pjes (::property-journal-entry-uuids rolon-value)
+         pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
+         rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
+         rolon (assoc-in rolon [::rolon-values je-uuid] rolon-value)
+         ark-value (assoc-rolon! ark-value rolon-uuid rolon)]
+     (je-modified! ark-value je-uuid rolon-uuid))))
 
 (defn update-properties!
   [rolon-uuid properties]
@@ -173,23 +175,19 @@
 
 (defn create-ark
   [this-db]
-  (let [ark (ark-value/->Ark this-db get-rolon get-journal-entries get-indexes get-random-rolons
+  (-> (ark-value/->Ark this-db get-rolon get-journal-entries get-indexes get-random-rolons
                              make-rolon! destroy-rolon! update-properties! update-ark
                              get-current-journal-entry-uuid
                              select-time! get-selected-time index-name-uuid)
-        ark (assoc ark ::journal-entries (sorted-map))
-        ark (assoc ark ::indexes (sorted-map))
-        ark (assoc ark ::random-rolons {})
-        ark (assoc ark ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))]
-    ark))
+      (assoc ::journal-entries (sorted-map))
+      (assoc ::indexes (sorted-map))
+      (assoc ::random-rolons {})
+      (assoc ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))))
 
 (defn- build
   "returns an ark db"
   [m]
-  (let [ark-db (-> m
-                   (assoc :ark-value/create-ark create-ark)
-                   )]
-    ark-db))
+  (assoc m :ark-value/create-ark create-ark))
 
 (defn builder
   []

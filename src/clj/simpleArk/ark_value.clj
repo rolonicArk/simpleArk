@@ -205,7 +205,7 @@
   ([rolon-uuid]
    (get-current-rolon-value @*volatile-ark-value* rolon-uuid))
   ([ark-value rolon-uuid]
-   (let [je-uuid (get-current-journal-entry-uuid)]
+   (let [je-uuid (get-current-journal-entry-uuid ark-value)]
      (get-rolon-value-at ark-value rolon-uuid je-uuid))))
 
 (defn get-property-values-at

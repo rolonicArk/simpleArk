@@ -130,9 +130,11 @@
           nil (keys properties)))
 
 (defn make-rolon!
-  [rolon-uuid properties]
-  (validate-property-keys properties)
-  ((:make-rolon! @*volatile-ark-value*) rolon-uuid properties))
+  ([rolon-uuid properties]
+   (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties))
+  ([ark-value rolon-uuid properties]
+   (validate-property-keys properties)
+   ((:make-rolon! ark-value)  rolon-uuid properties))) ;todo
 
 (defn destroy-rolon!
   "deletes all the classifiers of a rolon"
@@ -373,6 +375,7 @@
                      (disj value-set uuid))
          index-descriptor (assoc index-descriptor value value-set)]
      (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))
+
 (defn make-index-rolon!
   "create/update an index rolon"
   ([uuid properties old-properties]

@@ -138,8 +138,10 @@
 
 (defn destroy-rolon!
   "deletes all the classifiers of a rolon"
-  [rolon-uuid]
-  ((:destroy-rolon! @*volatile-ark-value*) rolon-uuid))
+  ([rolon-uuid]
+    (vswap! *volatile-ark-value* destroy-rolon! rolon-uuid))
+  ([ark-value rolon-uuid]
+   ((:destroy-rolon! ark-value) ark-value rolon-uuid)))
 
 (defn update-properties!
   "update the properties of a rolon"

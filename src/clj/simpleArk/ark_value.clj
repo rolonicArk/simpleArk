@@ -357,8 +357,7 @@
        (sorted-map)
       index))))
 
-(defn make-index-rolon!
-  "create/update an index rolon"
+(defn make-index-rolon-!
   ([classifier value uuid adding]
    (let [iuuid (uuid/index-uuid (get-ark-db) classifier)
          properties (if (get-rolon iuuid)
@@ -373,16 +372,18 @@
                      (conj value-set uuid)
                      (disj value-set uuid))
          index-descriptor (assoc index-descriptor value value-set)]
-     (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
+     (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))
+(defn make-index-rolon!
+  "create/update an index rolon"
   ([uuid properties old-properties]
    (reduce #(let [k (key %2)
                   nv (val %2)
                   ov (old-properties k)]
              (when (classifier? k)
                (if ov
-                 (make-index-rolon! k ov uuid false))
+                 (make-index-rolon-! k ov uuid false))
                (if nv
-                 (make-index-rolon! k nv uuid true))))
+                 (make-index-rolon-! k nv uuid true))))
            nil properties)
     @*volatile-ark-value*))
 

@@ -135,9 +135,11 @@
   ((:make-rolon! @*volatile-ark-value*) rolon-uuid properties))
 
 (defn destroy-rolon!
-  "deletes all the classifiers of a rolon"
-  [rolon-uuid]
-  ((:destroy-rolon! @*volatile-ark-value*) rolon-uuid))
+    "deletes all the classifiers of a rolon"
+    ([rolon-uuid]
+     (vswap! *volatile-ark-value* destroy-rolon! rolon-uuid))
+    ([ark-value rolon-uuid]
+     ((:destroy-rolon! ark-value) ark-value rolon-uuid)))
 
 (defn update-properties!
   "update the properties of a rolon"
@@ -448,13 +450,6 @@
     ([ark-value rolon-uuid properties]
      (validate-property-keys properties)
      ((:make-rolon! ark-value)  rolon-uuid properties))) ;todo
-
-#_(defn destroy-rolon!
-    "deletes all the classifiers of a rolon"
-    ([rolon-uuid]
-     (vswap! *volatile-ark-value* destroy-rolon! rolon-uuid))
-    ([ark-value rolon-uuid]
-     ((:destroy-rolon! ark-value) ark-value rolon-uuid)))
 
 #_(defn update-properties!
     "update the properties of a rolon"

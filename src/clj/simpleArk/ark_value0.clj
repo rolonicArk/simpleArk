@@ -54,7 +54,7 @@
    (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
          rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
          property-values (::property-values rolon-value)
-         ark-value (ark-value/make-index-rolon! rolon-uuid properties property-values)
+         ark-value (ark-value/make-index-rolon! rolon-uuid properties property-values) ;todo
          property-values (into property-values properties)
          rolon-value (assoc rolon-value ::property-values property-values)
          pjes (::property-journal-entry-uuids rolon-value)

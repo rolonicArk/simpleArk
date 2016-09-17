@@ -158,8 +158,9 @@
   [ark-value]
   (::index-name-uuid ark-value))
 
-(defn update-ark
+(defn update-ark!
   [ark-value je-uuid transaction-name s]
+  (let [ark-value (-> ark-value
                 (assoc ::latest-journal-entry-uuid je-uuid)
                 (assoc ::active-journal-entry-uuid je-uuid)
                 (ark-value/ark-binder (fn []
@@ -175,9 +176,9 @@
 (defn create-ark
   [this-db]
   (-> (ark-value/->Ark this-db get-rolon get-journal-entries get-indexes get-random-rolons
-                             make-rolon! destroy-rolon! update-properties! update-ark
-                             get-current-journal-entry-uuid
-                             select-time! get-selected-time index-name-uuid)
+                       make-rolon! destroy-rolon! update-properties! update-ark!
+                       get-current-journal-entry-uuid
+                       select-time! get-selected-time index-name-uuid)
       (assoc ::journal-entries (sorted-map))
       (assoc ::indexes (sorted-map))
       (assoc ::random-rolons {})

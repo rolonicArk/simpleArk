@@ -48,7 +48,7 @@
    ((:index-name-uuid ark-value) ark-value)))
 
 (defrecord Ark [this-db get-rolon get-journal-entries get-indexes get-random-rolons
-                make-rolon! destroy-rolon! update-properties! update-ark
+                make-rolon! destroy-rolon! update-properties! update-ark!
                 get-current-journal-entry-uuid
                 select-time! get-selected-time index-name-uuid])
 

@@ -101,6 +101,12 @@
      (je-modified! ark-value je-uuid rolon-uuid))))
 
 (defn update-properties!
+  [rolon-uuid properties]
+  (let [journal-entry-uuid (::active-journal-entry-uuid @ark-value/*volatile-ark-value*)]
+    (update-properties-! journal-entry-uuid rolon-uuid properties)
+    (je-modified! journal-entry-uuid rolon-uuid)))
+
+#_(defn update-properties!
   ([rolon-uuid properties]
    (vswap! ark-value/*volatile-ark-value* update-properties! rolon-uuid properties))
   ([ark-value rolon-uuid properties]
@@ -131,7 +137,6 @@
   (::rolon-values rolon))
 
 (defn make-rolon!
-  ;todo
   [rolon-uuid properties]
   (if (ark-value/get-rolon rolon-uuid)
     (update-properties! rolon-uuid properties)

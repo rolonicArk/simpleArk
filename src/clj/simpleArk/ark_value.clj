@@ -149,10 +149,13 @@
      (validate-property-keys properties)
      ((:update-properties! ark-value) ark-value rolon-uuid properties)))
 
-(defn update-property! ;todo
+(defn update-property!
   "update the value of a property of a rolon"
-  [rolon-uuid property-name property-value]
-  (update-properties! rolon-uuid (sorted-map property-name property-value))) ;todo
+  ([rolon-uuid property-name property-value]
+   (vswap! *volatile-ark-value* update-property! rolon-uuid property-name property-value))
+  ([ark-value rolon-uuid property-name property-value]
+   (update-properties! ark-value rolon-uuid (sorted-map property-name property-value)))
+  )
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,

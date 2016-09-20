@@ -129,7 +129,7 @@
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
           nil (keys properties)))
 
-(defn make-rolon!
+(defn make-rolon! ;todo
   [rolon-uuid properties]
   (validate-property-keys properties)
   ((:make-rolon! @*volatile-ark-value*) rolon-uuid properties))
@@ -141,16 +141,16 @@
     ([ark-value rolon-uuid]
      ((:destroy-rolon! ark-value) ark-value rolon-uuid)))
 
-(defn update-properties!
+(defn update-properties! ;todo
   "update the properties of a rolon"
   [rolon-uuid properties]
   (validate-property-keys properties)
   ((:update-properties! @*volatile-ark-value*) rolon-uuid properties))
 
-(defn update-property!
+(defn update-property! ;todo
   "update the value of a property of a rolon"
   [rolon-uuid property-name property-value]
-  (update-properties! rolon-uuid (sorted-map property-name property-value)))
+  (update-properties! rolon-uuid (sorted-map property-name property-value))) ;todo
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
@@ -321,8 +321,7 @@
   ([ark-value index-uuid value]
    (let [properties (get-current-property-values ark-value index-uuid)
          index-map (:descriptor/index properties)]
-     (index-map value)))
-  )
+     (index-map value))))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
@@ -359,13 +358,13 @@
        (sorted-map)
       index))))
 
-(defn make-index-rolon-!
+(defn make-index-rolon-! ;todo
     ([classifier value uuid adding]
      (let [iuuid (uuid/index-uuid (get-ark-db) classifier)
            properties (if (get-rolon iuuid)
                         (sorted-map)
                         (sorted-map :classifier/index.name (name classifier)))
-           _ (make-rolon! iuuid properties)
+           _ (make-rolon! iuuid properties) ;todo
            index-rolon (get-rolon iuuid)
            index-descriptor (get-index-descriptor iuuid)
            value-set (index-descriptor value)
@@ -374,9 +373,9 @@
                        (conj value-set uuid)
                        (disj value-set uuid))
            index-descriptor (assoc index-descriptor value value-set)]
-       (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))
+       (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))) ;todo
 
-(defn make-index-rolon!
+(defn make-index-rolon! ;todo
     "create/update an index rolon"
     ([uuid properties old-properties]
      (reduce #(let [k (key %2)
@@ -384,9 +383,9 @@
                     ov (old-properties k)]
                (when (classifier? k)
                  (if ov
-                   (make-index-rolon-! k ov uuid false))
+                   (make-index-rolon-! k ov uuid false)) ;todo
                  (if nv
-                   (make-index-rolon-! k nv uuid true))))
+                   (make-index-rolon-! k nv uuid true)))) ;todo
              nil properties)
      @*volatile-ark-value*))
 
@@ -397,15 +396,15 @@
   (let [je-uuid (get-current-journal-entry-uuid)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
-    (update-properties! je-uuid je-properties)
-    (vreset! *volatile-ark-value* (make-rolon! rolon-uuid rolon-properties))))
+    (update-properties! je-uuid je-properties) ;todo
+    (vreset! *volatile-ark-value* (make-rolon! rolon-uuid rolon-properties)))) ;todo
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [n s]
   (let [je-uuid (get-current-journal-entry-uuid)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
-    (update-properties! je-uuid je-properties)
+    (update-properties! je-uuid je-properties); todo
     (destroy-rolon! uuid)))
 
 (defn reprocess-trans
@@ -417,7 +416,7 @@
 
 #_(defn make-rolon!
     ([rolon-uuid properties]
-     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties))
+     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties)) ;todo and buggy!
     ([ark-value rolon-uuid properties]
      (validate-property-keys properties)
      ((:make-rolon! ark-value)  rolon-uuid properties))) ;todo
@@ -428,4 +427,4 @@
      (vswap! *volatile-ark-value* update-properties! rolon-uuid properties))
     ([ark-value rolon-uuid properties]
      (validate-property-keys properties)
-     ((:update-properties! ark-value) ark-value rolon-uuid properties)))
+     ((:update-properties! ark-value) ark-value rolon-uuid properties))) ;todo and buggy!

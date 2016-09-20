@@ -141,11 +141,13 @@
     ([ark-value rolon-uuid]
      ((:destroy-rolon! ark-value) ark-value rolon-uuid)))
 
-(defn update-properties! ;todo
-  "update the properties of a rolon"
-  [rolon-uuid properties]
-  (validate-property-keys properties)
-  ((:update-properties! @*volatile-ark-value*) rolon-uuid properties))
+(defn update-properties!
+    "update the properties of a rolon"
+    ([rolon-uuid properties]
+     (vswap! *volatile-ark-value* update-properties! rolon-uuid properties))
+    ([ark-value rolon-uuid properties]
+     (validate-property-keys properties)
+     ((:update-properties! ark-value) ark-value rolon-uuid properties)))
 
 (defn update-property! ;todo
   "update the value of a property of a rolon"
@@ -416,15 +418,7 @@
 
 #_(defn make-rolon!
     ([rolon-uuid properties]
-     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties)) ;todo and buggy!
+     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties))
     ([ark-value rolon-uuid properties]
      (validate-property-keys properties)
      ((:make-rolon! ark-value)  rolon-uuid properties))) ;todo
-
-#_(defn update-properties!
-    "update the properties of a rolon"
-    ([rolon-uuid properties]
-     (vswap! *volatile-ark-value* update-properties! rolon-uuid properties))
-    ([ark-value rolon-uuid properties]
-     (validate-property-keys properties)
-     ((:update-properties! ark-value) ark-value rolon-uuid properties))) ;todo and buggy!

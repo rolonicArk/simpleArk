@@ -132,20 +132,23 @@
   [rolon]
   (::rolon-values rolon))
 
-(defn make-rolon! ;todo
-  [rolon-uuid properties]
-  (if (ark-value/get-rolon rolon-uuid)
-    (update-properties! rolon-uuid properties) ;todo
-    (let [je-uuid (::active-journal-entry-uuid @ark-value/*volatile-ark-value*)
-          rolon (ark-value/->Rolon rolon-uuid get-rolon-values)
-          rolon (assoc rolon ::rolon-values
-                             (sorted-map je-uuid
-                                         (create-rolon-value je-uuid
-                                                             rolon-uuid
-                                                             properties)))]
-      (assoc-rolon! rolon-uuid rolon)
-      (je-modified! je-uuid rolon-uuid)
-      (ark-value/make-index-rolon! rolon-uuid properties (sorted-map))))) ;todo
+(defn make-rolon!
+  ([rolon-uuid properties]
+   (vswap! ark-value/*volatile-ark-value* make-rolon! rolon-uuid properties))
+  ([ark-value rolon-uuid properties]
+   (if (ark-value/get-rolon ark-value rolon-uuid)
+     (update-properties! ark-value rolon-uuid properties)
+     (let [je-uuid (::active-journal-entry-uuid ark-value)
+           rolon (ark-value/->Rolon rolon-uuid get-rolon-values)
+           rolon (assoc rolon ::rolon-values
+                              (sorted-map je-uuid
+                                          (create-rolon-value je-uuid
+                                                              rolon-uuid
+                                                              properties)))
+           ark-value (assoc-rolon! ark-value rolon-uuid rolon)
+           ark-value (je-modified! ark-value je-uuid rolon-uuid)]
+       (vreset! ark-value/*volatile-ark-value* ark-value) ;todo undo
+       (ark-value/make-index-rolon! rolon-uuid properties (sorted-map))))))
 
 (defn select-time!
   [ark-value je-uuid]

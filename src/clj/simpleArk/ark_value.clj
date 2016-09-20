@@ -129,10 +129,12 @@
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
           nil (keys properties)))
 
-(defn make-rolon! ;todo
-  [rolon-uuid properties]
-  (validate-property-keys properties)
-  ((:make-rolon! @*volatile-ark-value*) rolon-uuid properties))
+(defn make-rolon!
+    ([rolon-uuid properties]
+     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties))
+    ([ark-value rolon-uuid properties]
+     (validate-property-keys properties)
+     ((:make-rolon! ark-value) ark-value rolon-uuid properties)))
 
 (defn destroy-rolon!
     "deletes all the classifiers of a rolon"
@@ -410,7 +412,7 @@
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (update-properties! je-uuid je-properties); todo
-    (destroy-rolon! uuid)))
+    (destroy-rolon! uuid))) ;todo
 
 (defn reprocess-trans
   [m seq]
@@ -418,10 +420,3 @@
             (ark-db/process-transaction! m je-uuid transaction-name s))
           nil
           seq))
-
-#_(defn make-rolon!
-    ([rolon-uuid properties]
-     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties))
-    ([ark-value rolon-uuid properties]
-     (validate-property-keys properties)
-     ((:make-rolon! ark-value)  rolon-uuid properties))) ;todo

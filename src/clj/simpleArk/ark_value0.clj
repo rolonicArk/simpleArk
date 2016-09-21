@@ -154,10 +154,10 @@
                 (assoc ::latest-journal-entry-uuid je-uuid)
                 (assoc ::active-journal-entry-uuid je-uuid)
                 (ark-value/ark-binder (fn []
-                                        (vreset! ark-value/*volatile-ark-value*
-                                                 (ark-value/make-rolon! je-uuid ;todo
-                                                                        {:classifier/transaction-name transaction-name
-                                                                         :descriptor/transaction-argument s}))
+                                        (vswap! ark-value/*volatile-ark-value*
+                                                ark-value/make-rolon! je-uuid
+                                                {:classifier/transaction-name transaction-name
+                                                 :descriptor/transaction-argument s})
                                         (ark-value/eval-transaction transaction-name s))))]
     (if (::selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))

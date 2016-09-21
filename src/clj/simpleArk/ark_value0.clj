@@ -54,8 +54,7 @@
    (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
          rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
          property-values (::property-values rolon-value)
-         _ (vreset! ark-value/*volatile-ark-value* ark-value) ;todo decludge
-         ark-value (ark-value/make-index-rolon! rolon-uuid properties property-values) ;todo
+         ark-value (ark-value/make-index-rolon! ark-value rolon-uuid properties property-values)
          property-values (into property-values properties)
          rolon-value (assoc rolon-value ::property-values property-values)
          pjes (::property-journal-entry-uuids rolon-value)
@@ -92,8 +91,7 @@
          rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
          old-property-values (::property-values rolon-value)
          property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
-         _ (vreset! ark-value/*volatile-ark-value* ark-value) ;todo decludge
-         ark-value (ark-value/make-index-rolon! rolon-uuid property-values old-property-values) ;todo
+         ark-value (ark-value/make-index-rolon! ark-value rolon-uuid property-values old-property-values)
          rolon-value (assoc rolon-value ::property-values property-values)
          pjes (::property-journal-entry-uuids rolon-value)
          pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
@@ -147,8 +145,7 @@
                                                               properties)))
            ark-value (assoc-rolon! ark-value rolon-uuid rolon)
            ark-value (je-modified! ark-value je-uuid rolon-uuid)]
-       (vreset! ark-value/*volatile-ark-value* ark-value) ;todo undo
-       (ark-value/make-index-rolon! rolon-uuid properties (sorted-map)))))) ;todo
+       (ark-value/make-index-rolon! ark-value rolon-uuid properties (sorted-map))))))
 
 (defn select-time!
   [ark-value je-uuid]

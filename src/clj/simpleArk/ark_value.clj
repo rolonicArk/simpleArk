@@ -366,37 +366,37 @@
       index))))
 
 (defn make-index-rolon-!
-  ([classifier value uuid adding]
-   (vswap! *volatile-ark-value* make-index-rolon-! classifier value uuid adding))
-  ([ark-value classifier value uuid adding]
-   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
-         properties (if (get-rolon ark-value iuuid)
-                      (sorted-map)
-                      (sorted-map :classifier/index.name (name classifier)))
-         ark-value (make-rolon! ark-value iuuid properties)
-         index-rolon (get-rolon ark-value iuuid)
-         index-descriptor (get-index-descriptor ark-value iuuid)
-         value-set (index-descriptor value)
-         value-set (if value-set value-set #{})
-         value-set (if adding
-                     (conj value-set uuid)
-                     (disj value-set uuid))
-         index-descriptor (assoc index-descriptor value value-set)]
-     (update-property! ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))
+  [ark-value classifier value uuid adding]
+  (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
+        properties (if (get-rolon ark-value iuuid)
+                     (sorted-map)
+                     (sorted-map :classifier/index.name (name classifier)))
+        ark-value (make-rolon! ark-value iuuid properties)
+        index-rolon (get-rolon ark-value iuuid)
+        index-descriptor (get-index-descriptor ark-value iuuid)
+        value-set (index-descriptor value)
+        value-set (if value-set value-set #{})
+        value-set (if adding
+                    (conj value-set uuid)
+                    (disj value-set uuid))
+        index-descriptor (assoc index-descriptor value value-set)]
+    (update-property! ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
 
-(defn make-index-rolon! ;todo
-    "create/update an index rolon"
-    ([uuid properties old-properties]
-     (reduce #(let [k (key %2)
-                    nv (val %2)
-                    ov (old-properties k)]
-               (when (classifier? k)
-                 (if ov
-                   (make-index-rolon-! k ov uuid false)) ;todo
-                 (if nv
-                   (make-index-rolon-! k nv uuid true)))) ;todo
-             nil properties)
-     @*volatile-ark-value*))
+(defn make-index-rolon!
+  "create/update an index rolon"
+  [ark-value uuid properties old-properties]
+  (reduce #(let [ark-value %1
+                 k (key %2)
+                 nv (val %2)
+                 ov (old-properties k)
+                 ark-value (if (and ov (classifier? k))
+                             (make-index-rolon-! ark-value k ov uuid false)
+                             ark-value)
+                 ark-value (if (and nv (classifier? k))
+                             (make-index-rolon-! ark-value k nv uuid true)
+                             ark-value)]
+            ark-value)
+          ark-value properties))
 
 (defmulti eval-transaction (fn [n s] n))
 

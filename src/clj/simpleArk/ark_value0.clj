@@ -148,7 +148,7 @@
            ark-value (assoc-rolon! ark-value rolon-uuid rolon)
            ark-value (je-modified! ark-value je-uuid rolon-uuid)]
        (vreset! ark-value/*volatile-ark-value* ark-value) ;todo undo
-       (ark-value/make-index-rolon! rolon-uuid properties (sorted-map))))))
+       (ark-value/make-index-rolon! rolon-uuid properties (sorted-map)))))) ;todo
 
 (defn select-time!
   [ark-value je-uuid]

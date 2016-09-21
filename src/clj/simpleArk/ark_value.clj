@@ -365,22 +365,24 @@
        (sorted-map)
       index))))
 
-(defn make-index-rolon-! ;todo
-    ([classifier value uuid adding]
-     (let [iuuid (uuid/index-uuid (get-ark-db) classifier)
-           properties (if (get-rolon iuuid)
-                        (sorted-map)
-                        (sorted-map :classifier/index.name (name classifier)))
-           _ (make-rolon! iuuid properties) ;todo
-           index-rolon (get-rolon iuuid)
-           index-descriptor (get-index-descriptor iuuid)
-           value-set (index-descriptor value)
-           value-set (if value-set value-set #{})
-           value-set (if adding
-                       (conj value-set uuid)
-                       (disj value-set uuid))
-           index-descriptor (assoc index-descriptor value value-set)]
-       (update-property! (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))) ;todo
+(defn make-index-rolon-!
+  ([classifier value uuid adding]
+   (vswap! *volatile-ark-value* make-index-rolon-! classifier value uuid adding))
+  ([ark-value classifier value uuid adding]
+   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
+         properties (if (get-rolon ark-value iuuid)
+                      (sorted-map)
+                      (sorted-map :classifier/index.name (name classifier)))
+         ark-value (make-rolon! ark-value iuuid properties)
+         index-rolon (get-rolon ark-value iuuid)
+         index-descriptor (get-index-descriptor ark-value iuuid)
+         value-set (index-descriptor value)
+         value-set (if value-set value-set #{})
+         value-set (if adding
+                     (conj value-set uuid)
+                     (disj value-set uuid))
+         index-descriptor (assoc index-descriptor value value-set)]
+     (update-property! ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor))))
 
 (defn make-index-rolon! ;todo
     "create/update an index rolon"
@@ -403,16 +405,16 @@
   (let [je-uuid (get-current-journal-entry-uuid)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
-    (update-properties! je-uuid je-properties) ;todo
-    (vreset! *volatile-ark-value* (make-rolon! rolon-uuid rolon-properties)))) ;todo
+    (update-properties! je-uuid je-properties)
+    (vreset! *volatile-ark-value* (make-rolon! rolon-uuid rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [n s]
   (let [je-uuid (get-current-journal-entry-uuid)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
-    (update-properties! je-uuid je-properties); todo
-    (destroy-rolon! uuid))) ;todo
+    (update-properties! je-uuid je-properties)
+    (destroy-rolon! uuid)))
 
 (defn reprocess-trans
   [m seq]

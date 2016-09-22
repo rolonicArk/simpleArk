@@ -19,19 +19,13 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(def ^:dynamic *volatile-ark-value* nil)
-
 (defn get-current-journal-entry-uuid
-  ([]
-   (get-current-journal-entry-uuid @*volatile-ark-value*))
-  ([ark-value]
-   ((:get-current-journal-entry-uuid ark-value) ark-value)))
+  [ark-value]
+  ((:get-current-journal-entry-uuid ark-value) ark-value))
 
 (defn index-name-uuid
-  ([]
-   (index-name-uuid @*volatile-ark-value*))
-  ([ark-value]
-   ((:index-name-uuid ark-value) ark-value)))
+  [ark-value]
+  ((:index-name-uuid ark-value) ark-value))
 
 (defrecord Ark [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties! update-ark!
@@ -45,64 +39,46 @@
 
 (defn select-time!
   "Sets the ark to the time of the journal entry uuid"
-  ([je-uuid]
-   (vswap! *volatile-ark-value* select-time! je-uuid))
-  ([ark-value je-uuid]
-   ((:select-time! ark-value) ark-value je-uuid)))
+  [ark-value je-uuid]
+  ((:select-time! ark-value) ark-value je-uuid))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
-  ([]
-   (get-selected-time @*volatile-ark-value*))
-  ([ark-value]
-   ((:get-selected-time ark-value) ark-value)))
+  [ark-value]
+  ((:get-selected-time ark-value) ark-value))
 
 (defn get-ark-db
   "returns the ark-db"
-  ([]
-   (get-ark-db @*volatile-ark-value*))
-  ([ark-value]
-   (:this-db ark-value)))
+  [ark-value]
+  (:this-db ark-value))
 
 (defn get-journal-entries
   "returns a sorted map of all the journal entry rolons"
-  ([]
-   (get-journal-entries @*volatile-ark-value*))
-  ([ark-value]
-   ((:get-journal-entries ark-value) ark-value)))
+  [ark-value]
+  ((:get-journal-entries ark-value) ark-value))
 
 (defn get-indexes
   "returns a sorted map of all the index rolons"
-  ([]
-   (get-indexes @*volatile-ark-value*))
-  ([ark-value]
-   ((:get-indexes ark-value) ark-value)))
+  [ark-value]
+  ((:get-indexes ark-value) ark-value))
 
 (defn get-random-rolons
   "returns a map of all the random rolons"
-  ([]
-   (get-random-rolons @*volatile-ark-value*))
-  ([ark-value]
-   ((:get-random-rolons ark-value) ark-value)))
+  [ark-value]
+  ((:get-random-rolons ark-value) ark-value))
 
 (defn get-rolon
   "returns the rolon identified by the uuid, or nil"
-  ([uuid]
-   (get-rolon @*volatile-ark-value* uuid))
-  ([ark-value uuid]
-   ((:get-rolon ark-value) ark-value uuid)))
+  [ark-value uuid]
+  ((:get-rolon ark-value) ark-value uuid))
 
 (defn ark-str
-  [ark]
-  (let [old-ark @*volatile-ark-value*]
-    (vreset! *volatile-ark-value* ark)
-    (try
-      (let [s (str "\n" :ark "\n"
-                   "\n" :index-rolons "\n\n" (get-indexes) "\n"
-                   "\n" :journal-entry-rolons "\n\n" (get-journal-entries) "\n"
-                   "\n" :random-rolons "\n\n" (get-random-rolons))]
-        s)
-      (finally (vreset! *volatile-ark-value* old-ark)))))
+  [ark-value]
+  (let [s (str "\n" :ark "\n"
+               "\n" :index-rolons "\n\n" (get-indexes ark-value) "\n"
+               "\n" :journal-entry-rolons "\n\n" (get-journal-entries ark-value) "\n"
+               "\n" :random-rolons "\n\n" (get-random-rolons ark-value))]
+    s))
 
 (defmethod print-method Ark
   [ark writer]
@@ -178,89 +154,67 @@
 
 (defn get-rolon-value-at
   "returns the rolon value for the selected time"
-  ([rolon-uuid je-uuid]
-   (get-rolon-value-at @*volatile-ark-value* rolon-uuid je-uuid))
-  ([ark-value rolon-uuid je-uuid]
-   (let [rolon (get-rolon ark-value rolon-uuid)]
-     (val (first (rsubseq (get-rolon-values rolon) <= je-uuid))))))
+  [ark-value rolon-uuid je-uuid]
+  (let [rolon (get-rolon ark-value rolon-uuid)]
+    (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
 
 (defn get-current-rolon-value
   "returns the rolon value for the selected time"
-  ([rolon-uuid]
-   (get-current-rolon-value @*volatile-ark-value* rolon-uuid))
-  ([ark-value rolon-uuid]
-   (let [je-uuid (get-current-journal-entry-uuid ark-value)]
-     (get-rolon-value-at ark-value rolon-uuid je-uuid))))
+  [ark-value rolon-uuid]
+  (let [je-uuid (get-current-journal-entry-uuid ark-value)]
+    (get-rolon-value-at ark-value rolon-uuid je-uuid)))
 
 (defn get-property-values-at
   "returns the property values at the selected time"
-  ([rolon-uuid je-uuid]
-   (get-property-values-at @*volatile-ark-value* rolon-uuid je-uuid))
-  ([ark-value rolon-uuid je-uuid]
-   (get-property-values (get-rolon-value-at ark-value rolon-uuid je-uuid))))
+  [ark-value rolon-uuid je-uuid]
+  (get-property-values (get-rolon-value-at ark-value rolon-uuid je-uuid)))
 
 (defn get-current-property-values
   "returns the property values at the selected time"
-  ([rolon-uuid]
-   (get-current-property-values @*volatile-ark-value* rolon-uuid))
-  ([ark-value rolon-uuid]
-   (get-property-values (get-current-rolon-value ark-value rolon-uuid))))
+  [ark-value rolon-uuid]
+  (get-property-values (get-current-rolon-value ark-value rolon-uuid)))
 
 (defn get-property-je-uuids-at
   "returns the journal entries which last changed each property
   at the selected time"
-  ([rolon-uuid je-uuid]
-   (get-property-je-uuids-at @*volatile-ark-value* rolon-uuid je-uuid))
-  ([ark-value rolon-uuid je-uuid]
-   (get-property-je-uuids (get-rolon-value-at ark-value rolon-uuid je-uuid))))
+  [ark-value rolon-uuid je-uuid]
+  (get-property-je-uuids (get-rolon-value-at ark-value rolon-uuid je-uuid)))
 
 (defn get-current-property-je-uuids
   "returns the journal entries which last changed each property
   at the selected time"
-  ([rolon-uuid]
-   (get-current-property-je-uuids @*volatile-ark-value* rolon-uuid))
-  ([ark-value rolon-uuid]
-   (get-property-je-uuids (get-current-rolon-value ark-value rolon-uuid))))
+  [ark-value rolon-uuid]
+  (get-property-je-uuids (get-current-rolon-value ark-value rolon-uuid)))
 
 (defn get-property-value-at
   "returns the value of a property"
-  ([rolon-uuid key je-uuid]
-   (get-property-value-at @*volatile-ark-value* rolon-uuid key je-uuid))
-  ([ark-value rolon-uuid key je-uuid]
-   ((get-property-values-at ark-value rolon-uuid je-uuid) key)))
+  [ark-value rolon-uuid key je-uuid]
+  ((get-property-values-at ark-value rolon-uuid je-uuid) key))
 
 (defn get-current-property-value
   "returns the current value of a property"
-  ([rolon-uuid key]
-   (get-current-property-value @*volatile-ark-value* rolon-uuid key))
-  ([ark-value rolon-uuid key]
-   ((get-current-property-values ark-value rolon-uuid) key)))
+  [ark-value rolon-uuid key]
+  ((get-current-property-values ark-value rolon-uuid) key))
 
 (defn get-property-je-uuid-at
   "returns the uuid of the last je that changed the property
   at the selected time"
-  ([rolon-uuid key je-uuid]
-   (get-property-je-uuid-at @*volatile-ark-value* rolon-uuid key je-uuid))
-  ([ark-value rolon-uuid key je-uuid]
-   (key (get-property-je-uuids-at ark-value rolon-uuid je-uuid))))
+  [ark-value rolon-uuid key je-uuid]
+  (key (get-property-je-uuids-at ark-value rolon-uuid je-uuid)))
 
 (defn get-current-property-je-uuid
   "returns the uuid of the last je that changed the property
   at the selected time"
-  ([rolon-uuid key]
-   (get-current-property-je-uuid @*volatile-ark-value* rolon-uuid key))
-  ([ark-value rolon-uuid key]
-   (key (get-current-property-je-uuids ark-value rolon-uuid))))
+  [ark-value rolon-uuid key]
+  (key (get-current-property-je-uuids ark-value rolon-uuid)))
 
 (defn get-previous-rolon-je-uuid
   "returns the uuid of the prior journal entry updating the same rolon"
-  ([rolon-uuid je-uuid]
-   (get-previous-rolon-je-uuid @*volatile-ark-value* rolon-uuid je-uuid))
-  ([ark-value rolon-uuid je-uuid]
-   (let [rolon (get-rolon ark-value rolon-uuid)
-         rolon-values (get-rolon-values rolon)
-         previous-rolon-values (rsubseq rolon-values < je-uuid)]
-     (key (first previous-rolon-values)))))
+  [ark-value rolon-uuid je-uuid]
+  (let [rolon (get-rolon ark-value rolon-uuid)
+        rolon-values (get-rolon-values rolon)
+        previous-rolon-values (rsubseq rolon-values < je-uuid)]
+    (key (first previous-rolon-values))))
 
 (defn locate-next-je-uuid-for-property
   ([[ark-value rolon-uuid key je-uuid]]
@@ -280,67 +234,53 @@
 
 (defn rolon-property-je-uuids-at
   "returns a lazy sequence of journal entry uuids which changed a property"
-  ([rolon-uuid key je-uuid]
-   (rolon-property-je-uuids-at @*volatile-ark-value* rolon-uuid key je-uuid))
-  ([ark-value rolon-uuid key je-uuid]
-   (map #(if %
-          (% 3)
-          nil)
-        (take-while identity (iterate locate-next-je-uuid-for-property [ark-value rolon-uuid key je-uuid])))))
+  [ark-value rolon-uuid key je-uuid]
+  (map #(if %
+         (% 3)
+         nil)
+       (take-while identity (iterate locate-next-je-uuid-for-property [ark-value rolon-uuid key je-uuid]))))
 
 (defn rolon-property-current-je-uuids
   "returns a lazy sequence of journal entry uuids which changed a property"
-  ([rolon-uuid key]
-   (rolon-property-current-je-uuids @*volatile-ark-value* rolon-uuid key))
-  ([ark-value rolon-uuid key]
-   (let [first-je-uuid (get-current-property-je-uuid ark-value rolon-uuid key)]
-     (if first-je-uuid
-       (rolon-property-je-uuids-at ark-value rolon-uuid key first-je-uuid)
-       nil))))
+  [ark-value rolon-uuid key]
+  (let [first-je-uuid (get-current-property-je-uuid ark-value rolon-uuid key)]
+    (if first-je-uuid
+      (rolon-property-je-uuids-at ark-value rolon-uuid key first-je-uuid)
+      nil)))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
-  ([index-uuid value]
-   (index-lookup @*volatile-ark-value* index-uuid value))
-  ([ark-value index-uuid value]
-   (let [properties (get-current-property-values ark-value index-uuid)
-         index-map (:descriptor/index properties)]
-     (index-map value))))
+  [ark-value index-uuid value]
+  (let [properties (get-current-property-values ark-value index-uuid)
+        index-map (:descriptor/index properties)]
+    (index-map value)))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
-  ([index-name]
-   (get-index-uuid @*volatile-ark-value* index-name))
-  ([ark-value index-name]
-   (first (index-lookup ark-value (index-name-uuid ark-value) index-name))))
+  [ark-value index-name]
+  (first (index-lookup ark-value (index-name-uuid ark-value) index-name)))
 
 (defn name-lookup
-  ([rolon-name]
-   (name-lookup @*volatile-ark-value* rolon-name))
-  ([ark-value rolon-name]
-   (let [name-index-uuid (get-index-uuid ark-value "name")]
-     (first (index-lookup ark-value name-index-uuid rolon-name)))))
+  [ark-value rolon-name]
+  (let [name-index-uuid (get-index-uuid ark-value "name")]
+    (first (index-lookup ark-value name-index-uuid rolon-name))))
 
 (defn get-updated-rolon-uuids
   "returns a map of the uuids of the rolons updated by a journal-entry rolon"
-  ([je-uuid]
-   (get-updated-rolon-uuids @*volatile-ark-value* je-uuid))
-  ([ark-value je-uuid]
-   (let [latest-je-property-values (get-current-property-values ark-value je-uuid)
-         updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
-     (if (nil? updated-rolon-uuids)
-       (sorted-map)
-       updated-rolon-uuids))))
+  [ark-value je-uuid]
+  (let [latest-je-property-values (get-current-property-values ark-value je-uuid)
+        updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
+    (if (nil? updated-rolon-uuids)
+      (sorted-map)
+      updated-rolon-uuids)))
 
 (defn get-index-descriptor
   "returns a sorted map of sets of rolon uuids keyed by classifier value"
-  ([je-uuid]
-   (get-index-descriptor @*volatile-ark-value* je-uuid))
-  ([ark-value je-uuid]
-   (let [index (:descriptor/index (get-current-property-values ark-value je-uuid))]
-     (if (nil? index)
-       (sorted-map)
-      index))))
+  [ark-value je-uuid]
+  (let [index (:descriptor/index (get-current-property-values ark-value je-uuid))]
+    (if (nil? index)
+      (sorted-map)
+      index)))
 
 (defn make-index-rolon-!
   [ark-value classifier value uuid adding]

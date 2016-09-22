@@ -21,20 +21,6 @@
 
 (def ^:dynamic *volatile-ark-value* nil)
 
-(defn ark-binder
-  [ark-value f]
-  (let [vark (volatile! nil)]
-    (binding [*volatile-ark-value* (volatile! ark-value)]
-      (f)
-      (vreset! vark @*volatile-ark-value*))
-    @vark))
-
-(defmacro bind-ark
-  "binds a volatile holding an ark value to *ark* while body is evaluated,
-  returning the last bound value of ark"
-  [ark-db & body]
-  `(ark-binder (ark-db/get-ark-value ~ark-db) (fn [] ~@body)))
-
 (defn get-current-journal-entry-uuid
   ([]
    (get-current-journal-entry-uuid @*volatile-ark-value*))

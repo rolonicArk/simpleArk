@@ -36,7 +36,7 @@
   (first (keep println (tlog/tran-seq ark-db)))
   )
 
-(deftest ark-dba0
+(deftest ark-dba1
   (def ark-db ((comp
                  (ark-db/builder)
                  (ark-dba1/builder)

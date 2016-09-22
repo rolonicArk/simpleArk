@@ -104,32 +104,30 @@
   (println)
   (println ">>>>>>>>>>>> journal entry headlines")
   (println)
-  (ark-value/bind-ark ark-db
-            (first (keep (fn [x] (println (ark-value/get-current-property-value (key x) :classifier/headline)))
-                         (ark-value/get-journal-entries))))
+  (let [ark-value (ark-db/get-ark-value ark-db)]
+    (first (keep (fn [x] (println (ark-value/get-current-property-value ark-value (key x) :classifier/headline)))
+                 (ark-value/get-journal-entries ark-value))))
 
-(println)
-(println ">>>>>>>>>>>> all the latest headlines")
-(println)
-(ark-value/bind-ark ark-db
-          (let [headline-index-uuid (ark-value/get-index-uuid "headline")
-                current-rolon-value (ark-value/get-current-property-values headline-index-uuid)
-                descriptor-index (:descriptor/index current-rolon-value)]
-            (first (keep (fn [x]
-                           (if (first (val x))
-                             (println (key x))))
-                         descriptor-index))
-            ))
+  (println)
+  (println ">>>>>>>>>>>> all the latest headlines")
+  (println)
+  (let [ark-value (ark-db/get-ark-value ark-db)
+        headline-index-uuid (ark-value/get-index-uuid ark-value "headline")
+        current-rolon-value (ark-value/get-current-property-values ark-value headline-index-uuid)
+        descriptor-index (:descriptor/index current-rolon-value)]
+    (first (keep (fn [x]
+                   (if (first (val x))
+                     (println (key x))))
+                 descriptor-index)))
 
   (println)
   (println ">>>>>>>>>>>> bob's headlines over time")
   (println)
-  (ark-value/bind-ark ark-db
-                      (first (keep #(println (ark-value/get-property-value-at bob-uuid :classifier/headline %)
-                                   "-"
-                                   (ark-value/get-current-property-value % :classifier/headline))
-                                   (ark-value/rolon-property-current-je-uuids bob-uuid :classifier/headline))))
-  )
+  (let [ark-value (ark-db/get-ark-value ark-db)]
+    (first (keep #(println (ark-value/get-property-value-at ark-value bob-uuid :classifier/headline %)
+                           "-"
+                           (ark-value/get-current-property-value ark-value % :classifier/headline))
+                 (ark-value/rolon-property-current-je-uuids ark-value bob-uuid :classifier/headline)))))
 
 (deftest arks
   (println "impl0 tests")

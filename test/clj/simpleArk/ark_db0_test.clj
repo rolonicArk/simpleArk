@@ -96,10 +96,10 @@
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
-  (ark-value/bind-ark ark-db
-            (ark-value/select-time! make-bob-je-uuid)
-            (println :bob-properties (ark-value/get-current-property-values bob-uuid))
-            (println :lookup-bob (ark-value/name-lookup "Bob")))
+  (let [ark-value (ark-db/get-ark-value ark-db)
+        ark-value (ark-value/select-time! ark-value make-bob-je-uuid)]
+    (println :bob-properties (ark-value/get-current-property-values ark-value bob-uuid))
+    (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
   (println)
   (println ">>>>>>>>>>>> journal entry headlines")

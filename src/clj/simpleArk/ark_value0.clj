@@ -151,14 +151,12 @@
 (defn update-ark!
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
-                (assoc ::latest-journal-entry-uuid je-uuid)
-                (assoc ::active-journal-entry-uuid je-uuid)
-                (ark-value/ark-binder (fn []
-                                        (vswap! ark-value/*volatile-ark-value*
-                                                ark-value/make-rolon! je-uuid
-                                                {:classifier/transaction-name transaction-name
-                                                 :descriptor/transaction-argument s})
-                                        (ark-value/eval-transaction ark-value transaction-name s))))]
+                      (assoc ::latest-journal-entry-uuid je-uuid)
+                      (assoc ::active-journal-entry-uuid je-uuid)
+                      (ark-value/make-rolon! je-uuid
+                                             {:classifier/transaction-name transaction-name
+                                              :descriptor/transaction-argument s})
+                      (ark-value/eval-transaction transaction-name s))]
     (if (::selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))

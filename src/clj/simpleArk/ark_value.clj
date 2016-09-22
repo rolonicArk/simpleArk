@@ -402,19 +402,21 @@
 
 (defmethod eval-transaction :ark/update-rolon-transaction!
   [ark-value n s]
-  (let [je-uuid (get-current-journal-entry-uuid)
+  (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
-    (update-properties! je-uuid je-properties)
-    (vreset! *volatile-ark-value* (make-rolon! rolon-uuid rolon-properties))))
+    (-> ark-value
+        (update-properties! je-uuid je-properties)
+        (make-rolon! rolon-uuid rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
-  (let [je-uuid (get-current-journal-entry-uuid)
+  (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
-    (update-properties! je-uuid je-properties)
-    (destroy-rolon! uuid)))
+    (-> ark-value
+        (update-properties! je-uuid je-properties)
+        (destroy-rolon! uuid))))
 
 (defn reprocess-trans
   [m seq]

@@ -130,34 +130,25 @@
           nil (keys properties)))
 
 (defn make-rolon!
-    ([rolon-uuid properties]
-     (vswap! *volatile-ark-value* make-rolon! rolon-uuid properties))
-    ([ark-value rolon-uuid properties]
-     (validate-property-keys properties)
-     ((:make-rolon! ark-value) ark-value rolon-uuid properties)))
+  [ark-value rolon-uuid properties]
+  (validate-property-keys properties)
+  ((:make-rolon! ark-value) ark-value rolon-uuid properties))
 
 (defn destroy-rolon!
-    "deletes all the classifiers of a rolon"
-    ([rolon-uuid]
-     (vswap! *volatile-ark-value* destroy-rolon! rolon-uuid))
-    ([ark-value rolon-uuid]
-     ((:destroy-rolon! ark-value) ark-value rolon-uuid)))
+  "deletes all the classifiers of a rolon"
+  [ark-value rolon-uuid]
+  ((:destroy-rolon! ark-value) ark-value rolon-uuid))
 
 (defn update-properties!
-    "update the properties of a rolon"
-    ([rolon-uuid properties]
-     (vswap! *volatile-ark-value* update-properties! rolon-uuid properties))
-    ([ark-value rolon-uuid properties]
-     (validate-property-keys properties)
-     ((:update-properties! ark-value) ark-value rolon-uuid properties)))
+  "update the properties of a rolon"
+  [ark-value rolon-uuid properties]
+  (validate-property-keys properties)
+  ((:update-properties! ark-value) ark-value rolon-uuid properties))
 
 (defn update-property!
   "update the value of a property of a rolon"
-  ([rolon-uuid property-name property-value]
-   (vswap! *volatile-ark-value* update-property! rolon-uuid property-name property-value))
-  ([ark-value rolon-uuid property-name property-value]
-   (update-properties! ark-value rolon-uuid (sorted-map property-name property-value)))
-  )
+  [ark-value rolon-uuid property-name property-value]
+  (update-properties! ark-value rolon-uuid (sorted-map property-name property-value)))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,

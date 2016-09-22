@@ -11,12 +11,12 @@
 (set! *warn-on-reflection* true)
 
 (defmethod ark-value/eval-transaction ::trouble!
-  [n s]
+  [ark-value n s]
   (println "throwing exception")
   (throw (new IllegalArgumentException)))
 
 (defmethod ark-value/eval-transaction ::hello-world!
-  [n s]
+  [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid)]
     (ark-value/update-property! je-uuid :classifier/headline "Just for fun!")))

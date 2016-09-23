@@ -8,13 +8,13 @@
 
 (set! *warn-on-reflection* true)
 
-(defn close-tran-chan
+(defn- close-tran-chan
   [ark-db]
   (let [tran-chan (::tran-chan ark-db)]
     (async/close! tran-chan)
     (log/info! ark-db "transaction channel closed")))
 
-(defn process-transactions
+(defn- process-transactions
   [ark-db]
   (let [tran (async/<!! (::tran-chan ark-db))]
     (when tran

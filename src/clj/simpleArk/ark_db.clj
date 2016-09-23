@@ -32,11 +32,7 @@
   [ark-db]
   @(::ark-atom ark-db))
 
-(defn- build
-  "returns the ark db common data"
-  [m]
-  (assoc m ::ark-atom (atom nil)))
-
 (defn builder
   []
-  build)
+  (fn [m]
+    (assoc m ::ark-atom (atom nil))))

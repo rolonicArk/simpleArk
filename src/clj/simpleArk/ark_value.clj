@@ -37,8 +37,9 @@
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid
                         get-property-values get-property-journal-entry-uuids])
 
-(defn select-time!
-  "Sets the ark to the time of the journal entry uuid"
+(defn select-time
+  "Sets the ark to the time of the journal entry uuid,
+  returns the updated ark-value"
   [ark-value je-uuid]
   ((:select-time! ark-value) ark-value je-uuid))
 

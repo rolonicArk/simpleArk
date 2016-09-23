@@ -44,33 +44,33 @@
   (println)
   (def bob-uuid (uuid/random-uuid ark-db))
   (def make-bob-je-uuid (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
-                                              (prn-str [bob-uuid
-                                                        {:classifier/headline "make bob"}
-                                                        {:descriptor/age 8 :classifier/name "Bob"}])))
+                                                     (prn-str [bob-uuid
+                                                               {:classifier/headline "make bob"}
+                                                               {:descriptor/age 8 :classifier/name "Bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>>>> 4 updates to bob")
   (println)
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
-                        (prn-str [bob-uuid
-                                  {:classifier/headline "bob update 1"}
-                                  {:classifier/headline "kissing is gross!"}]))
+                               (prn-str [bob-uuid
+                                         {:classifier/headline "bob update 1"}
+                                         {:classifier/headline "kissing is gross!"}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
-                        (prn-str [bob-uuid
-                                  {:classifier/headline "bob update 2"}
-                                  {:descriptor/age 9}]))
+                               (prn-str [bob-uuid
+                                         {:classifier/headline "bob update 2"}
+                                         {:descriptor/age 9}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
-                        (prn-str [bob-uuid
-                                  {:classifier/headline "bob update 3"}
-                                  {:classifier/headline "who likes girls?"}]))
+                               (prn-str [bob-uuid
+                                         {:classifier/headline "bob update 3"}
+                                         {:classifier/headline "who likes girls?"}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
-                        (prn-str [bob-uuid
-                                  {:classifier/headline "bob update 4"}
-                                  {:classifier/headline "when do I get my own mobile!"}]))
+                               (prn-str [bob-uuid
+                                         {:classifier/headline "bob update 4"}
+                                         {:classifier/headline "when do I get my own mobile!"}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
@@ -78,26 +78,26 @@
   (println)
   (def sam-uuid (uuid/random-uuid ark-db))
   (def make-sam-je-uuid (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
-                                              (prn-str [sam-uuid
-                                                        {:classifier/headline "make sam"}
-                                                        {:descriptor/age 10
-                                                         :classifier/name "Sam"
-                                                         :classifier/headline "I hate green eggs and ham!"}])))
+                                                     (prn-str [sam-uuid
+                                                               {:classifier/headline "make sam"}
+                                                               {:descriptor/age 10
+                                                                :classifier/name "Sam"
+                                                                :classifier/headline "I hate green eggs and ham!"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>>>> destroy-bob")
   (println)
   (def destroy-bob-je-uuid (ark-db/process-transaction! ark-db :ark/destroy-rolon-transaction!
-                                                 (prn-str [bob-uuid
-                                                {:classifier/headline "destroy bob"}])))
+                                                        (prn-str [bob-uuid
+                                                                  {:classifier/headline "destroy bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-        ark-value (ark-value/select-time! ark-value make-bob-je-uuid)]
+        ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
     (println :bob-properties (ark-value/get-current-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 

@@ -137,6 +137,7 @@
                  (ark-db0/builder)
                  (ark-value0/builder)
                  (uuidi/builder)
+                 (closer/builder)
                  (logt/builder))
                 {}))
   (ark-db/open-ark! ark-db)

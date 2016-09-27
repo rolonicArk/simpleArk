@@ -7,7 +7,8 @@
             [simpleArk.uuid :as uuid]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-db :as ark-db]
-            [simpleArk.ark-db0 :as ark-db0]))
+            [simpleArk.ark-db0 :as ark-db0]
+            [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)
 
@@ -139,4 +140,7 @@
                  (logt/builder))
                 {}))
   (ark-db/open-ark! ark-db)
-  (test0 ark-db))
+  (try
+    (test0 ark-db)
+    (finally
+      (closer/close-all ark-db))))

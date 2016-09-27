@@ -38,10 +38,14 @@
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )
 
+(defn async-process-transaction!
+  [ark-db transaction-name s rsp-chan]
+  (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan]))
+
 (defn process-transaction!
   ([ark-db transaction-name s]
    (let [rsp-chan (async/chan)
-         _ (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan])
+         _ (async-process-transaction! ark-db transaction-name s rsp-chan)
          rsp (async/<!! rsp-chan)]
      (if (instance? Exception rsp)
        (throw rsp)
@@ -60,4 +64,5 @@
         (assoc ::tran-chan tran-chan)
         (assoc ::name name)
         (assoc :ark-db/open-ark! open-ark!)
+        (assoc :ark-db/async-process-transaction! async-process-transaction!)
         (assoc :ark-db/process-transaction! process-transaction!))))

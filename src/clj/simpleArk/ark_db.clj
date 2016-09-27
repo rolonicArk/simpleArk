@@ -7,6 +7,10 @@
   [ark-db]
   ((:ark-db/open-ark! ark-db) ark-db))
 
+(defn async-process-transaction!
+  [ark-db transaction-name s rsp-chan]
+  ((:ark-db/async-process-transaction! ark-db) ark-db transaction-name s rsp-chan))
+
 (defn process-transaction!
   "process a transaction with an (edn) string,
     returning the new journal-entry uuid"

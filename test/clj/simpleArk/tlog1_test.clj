@@ -25,5 +25,4 @@
     (tlog/add-tran! c 3 "c" "-" rsp-chan "z")
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
     (println (tlog/tran-seq c))
-    (println (tlog/tran-seq c 2))
-    ))
+    (println (tlog/tran-seq c 2))))

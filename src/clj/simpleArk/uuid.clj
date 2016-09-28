@@ -15,6 +15,10 @@
   [ark-db classifier]
   ((:uuid/index-uuid ark-db) ark-db classifier))
 
+(defn lsw
+  [uuid]
+  (long (+ 9223372036854775808 (clj-uuid/get-word-low uuid))))
+
 (defn journal-entry-uuid?
   [uuid]
   (and (uuid? uuid)

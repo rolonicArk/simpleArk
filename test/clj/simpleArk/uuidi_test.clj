@@ -17,7 +17,7 @@
   (is (random-uuid? random-uuid0))
   (is (index-uuid? index-uuid0))
 
-  (is (= 1 (uuidi/lsw random-uuid0)))
-  (is (= 2 (uuidi/lsw (random-uuid ark-db))))
-  (is (= 3 (uuidi/lsw (random-uuid ark-db))))
-  (is (= 4 (uuidi/lsw (random-uuid ark-db)))))
+  (is (= 1 (lsw random-uuid0)))
+  (is (= 2 (lsw (random-uuid ark-db))))
+  (is (= 3 (lsw (random-uuid ark-db))))
+  (is (= 4 (lsw (random-uuid ark-db)))))

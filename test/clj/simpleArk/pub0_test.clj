@@ -18,5 +18,4 @@
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
     (pub/publish c "z" [[rsp-chan 2] [rsp-chan 3]])
     (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
-    ))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))))

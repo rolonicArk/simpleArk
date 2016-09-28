@@ -4,7 +4,7 @@
 
 (set! *warn-on-reflection* true)
 
-(defn publish
+(defn publish!
   [ark-db ark-value v]
   (ark-db/init-ark! ark-db ark-value)
   (reduce (fn [_ [chan je-uuid]]
@@ -17,4 +17,4 @@
   (fn [m]
     (-> m
         (assoc ::va (atom []))
-        (assoc :pub/publish publish))))
+        (assoc :pub/publish! publish!))))

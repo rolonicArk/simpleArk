@@ -133,7 +133,7 @@
           ark-value (je-modified! ark-value je-uuid rolon-uuid)]
       (ark-value/make-index-rolon! ark-value rolon-uuid properties (sorted-map)))))
 
-(defn select-time!
+(defn select-time
   [ark-value je-uuid]
   (let [je-uuid (key (first (rsubseq (ark-value/get-journal-entries ark-value) <= je-uuid)))]
     (-> ark-value
@@ -163,10 +163,10 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark this-db get-rolon get-journal-entries get-indexes get-random-rolons
-                       make-rolon! destroy-rolon! update-properties! update-ark!
-                       get-current-journal-entry-uuid
-                       select-time! get-selected-time index-name-uuid)
+  (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
+                             make-rolon! destroy-rolon! update-properties! update-ark!
+                             get-current-journal-entry-uuid
+                             select-time get-selected-time index-name-uuid)
       (assoc ::journal-entries (sorted-map))
       (assoc ::indexes (sorted-map))
       (assoc ::random-rolons {})

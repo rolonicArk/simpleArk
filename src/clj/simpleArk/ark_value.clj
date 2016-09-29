@@ -27,7 +27,7 @@
   [ark-value]
   ((:index-name-uuid ark-value) ark-value))
 
-(defrecord Ark [this-db get-rolon get-journal-entries get-indexes get-random-rolons
+(defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                 make-rolon! destroy-rolon! update-properties! update-ark!
                 get-current-journal-entry-uuid
                 select-time! get-selected-time index-name-uuid])
@@ -81,7 +81,7 @@
                "\n" :random-rolons "\n\n" (get-random-rolons ark-value))]
     s))
 
-(defmethod print-method Ark
+(defmethod print-method Ark-value
   [ark writer]
   (print-simple (ark-str ark) writer))
 

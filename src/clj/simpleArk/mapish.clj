@@ -5,6 +5,7 @@
 (defprotocol MI
   (mi-get [this key] [key default])
   (mi-assoc [this key value])
+  (mi-dissoc [this key value])
   (mi-seq this)
   (mi-rseq this)
   (mi-sub [this start-test start-key] [this start-test start-key end-test end-key]))
@@ -44,8 +45,19 @@
       not-found))
   (mi-assoc [this key value]
     (if (in-range key start-test start-key end-test end-key)
-      (->MI-map
-        (assoc sorted-map key value) start-test start-key end-test end-key)
+      (if (not= 0 (compare value (get sorted-map key)))
+        (->MI-map
+          (assoc sorted-map key value)
+          start-test start-key end-test end-key)
+        this)
+      this))
+  (mi-dissoc [this key value]
+    (if (in-range key start-test start-key end-test end-key)
+      (if (get sorted-map key)
+        (->MI-map
+          (dissoc sorted-map key value)
+          start-test start-key end-test end-key)
+        this)
       this))
   (mi-seq [this]
     (cond

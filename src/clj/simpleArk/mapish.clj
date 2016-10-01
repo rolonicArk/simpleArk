@@ -44,7 +44,8 @@
       not-found))
   (mi-assoc [this key value]
     (if (in-range key start-test start-key end-test end-key)
-      (assoc sorted-map key value)
+      (->MI-map
+        (assoc sorted-map key value) start-test start-key end-test end-key)
       this))
   (mi-seq [this]
     (cond

@@ -70,4 +70,57 @@
           :else
           this
           )))
-  )
+  (mi-sub [this stest skey etest ekey]
+    (let [sc (compare skey start-key)
+          s-test (cond
+                   (< sc 0)
+                   start-test
+                   (> sc 0)
+                   stest
+                   (= stest start-test)
+                   start-test
+                   (= stest >)
+                   stest
+                   :else
+                   start-test)
+          s-key (cond
+                   (< sc 0)
+                   start-key
+                   (> sc 0)
+                   skey
+                   (= stest start-test)
+                   start-key
+                   (= stest >)
+                   skey
+                   :else
+                   start-key)
+          ec (compare ekey end-key)
+          e-test (cond
+                   (> ec 0)
+                   end-test
+                   (< ec 0)
+                   etest
+                   (= etest end-test)
+                   end-test
+                   (= etest <)
+                   etest
+                   :else
+                   end-test)
+          e-key (cond
+                   (> ec 0)
+                   end-key
+                   (< ec 0)
+                   ekey
+                   (= etest end-test)
+                   end-key
+                   (= etest <)
+                   ekey
+                   :else
+                   end-key)]
+      (if (and
+            (= s-test start-test)
+            (= e-test end-test)
+            (= 0 (compare s-key start-key))
+            (= 0 (compare e-key end-key)))
+        this
+        (->MI-map sorted-map s-test s-key e-test e-key)))))

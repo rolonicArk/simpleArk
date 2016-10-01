@@ -9,6 +9,12 @@
   (mi-rseq this)
   (mi-sub [this start-test start-key] [this start-test start-key end-test end-key]))
 
+(def in-range [key stest skey etest ekey]
+  (and
+    (cond
+      )
+    ()))
+
 (deftype MI-map [sorted-map start-test start-key end-test end-key]
   MI
   (mi-get [this key] (get sorted-map key))
@@ -59,6 +65,8 @@
   (mi-sub [this stest skey]
     (let [c (compare skey start-key)]
         (cond
+          (nil? start-key)
+          (->MI-map sorted-map stest skey end-test end-key)
           (< c 0)
           this
           (> c 0)
@@ -73,6 +81,8 @@
   (mi-sub [this stest skey etest ekey]
     (let [sc (compare skey start-key)
           s-test (cond
+                   (nil? start-key)
+                   stest
                    (< sc 0)
                    start-test
                    (> sc 0)
@@ -84,6 +94,8 @@
                    :else
                    start-test)
           s-key (cond
+                  (nil? start-key)
+                  skey
                    (< sc 0)
                    start-key
                    (> sc 0)
@@ -96,6 +108,8 @@
                    start-key)
           ec (compare ekey end-key)
           e-test (cond
+                   (nil? end-key)
+                   etest
                    (> ec 0)
                    end-test
                    (< ec 0)
@@ -107,16 +121,18 @@
                    :else
                    end-test)
           e-key (cond
-                   (> ec 0)
-                   end-key
-                   (< ec 0)
-                   ekey
-                   (= etest end-test)
-                   end-key
-                   (= etest <)
-                   ekey
-                   :else
-                   end-key)]
+                  (nil? end-key)
+                  ekey
+                  (> ec 0)
+                  end-key
+                  (< ec 0)
+                  ekey
+                  (= etest end-test)
+                  end-key
+                  (= etest <)
+                  ekey
+                  :else
+                  end-key)]
       (if (and
             (= s-test start-test)
             (= e-test end-test)

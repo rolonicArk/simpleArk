@@ -3,14 +3,14 @@
 (set! *warn-on-reflection* true)
 
 (defprotocol MI
-  (mi-get [this key] [key default])
+  (mi-get [this key] [this key default])
   (mi-assoc [this key value])
   (mi-dissoc [this key value])
-  (mi-seq this)
-  (mi-rseq this)
+  (mi-seq [this])
+  (mi-rseq [this])
   (mi-sub [this start-test start-key] [this start-test start-key end-test end-key]))
 
-(def in-range [key stest skey etest ekey]
+(defn in-range [key stest skey etest ekey]
   (let [sc (compare key skey)
         ec (compare key ekey)]
     (and
@@ -32,6 +32,8 @@
         true
         :else
         (= etest <=)))))
+
+(declare ->MI-map)
 
 (deftype MI-map [sorted-map start-test start-key end-test end-key]
   MI

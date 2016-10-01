@@ -19,7 +19,7 @@
   (println (mapish/mi-rseq mi1))
   (println (mapish/mi-rseq mi2))
   (println (mapish/mi-seq (mapish/mi-assoc mi0 :c 3)))
-  ;(println (mapish/mi-seq (mapish/mi-assoc mi1 :c 3)))
+  (println (mapish/mi-seq (mapish/mi-assoc mi1 :c 3)))
   (println (mapish/mi-seq (mapish/mi-assoc mi0 :a 1)))
   (println (mapish/mi-seq (mapish/mi-assoc mi0 :a 11)))
   (println (mapish/mi-seq (mapish/mi-dissoc mi0 :b)))

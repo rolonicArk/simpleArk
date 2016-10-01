@@ -17,18 +17,18 @@
       (cond
         (nil? skey)
         true
-        (< 0 sc)
-        false
         (> 0 sc)
+        false
+        (< 0 sc)
         true
         :else
         (= stest >=))
       (cond
         (nil? ekey)
         true
-        (> 0 ec)
-        false
         (< 0 ec)
+        false
+        (> 0 ec)
         true
         :else
         (= etest <=)))))

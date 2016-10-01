@@ -10,16 +10,42 @@
   (mi-sub [this start-test start-key] [this start-test start-key end-test end-key]))
 
 (def in-range [key stest skey etest ekey]
-  (and
-    (cond
-      )
-    ()))
+  (let [sc (compare key skey)
+        ec (compare key ekey)]
+    (and
+      (cond
+        (nil? skey)
+        true
+        (< 0 sc)
+        false
+        (> 0 sc)
+        true
+        :else
+        (= stest >=))
+      (cond
+        (nil? ekey)
+        true
+        (> 0 ec)
+        false
+        (< 0 ec)
+        true
+        :else
+        (= etest <=)))))
 
 (deftype MI-map [sorted-map start-test start-key end-test end-key]
   MI
-  (mi-get [this key] (get sorted-map key))
-  (mi-get [this key not-found] (get sorted-map key not-found))
-  (mi-assoc [this key value] (assoc sorted-map key value))
+  (mi-get [this key]
+    (if (in-range key start-test start-key end-test end-key)
+      (get sorted-map key)
+      nil))
+  (mi-get [this key not-found]
+    (if (in-range key start-test start-key end-test end-key)
+      (get sorted-map key not-found)
+      not-found))
+  (mi-assoc [this key value]
+    (if (in-range key start-test start-key end-test end-key)
+      (assoc sorted-map key value)
+      this))
   (mi-seq [this]
     (cond
       (empty? sorted-map)

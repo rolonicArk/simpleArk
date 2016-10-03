@@ -39,4 +39,8 @@
   (println (mapish/mi-get mi2 :f))
   (println (mapish/mi-get mi0 :a 22))
   (println (mapish/mi-get mi0 :c 22))
+  (println (mapish/mi-seq (mapish/mi-sub mi0 nil nil)))
+  (println (mapish/mi-seq (mapish/mi-sub mi0 nil nil nil nil)))
+  (println (mapish/mi-seq (mapish/mi-sub mi1 nil nil)))
+  (println (mapish/mi-seq (mapish/mi-sub mi1 nil nil nil nil)))
   )

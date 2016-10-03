@@ -106,6 +106,8 @@
   (mi-sub [this stest skey]
     (let [c (compare skey start-key)]
         (cond
+          (nil? skey)
+          this
           (nil? start-key)
           (->MI-map sorted-map stest skey end-test end-key)
           (< c 0)
@@ -122,6 +124,8 @@
   (mi-sub [this stest skey etest ekey]
     (let [sc (compare skey start-key)
           s-test (cond
+                   (nil? skey)
+                   start-test
                    (nil? start-key)
                    stest
                    (< sc 0)
@@ -135,20 +139,24 @@
                    :else
                    start-test)
           s-key (cond
+                  (nil? skey)
+                  start-key
                   (nil? start-key)
                   skey
-                   (< sc 0)
-                   start-key
-                   (> sc 0)
-                   skey
-                   (= stest start-test)
-                   start-key
-                   (= stest >)
-                   skey
-                   :else
-                   start-key)
+                  (< sc 0)
+                  start-key
+                  (> sc 0)
+                  skey
+                  (= stest start-test)
+                  start-key
+                  (= stest >)
+                  skey
+                  :else
+                  start-key)
           ec (compare ekey end-key)
           e-test (cond
+                   (nil? ekey)
+                   end-test
                    (nil? end-key)
                    etest
                    (> ec 0)
@@ -162,6 +170,8 @@
                    :else
                    end-test)
           e-key (cond
+                  (nil? ekey)
+                  end-key
                   (nil? end-key)
                   ekey
                   (> ec 0)

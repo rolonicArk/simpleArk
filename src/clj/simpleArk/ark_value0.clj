@@ -138,17 +138,19 @@
 
 (defn select-time
   [ark-value je-uuid]
-  (let [je-uuid
+  (let [jes
+        (mapish/mi-sub
+          (ark-value/get-journal-entries ark-value)
+          nil
+          nil
+          <=
+          je-uuid)
+        je-uuid
         (key
           (first
-            (mapish/mi-rseq
-              (mapish/mi-sub
-                (ark-value/get-journal-entries ark-value)
-                nil
-                nil
-                <=
-                je-uuid))))]
+            (mapish/mi-rseq jes)))]
     (-> ark-value
+        (assoc ::journal-entries jes)
         (assoc ::selected-time je-uuid)
         (assoc ::active-journal-entry-uuid je-uuid))))
 

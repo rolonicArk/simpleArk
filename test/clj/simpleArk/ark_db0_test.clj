@@ -8,7 +8,8 @@
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-db0 :as ark-db0]
-            [simpleArk.closer :as closer]))
+            [simpleArk.closer :as closer]
+            [simpleArk.mapish :as mapish]))
 
 (set! *warn-on-reflection* true)
 
@@ -98,9 +99,9 @@
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-        _ (println "total je count:" (count (ark-value/get-journal-entries ark-value)))
+;        _ (println "total je count:" (count (ark-value/get-journal-entries ark-value)))
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
-    (println "selected je count:" (count (ark-value/get-journal-entries ark-value)))
+;    (println "selected je count:" (count (ark-value/get-journal-entries ark-value)))
     (println :bob-properties (ark-value/get-current-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
@@ -108,8 +109,9 @@
   (println ">>>>>>>>>>>> journal entry headlines")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (first (keep (fn [x] (println (ark-value/get-current-property-value ark-value (key x) :classifier/headline)))
-                 (ark-value/get-journal-entries ark-value))))
+    (first (keep (fn [x] (println
+                           (ark-value/get-current-property-value ark-value (key x) :classifier/headline)))
+                 (mapish/mi-seq (ark-value/get-journal-entries ark-value)))))
 
   (println)
   (println ">>>>>>>>>>>> all the latest headlines")

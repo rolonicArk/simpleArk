@@ -1,6 +1,7 @@
 (ns simpleArk.ark-value0
   (:require [simpleArk.ark-value :as ark-value]
-            [simpleArk.uuid :as uuid]))
+            [simpleArk.uuid :as uuid]
+            [simpleArk.mapish :as mapish]))
 
 (set! *warn-on-reflection* true)
 
@@ -23,7 +24,7 @@
 (defn get-rolon
   [ark-value uuid]
   (cond
-    (uuid/journal-entry-uuid? uuid) ((ark-value/get-journal-entries ark-value) uuid)
+    (uuid/journal-entry-uuid? uuid) (mapish/mi-get (ark-value/get-journal-entries ark-value) uuid)
     (uuid/index-uuid? uuid) ((ark-value/get-indexes ark-value) uuid)
     (uuid/random-uuid? uuid) ((ark-value/get-random-rolons ark-value) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
@@ -33,7 +34,9 @@
   [ark-value rolon-uuid rolon]
   (cond
     (uuid/journal-entry-uuid? rolon-uuid)
-    (assoc-in ark-value [::journal-entries rolon-uuid] rolon)
+    (let [journal-entries (get ark-value ::journal-entries)
+          journal-entries (mapish/mi-assoc journal-entries rolon-uuid rolon)]
+      (assoc ark-value ::journal-entries journal-entries))
     (uuid/index-uuid? rolon-uuid)
     (assoc-in ark-value [::indexes rolon-uuid] rolon)
     (uuid/random-uuid? rolon-uuid)
@@ -135,7 +138,16 @@
 
 (defn select-time
   [ark-value je-uuid]
-  (let [je-uuid (key (first (rsubseq (ark-value/get-journal-entries ark-value) <= je-uuid)))]
+  (let [je-uuid
+        (key
+          (first
+            (mapish/mi-rseq
+              (mapish/mi-sub
+                (ark-value/get-journal-entries ark-value)
+                nil
+                nil
+                <=
+                je-uuid))))]
     (-> ark-value
         (assoc ::selected-time je-uuid)
         (assoc ::active-journal-entry-uuid je-uuid))))
@@ -167,7 +179,7 @@
                              make-rolon! destroy-rolon! update-properties! update-ark!
                              get-current-journal-entry-uuid
                              select-time get-selected-time index-name-uuid)
-      (assoc ::journal-entries (sorted-map))
+      (assoc ::journal-entries (mapish/->MI-map (sorted-map) nil nil nil nil))
       (assoc ::indexes (sorted-map))
       (assoc ::random-rolons {})
       (assoc ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))))

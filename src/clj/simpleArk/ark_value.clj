@@ -1,6 +1,7 @@
 (ns simpleArk.ark-value
   (:require [simpleArk.uuid :as uuid]
-            [simpleArk.ark-db :as ark-db]))
+            [simpleArk.ark-db :as ark-db]
+            [simpleArk.mapish :as mapish]))
 
 (set! *warn-on-reflection* true)
 
@@ -54,7 +55,7 @@
   (:this-db ark-value))
 
 (defn get-journal-entries
-  "returns a sorted map of all the journal entry rolons"
+  "returns an MI of all the journal entry rolons"
   [ark-value]
   ((:get-journal-entries ark-value) ark-value))
 
@@ -77,7 +78,7 @@
   [ark-value]
   (let [s (str "\n" :ark "\n"
                "\n" :index-rolons "\n\n" (get-indexes ark-value) "\n"
-               "\n" :journal-entry-rolons "\n\n" (get-journal-entries ark-value) "\n"
+               "\n" :journal-entry-rolons "\n\n" (mapish/mi-seq (get-journal-entries ark-value)) "\n"
                "\n" :random-rolons "\n\n" (get-random-rolons ark-value))]
     s))
 

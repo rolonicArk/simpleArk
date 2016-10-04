@@ -99,9 +99,9 @@
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-;        _ (println "total je count:" (count (ark-value/get-journal-entries ark-value)))
+        _ (println "total je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
-;    (println "selected je count:" (count (ark-value/get-journal-entries ark-value)))
+    (println "selected je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
     (println :bob-properties (ark-value/get-current-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 

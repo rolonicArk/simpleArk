@@ -129,7 +129,7 @@
   [rolon writer]
   (print-simple
     (str "\n" :rolon "\n"
-         "\n" (get-rolon-values rolon) "\n\n")
+         "\n" (mapish/mi-seq (get-rolon-values rolon)) "\n\n")
     writer))
 
 (defn get-journal-entry-uuid
@@ -158,7 +158,7 @@
   "returns the rolon value for the selected time"
   [ark-value rolon-uuid je-uuid]
   (let [rolon (get-rolon ark-value rolon-uuid)]
-    (val (first (rsubseq (get-rolon-values rolon) <= je-uuid)))))
+    (val (first (mapish/mi-rseq (mapish/mi-sub (get-rolon-values rolon) nil nil <= je-uuid))))))
 
 (defn get-current-rolon-value
   "returns the rolon value for the selected time"
@@ -215,7 +215,7 @@
   [ark-value rolon-uuid je-uuid]
   (let [rolon (get-rolon ark-value rolon-uuid)
         rolon-values (get-rolon-values rolon)
-        previous-rolon-values (rsubseq rolon-values < je-uuid)]
+        previous-rolon-values (mapish/mi-rseq (mapish/mi-sub rolon-values nil nil < je-uuid))]
     (key (first previous-rolon-values))))
 
 (defn locate-next-je-uuid-for-property

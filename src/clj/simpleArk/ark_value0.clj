@@ -125,27 +125,6 @@
                       (update-property-journal-entry-uuids (sorted-map) ps je-uuid))]
     rolon-value))
 
-(defn get-rolon-values
-  [rolon]
-  (::rolon-values rolon))
-
-(defn make-rolon!
-  [ark-value rolon-uuid properties]
-  (if (ark-value/get-rolon ark-value rolon-uuid)
-    (update-properties! ark-value rolon-uuid properties)
-    (let [je-uuid (::active-journal-entry-uuid ark-value)
-          rolon (ark-value/->Rolon rolon-uuid get-rolon-values)
-          rolon (assoc rolon ::rolon-values
-                             (mapish/->MI-map
-                               (sorted-map je-uuid
-                                           (create-rolon-value je-uuid
-                                                               rolon-uuid
-                                                               properties))
-                               nil nil nil nil))
-          ark-value (assoc-rolon! ark-value rolon-uuid rolon)
-          ark-value (je-modified! ark-value je-uuid rolon-uuid)]
-      (ark-value/make-index-rolon! ark-value rolon-uuid properties (sorted-map)))))
-
 (defn select-time
   [ark-value je-uuid]
   (let [jes
@@ -167,6 +146,28 @@
 (defn get-selected-time
   [ark-value]
   (::selected-time ark-value))
+
+(defn get-rolon-values
+  [rolon]
+  (let [ark-value (:ark-value rolon)]
+    (mapish/mi-sub (::rolon-values rolon) nil nil <= (get-selected-time ark-value))))
+
+(defn make-rolon!
+  [ark-value rolon-uuid properties]
+  (if (ark-value/get-rolon ark-value rolon-uuid)
+    (update-properties! ark-value rolon-uuid properties)
+    (let [je-uuid (::active-journal-entry-uuid ark-value)
+          rolon (ark-value/->Rolon rolon-uuid get-rolon-values ark-value)
+          rolon (assoc rolon ::rolon-values
+                             (mapish/->MI-map
+                               (sorted-map je-uuid
+                                           (create-rolon-value je-uuid
+                                                               rolon-uuid
+                                                               properties))
+                               nil nil nil nil))
+          ark-value (assoc-rolon! ark-value rolon-uuid rolon)
+          ark-value (je-modified! ark-value je-uuid rolon-uuid)]
+      (ark-value/make-index-rolon! ark-value rolon-uuid properties (sorted-map)))))
 
 (defn index-name-uuid
   [ark-value]

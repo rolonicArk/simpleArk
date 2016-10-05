@@ -26,7 +26,7 @@
   (cond
     (uuid/journal-entry-uuid? uuid) (mapish/mi-get (ark-value/get-journal-entries ark-value) uuid)
     (uuid/index-uuid? uuid) (mapish/mi-get (ark-value/get-indexes ark-value) uuid)
-    (uuid/random-uuid? uuid) ((ark-value/get-random-rolons ark-value) uuid)
+    (uuid/random-uuid? uuid) (mapish/mi-get (ark-value/get-random-rolons ark-value) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn assoc-rolon!
@@ -42,7 +42,9 @@
           indexes (mapish/mi-assoc indexes rolon-uuid rolon)]
       (assoc ark-value ::indexes indexes))
     (uuid/random-uuid? rolon-uuid)
-    (assoc-in ark-value [::random-rolons rolon-uuid] rolon)
+    (let [rolons (get ark-value ::random-rolons)
+          rolons (mapish/mi-assoc rolons rolon-uuid rolon)]
+      (assoc ark-value ::random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
 (defn update-property-journal-entry-uuids
@@ -185,7 +187,7 @@
                              select-time get-selected-time index-name-uuid)
       (assoc ::journal-entries (mapish/->MI-map (sorted-map) nil nil nil nil))
       (assoc ::indexes (mapish/->MI-map (sorted-map) nil nil nil nil))
-      (assoc ::random-rolons {})
+      (assoc ::random-rolons (mapish/->MI-map (sorted-map) nil nil nil nil))
       (assoc ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))))
 
 (defn- build

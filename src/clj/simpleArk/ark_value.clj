@@ -77,7 +77,7 @@
 (defn ark-str
   [ark-value]
   (let [s (str "\n" :ark "\n"
-               "\n" :index-rolons "\n\n" (get-indexes ark-value) "\n"
+               "\n" :index-rolons "\n\n" (mapish/mi-seq (get-indexes ark-value)) "\n"
                "\n" :journal-entry-rolons "\n\n" (mapish/mi-seq (get-journal-entries ark-value)) "\n"
                "\n" :random-rolons "\n\n" (get-random-rolons ark-value))]
     s))

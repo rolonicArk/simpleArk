@@ -29,11 +29,11 @@
   ((:index-name-uuid ark-value) ark-value))
 
 (defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
-                make-rolon! destroy-rolon! update-properties! update-ark!
+                make-rolon destroy-rolon update-properties update-ark
                 get-current-journal-entry-uuid
                 select-time get-selected-time index-name-uuid])
 
-(defrecord Rolon [rolon-uuid get-rolon-values])
+(defrecord Rolon [rolon-uuid get-rolon-values ark-value])
 
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid
                         get-property-values get-property-journal-entry-uuids])
@@ -93,26 +93,26 @@
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
           nil (keys properties)))
 
-(defn make-rolon!
+(defn make-rolon
   [ark-value rolon-uuid properties]
   (validate-property-keys properties)
-  ((:make-rolon! ark-value) ark-value rolon-uuid properties))
+  ((:make-rolon ark-value) ark-value rolon-uuid properties))
 
-(defn destroy-rolon!
+(defn destroy-rolon
   "deletes all the classifiers of a rolon"
   [ark-value rolon-uuid]
-  ((:destroy-rolon! ark-value) ark-value rolon-uuid))
+  ((:destroy-rolon ark-value) ark-value rolon-uuid))
 
-(defn update-properties!
+(defn update-properties
   "update the properties of a rolon"
   [ark-value rolon-uuid properties]
   (validate-property-keys properties)
-  ((:update-properties! ark-value) ark-value rolon-uuid properties))
+  ((:update-properties ark-value) ark-value rolon-uuid properties))
 
-(defn update-property!
+(defn update-property
   "update the value of a property of a rolon"
   [ark-value rolon-uuid property-name property-value]
-  (update-properties! ark-value rolon-uuid (sorted-map property-name property-value)))
+  (update-properties ark-value rolon-uuid (sorted-map property-name property-value)))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
@@ -284,13 +284,13 @@
       (sorted-map)
       index)))
 
-(defn make-index-rolon-!
+(defn make-index-rolon-
   [ark-value classifier value uuid adding]
   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
         properties (if (get-rolon ark-value iuuid)
                      (sorted-map)
                      (sorted-map :classifier/index.name (name classifier)))
-        ark-value (make-rolon! ark-value iuuid properties)
+        ark-value (make-rolon ark-value iuuid properties)
         index-rolon (get-rolon ark-value iuuid)
         index-descriptor (get-index-descriptor ark-value iuuid)
         value-set (index-descriptor value)
@@ -299,9 +299,9 @@
                     (conj value-set uuid)
                     (disj value-set uuid))
         index-descriptor (assoc index-descriptor value value-set)]
-    (update-property! ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
+    (update-property ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
 
-(defn make-index-rolon!
+(defn make-index-rolon
   "create/update an index rolon"
   [ark-value uuid properties old-properties]
   (reduce #(let [ark-value %1
@@ -309,10 +309,10 @@
                  nv (val %2)
                  ov (old-properties k)
                  ark-value (if (and ov (classifier? k))
-                             (make-index-rolon-! ark-value k ov uuid false)
+                             (make-index-rolon- ark-value k ov uuid false)
                              ark-value)
                  ark-value (if (and nv (classifier? k))
-                             (make-index-rolon-! ark-value k nv uuid true)
+                             (make-index-rolon- ark-value k nv uuid true)
                              ark-value)]
             ark-value)
           ark-value properties))
@@ -325,8 +325,8 @@
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
     (-> ark-value
-        (update-properties! je-uuid je-properties)
-        (make-rolon! rolon-uuid rolon-properties))))
+        (update-properties je-uuid je-properties)
+        (make-rolon rolon-uuid rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
@@ -334,8 +334,8 @@
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (-> ark-value
-        (update-properties! je-uuid je-properties)
-        (destroy-rolon! uuid))))
+        (update-properties je-uuid je-properties)
+        (destroy-rolon uuid))))
 
 (defn reprocess-trans
   [m seq]

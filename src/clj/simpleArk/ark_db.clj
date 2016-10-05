@@ -24,7 +24,7 @@
   [ark-db je-uuid transaction-name s]
   (swap! (::ark-atom ark-db)
          (fn [ark-value]
-           ((:update-ark! ark-value) ark-value je-uuid transaction-name s))))
+           ((:update-ark ark-value) ark-value je-uuid transaction-name s))))
 
 (defn init-ark!
   "initializes the ark-atom with the value of the ark."

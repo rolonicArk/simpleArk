@@ -29,7 +29,7 @@
     (uuid/random-uuid? uuid) (mapish/mi-get (ark-value/get-random-rolons ark-value) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
-(defn assoc-rolon!
+(defn assoc-rolon
   "update the ark with the revised/new rolon"
   [ark-value rolon-uuid rolon]
   (cond
@@ -52,12 +52,12 @@
   [pjes ps je-uuid]
   (reduce #(assoc %1 %2 je-uuid) pjes (keys ps)))
 
-(defn update-properties-!
+(defn update-properties-
   [ark-value journal-entry-uuid rolon-uuid properties]
   (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
         rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
         property-values (::property-values rolon-value)
-        ark-value (ark-value/make-index-rolon! ark-value rolon-uuid properties property-values)
+        ark-value (ark-value/make-index-rolon ark-value rolon-uuid properties property-values)
         property-values (into property-values properties)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
@@ -66,13 +66,13 @@
         rolon-values (::rolon-values rolon)
         rolon-values (mapish/mi-assoc rolon-values journal-entry-uuid rolon-value)
         rolon (assoc rolon ::rolon-values rolon-values)]
-    (assoc-rolon! ark-value rolon-uuid rolon)))
+    (assoc-rolon ark-value rolon-uuid rolon)))
 
-(defn update-property-!
+(defn update-property-
   [ark-value journal-entry-uuid rolon-uuid property-name property-value]
-  (update-properties-! ark-value journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
+  (update-properties- ark-value journal-entry-uuid rolon-uuid (sorted-map property-name property-value)))
 
-(defn je-modified!
+(defn je-modified
   "track the rolons modified by the journal entry"
   [ark-value journal-entry-uuid rolon-uuid]
   (let [je-value (ark-value/get-current-rolon-value ark-value journal-entry-uuid)
@@ -81,16 +81,16 @@
         modified (if modified
                    (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))]
-    (update-property-! ark-value journal-entry-uuid journal-entry-uuid :descriptor/modified modified)))
+    (update-property- ark-value journal-entry-uuid journal-entry-uuid :descriptor/modified modified)))
 
-(defn destroy-rolon!
+(defn destroy-rolon
   [ark-value rolon-uuid]
   (let [je-uuid (::active-journal-entry-uuid ark-value)
         rolon (ark-value/get-rolon ark-value rolon-uuid)
         rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
         old-property-values (::property-values rolon-value)
         property-values (reduce #(assoc %1 %2 nil) (sorted-map) (keys old-property-values))
-        ark-value (ark-value/make-index-rolon! ark-value rolon-uuid property-values old-property-values)
+        ark-value (ark-value/make-index-rolon ark-value rolon-uuid property-values old-property-values)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
         pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
@@ -98,14 +98,14 @@
         rolon-values (::rolon-values rolon)
         rolon-values (mapish/mi-assoc rolon-values je-uuid rolon-value)
         rolon (assoc rolon ::rolon-values rolon-values)
-        ark-value (assoc-rolon! ark-value rolon-uuid rolon)]
-    (je-modified! ark-value je-uuid rolon-uuid)))
+        ark-value (assoc-rolon ark-value rolon-uuid rolon)]
+    (je-modified ark-value je-uuid rolon-uuid)))
 
-(defn update-properties!
+(defn update-properties
   [ark-value rolon-uuid properties]
   (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
-        ark-value (update-properties-! ark-value journal-entry-uuid rolon-uuid properties)]
-    (je-modified! ark-value journal-entry-uuid rolon-uuid)))
+        ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
+    (je-modified ark-value journal-entry-uuid rolon-uuid)))
 
 (defn get-property-values
   [rolon-value]
@@ -152,10 +152,10 @@
   (let [ark-value (:ark-value rolon)]
     (mapish/mi-sub (::rolon-values rolon) nil nil <= (get-selected-time ark-value))))
 
-(defn make-rolon!
+(defn make-rolon
   [ark-value rolon-uuid properties]
   (if (ark-value/get-rolon ark-value rolon-uuid)
-    (update-properties! ark-value rolon-uuid properties)
+    (update-properties ark-value rolon-uuid properties)
     (let [je-uuid (::active-journal-entry-uuid ark-value)
           rolon (ark-value/->Rolon rolon-uuid get-rolon-values ark-value)
           rolon (assoc rolon ::rolon-values
@@ -165,21 +165,21 @@
                                                                rolon-uuid
                                                                properties))
                                nil nil nil nil))
-          ark-value (assoc-rolon! ark-value rolon-uuid rolon)
-          ark-value (je-modified! ark-value je-uuid rolon-uuid)]
-      (ark-value/make-index-rolon! ark-value rolon-uuid properties (sorted-map)))))
+          ark-value (assoc-rolon ark-value rolon-uuid rolon)
+          ark-value (je-modified ark-value je-uuid rolon-uuid)]
+      (ark-value/make-index-rolon ark-value rolon-uuid properties (sorted-map)))))
 
 (defn index-name-uuid
   [ark-value]
   (::index-name-uuid ark-value))
 
-(defn update-ark!
+(defn update-ark
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
                       (assoc ::latest-journal-entry-uuid je-uuid)
                       (assoc ::active-journal-entry-uuid je-uuid)
-                      (ark-value/make-rolon! je-uuid
-                                             {:classifier/transaction-name transaction-name
+                      (ark-value/make-rolon je-uuid
+                                            {:classifier/transaction-name transaction-name
                                               :descriptor/transaction-argument s})
                       (ark-value/eval-transaction transaction-name s))]
     (if (::selected-time ark-value)
@@ -189,7 +189,7 @@
 (defn create-ark
   [this-db]
   (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
-                             make-rolon! destroy-rolon! update-properties! update-ark!
+                             make-rolon destroy-rolon update-properties update-ark
                              get-current-journal-entry-uuid
                              select-time get-selected-time index-name-uuid)
       (assoc ::journal-entries (mapish/->MI-map (sorted-map) nil nil nil nil))

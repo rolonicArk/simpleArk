@@ -29,14 +29,19 @@
   ((:index-name-uuid ark-value) ark-value))
 
 (defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
-                make-rolon destroy-rolon update-properties update-ark
-                get-current-journal-entry-uuid
-                select-time get-selected-time index-name-uuid])
+                      make-rolon destroy-rolon update-properties update-ark
+                      get-current-journal-entry-uuid
+                      select-time get-selected-time index-name-uuid
+                      create-mi])
 
 (defrecord Rolon [rolon-uuid get-rolon-values ark-value])
 
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid
                         get-property-values get-property-journal-entry-uuids])
+
+(defn create-mi
+  ([ark-value] ((:create-mi ark-value)))
+  ([ark-value sorted-map] ((:create-mi ark-value) sorted-map)))
 
 (defn select-time
   "Sets the ark to the time of the journal entry uuid,
@@ -112,7 +117,7 @@
 (defn update-property
   "update the value of a property of a rolon"
   [ark-value rolon-uuid property-name property-value]
-  (update-properties ark-value rolon-uuid (sorted-map property-name property-value)))
+  (update-properties ark-value rolon-uuid (create-mi ark-value (sorted-map property-name property-value))))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon,
@@ -145,7 +150,7 @@
 (defmethod print-method Rolon-value
   [rolon-value writer]
   (print-simple
-    (str "\n" :properties "\n" (get-property-values rolon-value) "\n\n")
+    (str "\n" :properties "\n" (mapish/mi-seq (get-property-values rolon-value)) "\n\n")
     writer))
 
 (defn get-rolon-value-at
@@ -173,12 +178,12 @@
 (defn get-property-value-at
   "returns the value of a property"
   [ark-value rolon-uuid key je-uuid]
-  ((get-property-values-at ark-value rolon-uuid je-uuid) key))
+  (mapish/mi-get (get-property-values-at ark-value rolon-uuid je-uuid) key))
 
 (defn get-current-property-value
   "returns the current value of a property"
   [ark-value rolon-uuid key]
-  ((get-current-property-values ark-value rolon-uuid) key))
+  (mapish/mi-get (get-current-property-values ark-value rolon-uuid) key))
 
 (defn get-property-je-uuids
   "returns the type 1 uuid of the journal entry rolons which changed each property"
@@ -253,8 +258,8 @@
   "returns the uuids for a given index-uuid and value and time"
   [ark-value index-uuid value]
   (let [properties (get-current-property-values ark-value index-uuid)
-        index-map (:descriptor/index properties)]
-    (index-map value)))
+        index-map (mapish/mi-get properties :descriptor/index)]
+    (mapish/mi-get index-map value)))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
@@ -267,37 +272,37 @@
     (first (index-lookup ark-value name-index-uuid rolon-name))))
 
 (defn get-updated-rolon-uuids
-  "returns a map of the uuids of the rolons updated by a journal-entry rolon"
+  "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
   (let [latest-je-property-values (get-current-property-values ark-value je-uuid)
-        updated-rolon-uuids (:descriptor/updated-rolon-uuids latest-je-property-values)]
+        updated-rolon-uuids (mapish/mi-get latest-je-property-values :descriptor/updated-rolon-uuids)]
     (if (nil? updated-rolon-uuids)
-      (sorted-map)
+      (create-mi ark-value)
       updated-rolon-uuids)))
 
 (defn get-index-descriptor
-  "returns a sorted map of sets of rolon uuids keyed by classifier value"
+  "returns a mapish of sets of rolon uuids keyed by classifier value"
   [ark-value je-uuid]
-  (let [index (:descriptor/index (get-current-property-values ark-value je-uuid))]
+  (let [index (mapish/mi-get (get-current-property-values ark-value je-uuid) :descriptor/index)]
     (if (nil? index)
-      (sorted-map)
+      (create-mi ark-value)
       index)))
 
 (defn make-index-rolon-
   [ark-value classifier value uuid adding]
   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
         properties (if (get-rolon ark-value iuuid)
-                     (sorted-map)
-                     (sorted-map :classifier/index.name (name classifier)))
+                     (create-mi ark-value)
+                     (create-mi ark-value (sorted-map :classifier/index.name (name classifier))))
         ark-value (make-rolon ark-value iuuid properties)
         index-rolon (get-rolon ark-value iuuid)
         index-descriptor (get-index-descriptor ark-value iuuid)
-        value-set (index-descriptor value)
+        value-set (mapish/mi-get index-descriptor value)
         value-set (if value-set value-set #{})
         value-set (if adding
                     (conj value-set uuid)
                     (disj value-set uuid))
-        index-descriptor (assoc index-descriptor value value-set)]
+        index-descriptor (mapish/mi-assoc index-descriptor value value-set)]
     (update-property ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
 
 (defn make-index-rolon
@@ -306,7 +311,7 @@
   (reduce #(let [ark-value %1
                  k (key %2)
                  nv (val %2)
-                 ov (old-properties k)
+                 ov (mapish/mi-get old-properties k)
                  ark-value (if (and ov (classifier? k))
                              (make-index-rolon- ark-value k ov uuid false)
                              ark-value)
@@ -314,7 +319,7 @@
                              (make-index-rolon- ark-value k nv uuid true)
                              ark-value)]
             ark-value)
-          ark-value properties))
+          ark-value (mapish/mi-seq properties)))
 
 (defmulti eval-transaction (fn [ark-value n s] n))
 
@@ -324,8 +329,8 @@
         [rolon-uuid je-properties rolon-properties] (read-string s)
         je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
     (-> ark-value
-        (update-properties je-uuid je-properties)
-        (make-rolon rolon-uuid rolon-properties))))
+        (update-properties je-uuid (create-mi ark-value je-properties))
+        (make-rolon rolon-uuid (create-mi ark-value rolon-properties)))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
@@ -333,7 +338,7 @@
         [uuid je-properties] (read-string s)
         je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
     (-> ark-value
-        (update-properties je-uuid je-properties)
+        (update-properties je-uuid (create-mi ark-value je-properties))
         (destroy-rolon uuid))))
 
 (defn reprocess-trans

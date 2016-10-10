@@ -96,7 +96,7 @@
   [properties]
   (reduce #(if (not (or (classifier? %2) (descriptor? %2)))
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
-          nil (keys properties)))
+          nil (keys (mapish/mi-seq properties))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]

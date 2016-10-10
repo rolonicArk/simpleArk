@@ -125,7 +125,7 @@
     (first (keep (fn [x]
                    (if (first (val x))
                      (println (key x))))
-                 descriptor-index)))
+                 (mapish/mi-seq descriptor-index))))
 
   (println)
   (println ">>>>>>>>>>>> bob's headlines over time")

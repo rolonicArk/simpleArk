@@ -159,12 +159,52 @@
   (let [ark-value (:ark-value rolon)]
     (mapish/mi-sub (::rolon-values rolon) nil nil <= (get-selected-time ark-value))))
 
+(defn get-changes-by-property
+  [rolon]
+  (let [ark-value (:ark-value rolon)]
+    (mapish/mi-sub (::changes-by-property rolon) nil nil <= (get-selected-time ark-value))))
+
+(defn update-property-changes
+  [property-changes je-uuid new-value]
+  (let [property-changes (if (some? property-changes)
+                           property-changes
+                           (mapish/->MI-map
+                             (sorted-map)
+                             nil nil nil nil))]
+    (if (not= new-value (val (first (mapish/mi-seq property-changes))))
+      (mapish/mi-assoc property-changes je-uuid new-value))))
+
+(defn update-changes-by-property
+  ([changes-by-property je-uuid changed-properties]
+   (reduce #(update-changes-by-property %1 je-uuid (key %2) (val %2))
+           changes-by-property
+           (mapish/mi-seq changed-properties)))
+  ([changes-by-property je-uuid property-name new-value]
+   (let [changes-by-property (if (some? changes-by-property)
+                               changes-by-property
+                               (mapish/->MI-map
+                                 (sorted-map)
+                                 nil nil nil nil))]
+     (mapish/mi-assoc changes-by-property
+                      property-name
+                      (update-property-changes (mapish/mi-get changes-by-property property-name)
+                                               je-uuid
+                                               new-value)))))
+
 (defn make-rolon
   [ark-value rolon-uuid properties]
   (if (ark-value/get-rolon ark-value rolon-uuid)
     (update-properties ark-value rolon-uuid properties)
     (let [je-uuid (::active-journal-entry-uuid ark-value)
-          rolon (ark-value/->Rolon rolon-uuid get-rolon-values ark-value)
+;          rolon (assoc rolon ::changes-by-property )
+          rolon (ark-value/->Rolon rolon-uuid
+                                   get-rolon-values
+                                   get-changes-by-property
+                                   ark-value)
+          rolon (assoc rolon ::changes-by-property
+                             (mapish/->MI-map
+                               (sorted-map)
+                               nil nil nil nil))
           rolon (assoc rolon ::rolon-values
                              (mapish/->MI-map
                                (sorted-map je-uuid

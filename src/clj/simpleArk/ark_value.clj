@@ -34,7 +34,7 @@
                       select-time get-selected-time index-name-uuid
                       create-mi])
 
-(defrecord Rolon [rolon-uuid get-rolon-values ark-value])
+(defrecord Rolon [rolon-uuid get-rolon-values get-changes-by-property ark-value])
 
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid
                         get-property-values get-property-journal-entry-uuids])
@@ -129,6 +129,10 @@
   "returns a sorted map of all the values of a rolon"
   [rolon]
   ((:get-rolon-values rolon) rolon))
+
+(defn get-changes-by-property
+  [rolon]
+  ((:get-changes-by-property rolon) rolon))
 
 (defmethod print-method Rolon
   [rolon writer]

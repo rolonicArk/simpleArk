@@ -37,7 +37,7 @@
 (defrecord Rolon [rolon-uuid get-rolon-values get-changes-by-property ark-value])
 
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid
-                        get-property-values get-property-journal-entry-uuids])
+                        get-property-values])
 
 (defn create-mi
   ([ark-value] ((:create-mi ark-value)))
@@ -173,94 +173,15 @@
   (let [je-uuid (get-current-journal-entry-uuid ark-value)]
     (get-rolon-value-at ark-value rolon-uuid je-uuid)))
 
-(defn get-property-values-at
-  "returns the property values at the selected time"
-  [ark-value rolon-uuid je-uuid]
-  (get-property-values (get-rolon-value-at ark-value rolon-uuid je-uuid)))
-
 (defn get-current-property-values
   "returns the property values at the selected time"
   [ark-value rolon-uuid]
   (get-property-values (get-current-rolon-value ark-value rolon-uuid)))
 
-(defn get-property-value-at
-  "returns the value of a property"
-  [ark-value rolon-uuid key je-uuid]
-  (mapish/mi-get (get-property-values-at ark-value rolon-uuid je-uuid) key))
-
 (defn get-current-property-value
   "returns the current value of a property"
   [ark-value rolon-uuid key]
   (mapish/mi-get (get-current-property-values ark-value rolon-uuid) key))
-
-(defn get-property-je-uuids
-  "returns the type 1 uuid of the journal entry rolons which changed each property"
-  [rolon-value]
-  ((:get-property-journal-entry-uuids rolon-value) rolon-value))
-
-(defn get-property-je-uuids-at
-  "returns the journal entries which last changed each property
-  at the selected time"
-  [ark-value rolon-uuid je-uuid]
-  (get-property-je-uuids (get-rolon-value-at ark-value rolon-uuid je-uuid)))
-
-(defn get-current-property-je-uuids
-  "returns the journal entries which last changed each property
-  at the selected time"
-  [ark-value rolon-uuid]
-  (get-property-je-uuids (get-current-rolon-value ark-value rolon-uuid)))
-
-(defn get-property-je-uuid-at
-  "returns the uuid of the last je that changed the property
-  at the selected time"
-  [ark-value rolon-uuid key je-uuid]
-  (key (get-property-je-uuids-at ark-value rolon-uuid je-uuid)))
-
-(defn get-current-property-je-uuid
-  "returns the uuid of the last je that changed the property
-  at the selected time"
-  [ark-value rolon-uuid key]
-  (key (get-current-property-je-uuids ark-value rolon-uuid)))
-
-(defn get-previous-rolon-je-uuid
-  "returns the uuid of the prior journal entry updating the same rolon"
-  [ark-value rolon-uuid je-uuid]
-  (let [rolon (get-rolon ark-value rolon-uuid)
-        rolon-values (get-rolon-values rolon)
-        previous-rolon-values (mapish/mi-rseq (mapish/mi-sub rolon-values nil nil < je-uuid))]
-    (key (first previous-rolon-values))))
-
-(defn locate-next-je-uuid-for-property
-  ([[ark-value rolon-uuid key je-uuid]]
-   (let [je-uuid2 (get-property-je-uuid-at ark-value rolon-uuid key je-uuid)]
-     (if (= je-uuid je-uuid2)
-       (let [rolon-value (get-previous-rolon-je-uuid ark-value rolon-uuid je-uuid)]
-         (if rolon-value
-           (let [je-uuid2 (get-journal-entry-uuid rolon-value)
-                 je-uuid2 (get-property-je-uuid-at ark-value rolon-uuid key je-uuid2)]
-             (if je-uuid2
-               [ark-value rolon-uuid key je-uuid2]
-               nil))
-           nil))
-       (if je-uuid2
-         [ark-value rolon-uuid key je-uuid2]
-         nil)))))
-
-(defn rolon-property-je-uuids-at
-  "returns a lazy sequence of journal entry uuids which changed a property"
-  [ark-value rolon-uuid key je-uuid]
-  (map #(if %
-         (% 3)
-         nil)
-       (take-while identity (iterate locate-next-je-uuid-for-property [ark-value rolon-uuid key je-uuid]))))
-
-(defn rolon-property-current-je-uuids
-  "returns a lazy sequence of journal entry uuids which changed a property"
-  [ark-value rolon-uuid key]
-  (let [first-je-uuid (get-current-property-je-uuid ark-value rolon-uuid key)]
-    (if first-je-uuid
-      (rolon-property-je-uuids-at ark-value rolon-uuid key first-je-uuid)
-      nil)))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"

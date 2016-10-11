@@ -76,11 +76,6 @@
                                                je-uuid
                                                new-value)))))
 
-(defn update-property-journal-entry-uuids
-  "where pjes is to be updated and ps are the new property values"
-  [pjes ps je-uuid]
-  (reduce #(assoc %1 %2 je-uuid) pjes (keys (mapish/mi-seq ps))))
-
 (defn update-properties-
   [ark-value journal-entry-uuid rolon-uuid properties]
   (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
@@ -95,9 +90,6 @@
                                 property-values
                                 (mapish/mi-seq properties))
         rolon-value (assoc rolon-value ::property-values property-values)
-        pjes (::property-journal-entry-uuids rolon-value)
-        pjes (update-property-journal-entry-uuids pjes properties journal-entry-uuid)
-        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon-values (::rolon-values rolon)
         rolon-values (mapish/mi-assoc rolon-values journal-entry-uuid rolon-value)
         rolon (assoc rolon ::rolon-values rolon-values)]
@@ -137,9 +129,6 @@
                               property-values))
         ark-value (ark-value/make-index-rolon ark-value rolon-uuid property-values old-property-values)
         rolon-value (assoc rolon-value ::property-values property-values)
-        pjes (::property-journal-entry-uuids rolon-value)
-        pjes (reduce #(assoc %1 %2 je-uuid) (sorted-map) (keys pjes))
-        rolon-value (assoc rolon-value ::property-journal-entry-uuids pjes)
         rolon-values (::rolon-values rolon)
         rolon-values (mapish/mi-assoc rolon-values je-uuid rolon-value)
         rolon (assoc rolon ::rolon-values rolon-values)
@@ -156,18 +145,12 @@
   [rolon-value]
   (::property-values rolon-value))
 
-(defn get-property-journal-entry-uuids
-  [rolon-value]
-  (::property-journal-entry-uuids rolon-value))
-
 (defn create-rolon-value
   "returns a new rolon value"
   [je-uuid rolon-uuid ps]
   (let [rolon-value (ark-value/->Rolon-value je-uuid rolon-uuid
-                                             get-property-values get-property-journal-entry-uuids)
-        rolon-value (assoc rolon-value ::property-values ps)
-        rolon-value (assoc rolon-value ::property-journal-entry-uuids
-                      (update-property-journal-entry-uuids (sorted-map) ps je-uuid))]
+                                             get-property-values)
+        rolon-value (assoc rolon-value ::property-values ps)]
     rolon-value))
 
 (defn select-time

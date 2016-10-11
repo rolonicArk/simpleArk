@@ -170,8 +170,9 @@
                            property-changes
                            (mapish/->MI-map
                              (sorted-map)
-                             nil nil nil nil))]
-    (if (not= new-value (val (first (mapish/mi-seq property-changes))))
+                             nil nil nil nil))
+        first-entry (first (mapish/mi-seq property-changes))]
+    (if (or (nil? first-entry) (not= new-value (val first-entry)))
       (mapish/mi-assoc property-changes je-uuid new-value))))
 
 (defn update-changes-by-property
@@ -196,15 +197,14 @@
   (if (ark-value/get-rolon ark-value rolon-uuid)
     (update-properties ark-value rolon-uuid properties)
     (let [je-uuid (::active-journal-entry-uuid ark-value)
-;          rolon (assoc rolon ::changes-by-property )
           rolon (ark-value/->Rolon rolon-uuid
                                    get-rolon-values
                                    get-changes-by-property
                                    ark-value)
           rolon (assoc rolon ::changes-by-property
-                             (mapish/->MI-map
-                               (sorted-map)
-                               nil nil nil nil))
+                             (update-changes-by-property (::changes-by-property rolon)
+                                                         je-uuid
+                                                         properties))
           rolon (assoc rolon ::rolon-values
                              (mapish/->MI-map
                                (sorted-map je-uuid

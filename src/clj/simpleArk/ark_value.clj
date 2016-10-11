@@ -131,8 +131,12 @@
   ((:get-rolon-values rolon) rolon))
 
 (defn get-changes-by-property
-  [rolon]
-  ((:get-changes-by-property rolon) rolon))
+  ([ark-value rolon-uuid property-name]
+   (let [rolon (get-rolon ark-value rolon-uuid)]
+     ((:get-changes-by-property rolon) rolon property-name)))
+  ([ark-value rolon-uuid]
+  (let [rolon (get-rolon ark-value rolon-uuid)]
+    ((:get-changes-by-property rolon) rolon))))
 
 (defmethod print-method Rolon
   [rolon writer]

@@ -131,10 +131,10 @@
   (println ">>>>>>>>>>>> bob's headlines over time")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (first (keep #(println (ark-value/get-property-value-at ark-value bob-uuid :classifier/headline %)
+    (first (keep #(println (val %)
                            "-"
-                           (ark-value/get-current-property-value ark-value % :classifier/headline))
-                 (ark-value/rolon-property-current-je-uuids ark-value bob-uuid :classifier/headline)))))
+                           (ark-value/get-current-property-value ark-value (key %) :classifier/headline))
+                 (mapish/mi-rseq (ark-value/get-changes-by-property ark-value bob-uuid :classifier/headline))))))
 
 (deftest arks
   (println "impl0 tests")

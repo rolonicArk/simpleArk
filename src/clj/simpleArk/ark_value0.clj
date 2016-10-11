@@ -56,7 +56,8 @@
                              nil nil nil nil))
         first-entry (first (mapish/mi-seq property-changes))]
     (if (or (nil? first-entry) (not= new-value (val first-entry)))
-      (mapish/mi-assoc property-changes je-uuid new-value))))
+      (mapish/mi-assoc property-changes je-uuid new-value)
+      property-changes)))
 
 (defn update-changes-by-property
   ([changes-by-property je-uuid changed-properties]
@@ -129,6 +130,11 @@
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map) nil nil nil nil)
                                 (mapish/mi-seq old-property-values))
+        rolon (assoc rolon ::changes-by-property
+                            (update-changes-by-property
+                              (::changes-by-property rolon)
+                              je-uuid
+                              property-values))
         ark-value (ark-value/make-index-rolon ark-value rolon-uuid property-values old-property-values)
         rolon-value (assoc rolon-value ::property-values property-values)
         pjes (::property-journal-entry-uuids rolon-value)
@@ -187,9 +193,12 @@
   (::selected-time ark-value))
 
 (defn get-changes-by-property
-  [rolon]
+  ([rolon property-name]
+   (let [changes-by-property (get-changes-by-property rolon)]
+     (mapish/mi-get changes-by-property property-name)))
+  ([rolon]
   (let [ark-value (:ark-value rolon)]
-    (mapish/mi-sub (::changes-by-property rolon) nil nil <= (get-selected-time ark-value))))
+    (mapish/mi-sub (::changes-by-property rolon) nil nil <= (get-selected-time ark-value)))))
 
 (defn get-rolon-values
   [rolon]

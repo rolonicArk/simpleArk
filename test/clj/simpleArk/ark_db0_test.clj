@@ -112,7 +112,7 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep (fn [x] (println
-                           (ark-value/get-current-property-value ark-value (key x) :classifier/headline)))
+                           (ark-value/get-property-value ark-value (key x) :classifier/headline)))
                  (mapish/mi-seq (ark-value/get-journal-entries ark-value)))))
 
   (println)
@@ -133,7 +133,7 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep #(println (val %)
                            "-"
-                           (ark-value/get-current-property-value ark-value (key %) :classifier/headline))
+                           (ark-value/get-property-value ark-value (key %) :classifier/headline))
                  (mapish/mi-rseq (ark-value/get-changes-by-property ark-value bob-uuid :classifier/headline))))))
 
 (deftest arks

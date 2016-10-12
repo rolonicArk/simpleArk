@@ -144,22 +144,17 @@
       (val (first (mapish/mi-rseq changes)))
       nil)))
 
+(defn get-property-values
+  "returns the values of the properties, nil indicating the property is no longer present"
+  [rolon-value]
+  ((:get-property-values rolon-value) rolon-value))
+
 (defmethod print-method Rolon
   [rolon writer]
   (print-simple
     (str "\n" :rolon "\n"
          "\n" (mapish/mi-seq (get-rolon-values rolon)) "\n\n")
     writer))
-
-(defn get-journal-entry-uuid
-  "returns the type-1 uuid of the journal entry rolon which created this rolon value"
-  [rolon-value]
-  (:journal-entry-uuid rolon-value) rolon-value)
-
-(defn get-property-values
-  "returns the values of the properties, nil indicating the property is no longer present"
-  [rolon-value]
-  ((:get-property-values rolon-value) rolon-value))
 
 (defmethod print-method Rolon-value
   [rolon-value writer]
@@ -183,11 +178,6 @@
   "returns the property values at the selected time"
   [ark-value rolon-uuid]
   (get-property-values (get-current-rolon-value ark-value rolon-uuid)))
-
-(defn get-current-property-value
-  "returns the current value of a property"
-  [ark-value rolon-uuid key]
-  (mapish/mi-get (get-current-property-values ark-value rolon-uuid) key))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"

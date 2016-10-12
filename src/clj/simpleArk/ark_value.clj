@@ -36,8 +36,7 @@
 
 (defrecord Rolon [rolon-uuid get-rolon-values get-changes-by-property ark-value])
 
-(defrecord Rolon-value [journal-entry-uuid rolon-uuid
-                        get-property-values])
+(defrecord Rolon-value [journal-entry-uuid rolon-uuid get-property-values])
 
 (defn create-mi
   ([ark-value] ((:create-mi ark-value)))
@@ -138,6 +137,13 @@
   (let [rolon (get-rolon ark-value rolon-uuid)]
     ((:get-changes-by-property rolon) rolon))))
 
+(defn get-property-value
+  [ark-value rolon-uuid property-name]
+  (let [changes (get-changes-by-property ark-value rolon-uuid property-name)]
+    (if changes
+      (val (first (mapish/mi-rseq changes)))
+      nil)))
+
 (defmethod print-method Rolon
   [rolon writer]
   (print-simple
@@ -186,8 +192,7 @@
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
   [ark-value index-uuid value]
-  (let [properties (get-current-property-values ark-value index-uuid)
-        index-map (mapish/mi-get properties :descriptor/index)]
+  (let [index-map (get-property-value ark-value index-uuid :descriptor/index)]
     (mapish/mi-get index-map value)))
 
 (defn get-index-uuid

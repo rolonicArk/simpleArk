@@ -148,8 +148,7 @@
 (defn create-rolon-value
   "returns a new rolon value"
   [je-uuid rolon-uuid ps]
-  (let [rolon-value (ark-value/->Rolon-value je-uuid rolon-uuid
-                                             get-property-values)
+  (let [rolon-value (ark-value/->Rolon-value je-uuid rolon-uuid get-property-values)
         rolon-value (assoc rolon-value ::property-values ps)]
     rolon-value))
 

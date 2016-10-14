@@ -104,10 +104,9 @@
 
 (defn je-modified
   "track the rolons modified by the journal entry"
-  [ark-value journal-entry-uuid rolon-uuid]
-  (let [je-value (ark-value/get-current-rolon-value ark-value journal-entry-uuid)
-        je-property-values (::property-values je-value)
-        modified (mapish/mi-get je-property-values :descriptor/modified)
+  [ark-value rolon-uuid]
+  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
+        modified (ark-value/get-property-value ark-value journal-entry-uuid :descriptor/modified)
         modified (if modified
                    (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))]
@@ -133,13 +132,13 @@
         rolon-values (mapish/mi-assoc rolon-values je-uuid rolon-value)
         rolon (assoc rolon ::rolon-values rolon-values)
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
-    (je-modified ark-value je-uuid rolon-uuid)))
+    (je-modified ark-value rolon-uuid)))
 
 (defn update-properties
   [ark-value rolon-uuid properties]
   (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
         ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
-    (je-modified ark-value journal-entry-uuid rolon-uuid)))
+    (je-modified ark-value rolon-uuid)))
 
 (defn get-property-values
   [rolon-value]
@@ -208,7 +207,7 @@
                                                                properties))
                                nil nil nil nil))
           ark-value (assoc-rolon ark-value rolon-uuid rolon)
-          ark-value (je-modified ark-value je-uuid rolon-uuid)]
+          ark-value (je-modified ark-value rolon-uuid)]
       (ark-value/make-index-rolon ark-value
                                   rolon-uuid
                                   properties

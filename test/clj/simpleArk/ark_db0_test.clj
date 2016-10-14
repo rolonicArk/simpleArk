@@ -52,8 +52,12 @@
                                                                {:classifier/headline "make bob"}
                                                                {:descriptor/age 8 :classifier/name "Bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
+  (let [ark-value (ark-db/get-ark-value ark-db)]
+  (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
+  (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
-  (println)
+
+(println)
   (println ">>>>>>>>>>>> 4 updates to bob")
   (println)
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!

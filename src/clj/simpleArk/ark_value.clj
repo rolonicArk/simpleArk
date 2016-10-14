@@ -139,15 +139,16 @@
 
 (defn get-property-values
   ([ark-value rolon-uuid]
-   (get-property-values (get-changes-by-property ark-value rolon-uuid)))
-  ([all-changes]
+   (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))
+  ([ark-value rolon-uuid all-changes]
    (reify
      mapish/MI
      (mi-get [this property-name default]
        (let [changes (mapish/mi-get all-changes property-name)]
          (if (nil? changes)
            default
-           (let [fst (first (mapish/mi-rseq changes))]
+           (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
+                 fst (first (mapish/mi-rseq changes))]
              (if (nil? fst)
                default
                (val fst))))))
@@ -159,18 +160,18 @@
        (map
          #(clojure.lang.MapEntry.
            (key %)
-           (first (mapish/mi-rseq (val %))))
+           (first (mapish/mi-rseq (mapish/mi-sub (val %)nil nil <= (get-selected-time ark-value)))))
          (mapish/mi-seq all-changes)))
 
      (mi-rseq [this]
        (map
          #(clojure.lang.MapEntry.
            (key %)
-           (first (mapish/mi-rseq (val %))))
+           (first (mapish/mi-rseq (mapish/mi-sub (val %)nil nil <= (get-selected-time ark-value)))))
          (mapish/mi-rseq all-changes)))
 
      (mi-sub [this start-test start-key end-test end-key]
-       (get-property-values (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
+       (get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"

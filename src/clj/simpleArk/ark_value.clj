@@ -34,7 +34,7 @@
                       select-time get-selected-time index-name-uuid
                       create-mi])
 
-(defrecord Rolon [rolon-uuid get-rolon-values get-changes-by-property ark-value])
+(defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 
 (defrecord Rolon-value [journal-entry-uuid rolon-uuid get-property-values])
 

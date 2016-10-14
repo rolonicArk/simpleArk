@@ -179,20 +179,12 @@
     (update-properties ark-value rolon-uuid properties)
     (let [je-uuid (::active-journal-entry-uuid ark-value)
           rolon (ark-value/->Rolon rolon-uuid
-                                   get-rolon-values
                                    get-changes-by-property
                                    ark-value)
           rolon (assoc rolon ::changes-by-property
                              (update-changes-by-property (::changes-by-property rolon)
                                                          je-uuid
                                                          properties))
-          rolon (assoc rolon ::rolon-values
-                             (mapish/->MI-map
-                               (sorted-map je-uuid
-                                           (create-rolon-value je-uuid
-                                                               rolon-uuid
-                                                               properties))
-                               nil nil nil nil))
           ark-value (assoc-rolon ark-value rolon-uuid rolon)
           ark-value (je-modified ark-value rolon-uuid)]
       (ark-value/make-index-rolon ark-value

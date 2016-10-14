@@ -1,6 +1,7 @@
 (ns simpleArk.ark-value
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
+            [simpleArk.vecish]
             [simpleArk.mapish :as mapish]))
 
 (set! *warn-on-reflection* true)
@@ -190,8 +191,7 @@
 (defn get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
-  (let [latest-je-property-values (get-property-values ark-value je-uuid)
-        updated-rolon-uuids (mapish/mi-get latest-je-property-values :descriptor/updated-rolon-uuids)]
+  (let [updated-rolon-uuids (get-property-value ark-value je-uuid :descriptor/updated-rolon-uuids)]
     (if (nil? updated-rolon-uuids)
       (create-mi ark-value)
       updated-rolon-uuids)))
@@ -199,7 +199,7 @@
 (defn get-index-descriptor
   "returns a mapish of sets of rolon uuids keyed by classifier value"
   [ark-value je-uuid]
-  (let [index (mapish/mi-get (get-property-values ark-value je-uuid) :descriptor/index)]
+  (let [index (get-property-value ark-value je-uuid :descriptor/index)]
     (if (nil? index)
       (create-mi ark-value)
       index)))

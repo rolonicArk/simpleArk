@@ -36,8 +36,6 @@
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 
-(defrecord Rolon-value [journal-entry-uuid rolon-uuid get-property-values])
-
 (defn create-mi
   ([ark-value] ((:create-mi ark-value)))
   ([ark-value sorted-map] ((:create-mi ark-value) sorted-map)))
@@ -119,15 +117,9 @@
   (update-properties ark-value rolon-uuid (create-mi ark-value (sorted-map property-name property-value))))
 
 (defn get-rolon-uuid
-  "returns the uuid of the rolon,
-  where rec is a rolon or rolon-value"
-  [rec]
-  (:rolon-uuid rec))
-
-(defn get-rolon-values
-  "returns a sorted map of all the values of a rolon"
+  "returns the uuid of the rolon"
   [rolon]
-  ((:get-rolon-values rolon) rolon))
+  (:rolon-uuid rolon))
 
 (defn get-changes-by-property
   ([ark-value rolon-uuid property-name]
@@ -144,9 +136,9 @@
       (val (first (mapish/mi-rseq changes)))
       nil)))
 
-(defn get-mapish-property-values
+(defn get-property-values
   ([ark-value rolon-uuid]
-   (get-mapish-property-values (get-changes-by-property ark-value rolon-uuid)))
+   (get-property-values (get-changes-by-property ark-value rolon-uuid)))
   ([all-changes]
    (reify
      mapish/MI
@@ -177,37 +169,7 @@
          (mapish/mi-rseq all-changes)))
 
      (mi-sub [this start-test start-key end-test end-key]
-       (get-mapish-property-values (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
-
-(defn get-property-values
-  "returns the values of the properties, nil indicating the property is no longer present"
-  [rolon-value]
-  ((:get-property-values rolon-value) rolon-value))
-
-(defmethod print-method Rolon
-  [rolon writer]
-  (print-simple
-    (str "\n" :rolon "\n"
-         "\n" (mapish/mi-seq (get-rolon-values rolon)) "\n\n")
-    writer))
-
-(defmethod print-method Rolon-value
-  [rolon-value writer]
-  (print-simple
-    (str "\n" :properties "\n" (mapish/mi-seq (get-property-values rolon-value)) "\n\n")
-    writer))
-
-(defn get-rolon-value-at
-  "returns the rolon value for the selected time"
-  [ark-value rolon-uuid je-uuid]
-  (let [rolon (get-rolon ark-value rolon-uuid)]
-    (val (first (mapish/mi-rseq (mapish/mi-sub (get-rolon-values rolon) nil nil <= je-uuid))))))
-
-(defn get-current-rolon-value
-  "returns the rolon value for the selected time"
-  [ark-value rolon-uuid]
-  (let [je-uuid (get-current-journal-entry-uuid ark-value)]
-    (get-rolon-value-at ark-value rolon-uuid je-uuid)))
+       (get-property-values (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
@@ -228,7 +190,7 @@
 (defn get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
-  (let [latest-je-property-values (get-mapish-property-values ark-value je-uuid)
+  (let [latest-je-property-values (get-property-values ark-value je-uuid)
         updated-rolon-uuids (mapish/mi-get latest-je-property-values :descriptor/updated-rolon-uuids)]
     (if (nil? updated-rolon-uuids)
       (create-mi ark-value)
@@ -237,7 +199,7 @@
 (defn get-index-descriptor
   "returns a mapish of sets of rolon uuids keyed by classifier value"
   [ark-value je-uuid]
-  (let [index (mapish/mi-get (get-mapish-property-values ark-value je-uuid) :descriptor/index)]
+  (let [index (mapish/mi-get (get-property-values ark-value je-uuid) :descriptor/index)]
     (if (nil? index)
       (create-mi ark-value)
       index)))

@@ -83,7 +83,7 @@
                            (update-changes-by-property (::changes-by-property rolon)
                                                        journal-entry-uuid
                                                        properties))
-        property-values (ark-value/get-mapish-property-values ark-value rolon-uuid)
+        property-values (ark-value/get-property-values ark-value rolon-uuid)
         ark-value (ark-value/make-index-rolon ark-value rolon-uuid properties property-values)]
     (assoc-rolon ark-value rolon-uuid rolon)))
 
@@ -108,7 +108,7 @@
   [ark-value rolon-uuid]
   (let [je-uuid (::active-journal-entry-uuid ark-value)
         rolon (ark-value/get-rolon ark-value rolon-uuid)
-        old-property-values (ark-value/get-mapish-property-values ark-value rolon-uuid)
+        old-property-values (ark-value/get-property-values ark-value rolon-uuid)
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map) nil nil nil nil)
                                 (mapish/mi-seq old-property-values))
@@ -126,17 +126,6 @@
   (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
         ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
     (je-modified ark-value rolon-uuid)))
-
-(defn get-property-values
-  [rolon-value]
-  (::property-values rolon-value))
-
-(defn create-rolon-value
-  "returns a new rolon value"
-  [je-uuid rolon-uuid ps]
-  (let [rolon-value (ark-value/->Rolon-value je-uuid rolon-uuid get-property-values)
-        rolon-value (assoc rolon-value ::property-values ps)]
-    rolon-value))
 
 (defn select-time
   [ark-value je-uuid]
@@ -167,11 +156,6 @@
   ([rolon]
   (let [ark-value (:ark-value rolon)]
     (mapish/mi-sub (::changes-by-property rolon) nil nil <= (get-selected-time ark-value)))))
-
-(defn get-rolon-values
-  [rolon]
-  (let [ark-value (:ark-value rolon)]
-    (mapish/mi-sub (::rolon-values rolon) nil nil <= (get-selected-time ark-value))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]

@@ -104,7 +104,7 @@
         _ (println "total je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
     (println "selected je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
-    (println :bob-properties (mapish/mi-seq (ark-value/get-mapish-property-values ark-value bob-uuid)))
+    (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
   (println)

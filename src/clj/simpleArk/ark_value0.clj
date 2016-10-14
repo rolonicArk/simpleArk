@@ -83,16 +83,8 @@
                            (update-changes-by-property (::changes-by-property rolon)
                                                        journal-entry-uuid
                                                        properties))
-        rolon-value (ark-value/get-current-rolon-value ark-value rolon-uuid)
-        property-values (::property-values rolon-value)
-        ark-value (ark-value/make-index-rolon ark-value rolon-uuid properties property-values)
-        property-values (reduce #(mapish/mi-assoc %1 (key %2) (val %2))
-                                property-values
-                                (mapish/mi-seq properties))
-        rolon-value (assoc rolon-value ::property-values property-values)
-        rolon-values (::rolon-values rolon)
-        rolon-values (mapish/mi-assoc rolon-values journal-entry-uuid rolon-value)
-        rolon (assoc rolon ::rolon-values rolon-values)]
+        property-values (ark-value/get-mapish-property-values ark-value rolon-uuid)
+        ark-value (ark-value/make-index-rolon ark-value rolon-uuid properties property-values)]
     (assoc-rolon ark-value rolon-uuid rolon)))
 
 (defn update-property-

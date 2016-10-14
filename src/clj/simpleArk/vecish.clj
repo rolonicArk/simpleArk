@@ -5,11 +5,21 @@
 (defrecord vecish [v]
   java.lang.Comparable
   (compareTo [this o]
-    (let [^vecish ov o]
-      (if
-        (= this ov)
-        0
+    (if
+      (= this o)
+      0
+      (let [^vecish ov o
+            ovv (.v ov)
+            c (count v)
+            ovc (count ovv)
+            mc (min c ovc)]
         (if
-          (= (count v) (count (.v ov)))
-          (compare v (.v ov))
-          )))))
+          (= c ovc)
+          (compare v ovv)
+          (loop [i 0]
+                (if (>= i mc)
+                  (compare c ovc)
+                  (let [r (compare (v i) (ovv i))]
+                    (if (not= r 0)
+                      r
+                      (recur (+ i 1)))))))))))

@@ -4,11 +4,13 @@
 
 (defprotocol MI
   (mi-get [this key] [this key default])
-  (mi-assoc [this key value])
-  (mi-dissoc [this key])
   (mi-seq [this])
   (mi-rseq [this])
   (mi-sub [this start-test start-key] [this start-test start-key end-test end-key]))
+
+(defprotocol MIU
+  (mi-assoc [this key value])
+  (mi-dissoc [this key]))
 
 (defn in-range [key stest skey etest ekey]
   (let [sc (compare key skey)
@@ -45,20 +47,6 @@
     (if (in-range key start-test start-key end-test end-key)
       (get sorted-map key not-found)
       not-found))
-  (mi-assoc [this key value]
-    (if (in-range key start-test start-key end-test end-key)
-      (->MI-map
-        (assoc sorted-map key value)
-        start-test start-key end-test end-key)
-      this))
-  (mi-dissoc [this key]
-    (if (in-range key start-test start-key end-test end-key)
-      (if (get sorted-map key)
-        (->MI-map
-          (dissoc sorted-map key)
-          start-test start-key end-test end-key)
-        this)
-      this))
   (mi-seq [this]
     (cond
       (empty? sorted-map)
@@ -188,4 +176,20 @@
             (= 0 (compare s-key start-key))
             (= 0 (compare e-key end-key)))
         this
-        (->MI-map sorted-map s-test s-key e-test e-key)))))
+        (->MI-map sorted-map s-test s-key e-test e-key))))
+
+  MIU
+  (mi-assoc [this key value]
+    (if (in-range key start-test start-key end-test end-key)
+      (->MI-map
+        (assoc sorted-map key value)
+        start-test start-key end-test end-key)
+      this))
+  (mi-dissoc [this key]
+    (if (in-range key start-test start-key end-test end-key)
+      (if (get sorted-map key)
+        (->MI-map
+          (dissoc sorted-map key)
+          start-test start-key end-test end-key)
+        this)
+      this)))

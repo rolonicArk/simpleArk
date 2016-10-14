@@ -9,8 +9,7 @@
   (mi-sub [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
-  (mi-assoc [this key value])
-  (mi-dissoc [this key]))
+  (mi-assoc [this key value]))
 
 (defn in-range [key stest skey etest ekey]
   (let [sc (compare key skey)
@@ -166,12 +165,4 @@
       (->MI-map
         (assoc sorted-map key value)
         start-test start-key end-test end-key)
-      this))
-  (mi-dissoc [this key]
-    (if (in-range key start-test start-key end-test end-key)
-      (if (get sorted-map key)
-        (->MI-map
-          (dissoc sorted-map key)
-          start-test start-key end-test end-key)
-        this)
       this)))

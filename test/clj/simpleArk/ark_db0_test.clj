@@ -104,7 +104,7 @@
         _ (println "total je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
     (println "selected je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
-    (println :bob-properties (mapish/mi-seq (ark-value/get-current-property-values ark-value bob-uuid)))
+    (println :bob-properties (mapish/mi-seq (ark-value/get-mapish-property-values ark-value bob-uuid)))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
   (println)
@@ -120,8 +120,7 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
         headline-index-uuid (ark-value/get-index-uuid ark-value "headline")
-        current-rolon-properties (ark-value/get-current-property-values ark-value headline-index-uuid)
-        descriptor-index (mapish/mi-get current-rolon-properties :descriptor/index)]
+        descriptor-index (ark-value/get-property-value ark-value headline-index-uuid :descriptor/index)]
     (first (keep (fn [x]
                    (if (first (val x))
                      (println (key x))))

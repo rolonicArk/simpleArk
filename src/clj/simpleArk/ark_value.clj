@@ -164,13 +164,17 @@
 
      (mi-seq [this]
        (map
-         #(first (mapish/mi-seq %))
-         all-changes))
+         #(clojure.lang.MapEntry.
+           (key %)
+           (first (mapish/mi-rseq (val %))))
+         (mapish/mi-seq all-changes)))
 
      (mi-rseq [this]
        (map
-         #(first (mapish/mi-rseq %))
-         all-changes))
+         #(clojure.lang.MapEntry.
+           (key %)
+           (first (mapish/mi-rseq (val %))))
+         (mapish/mi-rseq all-changes)))
 
      (mi-sub [this start-test start-key end-test end-key]
        (get-mapish-property-values (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
@@ -205,11 +209,6 @@
   (let [je-uuid (get-current-journal-entry-uuid ark-value)]
     (get-rolon-value-at ark-value rolon-uuid je-uuid)))
 
-(defn get-current-property-values
-  "returns the property values at the selected time"
-  [ark-value rolon-uuid]
-  (get-property-values (get-current-rolon-value ark-value rolon-uuid)))
-
 (defn index-lookup
   "returns the uuids for a given index-uuid and value and time"
   [ark-value index-uuid value]
@@ -229,7 +228,7 @@
 (defn get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
-  (let [latest-je-property-values (get-current-property-values ark-value je-uuid)
+  (let [latest-je-property-values (get-mapish-property-values ark-value je-uuid)
         updated-rolon-uuids (mapish/mi-get latest-je-property-values :descriptor/updated-rolon-uuids)]
     (if (nil? updated-rolon-uuids)
       (create-mi ark-value)
@@ -238,7 +237,7 @@
 (defn get-index-descriptor
   "returns a mapish of sets of rolon uuids keyed by classifier value"
   [ark-value je-uuid]
-  (let [index (mapish/mi-get (get-current-property-values ark-value je-uuid) :descriptor/index)]
+  (let [index (mapish/mi-get (get-mapish-property-values ark-value je-uuid) :descriptor/index)]
     (if (nil? index)
       (create-mi ark-value)
       index)))

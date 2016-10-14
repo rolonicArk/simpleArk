@@ -144,6 +144,37 @@
       (val (first (mapish/mi-rseq changes)))
       nil)))
 
+(defn get-mapish-property-values
+  ([ark-value rolon-uuid]
+   (get-mapish-property-values (get-changes-by-property ark-value rolon-uuid)))
+  ([all-changes]
+   (reify
+     mapish/MI
+     (mi-get [this property-name default]
+       (let [changes (mapish/mi-get all-changes property-name)]
+         (if (nil? changes)
+           default
+           (let [fst (first (mapish/mi-rseq changes))]
+             (if (nil? fst)
+               default
+               (val fst))))))
+
+     (mi-get [this property-name]
+       (mapish/mi-get this property-name nil))
+
+     (mi-seq [this]
+       (map
+         #(first (mapish/mi-seq %))
+         all-changes))
+
+     (mi-rseq [this]
+       (map
+         #(first (mapish/mi-rseq %))
+         all-changes))
+
+     (mi-sub [this start-test start-key end-test end-key]
+       (get-mapish-property-values (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
+
 (defn get-property-values
   "returns the values of the properties, nil indicating the property is no longer present"
   [rolon-value]

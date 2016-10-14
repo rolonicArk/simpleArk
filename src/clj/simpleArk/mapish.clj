@@ -6,7 +6,7 @@
   (mi-get [this key] [this key default])
   (mi-seq [this])
   (mi-rseq [this])
-  (mi-sub [this start-test start-key] [this start-test start-key end-test end-key]))
+  (mi-sub [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
   (mi-assoc [this key value])
@@ -89,24 +89,6 @@
         (rsubseq sorted-map start-test start-key end-test end-key))
       :else
       (rseq sorted-map)))
-  (mi-sub [this stest skey]
-    (let [c (compare skey start-key)]
-        (cond
-          (nil? skey)
-          this
-          (nil? start-key)
-          (->MI-map sorted-map stest skey end-test end-key)
-          (< c 0)
-          this
-          (> c 0)
-          (->MI-map sorted-map stest skey end-test end-key)
-          (= stest start-test)
-          this
-          (= stest >)
-          (->MI-map sorted-map stest skey end-test end-key)
-          :else
-          this
-          )))
   (mi-sub [this stest skey etest ekey]
     (let [sc (compare skey start-key)
           s-test (cond

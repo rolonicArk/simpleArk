@@ -12,6 +12,8 @@
 (def f (vecish/->Vecish [99 1]))
 
 (deftest vecish
+  (println a)
+  (is (= [0 1 2] (:v a)))
   (is (= 0 (compare a a)))
   (is (= 1 (compare b c)))
   (is (= -1 (compare a d)))

@@ -134,7 +134,7 @@
   [ark-value rolon-uuid property-name]
   (let [changes (get-changes-by-property ark-value rolon-uuid property-name)]
     (if changes
-      (val (first (mapish/mi-rseq changes)))
+      (val (first (mapish/mi-rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
       nil)))
 
 (defn get-property-values
@@ -182,7 +182,7 @@
        (get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
 
 (defn index-lookup
-  "returns the uuids for a given index-uuid and value and time"
+  "returns the uuids for a given index-uuid and value"
   [ark-value index-uuid value]
   (let [index-map (get-property-value ark-value index-uuid :descriptor/index)]
     (mapish/mi-get index-map value)))

@@ -100,6 +100,9 @@
                                                         (prn-str [bob-uuid
                                                                   {:classifier/headline "destroy bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
+  (let [ark-value (ark-db/get-ark-value ark-db)]
+    (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
@@ -109,7 +112,8 @@
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
     (println "selected je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
     (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
-    (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
+    (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
+    )
 
   (println)
   (println ">>>>>>>>>>>> journal entry headlines")

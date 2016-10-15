@@ -20,4 +20,6 @@
   (is (= -1 (compare nil b)))
   (is (= 1 (compare b nil)))
   (is (= -1 (compare e f)))
-  (println (map val (sorted-map a (:v a) b (:v b) c (:v c) d (:v d) e (:v e) f (:v f)))))
+  (println :vecish (map :v (sorted-set a b c d e f)))
+  (println :vector (sorted-set (:v a) (:v b) (:v c) (:v d) (:v e) (:v f))))
+

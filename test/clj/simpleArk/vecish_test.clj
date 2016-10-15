@@ -19,4 +19,5 @@
   (is (= -1 (compare a d)))
   (is (= -1 (compare nil b)))
   (is (= 1 (compare b nil)))
-  (is (= -1 (compare e f))))
+  (is (= -1 (compare e f)))
+  (println (map val (sorted-map a (:v a) b (:v b) c (:v c) d (:v d) e (:v e) f (:v f)))))

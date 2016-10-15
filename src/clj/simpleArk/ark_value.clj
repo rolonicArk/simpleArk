@@ -158,17 +158,25 @@
 
      (mi-seq [this]
        (map
-         #(clojure.lang.MapEntry.
-           (key %)
-           (first (mapish/mi-rseq (mapish/mi-sub (val %)nil nil <= (get-selected-time ark-value)))))
-         (mapish/mi-seq all-changes)))
+         #(clojure.lang.MapEntry. (key %) (val (val %)))
+         (filter
+           #(some? (val %))
+           (map
+             #(clojure.lang.MapEntry.
+               (key %)
+               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+             (mapish/mi-seq all-changes)))))
 
      (mi-rseq [this]
        (map
-         #(clojure.lang.MapEntry.
-           (key %)
-           (first (mapish/mi-rseq (mapish/mi-sub (val %)nil nil <= (get-selected-time ark-value)))))
-         (mapish/mi-rseq all-changes)))
+         #(clojure.lang.MapEntry. (key %) (val (val %)))
+         (filter
+           #(some? (val %))
+           (map
+             #(clojure.lang.MapEntry.
+               (key %)
+               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+             (mapish/mi-rseq all-changes)))))
 
      (mi-sub [this start-test start-key end-test end-key]
        (get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes start-test start-key end-test end-key))))))

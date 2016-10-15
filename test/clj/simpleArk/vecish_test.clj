@@ -21,5 +21,5 @@
   (is (= 1 (compare b nil)))
   (is (= -1 (compare e f)))
   (println :vecish (map :v (sorted-set a b c d e f)))
-  (println :vector (sorted-set (:v a) (:v b) (:v c) (:v d) (:v e) (:v f))))
+  (println :vector (seq (sorted-set (:v a) (:v b) (:v c) (:v d) (:v e) (:v f)))))
 

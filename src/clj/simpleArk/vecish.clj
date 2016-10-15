@@ -2,13 +2,13 @@
 
 (set! *warn-on-reflection* true)
 
-(defrecord vecish [v]
+(defrecord Vecish [v]
   java.lang.Comparable
   (compareTo [this o]
     (if
       (= this o)
       0
-      (let [^vecish ov o
+      (let [^Vecish ov o
             ovv (.v ov)
             c (count v)
             ovc (count ovv)

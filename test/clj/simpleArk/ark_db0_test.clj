@@ -32,10 +32,10 @@
   (is (not (ark-value/descriptor? :x)))
   (is (not (ark-value/descriptor? ":descriptor/x")))
 
-  (ark-value/validate-property-keys (mapish/->MI-map
+  (ark-value/validate-property-names (mapish/->MI-map
                                       (sorted-map :classifier/x 1 :descriptor/y "fred")
                                       nil nil nil nil))
-  (is (thrown? Exception (ark-value/validate-property-keys {1 2})))
+  (is (thrown? Exception (ark-value/validate-property-names {1 2})))
 
   (println)
   (println ">>>>>>>>>>>> hello-world")

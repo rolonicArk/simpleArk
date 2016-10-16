@@ -89,17 +89,31 @@
   [ark writer]
   (print-simple (ark-str ark) writer))
 
-(defn validate-property-keys
+(defn $cvt
+  [properties]
+  (map
+    #(clojure.lang.MapEntry. (first (key %)) (val %))
+    (mapish/mi-seq properties)))
+
+(defn validate-property-names
   "properties must be classifiers or descriptors"
   [properties]
   (reduce #(if (not (or (classifier? %2) (descriptor? %2)))
             (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
           nil (keys (mapish/mi-seq properties))))
 
+(defn $validate-property-paths
+  [properties]
+  (validate-property-names ($cvt properties)))
+
 (defn make-rolon
   [ark-value rolon-uuid properties]
-  (validate-property-keys properties)
+  (validate-property-names properties)
   ((:make-rolon ark-value) ark-value rolon-uuid properties))
+
+(defn $make-rolon
+  [ark-value rolon-uuid properties]
+  (make-rolon ark-value rolon-uuid ($cvt properties)))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon"
@@ -109,13 +123,21 @@
 (defn update-properties
   "update the properties of a rolon"
   [ark-value rolon-uuid properties]
-  (validate-property-keys properties)
+  (validate-property-names properties)
   ((:update-properties ark-value) ark-value rolon-uuid properties))
+
+(defn $update-properties
+  [ark-value rolon-uuid properties]
+  (update-properties ark-value rolon-uuid ($cvt properties)))
 
 (defn update-property
   "update the value of a property of a rolon"
   [ark-value rolon-uuid property-name property-value]
   (update-properties ark-value rolon-uuid (create-mi ark-value (sorted-map property-name property-value))))
+
+(defn $update-property
+  [ark-value rolon-uuid property-path property-value]
+  (update-property ark-value rolon-uuid (first property-path) property-value))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon"
@@ -130,6 +152,14 @@
   (let [rolon (get-rolon ark-value rolon-uuid)]
     ((:get-changes-by-property rolon) rolon))))
 
+(defn $get-changes-by-property
+  ([ark-value rolon-uuid property-path]
+   (get-changes-by-property ark-value rolon-uuid (first property-path)))
+  ([ark-value rolon-uuid]
+   (map
+     #(clojure.lang.MapEntry. [(key %)] (val %))
+     (get-changes-by-property ark-value rolon-uuid))))
+
 (defn get-property-value
   [ark-value rolon-uuid property-name]
   (let [changes (get-changes-by-property ark-value rolon-uuid property-name)]
@@ -137,6 +167,11 @@
       (val (first (mapish/mi-rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
       nil)))
 
+(defn $get-property-value
+  [ark-value rolon-uuid property-path]
+  (get-property-value ark-value rolon-uuid (first property-path)))
+
+;todo
 (defn get-property-values
   ([ark-value rolon-uuid]
    (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))

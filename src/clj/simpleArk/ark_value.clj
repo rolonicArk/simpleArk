@@ -91,8 +91,9 @@
 
 (defn $cvt
   [properties]
-  (map
-    #(clojure.lang.MapEntry. (first (key %)) (val %))
+  (reduce
+    #(mapish/mi-assoc %1 (first (key %2)) (val %2))
+    (mapish/->MI-map (sorted-map) nil nil nil nil)
     (mapish/mi-seq properties)))
 
 (defn validate-property-names

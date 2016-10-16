@@ -171,7 +171,6 @@
   [ark-value rolon-uuid property-path]
   (get-property-value ark-value rolon-uuid (first property-path)))
 
-;todo
 (defn get-property-values
   ([ark-value rolon-uuid]
    (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))
@@ -215,6 +214,50 @@
 
      (mi-sub [this start-test start-key end-test end-key]
        (get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
+
+(defn $get-property-values
+  ([ark-value rolon-uuid]
+   (get-property-values ark-value rolon-uuid ($get-changes-by-property ark-value rolon-uuid)))
+  ([ark-value rolon-uuid all-changes]
+   (reify
+     mapish/MI
+     (mi-get [this property-path default]
+       (let [changes (mapish/mi-get all-changes property-path)]
+         (if (nil? changes)
+           default
+           (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
+                 fst (first (mapish/mi-rseq changes))]
+             (if (nil? fst)
+               default
+               (val fst))))))
+
+     (mi-get [this property-path]
+       (mapish/mi-get this property-path nil))
+
+     (mi-seq [this]
+       (map
+         #(clojure.lang.MapEntry. (key %) (val (val %)))
+         (filter
+           #(some? (val %))
+           (map
+             #(clojure.lang.MapEntry.
+               (key %)
+               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+             (mapish/mi-seq all-changes)))))
+
+     (mi-rseq [this]
+       (map
+         #(clojure.lang.MapEntry. (key %) (val (val %)))
+         (filter
+           #(some? (val %))
+           (map
+             #(clojure.lang.MapEntry.
+               (key %)
+               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+             (mapish/mi-rseq all-changes)))))
+
+     (mi-sub [this start-test start-key end-test end-key]
+       ($get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value"

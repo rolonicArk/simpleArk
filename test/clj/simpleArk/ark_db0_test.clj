@@ -9,7 +9,8 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-db0 :as ark-db0]
             [simpleArk.closer :as closer]
-            [simpleArk.mapish :as mapish]))
+            [simpleArk.mapish :as mapish]
+            [simpleArk.vecish :as vecish]))
 
 (set! *warn-on-reflection* true)
 
@@ -33,10 +34,11 @@
   (is (not (ark-value/descriptor? ":descriptor/x")))
 
   (ark-value/$validate-property-paths (mapish/->MI-map
-                                      (sorted-map [:classifier/x] 1 [:descriptor/y] "fred")
+                                      (sorted-map (vecish/->Vecish [:classifier/x]) 1
+                                                  (vecish/->Vecish [:descriptor/y]) "fred")
                                       nil nil nil nil))
   (is (thrown? Exception (ark-value/validate-property-names {:classifier/x 2})))
-  (is (thrown? Exception (ark-value/validate-property-names {[1] 2})))
+  (is (thrown? Exception (ark-value/validate-property-names {(vecish/->Vecish [1]) 2})))
 
   (println)
   (println ">>>>>>>>>>>> hello-world")
@@ -54,8 +56,8 @@
                                                                {:descriptor/age 8 :classifier/name "Bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-  (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
-  (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
+  (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))
+  (println :lookup-bob (ark-value/$name-lookup ark-value "Bob")))
 
 
 (println)

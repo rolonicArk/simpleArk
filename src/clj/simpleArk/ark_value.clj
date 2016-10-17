@@ -1,7 +1,7 @@
 (ns simpleArk.ark-value
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
-            [simpleArk.vecish]
+            [simpleArk.vecish :as vecish]
             [simpleArk.mapish :as mapish]))
 
 (set! *warn-on-reflection* true)
@@ -89,23 +89,46 @@
   [ark writer]
   (print-simple (ark-str ark) writer))
 
-(defn $cvt
+(defn $to-names
   [properties]
   (reduce
-    #(mapish/mi-assoc %1 (first (key %2)) (val %2))
+    #(mapish/mi-assoc %1 (first (:v (key %2))) (val %2))
     (mapish/->MI-map (sorted-map) nil nil nil nil)
     (mapish/mi-seq properties)))
+
+(defn $to-paths
+  [properties]
+  (reduce
+    #(mapish/mi-assoc %1 (vecish/->Vecish [(key %2)]) (val %2))
+    (mapish/->MI-map (sorted-map) nil nil nil nil)
+    (mapish/mi-seq properties)))
+
+(defn validate-property-name
+  [property-name]
+  (if (not (or (classifier? property-name) (descriptor? property-name)))
+    (throw (Exception. (str property-name " is neither a classifier nor a keyword")))))
+
+(defn $validate-property-path
+  [property-path]
+  (if (not (instance? simpleArk.vecish.Vecish property-path))
+    (throw (Exception. (str property-path " is not a vecish")))
+    (let [kw (first (:v property-path))]
+      (if (classifier? kw)
+        (if (< 1 (count (:v property-path)))
+          (throw (Exception. (str property-path " has too many elements for a classifier"))))
+        (if (not (descriptor? kw))
+          (throw (Exception. (str property-path " is neither a classifier nor a keyword"))))))))
 
 (defn validate-property-names
   "properties must be classifiers or descriptors"
   [properties]
-  (reduce #(if (not (or (classifier? %2) (descriptor? %2)))
-            (throw (Exception. (str %2 " is neither a classifier nor a keyword"))))
+  (reduce (fn [_ p] (validate-property-name p))
           nil (keys (mapish/mi-seq properties))))
 
 (defn $validate-property-paths
   [properties]
-  (validate-property-names ($cvt properties)))
+  (reduce (fn [_ p] ($validate-property-path p))
+          nil (keys (mapish/mi-seq properties))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]
@@ -114,7 +137,8 @@
 
 (defn $make-rolon
   [ark-value rolon-uuid properties]
-  (make-rolon ark-value rolon-uuid ($cvt properties)))
+  ($validate-property-paths properties)
+  (make-rolon ark-value rolon-uuid ($to-names properties)))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon"
@@ -129,16 +153,19 @@
 
 (defn $update-properties
   [ark-value rolon-uuid properties]
-  (update-properties ark-value rolon-uuid ($cvt properties)))
+  ($validate-property-paths properties)
+  (update-properties ark-value rolon-uuid ($to-names properties)))
 
 (defn update-property
   "update the value of a property of a rolon"
   [ark-value rolon-uuid property-name property-value]
+  (validate-property-name property-name)
   (update-properties ark-value rolon-uuid (create-mi ark-value (sorted-map property-name property-value))))
 
 (defn $update-property
   [ark-value rolon-uuid property-path property-value]
-  (update-property ark-value rolon-uuid (first property-path) property-value))
+  ($validate-property-path property-path)
+  (update-property ark-value rolon-uuid (first (:v property-path)) property-value))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon"
@@ -147,6 +174,7 @@
 
 (defn get-changes-by-property
   ([ark-value rolon-uuid property-name]
+   (validate-property-name property-name)
    (let [rolon (get-rolon ark-value rolon-uuid)]
      ((:get-changes-by-property rolon) rolon property-name)))
   ([ark-value rolon-uuid]
@@ -155,14 +183,14 @@
 
 (defn $get-changes-by-property
   ([ark-value rolon-uuid property-path]
-   (get-changes-by-property ark-value rolon-uuid (first property-path)))
+   ($validate-property-path property-path)
+   (get-changes-by-property ark-value rolon-uuid (first (:v property-path))))
   ([ark-value rolon-uuid]
-   (map
-     #(clojure.lang.MapEntry. [(key %)] (val %))
-     (get-changes-by-property ark-value rolon-uuid))))
+   ($to-paths (get-changes-by-property ark-value rolon-uuid))))
 
 (defn get-property-value
   [ark-value rolon-uuid property-name]
+  (validate-property-name property-name)
   (let [changes (get-changes-by-property ark-value rolon-uuid property-name)]
     (if changes
       (val (first (mapish/mi-rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
@@ -170,7 +198,8 @@
 
 (defn $get-property-value
   [ark-value rolon-uuid property-path]
-  (get-property-value ark-value rolon-uuid (first property-path)))
+  ($validate-property-path property-path)
+  (get-property-value ark-value rolon-uuid (first (:v property-path))))
 
 (defn get-property-values
   ([ark-value rolon-uuid]
@@ -218,7 +247,7 @@
 
 (defn $get-property-values
   ([ark-value rolon-uuid]
-   (get-property-values ark-value rolon-uuid ($get-changes-by-property ark-value rolon-uuid)))
+   ($get-property-values ark-value rolon-uuid ($get-changes-by-property ark-value rolon-uuid)))
   ([ark-value rolon-uuid all-changes]
    (reify
      mapish/MI
@@ -267,10 +296,10 @@
     (mapish/mi-get index-map value)))
 
 (defn $index-lookup
-  "returns the uuids for a given index-uuid and value"
-  [ark-value index-uuid value]
-  (let [index-map ($get-property-value ark-value index-uuid [:descriptor/index])]
-    (mapish/mi-get index-map value)))
+  "returns the uuids for a given index-uuid and name"
+  [ark-value index-uuid name]
+  (let [index-map ($get-property-value ark-value index-uuid (vecish/->Vecish [:descriptor/index]))]
+    (mapish/mi-get index-map name)))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
@@ -280,7 +309,7 @@
 (defn $get-index-uuid
   "Looks up the index name in the index-name index rolon."
   [ark-value index-name]
-  (first ($index-lookup ark-value (index-name-uuid ark-value) [index-name])))
+  (first ($index-lookup ark-value (index-name-uuid ark-value) index-name)))
 
 (defn name-lookup
   [ark-value rolon-name]
@@ -303,7 +332,9 @@
 (defn $get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
-  (let [updated-rolon-uuids ($get-property-value ark-value je-uuid [:descriptor/updated-rolon-uuids])]
+  (let [updated-rolon-uuids ($get-property-value ark-value
+                                                 je-uuid
+                                                 (vecish/->Vecish [:descriptor/updated-rolon-uuids]))]
     (if (nil? updated-rolon-uuids)
       (create-mi ark-value)
       updated-rolon-uuids)))
@@ -319,7 +350,7 @@
 (defn $get-index-descriptor
   "returns a mapish of sets of rolon uuids keyed by classifier value"
   [ark-value je-uuid]
-  (let [index ($get-property-value ark-value je-uuid [:descriptor/index])]
+  (let [index ($get-property-value ark-value je-uuid (vecish/->Vecish [:descriptor/index]))]
     (if (nil? index)
       (create-mi ark-value)
       index)))
@@ -346,7 +377,8 @@
   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
         properties (if (get-rolon ark-value iuuid)
                      (create-mi ark-value)
-                     (create-mi ark-value (sorted-map [:classifier/index.name] (name classifier))))
+                     (create-mi ark-value (sorted-map (vecish/->Vecish [:classifier/index.name])
+                                                      (name classifier))))
         ark-value ($make-rolon ark-value iuuid properties)
         index-rolon (get-rolon ark-value iuuid)
         index-descriptor ($get-index-descriptor ark-value iuuid)
@@ -356,7 +388,10 @@
                     (conj value-set uuid)
                     (disj value-set uuid))
         index-descriptor (mapish/mi-assoc index-descriptor value value-set)]
-    ($update-property ark-value (get-rolon-uuid index-rolon) [:descriptor/index] index-descriptor)))
+    ($update-property ark-value
+                      (get-rolon-uuid index-rolon)
+                      (vecish/->Vecish [:descriptor/index])
+                      index-descriptor)))
 
 (defn make-index-rolon
   "create/update an index rolon"
@@ -382,10 +417,10 @@
                  nv (val %2)
                  ov (mapish/mi-get old-properties path)
                  ark-value (if (and ov (classifier? path))
-                             ($make-index-rolon- ark-value (first path) ov uuid false)
+                             ($make-index-rolon- ark-value (first (:v path)) ov uuid false)
                              ark-value)
                  ark-value (if (and nv (classifier? path))
-                             ($make-index-rolon- ark-value (first path) nv uuid true)
+                             ($make-index-rolon- ark-value (first (:v path)) nv uuid true)
                              ark-value)]
             ark-value)
           ark-value (mapish/mi-seq properties)))
@@ -398,7 +433,8 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [rolon-uuid je-properties rolon-properties] (read-string s)
-        je-properties (into {:classifier/headline (str "update a rolon with " s)} je-properties)]
+        je-properties (into (sorted-map :classifier/headline (str "update a rolon with " s))
+                            je-properties)]
     (-> ark-value
         (update-properties je-uuid (create-mi ark-value je-properties))
         (make-rolon rolon-uuid (create-mi ark-value rolon-properties)))))
@@ -407,7 +443,9 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [rolon-uuid je-properties rolon-properties] (read-string s)
-        je-properties (into {[:classifier/headline] (str "update a rolon with " s)} je-properties)]
+        je-properties (into (sorted-map (vecish/->Vecish [:classifier/headline])
+                                        (str "update a rolon with " s))
+                            je-properties)]
     (-> ark-value
         ($update-properties je-uuid (create-mi ark-value je-properties))
         ($make-rolon rolon-uuid (create-mi ark-value rolon-properties)))))
@@ -416,7 +454,8 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties] (read-string s)
-        je-properties (into {:classifier/headline (str "destroy rolon " s)} je-properties)]
+        je-properties (into (sorted-map :classifier/headline (str "destroy rolon " s))
+                            je-properties)]
     (-> ark-value
         (update-properties je-uuid (create-mi ark-value je-properties))
         (destroy-rolon uuid))))
@@ -425,7 +464,8 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties] (read-string s)
-        je-properties (into {[:classifier/headline] (str "destroy rolon " s)} je-properties)]
+        je-properties (into (sorted-map [:classifier/headline] (str "destroy rolon " s))
+                            je-properties)]
     (-> ark-value
         ($update-properties je-uuid (create-mi ark-value je-properties))
         (destroy-rolon uuid))))

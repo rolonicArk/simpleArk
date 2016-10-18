@@ -21,7 +21,7 @@
   (println "throwing exception")
   (throw (new IllegalArgumentException)))
 
-(defmethod ark-value/eval-transaction ::hello-world!
+%_(defmethod ark-value/eval-transaction ::hello-world!
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
@@ -31,14 +31,15 @@
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
-    (ark-value/$update-property ark-value je-uuid (vecish/->Vecish :classifier/headline) "Just for fun!")))
+    (ark-value/$update-property ark-value je-uuid (vecish/->Vecish [:classifier/headline]) "Just for fun!")))
 
 (defn ark-dba0-test
   [ark-db]
   (try
     (ark-db/process-transaction! ark-db ::trouble! "eek!")
     (println ">>> did not receive expected exception")
-    (catch Exception e))
+    (catch Exception e
+      (println "got expected exception")))
   (ark-db/process-transaction! ark-db ::hello-world! "Fred")
   (ark-db/process-transaction! ark-db ::hello-world! "Sam")
   (ark-db/process-transaction! ark-db ::hello-world! "Ruth")

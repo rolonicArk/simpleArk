@@ -184,7 +184,7 @@
   [ark-value]
   (::index-name-uuid ark-value))
 
-(defn update-ark
+(defn -update-ark
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
                       (assoc ::latest-journal-entry-uuid je-uuid)
@@ -199,7 +199,7 @@
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))
 
-(defn $update-ark
+(defn update-ark
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
                       (assoc ::latest-journal-entry-uuid je-uuid)
@@ -207,8 +207,8 @@
                       (ark-value/$make-rolon je-uuid
                                             (mapish/->MI-map
                                               (sorted-map
-                                                (vecish/->Vecish :classifier/transaction-name) transaction-name
-                                                (vecish/->Vecish :descriptor/transaction-argument) s)
+                                                (vecish/->Vecish [:classifier/transaction-name]) transaction-name
+                                                (vecish/->Vecish [:descriptor/transaction-argument]) s)
                                               nil nil nil nil))
                       (ark-value/$eval-transaction transaction-name s))]
     (if (::selected-time ark-value)

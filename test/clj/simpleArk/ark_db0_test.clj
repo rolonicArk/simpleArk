@@ -14,11 +14,17 @@
 
 (set! *warn-on-reflection* true)
 
-(defmethod ark-value/eval-transaction ::hello-world!
+#_(defmethod ark-value/eval-transaction ::hello-world!
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
     (ark-value/update-property ark-value je-uuid :classifier/headline "Just for fun!")))
+
+(defmethod ark-value/$eval-transaction ::hello-world!
+  [ark-value n s]
+  (println "Hello," s)
+  (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
+    (ark-value/$update-property ark-value je-uuid (vecish/->Vecish [:classifier/headline]) "Just for fun!")))
 
 (defn test0
   "tests that even work with impl0"
@@ -52,8 +58,12 @@
   (def bob-uuid (uuid/random-uuid ark-db))
   (def make-bob-je-uuid (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                                                      (prn-str [bob-uuid
-                                                               {:classifier/headline "make bob"}
-                                                               {:descriptor/age 8 :classifier/name "Bob"}])))
+                                                               (sorted-map (vecish/->Vecish [:classifier/headline])
+                                                                           "make bob")
+                                                               (sorted-map (vecish/->Vecish [:descriptor/age])
+                                                                           8
+                                                                           (vecish/->Vecish [:classifier/name])
+                                                                           "Bob")])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
   (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))
@@ -65,23 +75,25 @@
   (println)
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                                (prn-str [bob-uuid
-                                         {:classifier/headline "bob update 1"}
-                                         {:classifier/headline "kissing is gross!"}]))
+                                         (sorted-map (vecish/->Vecish [:classifier/headline]) "bob update 1")
+                                         (sorted-map (vecish/->Vecish [:classifier/headline]) "kissing is gross!")]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                                (prn-str [bob-uuid
-                                         {:classifier/headline "bob update 2"}
-                                         {:descriptor/age 9}]))
+                                         (sorted-map (vecish/->Vecish [:classifier/headline]) "bob update 2")
+                                         (sorted-map (vecish/->Vecish [:descriptor/age]) 9)]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                                (prn-str [bob-uuid
-                                         {:classifier/headline "bob update 3"}
-                                         {:classifier/headline "who likes girls?"}]))
+                                         (sorted-map (vecish/->Vecish [:classifier/headline]) "bob update 3")
+                                         (sorted-map (vecish/->Vecish [:classifier/headline]) "who likes girls?")]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                                (prn-str [bob-uuid
-                                         {:classifier/headline "bob update 4"}
-                                         {:classifier/headline "when do I get my own mobile!"}]))
+                                         (sorted-map (vecish/->Vecish [:classifier/headline])
+                                                     "bob update 4")
+                                         (sorted-map (vecish/->Vecish [:classifier/headline])
+                                                     "when do I get my own mobile!")]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
@@ -90,10 +102,14 @@
   (def sam-uuid (uuid/random-uuid ark-db))
   (def make-sam-je-uuid (ark-db/process-transaction! ark-db :ark/update-rolon-transaction!
                                                      (prn-str [sam-uuid
-                                                               {:classifier/headline "make sam"}
-                                                               {:descriptor/age 10
-                                                                :classifier/name "Sam"
-                                                                :classifier/headline "I hate green eggs and ham!"}])))
+                                                               (sorted-map (vecish/->Vecish [:classifier/headline])
+                                                                           "make sam")
+                                                               (sorted-map (vecish/->Vecish [:descriptor/age])
+                                                                           10
+                                                                           (vecish/->Vecish [:classifier/name])
+                                                                           "Sam"
+                                                                           (vecish/->Vecish [:classifier/headline])
+                                                                           "I hate green eggs and ham!")])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
@@ -101,7 +117,8 @@
   (println)
   (def destroy-bob-je-uuid (ark-db/process-transaction! ark-db :ark/destroy-rolon-transaction!
                                                         (prn-str [bob-uuid
-                                                                  {:classifier/headline "destroy bob"}])))
+                                                                  (sorted-map (vecish/->Vecish [:classifier/headline])
+                                                                              "destroy bob")])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))

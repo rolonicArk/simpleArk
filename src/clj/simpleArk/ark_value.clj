@@ -464,7 +464,7 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties] (read-string s)
-        je-properties (into (sorted-map [:classifier/headline] (str "destroy rolon " s))
+        je-properties (into (sorted-map (vecish/->Vecish [:classifier/headline]) (str "destroy rolon " s))
                             je-properties)]
     (-> ark-value
         ($update-properties je-uuid (create-mi ark-value je-properties))

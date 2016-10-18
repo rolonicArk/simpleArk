@@ -1,7 +1,8 @@
 (ns simpleArk.ark-value0
   (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.uuid :as uuid]
-            [simpleArk.mapish :as mapish]))
+            [simpleArk.mapish :as mapish]
+            [simpleArk.vecish :as vecish]))
 
 (set! *warn-on-reflection* true)
 
@@ -190,10 +191,26 @@
                       (assoc ::active-journal-entry-uuid je-uuid)
                       (ark-value/make-rolon je-uuid
                                             (mapish/->MI-map
-                                              {:classifier/transaction-name transaction-name
-                                               :descriptor/transaction-argument s}
+                                              (sorted-map :classifier/transaction-name transaction-name
+                                               :descriptor/transaction-argument s)
                                               nil nil nil nil))
                       (ark-value/eval-transaction transaction-name s))]
+    (if (::selected-time ark-value)
+      (throw (Exception. "Transaction can not update ark with a selected time")))
+    ark-value))
+
+(defn $update-ark
+  [ark-value je-uuid transaction-name s]
+  (let [ark-value (-> ark-value
+                      (assoc ::latest-journal-entry-uuid je-uuid)
+                      (assoc ::active-journal-entry-uuid je-uuid)
+                      (ark-value/$make-rolon je-uuid
+                                            (mapish/->MI-map
+                                              (sorted-map
+                                                (vecish/->Vecish :classifier/transaction-name) transaction-name
+                                                (vecish/->Vecish :descriptor/transaction-argument) s)
+                                              nil nil nil nil))
+                      (ark-value/$eval-transaction transaction-name s))]
     (if (::selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))

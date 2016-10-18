@@ -14,12 +14,6 @@
 
 (set! *warn-on-reflection* true)
 
-#_(defmethod ark-value/eval-transaction ::hello-world!
-  [ark-value n s]
-  (println "Hello," s)
-  (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
-    (ark-value/update-property ark-value je-uuid :classifier/headline "Just for fun!")))
-
 (defmethod ark-value/$eval-transaction ::hello-world!
   [ark-value n s]
   (println "Hello," s)

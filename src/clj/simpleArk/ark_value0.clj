@@ -6,6 +6,22 @@
 
 (set! *warn-on-reflection* true)
 
+;todo drop
+(defn $to-names
+  [properties]
+  (reduce
+    #(mapish/mi-assoc %1 (first (:v (key %2))) (val %2))
+    (mapish/->MI-map (sorted-map) nil nil nil nil)
+    (mapish/mi-seq properties)))
+
+;todo drop
+(defn $to-paths
+  [properties]
+  (reduce
+    #(mapish/mi-assoc %1 (vecish/->Vecish [(key %2)]) (val %2))
+    (mapish/->MI-map (sorted-map) nil nil nil nil)
+    (mapish/mi-seq properties)))
+
 (defn get-current-journal-entry-uuid
   [ark-value]
   (::active-journal-entry-uuid ark-value))
@@ -87,7 +103,7 @@
         property-values (ark-value/$get-property-values ark-value rolon-uuid)
         ark-value (ark-value/$make-index-rolon ark-value
                                                rolon-uuid
-                                               (ark-value/$to-paths properties)
+                                               ($to-paths properties)
                                                property-values)]
     (assoc-rolon ark-value rolon-uuid rolon)))
 
@@ -117,7 +133,7 @@
         old-property-values (ark-value/$get-property-values ark-value rolon-uuid)
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map) nil nil nil nil)
-                                (mapish/mi-seq (ark-value/$to-names old-property-values)))
+                                (mapish/mi-seq ($to-names old-property-values)))
         rolon (assoc rolon ::changes-by-property
                             (update-changes-by-property
                               (::changes-by-property rolon)
@@ -125,7 +141,7 @@
                               property-values))
         ark-value (ark-value/$make-index-rolon ark-value
                                               rolon-uuid
-                                              (ark-value/$to-paths property-values)
+                                              ($to-paths property-values)
                                               old-property-values)
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value rolon-uuid)))
@@ -133,7 +149,7 @@
 (defn update-properties
   [ark-value rolon-uuid properties]
   (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
-        ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid (ark-value/$to-names properties))]
+        ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid ($to-names properties))]
     (je-modified ark-value rolon-uuid)))
 
 (defn select-time
@@ -161,13 +177,13 @@
 (defn get-changes-by-property
   ([rolon property-path]
    (let [ark-value (:ark-value rolon)
-         changes-by-property (ark-value/$to-names (get-changes-by-property rolon))
+         changes-by-property ($to-names (get-changes-by-property rolon))
          pc (mapish/mi-get changes-by-property (first (:v property-path)))]
      (if (nil? pc)
        nil
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
   ([rolon]
-   (ark-value/$to-paths (::changes-by-property rolon))))
+   ($to-paths (::changes-by-property rolon))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]
@@ -180,7 +196,7 @@
           rolon (assoc rolon ::changes-by-property
                              (update-changes-by-property (::changes-by-property rolon)
                                                          je-uuid
-                                                         (ark-value/$to-names properties)))
+                                                         ($to-names properties)))
           ark-value (assoc-rolon ark-value rolon-uuid rolon)
           ark-value (je-modified ark-value rolon-uuid)]
       (ark-value/$make-index-rolon ark-value

@@ -89,22 +89,6 @@
   [ark writer]
   (print-simple (ark-str ark) writer))
 
-;todo drop
-(defn $to-names
-  [properties]
-  (reduce
-    #(mapish/mi-assoc %1 (first (:v (key %2))) (val %2))
-    (mapish/->MI-map (sorted-map) nil nil nil nil)
-    (mapish/mi-seq properties)))
-
-;todo drop
-(defn $to-paths
-  [properties]
-  (reduce
-    #(mapish/mi-assoc %1 (vecish/->Vecish [(key %2)]) (val %2))
-    (mapish/->MI-map (sorted-map) nil nil nil nil)
-    (mapish/mi-seq properties)))
-
 (defn $validate-property-path
   [property-path]
   (if (not (instance? simpleArk.vecish.Vecish property-path))

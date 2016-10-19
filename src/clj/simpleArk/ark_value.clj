@@ -212,7 +212,7 @@
   [ark-value je-uuid]
   (let [updated-rolon-uuids (get-property-value ark-value
                                                  je-uuid
-                                                 (vecish/->Vecish [:descriptor/updated-rolon-uuids]))]
+                                                 (vecish/->Vecish [:descriptor/modified]))]
     (if (nil? updated-rolon-uuids)
       (create-mi ark-value)
       updated-rolon-uuids)))

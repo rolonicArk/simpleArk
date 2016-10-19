@@ -124,7 +124,7 @@
 (defn $make-rolon
   [ark-value rolon-uuid properties]
   ($validate-property-paths properties)
-  ((:make-rolon ark-value) ark-value rolon-uuid ($to-names properties)))
+  ((:make-rolon ark-value) ark-value rolon-uuid properties))
 
 (defn destroy-rolon
   "deletes all the classifiers of a rolon"
@@ -134,7 +134,7 @@
 (defn $update-properties
   [ark-value rolon-uuid properties]
   ($validate-property-paths properties)
-  ((:update-properties ark-value) ark-value rolon-uuid ($to-names properties)))
+  ((:update-properties ark-value) ark-value rolon-uuid properties))
 
 (defn $update-property
   [ark-value rolon-uuid property-path property-value]

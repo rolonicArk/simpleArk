@@ -18,7 +18,7 @@
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
-    (ark-value/$update-property ark-value je-uuid (vecish/->Vecish [:classifier/headline]) "Just for fun!")))
+    (ark-value/update-property ark-value je-uuid (vecish/->Vecish [:classifier/headline]) "Just for fun!")))
 
 (defn test0
   "tests that even work with impl0"
@@ -33,12 +33,12 @@
   (is (not (ark-value/descriptor? :x)))
   (is (not (ark-value/descriptor? ":descriptor/x")))
 
-  (ark-value/$validate-property-paths (mapish/->MI-map
+  (ark-value/validate-property-paths (mapish/->MI-map
                                       (sorted-map (vecish/->Vecish [:classifier/x]) 1
                                                   (vecish/->Vecish [:descriptor/y]) "fred")
                                       nil nil nil nil))
-  (is (thrown? Exception (ark-value/$validate-property-paths {:classifier/x 2})))
-  (is (thrown? Exception (ark-value/$validate-property-paths {(vecish/->Vecish [1]) 2})))
+  (is (thrown? Exception (ark-value/validate-property-paths {:classifier/x 2})))
+  (is (thrown? Exception (ark-value/validate-property-paths {(vecish/->Vecish [1]) 2})))
 
   (println)
   (println ">>>>>>>>>>>> hello-world")
@@ -66,8 +66,8 @@
                                                                            true)])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-  (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))
-  (println :lookup-bob (ark-value/$name-lookup ark-value "Bob")))
+  (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
+  (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
 
 (println)
@@ -121,8 +121,8 @@
                                                                               "destroy bob")])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))
-    (println :lookup-bob (ark-value/$name-lookup ark-value "Bob")))
+    (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
@@ -131,8 +131,8 @@
         _ (println "total je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
     (println "selected je count:" (count (mapish/mi-seq (ark-value/get-journal-entries ark-value))))
-    (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))
-    (println :lookup-bob (ark-value/$name-lookup ark-value "Bob"))
+    (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
     )
 
   (println)
@@ -140,15 +140,15 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep (fn [x] (println
-                           (ark-value/$get-property-value ark-value (key x) (vecish/->Vecish [:classifier/headline]))))
+                           (ark-value/get-property-value ark-value (key x) (vecish/->Vecish [:classifier/headline]))))
                  (mapish/mi-seq (ark-value/get-journal-entries ark-value)))))
 
   (println)
   (println ">>>>>>>>>>>> all the latest headlines")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-        headline-index-uuid (ark-value/$get-index-uuid ark-value "headline")
-        descriptor-index (ark-value/$get-property-value ark-value
+        headline-index-uuid (ark-value/get-index-uuid ark-value "headline")
+        descriptor-index (ark-value/get-property-value ark-value
                                                         headline-index-uuid
                                                         (vecish/->Vecish [:descriptor/index]))]
     (first (keep (fn [x]
@@ -162,8 +162,8 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep #(println (val %)
                            "-"
-                           (ark-value/$get-property-value ark-value (key %) (vecish/->Vecish [:classifier/headline])))
-                 (mapish/mi-rseq (ark-value/$get-changes-by-property ark-value
+                           (ark-value/get-property-value ark-value (key %) (vecish/->Vecish [:classifier/headline])))
+                 (mapish/mi-rseq (ark-value/get-changes-by-property ark-value
                                                                      bob-uuid
                                                                      (vecish/->Vecish [:classifier/headline])))))))
 

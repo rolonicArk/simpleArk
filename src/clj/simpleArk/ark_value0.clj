@@ -84,8 +84,8 @@
                            (update-changes-by-property (::changes-by-property rolon)
                                                        journal-entry-uuid
                                                        properties))
-        property-values (ark-value/$get-property-values ark-value rolon-uuid)
-        ark-value (ark-value/$make-index-rolon ark-value
+        property-values (ark-value/get-property-values ark-value rolon-uuid)
+        ark-value (ark-value/make-index-rolon ark-value
                                                rolon-uuid
                                                properties
                                                property-values)]
@@ -102,7 +102,7 @@
   "track the rolons modified by the journal entry"
   [ark-value rolon-uuid]
   (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
-        modified (ark-value/$get-property-value ark-value
+        modified (ark-value/get-property-value ark-value
                                                 journal-entry-uuid
                                                 (vecish/->Vecish [:descriptor/modified]))
         modified (if modified
@@ -118,7 +118,7 @@
   [ark-value rolon-uuid]
   (let [je-uuid (::active-journal-entry-uuid ark-value)
         rolon (ark-value/get-rolon ark-value rolon-uuid)
-        old-property-values (ark-value/$get-property-values ark-value rolon-uuid)
+        old-property-values (ark-value/get-property-values ark-value rolon-uuid)
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map) nil nil nil nil)
                                 (mapish/mi-seq old-property-values))
@@ -127,7 +127,7 @@
                               (::changes-by-property rolon)
                               je-uuid
                               property-values))
-        ark-value (ark-value/$make-index-rolon ark-value
+        ark-value (ark-value/make-index-rolon ark-value
                                               rolon-uuid
                                               property-values
                                               old-property-values)
@@ -187,7 +187,7 @@
                                                          properties))
           ark-value (assoc-rolon ark-value rolon-uuid rolon)
           ark-value (je-modified ark-value rolon-uuid)]
-      (ark-value/$make-index-rolon ark-value
+      (ark-value/make-index-rolon ark-value
                                    rolon-uuid
                                    properties
                                    (mapish/->MI-map (sorted-map) nil nil nil nil)))))
@@ -201,7 +201,7 @@
   (let [ark-value (-> ark-value
                       (assoc ::latest-journal-entry-uuid je-uuid)
                       (assoc ::active-journal-entry-uuid je-uuid)
-                      (ark-value/$make-rolon je-uuid
+                      (ark-value/make-rolon je-uuid
                                             (mapish/->MI-map
                                               (sorted-map
                                                 (vecish/->Vecish [:classifier/transaction-name]) transaction-name

@@ -425,9 +425,9 @@
             ark-value)
           ark-value (mapish/mi-seq properties)))
 
-(defmulti $eval-transaction (fn [ark-value n s] n))
+(defmulti eval-transaction (fn [ark-value n s] n))
 
-(defmethod $eval-transaction :ark/update-rolon-transaction!
+(defmethod eval-transaction :ark/update-rolon-transaction!
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [rolon-uuid je-properties rolon-properties] (read-string s)
@@ -438,7 +438,7 @@
         ($update-properties je-uuid (create-mi ark-value je-properties))
         ($make-rolon rolon-uuid (create-mi ark-value rolon-properties)))))
 
-(defmethod $eval-transaction :ark/destroy-rolon-transaction!
+(defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties] (read-string s)

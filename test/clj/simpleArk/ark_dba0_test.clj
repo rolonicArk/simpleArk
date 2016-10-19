@@ -11,12 +11,12 @@
 
 (set! *warn-on-reflection* true)
 
-(defmethod ark-value/$eval-transaction ::trouble!
+(defmethod ark-value/eval-transaction ::trouble!
   [ark-value n s]
   (println "throwing exception")
   (throw (new IllegalArgumentException)))
 
-(defmethod ark-value/$eval-transaction ::hello-world!
+(defmethod ark-value/eval-transaction ::hello-world!
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]

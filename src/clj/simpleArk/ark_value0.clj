@@ -84,11 +84,11 @@
                            (update-changes-by-property (::changes-by-property rolon)
                                                        journal-entry-uuid
                                                        properties))
-        property-values (ark-value/get-property-values ark-value rolon-uuid)
+        property-values (ark-value/$get-property-values ark-value rolon-uuid)
         ark-value (ark-value/$make-index-rolon ark-value
                                                rolon-uuid
                                                (ark-value/$to-paths properties)
-                                               (ark-value/$to-paths property-values))]
+                                               property-values)]
     (assoc-rolon ark-value rolon-uuid rolon)))
 
 (defn update-property-
@@ -102,7 +102,9 @@
   "track the rolons modified by the journal entry"
   [ark-value rolon-uuid]
   (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
-        modified (ark-value/get-property-value ark-value journal-entry-uuid :descriptor/modified)
+        modified (ark-value/$get-property-value ark-value
+                                                journal-entry-uuid
+                                                (vecish/->Vecish [:descriptor/modified]))
         modified (if modified
                    (conj modified rolon-uuid)
                    (sorted-set rolon-uuid))]
@@ -112,10 +114,10 @@
   [ark-value rolon-uuid]
   (let [je-uuid (::active-journal-entry-uuid ark-value)
         rolon (ark-value/get-rolon ark-value rolon-uuid)
-        old-property-values (ark-value/get-property-values ark-value rolon-uuid)
+        old-property-values (ark-value/$get-property-values ark-value rolon-uuid)
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map) nil nil nil nil)
-                                (mapish/mi-seq old-property-values))
+                                (mapish/mi-seq (ark-value/$to-names old-property-values)))
         rolon (assoc rolon ::changes-by-property
                             (update-changes-by-property
                               (::changes-by-property rolon)
@@ -124,7 +126,7 @@
         ark-value (ark-value/$make-index-rolon ark-value
                                               rolon-uuid
                                               (ark-value/$to-paths property-values)
-                                              (ark-value/$to-paths old-property-values))
+                                              old-property-values)
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value rolon-uuid)))
 

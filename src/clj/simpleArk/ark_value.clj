@@ -105,12 +105,6 @@
     (mapish/->MI-map (sorted-map) nil nil nil nil)
     (mapish/mi-seq properties)))
 
-;todo drop
-(defn validate-property-name
-  [property-name]
-  (if (not (or (classifier? property-name) (descriptor? property-name)))
-    (throw (Exception. (str property-name " is neither a classifier nor a keyword")))))
-
 (defn $validate-property-path
   [property-path]
   (if (not (instance? simpleArk.vecish.Vecish property-path))
@@ -152,31 +146,14 @@
   [rolon]
   (:rolon-uuid rolon))
 
-;todo drop
-(defn get-changes-by-property
-  ([ark-value rolon-uuid property-name]
-   (validate-property-name property-name)
-   (let [rolon (get-rolon ark-value rolon-uuid)]
-     ((:get-changes-by-property rolon) rolon property-name)))
-  ([ark-value rolon-uuid]
-  (let [rolon (get-rolon ark-value rolon-uuid)]
-    ((:get-changes-by-property rolon) rolon))))
-
 (defn $get-changes-by-property
   ([ark-value rolon-uuid property-path]
    ($validate-property-path property-path)
-   (get-changes-by-property ark-value rolon-uuid (first (:v property-path))))
+   (let [rolon (get-rolon ark-value rolon-uuid)]
+     ((:get-changes-by-property rolon) rolon (first (:v property-path)))))
   ([ark-value rolon-uuid]
-   ($to-paths (get-changes-by-property ark-value rolon-uuid))))
-
-;todo drop
-(defn get-property-value
-  [ark-value rolon-uuid property-name]
-  (validate-property-name property-name)
-  (let [changes (get-changes-by-property ark-value rolon-uuid property-name)]
-    (if changes
-      (val (first (mapish/mi-rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
-      nil)))
+   (let [rolon (get-rolon ark-value rolon-uuid)]
+     ($to-paths ((:get-changes-by-property rolon) rolon)))))
 
 (defn $get-property-value
   [ark-value rolon-uuid property-path]
@@ -185,51 +162,6 @@
     (if changes
       (val (first (mapish/mi-rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
       nil)))
-
-;todo drop
-(defn get-property-values
-  ([ark-value rolon-uuid]
-   (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))
-  ([ark-value rolon-uuid all-changes]
-   (reify
-     mapish/MI
-     (mi-get [this property-name default]
-       (let [changes (mapish/mi-get all-changes property-name)]
-         (if (nil? changes)
-           default
-           (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
-                 fst (first (mapish/mi-rseq changes))]
-             (if (nil? fst)
-               default
-               (val fst))))))
-
-     (mi-get [this property-name]
-       (mapish/mi-get this property-name nil))
-
-     (mi-seq [this]
-       (map
-         #(clojure.lang.MapEntry. (key %) (val (val %)))
-         (filter
-           #(some? (val %))
-           (map
-             #(clojure.lang.MapEntry.
-               (key %)
-               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
-             (mapish/mi-seq all-changes)))))
-
-     (mi-rseq [this]
-       (map
-         #(clojure.lang.MapEntry. (key %) (val (val %)))
-         (filter
-           #(some? (val %))
-           (map
-             #(clojure.lang.MapEntry.
-               (key %)
-               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
-             (mapish/mi-rseq all-changes)))))
-
-     (mi-sub [this start-test start-key end-test end-key]
-       (get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
 
 (defn $get-property-values
   ([ark-value rolon-uuid]

@@ -57,7 +57,13 @@
                                                                (sorted-map (vecish/->Vecish [:descriptor/age])
                                                                            8
                                                                            (vecish/->Vecish [:classifier/name])
-                                                                           "Bob")])))
+                                                                           "Bob"
+                                                                           (vecish/->Vecish [:descriptor/brothers
+                                                                                             "John"])
+                                                                           true
+                                                                           (vecish/->Vecish [:descriptor/brothers
+                                                                                             "Jeff"])
+                                                                           true)])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
   (println :bob-properties (mapish/mi-seq (ark-value/$get-property-values ark-value bob-uuid)))

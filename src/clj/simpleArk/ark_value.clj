@@ -355,23 +355,6 @@
       (create-mi ark-value)
       index)))
 
-(defn make-index-rolon-
-  [ark-value classifier value uuid adding]
-  (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
-        properties (if (get-rolon ark-value iuuid)
-                     (create-mi ark-value)
-                     (create-mi ark-value (sorted-map :classifier/index.name (name classifier))))
-        ark-value (make-rolon ark-value iuuid properties)
-        index-rolon (get-rolon ark-value iuuid)
-        index-descriptor (get-index-descriptor ark-value iuuid)
-        value-set (mapish/mi-get index-descriptor value)
-        value-set (if value-set value-set #{})
-        value-set (if adding
-                    (conj value-set uuid)
-                    (disj value-set uuid))
-        index-descriptor (mapish/mi-assoc index-descriptor value value-set)]
-    (update-property ark-value (get-rolon-uuid index-rolon) :descriptor/index index-descriptor)))
-
 (defn $make-index-rolon-
   [ark-value classifier value uuid adding]
   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
@@ -393,34 +376,19 @@
                       (vecish/->Vecish [:descriptor/index])
                       index-descriptor)))
 
-(defn make-index-rolon
-  "create/update an index rolon"
-  [ark-value uuid properties old-properties]
-  (reduce #(let [ark-value %1
-                 k (key %2)
-                 nv (val %2)
-                 ov (mapish/mi-get old-properties k)
-                 ark-value (if (and ov (classifier? k))
-                             (make-index-rolon- ark-value k ov uuid false)
-                             ark-value)
-                 ark-value (if (and nv (classifier? k))
-                             (make-index-rolon- ark-value k nv uuid true)
-                             ark-value)]
-            ark-value)
-          ark-value (mapish/mi-seq properties)))
-
 (defn $make-index-rolon
   "create/update an index rolon"
   [ark-value uuid properties old-properties]
   (reduce #(let [ark-value %1
                  path (key %2)
+                 k (first (:v path))
                  nv (val %2)
                  ov (mapish/mi-get old-properties path)
-                 ark-value (if (and ov (classifier? path))
-                             ($make-index-rolon- ark-value (first (:v path)) ov uuid false)
+                 ark-value (if (and ov (classifier? k))
+                             ($make-index-rolon- ark-value k ov uuid false)
                              ark-value)
-                 ark-value (if (and nv (classifier? path))
-                             ($make-index-rolon- ark-value (first (:v path)) nv uuid true)
+                 ark-value (if (and nv (classifier? k))
+                             ($make-index-rolon- ark-value k nv uuid true)
                              ark-value)]
             ark-value)
           ark-value (mapish/mi-seq properties)))

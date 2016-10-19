@@ -85,7 +85,10 @@
                                                        journal-entry-uuid
                                                        properties))
         property-values (ark-value/get-property-values ark-value rolon-uuid)
-        ark-value (ark-value/make-index-rolon ark-value rolon-uuid properties property-values)]
+        ark-value (ark-value/$make-index-rolon ark-value
+                                               rolon-uuid
+                                               (ark-value/$to-paths properties)
+                                               (ark-value/$to-paths property-values))]
     (assoc-rolon ark-value rolon-uuid rolon)))
 
 (defn update-property-
@@ -118,7 +121,10 @@
                               (::changes-by-property rolon)
                               je-uuid
                               property-values))
-        ark-value (ark-value/make-index-rolon ark-value rolon-uuid property-values old-property-values)
+        ark-value (ark-value/$make-index-rolon ark-value
+                                              rolon-uuid
+                                              (ark-value/$to-paths property-values)
+                                              (ark-value/$to-paths old-property-values))
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value rolon-uuid)))
 
@@ -175,10 +181,10 @@
                                                          properties))
           ark-value (assoc-rolon ark-value rolon-uuid rolon)
           ark-value (je-modified ark-value rolon-uuid)]
-      (ark-value/make-index-rolon ark-value
-                                  rolon-uuid
-                                  properties
-                                  (mapish/->MI-map (sorted-map) nil nil nil nil)))))
+      (ark-value/$make-index-rolon ark-value
+                                   rolon-uuid
+                                   (ark-value/$to-paths properties)
+                                   (mapish/->MI-map (sorted-map) nil nil nil nil)))))
 
 (defn index-name-uuid
   [ark-value]

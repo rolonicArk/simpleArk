@@ -150,10 +150,10 @@
   ([ark-value rolon-uuid property-path]
    ($validate-property-path property-path)
    (let [rolon (get-rolon ark-value rolon-uuid)]
-     ((:get-changes-by-property rolon) rolon (first (:v property-path)))))
+     ((:get-changes-by-property rolon) rolon property-path)))
   ([ark-value rolon-uuid]
    (let [rolon (get-rolon ark-value rolon-uuid)]
-     ($to-paths ((:get-changes-by-property rolon) rolon)))))
+     ((:get-changes-by-property rolon) rolon))))
 
 (defn $get-property-value
   [ark-value rolon-uuid property-path]

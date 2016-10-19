@@ -159,15 +159,15 @@
   (::selected-time ark-value))
 
 (defn get-changes-by-property
-  ([rolon property-name]
+  ([rolon property-path]
    (let [ark-value (:ark-value rolon)
-         changes-by-property (get-changes-by-property rolon)
-         pc (mapish/mi-get changes-by-property property-name)]
+         changes-by-property (ark-value/$to-names (get-changes-by-property rolon))
+         pc (mapish/mi-get changes-by-property (first (:v property-path)))]
      (if (nil? pc)
        nil
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
   ([rolon]
-   (::changes-by-property rolon)))
+   (ark-value/$to-paths (::changes-by-property rolon))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]

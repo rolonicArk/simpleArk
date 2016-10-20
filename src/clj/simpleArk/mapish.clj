@@ -11,12 +11,21 @@
 (defprotocol MIU
   (mi-assoc [this key value]))
 
-(defn in-range [key prefix stest skey etest ekey]
-  (let [sc (compare key skey)
-        ec (compare key ekey)]
+(defn in-range [path prefix stest spath etest epath]
+  (let [sc (compare path spath)
+        ec (compare path epath)]
     (and
       (cond
-        (nil? skey)
+        (nil? prefix)
+        true
+        (not (instance? simpleArk.vecish.Vecish path))
+        false
+        (< (count (:v path)) (count (:v prefix)))
+        false
+        ;todo
+        )
+      (cond
+        (nil? spath)
         true
         (> 0 sc)
         false
@@ -25,7 +34,7 @@
         :else
         (= stest >=))
       (cond
-        (nil? ekey)
+        (nil? epath)
         true
         (< 0 ec)
         false

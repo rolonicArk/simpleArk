@@ -5,9 +5,9 @@
 (set! *warn-on-reflection* true)
 
 (def sm0 (sorted-map :a 1 :b 2 :e 10 :f 11))
-(def mi0 (mapish/->MI-map sm0 nil nil nil nil))
-(def mi1 (mapish/->MI-map sm0 >= :b <= :e))
-(def mi2 (mapish/->MI-map sm0 > :a < :f))
+(def mi0 (mapish/->MI-map sm0 nil nil nil nil nil))
+(def mi1 (mapish/->MI-map sm0 nil >= :b <= :e))
+(def mi2 (mapish/->MI-map sm0 nil > :a < :f))
 
 (deftest mapish
   (println sm0)

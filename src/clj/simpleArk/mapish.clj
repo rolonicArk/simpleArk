@@ -11,7 +11,7 @@
 (defprotocol MIU
   (mi-assoc [this key value]))
 
-(defn in-range [key stest skey etest ekey]
+(defn in-range [key prefix stest skey etest ekey]
   (let [sc (compare key skey)
         ec (compare key ekey)]
     (and
@@ -36,14 +36,14 @@
 
 (declare ->MI-map)
 
-(deftype MI-map [sorted-map start-test start-key end-test end-key]
+(deftype MI-map [sorted-map prefix start-test start-key end-test end-key]
   MI
   (mi-get [this key]
-    (if (in-range key start-test start-key end-test end-key)
+    (if (in-range key nil start-test start-key end-test end-key)
       (get sorted-map key)
       nil))
   (mi-get [this key not-found]
-    (if (in-range key start-test start-key end-test end-key)
+    (if (in-range key nil start-test start-key end-test end-key)
       (get sorted-map key not-found)
       not-found))
   (mi-seq [this]
@@ -157,12 +157,12 @@
             (= 0 (compare s-key start-key))
             (= 0 (compare e-key end-key)))
         this
-        (->MI-map sorted-map s-test s-key e-test e-key))))
+        (->MI-map sorted-map nil s-test s-key e-test e-key))))
 
   MIU
   (mi-assoc [this key value]
-    (if (in-range key start-test start-key end-test end-key)
+    (if (in-range key nil start-test start-key end-test end-key)
       (->MI-map
         (assoc sorted-map key value)
-        start-test start-key end-test end-key)
+        nil start-test start-key end-test end-key)
       this)))

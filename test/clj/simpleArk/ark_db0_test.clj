@@ -36,7 +36,7 @@
   (ark-value/validate-property-paths (mapish/->MI-map
                                       (sorted-map (vecish/->Vecish [:classifier/x]) 1
                                                   (vecish/->Vecish [:descriptor/y]) "fred")
-                                      nil nil nil nil))
+                                      nil nil nil nil nil))
   (is (thrown? Exception (ark-value/validate-property-paths {:classifier/x 2})))
   (is (thrown? Exception (ark-value/validate-property-paths {(vecish/->Vecish [1]) 2})))
 

@@ -147,6 +147,7 @@
           (ark-value/get-journal-entries ark-value)
           nil
           nil
+          nil
           <=
           je-uuid)
         je-uuid
@@ -169,7 +170,7 @@
          pc (mapish/mi-get changes-by-property property-path)]
      (if (nil? pc)
        nil
-       (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
+       (mapish/mi-sub pc nil nil nil <= (get-selected-time ark-value)))))
   ([rolon]
    (::changes-by-property rolon)))
 

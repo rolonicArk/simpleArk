@@ -23,3 +23,21 @@
                     (if (not= r 0)
                       r
                       (recur (+ i 1)))))))))))
+
+(defn prefixed? [path prefix]
+  (if (nil? prefix)
+    true
+    (if (not (instance? simpleArk.vecish.Vecish path))
+      false
+      (let [path-vec (:v path)
+            path-count (count path-vec)
+            prefix-vec (:v prefix)
+            prefix-count (count prefix-vec)]
+        (if (< path-count prefix-count)
+          false
+          (loop [i 0]
+            (if (> i prefix-count)
+              true
+              (if (not= (path i) (prefix i))
+                false
+                (recur (+ i 1))))))))))

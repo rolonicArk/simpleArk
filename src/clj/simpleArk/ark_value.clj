@@ -189,7 +189,9 @@
              (mapish/mi-rseq all-changes)))))
 
      (mi-sub [this prefix start-test start-key end-test end-key]
-       (get-property-values ark-value rolon-uuid (mapish/mi-sub all-changes prefix start-test start-key end-test end-key))))))
+       (get-property-values ark-value
+                            rolon-uuid
+                            (mapish/mi-sub all-changes prefix start-test start-key end-test end-key))))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and name"

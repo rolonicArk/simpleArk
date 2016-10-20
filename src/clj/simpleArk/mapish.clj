@@ -1,4 +1,5 @@
-(ns simpleArk.mapish)
+(ns simpleArk.mapish
+  (:require [simpleArk.vecish :as vecish]))
 
 (set! *warn-on-reflection* true)
 
@@ -15,15 +16,7 @@
   (let [sc (compare path spath)
         ec (compare path epath)]
     (and
-      (cond
-        (nil? prefix)
-        true
-        (not (instance? simpleArk.vecish.Vecish path))
-        false
-        (< (count (:v path)) (count (:v prefix)))
-        false
-        ;todo
-        )
+      (vecish/prefixed? path prefix)
       (cond
         (nil? spath)
         true
@@ -48,14 +41,14 @@
 (deftype MI-map [sorted-map prefix start-test start-key end-test end-key]
   MI
   (mi-get [this key]
-    (if (in-range key nil start-test start-key end-test end-key)
+    (if (in-range key prefix start-test start-key end-test end-key)
       (get sorted-map key)
       nil))
   (mi-get [this key not-found]
-    (if (in-range key nil start-test start-key end-test end-key)
+    (if (in-range key prefix start-test start-key end-test end-key)
       (get sorted-map key not-found)
       not-found))
-  (mi-seq [this]
+  (mi-seq [this] ;todo
     (cond
       (empty? sorted-map)
       nil
@@ -76,7 +69,7 @@
         (subseq sorted-map start-test start-key end-test end-key))
       :else
       (seq sorted-map)))
-  (mi-rseq [this]
+  (mi-rseq [this] ;todo
     (cond
       (empty? sorted-map)
       nil
@@ -97,7 +90,7 @@
         (rsubseq sorted-map start-test start-key end-test end-key))
       :else
       (rseq sorted-map)))
-  (mi-sub [this prefix stest skey etest ekey]
+  (mi-sub [this pf stest skey etest ekey] ;todo
     (let [sc (compare skey start-key)
           s-test (cond
                    (nil? skey)
@@ -170,8 +163,8 @@
 
   MIU
   (mi-assoc [this key value]
-    (if (in-range key nil start-test start-key end-test end-key)
+    (if (in-range key prefix start-test start-key end-test end-key)
       (->MI-map
         (assoc sorted-map key value)
-        nil start-test start-key end-test end-key)
+        prefix start-test start-key end-test end-key)
       this)))

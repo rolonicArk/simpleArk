@@ -66,8 +66,13 @@
                                                                            true)])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-  (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
-  (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
+    (println :bob-properties (mapish/mi-seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
+    (println :brothers
+             (mapish/mi-seq
+               (mapish/mi-sub
+                 (ark-value/get-property-values ark-value bob-uuid)
+                 (vecish/->Vecish [:descriptor/brothers])))))
 
 
 (println)

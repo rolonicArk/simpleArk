@@ -36,8 +36,8 @@
         (if (< path-count prefix-count)
           false
           (loop [i 0]
-            (if (> i prefix-count)
+            (if (>= i prefix-count)
               true
-              (if (not= (path i) (prefix i))
+              (if (not= (path-vec i) (prefix-vec i))
                 false
                 (recur (+ i 1))))))))))

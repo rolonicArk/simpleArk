@@ -7,16 +7,15 @@
   (mi-get [this key] [this key default])
   (mi-seq [this])
   (mi-rseq [this])
-  (mi-sub [this prefix start-test start-key end-test end-key]))
+  (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
-  (mi-assoc [this key value]))
+  (mi-assoc [this path value]))
 
-(defn in-range [path prefix stest spath etest epath]
+(defn in-range [path stest spath etest epath]
   (let [sc (compare path spath)
         ec (compare path epath)]
     (and
-      (vecish/prefixed? path prefix)
       (cond
         (nil? spath)
         true
@@ -36,12 +35,12 @@
         :else
         (= etest <=)))))
 
-(defn munge
+(defn mi-munge
   ([prefix start-test start-path end-test end-path]
    (if (nil? prefix)
      [start-test start-path end-test end-path]
-     (munge start-test start-path end-test end-path
-            >= prefix < (conj prefix nil))))
+     (mi-munge start-test start-path end-test end-path
+               >= prefix < (conj prefix nil))))
   ([start-test start-path end-test end-path stest spath etest epath]
    (let [sc (compare spath start-path)
          s-test (cond
@@ -109,14 +108,14 @@
 
 (declare ->MI-map)
 
-(deftype MI-map [sorted-map prefix start-test start-path end-test end-path]
+(deftype MI-map [sorted-map start-test start-path end-test end-path]
   MI
   (mi-get [this key]
-    (if (in-range key prefix start-test start-path end-test end-path)
+    (if (in-range key start-test start-path end-test end-path)
       (get sorted-map key)
       nil))
   (mi-get [this key not-found]
-    (if (in-range key prefix start-test start-path end-test end-path)
+    (if (in-range key start-test start-path end-test end-path)
       (get sorted-map key not-found)
       not-found))
   (mi-seq [this]
@@ -135,9 +134,7 @@
                        <=)
             end-path (if end-path
                       end-path
-                      (key (last sorted-map)))
-            [start-test start-path end-test end-path]
-            (munge prefix start-test start-path end-test end-path)]
+                      (key (last sorted-map)))]
         (subseq sorted-map start-test start-path end-test end-path))
       :else
       (seq sorted-map)))
@@ -157,29 +154,37 @@
                        <=)
             end-path (if end-path
                       end-path
-                      (key (last sorted-map)))
-            [start-test start-path end-test end-path]
-            (munge prefix start-test start-path end-test end-path)]
+                      (key (last sorted-map)))]
         (rsubseq sorted-map start-test start-path end-test end-path))
       :else
       (rseq sorted-map)))
-  (mi-sub [this pf stest spath etest epath]
-    (let [[s-test s-key e-test e-key]
-          (munge start-test start-path end-test end-path stest spath etest epath)
-          [s-test s-key e-test e-key]
-          (munge pf s-test s-key e-test e-key)]
+  (mi-sub
+    [this prefix]
+    (let [[s-test s-path e-test e-path]
+          (mi-munge prefix start-test start-path end-test end-path)]
       (if (and
             (= s-test start-test)
             (= e-test end-test)
-            (= 0 (compare s-key start-path))
-            (= 0 (compare e-key end-path)))
+            (= 0 (compare s-path start-path))
+            (= 0 (compare e-path end-path)))
         this
-        (->MI-map sorted-map prefix s-test s-key e-test e-key))))
+        (->MI-map sorted-map s-test s-path e-test e-path))))
+  (mi-sub
+    [this stest spath etest epath]
+    (let [[s-test s-path e-test e-path]
+          (mi-munge start-test start-path end-test end-path stest spath etest epath)]
+      (if (and
+            (= s-test start-test)
+            (= e-test end-test)
+            (= 0 (compare s-path start-path))
+            (= 0 (compare e-path end-path)))
+        this
+        (->MI-map sorted-map s-test s-path e-test e-path))))
 
   MIU
-  (mi-assoc [this key value]
-    (if (in-range key prefix start-test start-path end-test end-path)
+  (mi-assoc [this path value]
+    (if (in-range path start-test start-path end-test end-path)
       (->MI-map
-        (assoc sorted-map key value)
-        prefix start-test start-path end-test end-path)
+        (assoc sorted-map path value)
+        start-test start-path end-test end-path)
       this)))

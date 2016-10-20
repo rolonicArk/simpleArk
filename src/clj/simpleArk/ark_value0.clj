@@ -54,7 +54,7 @@
                            property-changes
                            (mapish/->MI-map
                              (sorted-map)
-                             nil nil nil nil nil))
+                             nil nil nil nil))
         first-entry (first (mapish/mi-seq property-changes))]
     (if (or (nil? first-entry) (not= new-value (val first-entry)))
       (mapish/mi-assoc property-changes je-uuid new-value)
@@ -70,7 +70,7 @@
                                changes-by-property
                                (mapish/->MI-map
                                  (sorted-map)
-                                 nil nil nil nil nil))]
+                                 nil nil nil nil))]
      (mapish/mi-assoc changes-by-property
                       property-name
                       (update-property-changes (mapish/mi-get changes-by-property property-name)
@@ -97,7 +97,7 @@
                       journal-entry-uuid
                       rolon-uuid
                       (mapish/->MI-map (sorted-map property-path property-value)
-                                       nil nil nil nil nil)))
+                                       nil nil nil nil)))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
@@ -122,7 +122,7 @@
         old-property-values (ark-value/get-property-values ark-value rolon-uuid)
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map)
-                                                 nil nil nil nil nil)
+                                                 nil nil nil nil)
                                 (mapish/mi-seq old-property-values))
         rolon (assoc rolon ::changes-by-property
                             (update-changes-by-property
@@ -149,7 +149,6 @@
           (ark-value/get-journal-entries ark-value)
           nil
           nil
-          nil
           <=
           je-uuid)
         je-uuid
@@ -172,7 +171,7 @@
          pc (mapish/mi-get changes-by-property property-path)]
      (if (nil? pc)
        nil
-       (mapish/mi-sub pc nil nil nil <= (get-selected-time ark-value)))))
+       (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
   ([rolon]
    (::changes-by-property rolon)))
 
@@ -194,7 +193,7 @@
                                    rolon-uuid
                                    properties
                                    (mapish/->MI-map (sorted-map)
-                                                    nil nil nil nil nil)))))
+                                                    nil nil nil nil)))))
 
 (defn index-name-uuid
   [ark-value]
@@ -210,7 +209,7 @@
                                               (sorted-map
                                                 (vecish/->Vecish [:classifier/transaction-name]) transaction-name
                                                 (vecish/->Vecish [:descriptor/transaction-argument]) s)
-                                              nil nil nil nil nil))
+                                              nil nil nil nil))
                       (ark-value/eval-transaction transaction-name s))]
     (if (::selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
@@ -218,7 +217,7 @@
 
 (defn create-mi
   ([] (create-mi (sorted-map)))
-  ([sorted-map] (mapish/->MI-map sorted-map nil nil nil nil nil)))
+  ([sorted-map] (mapish/->MI-map sorted-map nil nil nil nil)))
 
 (defn create-ark
   [this-db]
@@ -226,9 +225,9 @@
                              make-rolon destroy-rolon update-properties update-ark
                              get-current-journal-entry-uuid
                              select-time get-selected-time index-name-uuid create-mi)
-      (assoc ::journal-entries (mapish/->MI-map (sorted-map) nil nil nil nil nil))
-      (assoc ::indexes (mapish/->MI-map (sorted-map) nil nil nil nil nil))
-      (assoc ::random-rolons (mapish/->MI-map (sorted-map) nil nil nil nil nil))
+      (assoc ::journal-entries (mapish/->MI-map (sorted-map) nil nil nil nil))
+      (assoc ::indexes (mapish/->MI-map (sorted-map) nil nil nil nil))
+      (assoc ::random-rolons (mapish/->MI-map (sorted-map) nil nil nil nil))
       (assoc ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))))
 
 (defn- build

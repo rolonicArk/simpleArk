@@ -36,135 +36,150 @@
         :else
         (= etest <=)))))
 
+(defn munge
+  ([prefix start-test start-path end-test end-path]
+   (if (nil? prefix)
+     [start-test start-path end-test end-path]
+     (munge start-test start-path end-test end-path
+            >= prefix < (conj prefix nil))))
+  ([start-test start-path end-test end-path stest spath etest epath]
+   (let [sc (compare spath start-path)
+         s-test (cond
+                  (nil? spath)
+                  start-test
+                  (nil? start-path)
+                  stest
+                  (< sc 0)
+                  start-test
+                  (> sc 0)
+                  stest
+                  (= stest start-test)
+                  start-test
+                  (= stest >)
+                  stest
+                  :else
+                  start-test)
+         s-path (cond
+                  (nil? spath)
+                  start-path
+                  (nil? start-path)
+                  spath
+                  (< sc 0)
+                  start-path
+                  (> sc 0)
+                  spath
+                  (= stest start-test)
+                  start-path
+                  (= stest >)
+                  spath
+                  :else
+                  start-path)
+         ec (compare epath end-path)
+         e-test (cond
+                  (nil? epath)
+                  end-test
+                  (nil? end-path)
+                  etest
+                  (> ec 0)
+                  end-test
+                  (< ec 0)
+                  etest
+                  (= etest end-test)
+                  end-test
+                  (= etest <)
+                  etest
+                  :else
+                  end-test)
+         e-path (cond
+                  (nil? epath)
+                  end-path
+                  (nil? end-path)
+                  epath
+                  (> ec 0)
+                  end-path
+                  (< ec 0)
+                  epath
+                  (= etest end-test)
+                  end-path
+                  (= etest <)
+                  epath
+                  :else
+                  end-path)]
+     [s-test s-path e-test e-path])))
+
 (declare ->MI-map)
 
-(deftype MI-map [sorted-map prefix start-test start-key end-test end-key]
+(deftype MI-map [sorted-map prefix start-test start-path end-test end-path]
   MI
   (mi-get [this key]
-    (if (in-range key prefix start-test start-key end-test end-key)
+    (if (in-range key prefix start-test start-path end-test end-path)
       (get sorted-map key)
       nil))
   (mi-get [this key not-found]
-    (if (in-range key prefix start-test start-key end-test end-key)
+    (if (in-range key prefix start-test start-path end-test end-path)
       (get sorted-map key not-found)
       not-found))
-  (mi-seq [this] ;todo
+  (mi-seq [this]
     (cond
       (empty? sorted-map)
       nil
-      (or start-key end-key)
-      (let [
-            start-test (if start-key
+      (or start-path end-path)
+      (let [start-test (if start-path
                          start-test
                          >=)
-            start-key (if start-key
-                        start-key
+            start-path (if start-path
+                        start-path
                         (key (first sorted-map)))
-            end-test (if end-key
+            end-test (if end-path
                        end-test
                        <=)
-            end-key (if end-key
-                      end-key
-                      (key (last sorted-map)))]
-        (subseq sorted-map start-test start-key end-test end-key))
+            end-path (if end-path
+                      end-path
+                      (key (last sorted-map)))
+            [start-test start-path end-test end-path]
+            (munge prefix start-test start-path end-test end-path)]
+        (subseq sorted-map start-test start-path end-test end-path))
       :else
       (seq sorted-map)))
-  (mi-rseq [this] ;todo
+  (mi-rseq [this]
     (cond
       (empty? sorted-map)
       nil
-      (or start-key end-key)
-      (let [
-            start-test (if start-key
+      (or start-path end-path)
+      (let [start-test (if start-path
                          start-test
                          >=)
-            start-key (if start-key
-                        start-key
+            start-path (if start-path
+                        start-path
                         (key (first sorted-map)))
-            end-test (if end-key
+            end-test (if end-path
                        end-test
                        <=)
-            end-key (if end-key
-                      end-key
-                      (key (last sorted-map)))]
-        (rsubseq sorted-map start-test start-key end-test end-key))
+            end-path (if end-path
+                      end-path
+                      (key (last sorted-map)))
+            [start-test start-path end-test end-path]
+            (munge prefix start-test start-path end-test end-path)]
+        (rsubseq sorted-map start-test start-path end-test end-path))
       :else
       (rseq sorted-map)))
-  (mi-sub [this pf stest skey etest ekey] ;todo
-    (let [sc (compare skey start-key)
-          s-test (cond
-                   (nil? skey)
-                   start-test
-                   (nil? start-key)
-                   stest
-                   (< sc 0)
-                   start-test
-                   (> sc 0)
-                   stest
-                   (= stest start-test)
-                   start-test
-                   (= stest >)
-                   stest
-                   :else
-                   start-test)
-          s-key (cond
-                  (nil? skey)
-                  start-key
-                  (nil? start-key)
-                  skey
-                  (< sc 0)
-                  start-key
-                  (> sc 0)
-                  skey
-                  (= stest start-test)
-                  start-key
-                  (= stest >)
-                  skey
-                  :else
-                  start-key)
-          ec (compare ekey end-key)
-          e-test (cond
-                   (nil? ekey)
-                   end-test
-                   (nil? end-key)
-                   etest
-                   (> ec 0)
-                   end-test
-                   (< ec 0)
-                   etest
-                   (= etest end-test)
-                   end-test
-                   (= etest <)
-                   etest
-                   :else
-                   end-test)
-          e-key (cond
-                  (nil? ekey)
-                  end-key
-                  (nil? end-key)
-                  ekey
-                  (> ec 0)
-                  end-key
-                  (< ec 0)
-                  ekey
-                  (= etest end-test)
-                  end-key
-                  (= etest <)
-                  ekey
-                  :else
-                  end-key)]
+  (mi-sub [this pf stest spath etest epath]
+    (let [[s-test s-key e-test e-key]
+          (munge start-test start-path end-test end-path stest spath etest epath)
+          [s-test s-key e-test e-key]
+          (munge pf s-test s-key e-test e-key)]
       (if (and
             (= s-test start-test)
             (= e-test end-test)
-            (= 0 (compare s-key start-key))
-            (= 0 (compare e-key end-key)))
+            (= 0 (compare s-key start-path))
+            (= 0 (compare e-key end-path)))
         this
-        (->MI-map sorted-map nil s-test s-key e-test e-key))))
+        (->MI-map sorted-map prefix s-test s-key e-test e-key))))
 
   MIU
   (mi-assoc [this key value]
-    (if (in-range key prefix start-test start-key end-test end-key)
+    (if (in-range key prefix start-test start-path end-test end-path)
       (->MI-map
         (assoc sorted-map key value)
-        prefix start-test start-key end-test end-key)
+        prefix start-test start-path end-test end-path)
       this)))

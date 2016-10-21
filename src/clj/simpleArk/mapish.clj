@@ -1,5 +1,5 @@
 (ns simpleArk.mapish
-  (:require [simpleArk.vecish :as vecish]))
+  (:require [simpleArk.vecish :refer [->Vecish]]))
 
 (set! *warn-on-reflection* true)
 
@@ -40,7 +40,7 @@
    (if (nil? prefix)
      [start-test start-path end-test end-path]
      (mi-munge start-test start-path end-test end-path
-               >= prefix < (vecish/->Vecish (conj (:v prefix) nil)))))
+               >= prefix < (->Vecish (conj (:v prefix) nil)))))
   ([start-test start-path end-test end-path stest spath etest epath]
    (let [sc (compare spath start-path)
          s-test (cond

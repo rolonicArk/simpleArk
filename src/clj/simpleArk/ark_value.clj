@@ -263,12 +263,7 @@
 (defn get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
-  (let [updated-rolon-uuids (get-property-value ark-value
-                                                je-uuid
-                                                (vecish/->Vecish [:descriptor/modified]))]
-    (if (nil? updated-rolon-uuids)
-      (create-mi ark-value)
-      updated-rolon-uuids)))
+  (mapish/mi-sub (get-property-values ark-value je-uuid) (vecish/->Vecish [:descriptor/modified])))
 
 (defmulti eval-transaction (fn [ark-value n s] n))
 

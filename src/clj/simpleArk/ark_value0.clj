@@ -102,18 +102,12 @@
 (defn je-modified
   "track the rolons modified by the journal entry"
   [ark-value rolon-uuid]
-  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
-        modified (ark-value/get-property-value ark-value
-                                                journal-entry-uuid
-                                                (vecish/->Vecish [:descriptor/modified]))
-        modified (if modified
-                   (conj modified rolon-uuid)
-                   (sorted-set rolon-uuid))]
+  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)]
     (update-property- ark-value
                       journal-entry-uuid
                       journal-entry-uuid
-                      (vecish/->Vecish [:descriptor/modified])
-                      modified)))
+                      (vecish/->Vecish [:descriptor/modified rolon-uuid])
+                      true)))
 
 (defn destroy-rolon
   [ark-value rolon-uuid]

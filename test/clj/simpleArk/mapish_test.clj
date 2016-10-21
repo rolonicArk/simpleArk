@@ -14,6 +14,7 @@
 (def mi2 (->MI-map sm0 > (->Vecish [:a]) < (->Vecish [:f])))
 (def mea (->MI-map
             (sorted-map
+              (->Vecish [:a]) 0
               (->Vecish [:a 1]) 1
               (->Vecish [:a 1 :x]) 2
               (->Vecish [:a 1 :y]) 3

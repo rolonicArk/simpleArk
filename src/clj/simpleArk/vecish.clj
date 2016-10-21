@@ -13,16 +13,19 @@
             c (count v)
             ovc (count ovv)
             mc (min c ovc)]
-        (if
-          (= c ovc)
-          (compare v ovv)
-          (loop [i 0]
-                (if (>= i mc)
-                  (compare c ovc)
-                  (let [r (compare (v i) (ovv i))]
-                    (if (not= r 0)
-                      r
-                      (recur (+ i 1)))))))))))
+        (loop [i 0]
+          (if (>= i mc)
+            (compare c ovc)
+            (let [vi (v i)
+                  ovvi (ovv i)
+                  r (compare vi ovvi)]
+              (if (not= r 0)
+                (if (nil? vi)
+                  1
+                  (if (nil? ovvi)
+                    -1
+                    r))
+                (recur (+ i 1))))))))))
 
 (defn prefixed? [path prefix]
   (if (nil? prefix)

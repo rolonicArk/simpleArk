@@ -162,7 +162,6 @@
     [this prefix]
     (let [[s-test s-path e-test e-path]
           (mi-munge prefix start-test start-path end-test end-path)]
-      (println :prefix prefix s-test s-path e-test e-path)
       (if (and
             (= s-test start-test)
             (= e-test end-test)

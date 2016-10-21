@@ -40,7 +40,7 @@
    (if (nil? prefix)
      [start-test start-path end-test end-path]
      (mi-munge start-test start-path end-test end-path
-               >= prefix < (conj prefix nil))))
+               >= prefix < (vecish/->Vecish (conj (:v prefix) nil)))))
   ([start-test start-path end-test end-path stest spath etest epath]
    (let [sc (compare spath start-path)
          s-test (cond
@@ -162,6 +162,7 @@
     [this prefix]
     (let [[s-test s-path e-test e-path]
           (mi-munge prefix start-test start-path end-test end-path)]
+      (println :prefix prefix s-test s-path e-test e-path)
       (if (and
             (= s-test start-test)
             (= e-test end-test)

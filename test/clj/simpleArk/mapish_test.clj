@@ -12,6 +12,15 @@
 (def mi0 (->MI-map sm0 nil nil nil nil))
 (def mi1 (->MI-map sm0 >= (->Vecish [:b]) <= (->Vecish [:e])))
 (def mi2 (->MI-map sm0 > (->Vecish [:a]) < (->Vecish [:f])))
+(def mea (->MI-map
+            (sorted-map
+              (->Vecish [:a 1]) 1
+              (->Vecish [:a 1 :x]) 2
+              (->Vecish [:a 1 :y]) 3
+              (->Vecish [:a 2]) 4
+              (->Vecish [:b]) 5
+              )
+            nil nil nil nil))
 
 (deftest mapish
   (println sm0)
@@ -55,4 +64,6 @@
   (println (mi-seq (mi-sub mi2 > (->Vecish [:a]) < (->Vecish [:f]))))
   (println (mi-seq (mi-sub mi2 >= (->Vecish [:b]) <= (->Vecish [:e]))))
   (println (mi-seq (mi-sub mi2 > (->Vecish [:b]) < (->Vecish [:e]))))
+  (println (mi-seq mea))
+  (println (mi-seq (mi-sub mea (->Vecish [:a]))))
   )

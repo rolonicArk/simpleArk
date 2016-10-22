@@ -198,10 +198,16 @@
                             (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
 
 (defn index-lookup
-  "returns the uuids for a given index-uuid and name"
-  [ark-value index-uuid name]
-  (let [index-map (get-property-value ark-value index-uuid (vecish/->Vecish [:descriptor/index]))]
-    (mapish/mi-get index-map name)))
+  "returns the uuids for a given index-uuid and value"
+  [ark-value index-uuid value]
+  (map
+    (fn [e]
+      ((:v (key e)) 2))
+    (filter
+      #(some? (val %))
+      (mapish/mi-seq (mapish/mi-sub
+        (get-property-values ark-value index-uuid)
+        (vecish/->Vecish [:descriptor/index value]))))))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
@@ -213,35 +219,31 @@
   (let [name-index-uuid (get-index-uuid ark-value "name")]
     (first (index-lookup ark-value name-index-uuid rolon-name))))
 
-(defn get-index-descriptor
-  "returns a mapish of sets of rolon uuids keyed by classifier value"
-  [ark-value iuuid]
-  (let [index (get-property-value ark-value iuuid (vecish/->Vecish [:descriptor/index]))]
-    (if (nil? index)
-      (create-mi ark-value)
-      index)))
+(defn get-descriptor-index
+  "returns a seq of [value uuid]"
+  [ark-value index-uuid]
+  (map
+    (fn [e]
+      (let [v (:v (key e))]
+      [(v 1) (v 2)]))
+    (filter
+      #(some? (val %))
+      (mapish/mi-seq (mapish/mi-sub
+                       (get-property-values ark-value index-uuid)
+                       (vecish/->Vecish [:descriptor/index]))))))
 
 (defn make-index-rolon-
-  [ark-value classifier value uuid adding]
-  (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier)
-        properties (if (get-rolon ark-value iuuid)
-                     (create-mi ark-value)
-                     (create-mi ark-value (sorted-map (vecish/->Vecish [:classifier/index.name])
-                                                      (name classifier))))
-        ark-value (make-rolon ark-value iuuid properties)
-        index-rolon (get-rolon ark-value iuuid)
-        index-descriptor (get-index-descriptor ark-value iuuid)
-
-        value-set (mapish/mi-get index-descriptor value)
-        value-set (if value-set value-set #{})
-        value-set (if adding
-                    (conj value-set uuid)
-                    (disj value-set uuid))
-        index-descriptor (mapish/mi-assoc index-descriptor value value-set)]
+  [ark-value classifier-keyword value uuid adding]
+  (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier-keyword)
+        ark-value (if (get-rolon ark-value iuuid)
+                    ark-value
+                    (make-rolon ark-value iuuid
+                                (create-mi ark-value (sorted-map (vecish/->Vecish [:classifier/index.name])
+                                                                 (name classifier-keyword)))))]
     (update-property ark-value
-                      (get-rolon-uuid index-rolon)
-                      (vecish/->Vecish [:descriptor/index])
-                      index-descriptor)))
+                     iuuid
+                     (vecish/->Vecish [:descriptor/index value uuid])
+                     adding)))
 
 (defn make-index-rolon
   "create/update an index rolon"
@@ -252,7 +254,7 @@
                  nv (val %2)
                  ov (mapish/mi-get old-properties path)
                  ark-value (if (and ov (classifier? k))
-                             (make-index-rolon- ark-value k ov uuid false)
+                             (make-index-rolon- ark-value k ov uuid nil)
                              ark-value)
                  ark-value (if (and nv (classifier? k))
                              (make-index-rolon- ark-value k nv uuid true)

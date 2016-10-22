@@ -153,13 +153,10 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
         headline-index-uuid (ark-value/get-index-uuid ark-value "headline")
-        descriptor-index (ark-value/get-property-value ark-value
-                                                        headline-index-uuid
-                                                        (vecish/->Vecish [:descriptor/index]))]
-    (first (keep (fn [x]
-                   (if (first (val x))
-                     (println (key x))))
-                 (mapish/mi-seq descriptor-index))))
+        descriptor-index (ark-value/get-descriptor-index
+                           ark-value
+                           headline-index-uuid)]
+    (doall (map #(println (first %)) descriptor-index)))
 
   (println)
   (println ">>>>>>>>>>>> bob's headlines over time")

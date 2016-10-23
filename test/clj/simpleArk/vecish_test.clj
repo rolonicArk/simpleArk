@@ -31,5 +31,6 @@
   (is (prefixed? c a))
   (is (not (prefixed? a c)))
   (println (compare (->Vecish [:a]) (->Vecish [:a nil])))
+  (println (seq a) a)
   )
 

@@ -25,6 +25,6 @@
                                 ;simpleArk.ark-dba1-test
                                 ;simpleArk.pub0-test
                                 ;simpleArk.tlog1-test
-                                ;simpleArk.mapish-test
+                                simpleArk.mapish-test
                                 ;simpleArk.vecish-test
                                 })))

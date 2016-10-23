@@ -2,7 +2,8 @@
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.vecish :as vecish]
-            [simpleArk.mapish :as mapish]))
+            [simpleArk.mapish :as mapish])
+  (:import (clojure.lang Reversible)))
 
 (set! *warn-on-reflection* true)
 
@@ -144,7 +145,7 @@
   (validate-property-path property-path)
   (let [changes (get-changes-by-property ark-value rolon-uuid property-path)]
     (if changes
-      (val (first (mapish/mi-rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
+      (val (first (rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
       nil)))
 
 (defn get-property-values
@@ -152,13 +153,28 @@
    (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))
   ([ark-value rolon-uuid all-changes]
    (reify
+
+     Reversible
+
+     (rseq [this]
+       (map
+         #(clojure.lang.MapEntry. (key %) (val (val %)))
+         (filter
+           #(some? (val %))
+           (map
+             #(clojure.lang.MapEntry.
+               (key %)
+               (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+             (rseq all-changes)))))
+
      mapish/MI
+
      (mi-get [this property-path default]
        (let [changes (mapish/mi-get all-changes property-path)]
          (if (nil? changes)
            default
            (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
-                 fst (first (mapish/mi-rseq changes))]
+                 fst (first (rseq changes))]
              (if (nil? fst)
                default
                (val fst))))))
@@ -174,19 +190,8 @@
            (map
              #(clojure.lang.MapEntry.
                (key %)
-               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+               (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
              (mapish/mi-seq all-changes)))))
-
-     (mi-rseq [this]
-       (map
-         #(clojure.lang.MapEntry. (key %) (val (val %)))
-         (filter
-           #(some? (val %))
-           (map
-             #(clojure.lang.MapEntry.
-               (key %)
-               (first (mapish/mi-rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
-             (mapish/mi-rseq all-changes)))))
 
      (mi-sub [this prefix]
        (get-property-values ark-value

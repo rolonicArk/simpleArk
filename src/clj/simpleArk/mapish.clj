@@ -1,12 +1,12 @@
 (ns simpleArk.mapish
-  (:require [simpleArk.vecish :refer [->Vecish]]))
+  (:require [simpleArk.vecish :refer [->Vecish]])
+  (:import (clojure.lang Reversible)))
 
 (set! *warn-on-reflection* true)
 
 (defprotocol MI
   (mi-get [this key] [this key default])
   (mi-seq [this])
-  (mi-rseq [this])
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
@@ -109,6 +109,27 @@
 (declare ->MI-map)
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
+  Reversible
+  (rseq [this]
+    (cond
+      (empty? sorted-map)
+      nil
+      (or start-path end-path)
+      (let [start-test (if start-path
+                         start-test
+                         >=)
+            start-path (if start-path
+                         start-path
+                         (key (first sorted-map)))
+            end-test (if end-path
+                       end-test
+                       <=)
+            end-path (if end-path
+                       end-path
+                       (key (last sorted-map)))]
+        (rsubseq sorted-map start-test start-path end-test end-path))
+      :else
+      (rseq sorted-map)))
   MI
   (mi-get [this key]
     (if (in-range key start-test start-path end-test end-path)
@@ -138,26 +159,6 @@
         (subseq sorted-map start-test start-path end-test end-path))
       :else
       (seq sorted-map)))
-  (mi-rseq [this]
-    (cond
-      (empty? sorted-map)
-      nil
-      (or start-path end-path)
-      (let [start-test (if start-path
-                         start-test
-                         >=)
-            start-path (if start-path
-                        start-path
-                        (key (first sorted-map)))
-            end-test (if end-path
-                       end-test
-                       <=)
-            end-path (if end-path
-                      end-path
-                      (key (last sorted-map)))]
-        (rsubseq sorted-map start-test start-path end-test end-path))
-      :else
-      (rseq sorted-map)))
   (mi-sub
     [this prefix]
     (let [[s-test s-path e-test e-path]

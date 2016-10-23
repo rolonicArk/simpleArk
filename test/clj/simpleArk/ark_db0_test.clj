@@ -165,9 +165,9 @@
     (first (keep #(println (val %)
                            "-"
                            (ark-value/get-property-value ark-value (key %) (vecish/->Vecish [:classifier/headline])))
-                 (mapish/mi-rseq (ark-value/get-changes-by-property ark-value
-                                                                     bob-uuid
-                                                                     (vecish/->Vecish [:classifier/headline])))))))
+                 (rseq (ark-value/get-changes-by-property ark-value
+                                                          bob-uuid
+                                                          (vecish/->Vecish [:classifier/headline])))))))
 
 (deftest arks
   (println "impl0 tests")

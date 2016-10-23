@@ -55,7 +55,7 @@
                            (mapish/->MI-map
                              (sorted-map)
                              nil nil nil nil))
-        first-entry (first (mapish/mi-seq property-changes))]
+        first-entry (first (seq property-changes))]
     (if (or (nil? first-entry) (not= new-value (val first-entry)))
       (mapish/mi-assoc property-changes je-uuid new-value)
       property-changes)))
@@ -64,7 +64,7 @@
   ([changes-by-property je-uuid changed-properties]
    (reduce #(update-changes-by-property %1 je-uuid (key %2) (val %2))
            changes-by-property
-           (mapish/mi-seq changed-properties)))
+           (seq changed-properties)))
   ([changes-by-property je-uuid property-name new-value]
    (let [changes-by-property (if (some? changes-by-property)
                                changes-by-property
@@ -117,7 +117,7 @@
         property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map)
                                                  nil nil nil nil)
-                                (mapish/mi-seq old-property-values))
+                                (seq old-property-values))
         rolon (assoc rolon ::changes-by-property
                             (update-changes-by-property
                               (::changes-by-property rolon)

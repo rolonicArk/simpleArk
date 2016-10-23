@@ -3,7 +3,7 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.vecish :as vecish]
             [simpleArk.mapish :as mapish])
-  (:import (clojure.lang Reversible)))
+  (:import (clojure.lang Reversible Seqable)))
 
 (set! *warn-on-reflection* true)
 
@@ -81,8 +81,8 @@
 (defn ark-str
   [ark-value]
   (let [s (str "\n" :ark "\n"
-               "\n" :index-rolons "\n\n" (mapish/mi-seq (get-indexes ark-value)) "\n"
-               "\n" :journal-entry-rolons "\n\n" (mapish/mi-seq (get-journal-entries ark-value)) "\n"
+               "\n" :index-rolons "\n\n" (seq (get-indexes ark-value)) "\n"
+               "\n" :journal-entry-rolons "\n\n" (seq (get-journal-entries ark-value)) "\n"
                "\n" :random-rolons "\n\n" (get-random-rolons ark-value))]
     s))
 
@@ -104,7 +104,7 @@
 (defn validate-property-paths
   [properties]
   (reduce (fn [_ p] (validate-property-path p))
-          nil (keys (mapish/mi-seq properties))))
+          nil (keys (seq properties))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]
@@ -154,6 +154,19 @@
   ([ark-value rolon-uuid all-changes]
    (reify
 
+     Seqable
+
+     (seq [this]
+       (map
+         #(clojure.lang.MapEntry. (key %) (val (val %)))
+         (filter
+           #(some? (val %))
+           (map
+             #(clojure.lang.MapEntry.
+               (key %)
+               (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
+             (seq all-changes)))))
+
      Reversible
 
      (rseq [this]
@@ -182,17 +195,6 @@
      (mi-get [this property-path]
        (mapish/mi-get this property-path nil))
 
-     (mi-seq [this]
-       (map
-         #(clojure.lang.MapEntry. (key %) (val (val %)))
-         (filter
-           #(some? (val %))
-           (map
-             #(clojure.lang.MapEntry.
-               (key %)
-               (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
-             (mapish/mi-seq all-changes)))))
-
      (mi-sub [this prefix]
        (get-property-values ark-value
                             rolon-uuid
@@ -210,7 +212,7 @@
       ((:v (key e)) 2))
     (filter
       #(some? (val %))
-      (mapish/mi-seq (mapish/mi-sub
+      (seq (mapish/mi-sub
         (get-property-values ark-value index-uuid)
         (vecish/->Vecish [:descriptor/index value]))))))
 
@@ -233,7 +235,7 @@
       [(v 1) (v 2)]))
     (filter
       #(some? (val %))
-      (mapish/mi-seq (mapish/mi-sub
+      (seq (mapish/mi-sub
                        (get-property-values ark-value index-uuid)
                        (vecish/->Vecish [:descriptor/index]))))))
 
@@ -265,7 +267,7 @@
                              (make-index-rolon- ark-value k nv uuid true)
                              ark-value)]
             ark-value)
-          ark-value (mapish/mi-seq properties)))
+          ark-value (seq properties)))
 
 (defn get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"

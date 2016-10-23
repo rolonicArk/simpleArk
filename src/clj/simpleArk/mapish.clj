@@ -1,12 +1,11 @@
 (ns simpleArk.mapish
   (:require [simpleArk.vecish :refer [->Vecish]])
-  (:import (clojure.lang Reversible)))
+  (:import (clojure.lang Reversible Seqable)))
 
 (set! *warn-on-reflection* true)
 
 (defprotocol MI
   (mi-get [this key] [this key default])
-  (mi-seq [this])
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
@@ -109,6 +108,27 @@
 (declare ->MI-map)
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
+  Seqable
+  (seq [this]
+    (cond
+      (empty? sorted-map)
+      nil
+      (or start-path end-path)
+      (let [start-test (if start-path
+                         start-test
+                         >=)
+            start-path (if start-path
+                         start-path
+                         (key (first sorted-map)))
+            end-test (if end-path
+                       end-test
+                       <=)
+            end-path (if end-path
+                       end-path
+                       (key (last sorted-map)))]
+        (subseq sorted-map start-test start-path end-test end-path))
+      :else
+      (seq sorted-map)))
   Reversible
   (rseq [this]
     (cond
@@ -139,26 +159,6 @@
     (if (in-range key start-test start-path end-test end-path)
       (get sorted-map key not-found)
       not-found))
-  (mi-seq [this]
-    (cond
-      (empty? sorted-map)
-      nil
-      (or start-path end-path)
-      (let [start-test (if start-path
-                         start-test
-                         >=)
-            start-path (if start-path
-                        start-path
-                        (key (first sorted-map)))
-            end-test (if end-path
-                       end-test
-                       <=)
-            end-path (if end-path
-                      end-path
-                      (key (last sorted-map)))]
-        (subseq sorted-map start-test start-path end-test end-path))
-      :else
-      (seq sorted-map)))
   (mi-sub
     [this prefix]
     (let [[s-test s-path e-test e-path]

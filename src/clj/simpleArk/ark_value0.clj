@@ -148,7 +148,7 @@
         je-uuid
         (key
           (first
-            (mapish/mi-rseq jes)))]
+            (rseq jes)))]
     (-> ark-value
         (assoc ::journal-entries jes)
         (assoc ::selected-time je-uuid)

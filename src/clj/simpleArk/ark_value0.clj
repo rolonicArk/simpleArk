@@ -36,15 +36,15 @@
   (cond
     (uuid/journal-entry-uuid? rolon-uuid)
     (let [journal-entries (get ark-value ::journal-entries)
-          journal-entries (mapish/mi-assoc journal-entries rolon-uuid rolon)]
+          journal-entries (assoc journal-entries rolon-uuid rolon)]
       (assoc ark-value ::journal-entries journal-entries))
     (uuid/index-uuid? rolon-uuid)
     (let [indexes (get ark-value ::indexes)
-          indexes (mapish/mi-assoc indexes rolon-uuid rolon)]
+          indexes (assoc indexes rolon-uuid rolon)]
       (assoc ark-value ::indexes indexes))
     (uuid/random-uuid? rolon-uuid)
     (let [rolons (get ark-value ::random-rolons)
-          rolons (mapish/mi-assoc rolons rolon-uuid rolon)]
+          rolons (assoc rolons rolon-uuid rolon)]
       (assoc ark-value ::random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
@@ -57,7 +57,7 @@
                              nil nil nil nil))
         first-entry (first (seq property-changes))]
     (if (or (nil? first-entry) (not= new-value (val first-entry)))
-      (mapish/mi-assoc property-changes je-uuid new-value)
+      (assoc property-changes je-uuid new-value)
       property-changes)))
 
 (defn update-changes-by-property
@@ -71,7 +71,7 @@
                                (mapish/->MI-map
                                  (sorted-map)
                                  nil nil nil nil))]
-     (mapish/mi-assoc changes-by-property
+     (assoc changes-by-property
                       property-name
                       (update-property-changes (get changes-by-property property-name)
                                                je-uuid
@@ -114,7 +114,7 @@
   (let [je-uuid (::active-journal-entry-uuid ark-value)
         rolon (ark-value/get-rolon ark-value rolon-uuid)
         old-property-values (ark-value/get-property-values ark-value rolon-uuid)
-        property-values (reduce #(mapish/mi-assoc %1 (key %2) nil)
+        property-values (reduce #(assoc %1 (key %2) nil)
                                 (mapish/->MI-map (sorted-map)
                                                  nil nil nil nil)
                                 (seq old-property-values))

@@ -1,14 +1,11 @@
 (ns simpleArk.mapish
   (:require [simpleArk.vecish :refer [->Vecish]])
-  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection)))
+  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection Associative)))
 
 (set! *warn-on-reflection* true)
 
 (defprotocol MI
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
-
-(defprotocol MIU
-  (mi-assoc [this path value]))
 
 (defn in-range [path stest spath etest epath]
   (let [sc (compare path spath)
@@ -140,6 +137,13 @@
   IPersistentCollection
   (count [this]
     (count (seq this)))
+  Associative
+  (assoc [this path value]
+    (if (in-range path start-test start-path end-test end-path)
+      (->MI-map
+        (assoc sorted-map path value)
+        start-test start-path end-test end-path)
+      this))
   Reversible
   (rseq [this]
     (cond
@@ -183,12 +187,4 @@
             (= 0 (compare s-path start-path))
             (= 0 (compare e-path end-path)))
         this
-        (->MI-map sorted-map s-test s-path e-test e-path))))
-
-  MIU
-  (mi-assoc [this path value]
-    (if (in-range path start-test start-path end-test end-path)
-      (->MI-map
-        (assoc sorted-map path value)
-        start-test start-path end-test end-path)
-      this)))
+        (->MI-map sorted-map s-test s-path e-test e-path)))))

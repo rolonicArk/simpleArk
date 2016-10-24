@@ -8,7 +8,8 @@
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
-  (mi-assoc [this path value]))
+  (mi-assoc [this path value])
+  (count [this]))
 
 (defn in-range [path stest spath etest epath]
   (let [sc (compare path spath)
@@ -188,4 +189,6 @@
       (->MI-map
         (assoc sorted-map path value)
         start-test start-path end-test end-path)
-      this)))
+      this))
+  (count [this]
+    (count (seq this))))

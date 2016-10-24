@@ -5,6 +5,17 @@
 
 (set! *warn-on-reflection* true)
 
+(def a [0 1 2])
+(def b [1 2 3])
+(def c [0 1 2 3])
+(def d [3 4])
+(def e [2 11])
+(def f [99 1])
+(def x [0])
+(def y [1])
+(def z [])
+(println (sorted-set-by vec-lt a b c d e f))
+
 (def sm0 (sorted-map (->Vecish [:a]) 1
                      (->Vecish [:b]) 2
                      (->Vecish [:e]) 10

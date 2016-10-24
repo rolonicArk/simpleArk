@@ -103,6 +103,27 @@
 
 (declare ->MI-map)
 
+(defn vec-lt [a b]
+  (if
+    (= a b)
+    false
+    (let [ac (count a)
+          bc (count b)
+          minc (min ac bc)]
+      (loop [i 0]
+        (if (>= i minc)
+          (< ac bc)
+          (let [ai (a i)
+                bi (b i)
+                r (compare ai bi)]
+            (if (not= r 0)
+              (if (nil? ai)
+                false
+                (if (nil? bi)
+                  true
+                  (= r -1)))
+              (recur (+ i 1)))))))))
+
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
   ILookup
   (valAt [this key]

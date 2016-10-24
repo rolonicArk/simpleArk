@@ -1,6 +1,6 @@
 (ns simpleArk.mapish
   (:require [simpleArk.vecish :refer [->Vecish]])
-  (:import (clojure.lang Reversible Seqable ILookup)))
+  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection)))
 
 (set! *warn-on-reflection* true)
 
@@ -8,8 +8,7 @@
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
-  (mi-assoc [this path value])
-  (count [this]))
+  (mi-assoc [this path value]))
 
 (defn in-range [path stest spath etest epath]
   (let [sc (compare path spath)
@@ -138,6 +137,9 @@
         (subseq sorted-map start-test start-path end-test end-path))
       :else
       (seq sorted-map)))
+  IPersistentCollection
+  (count [this]
+    (count (seq this)))
   Reversible
   (rseq [this]
     (cond
@@ -189,6 +191,4 @@
       (->MI-map
         (assoc sorted-map path value)
         start-test start-path end-test end-path)
-      this))
-  (count [this]
-    (count (seq this))))
+      this)))

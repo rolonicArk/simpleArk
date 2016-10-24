@@ -3,7 +3,7 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.vecish :as vecish]
             [simpleArk.mapish :as mapish])
-  (:import (clojure.lang Reversible Seqable ILookup)))
+  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection)))
 
 (set! *warn-on-reflection* true)
 
@@ -181,6 +181,11 @@
                (key %)
                (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
              (seq all-changes)))))
+
+     IPersistentCollection
+
+     (count [this]
+       (count (seq this)))
 
      Reversible
 

@@ -3,7 +3,7 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.vecish :as vecish]
             [simpleArk.mapish :as mapish])
-  (:import (clojure.lang Reversible Seqable)))
+  (:import (clojure.lang Reversible Seqable ILookup)))
 
 (set! *warn-on-reflection* true)
 
@@ -154,6 +154,21 @@
   ([ark-value rolon-uuid all-changes]
    (reify
 
+     ILookup
+
+     (valAt [this property-path default]
+       (let [changes (get all-changes property-path)]
+         (if (nil? changes)
+           default
+           (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
+                 fst (first (rseq changes))]
+             (if (nil? fst)
+               default
+               (val fst))))))
+
+     (valAt [this property-path]
+       (get this property-path nil))
+
      Seqable
 
      (seq [this]
@@ -181,19 +196,6 @@
              (rseq all-changes)))))
 
      mapish/MI
-
-     (mi-get [this property-path default]
-       (let [changes (mapish/mi-get all-changes property-path)]
-         (if (nil? changes)
-           default
-           (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
-                 fst (first (rseq changes))]
-             (if (nil? fst)
-               default
-               (val fst))))))
-
-     (mi-get [this property-path]
-       (mapish/mi-get this property-path nil))
 
      (mi-sub [this prefix]
        (get-property-values ark-value
@@ -259,7 +261,7 @@
                  path (key %2)
                  k (first (:v path))
                  nv (val %2)
-                 ov (mapish/mi-get old-properties path)
+                 ov (get old-properties path)
                  ark-value (if (and ov (classifier? k))
                              (make-index-rolon- ark-value k ov uuid nil)
                              ark-value)

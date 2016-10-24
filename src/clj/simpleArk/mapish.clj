@@ -1,11 +1,10 @@
 (ns simpleArk.mapish
   (:require [simpleArk.vecish :refer [->Vecish]])
-  (:import (clojure.lang Reversible Seqable)))
+  (:import (clojure.lang Reversible Seqable ILookup)))
 
 (set! *warn-on-reflection* true)
 
 (defprotocol MI
-  (mi-get [this key] [this key default])
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
 (defprotocol MIU
@@ -108,6 +107,15 @@
 (declare ->MI-map)
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
+  ILookup
+  (valAt [this key]
+    (if (in-range key start-test start-path end-test end-path)
+      (get sorted-map key)
+      nil))
+  (valAt [this key not-found]
+    (if (in-range key start-test start-path end-test end-path)
+      (get sorted-map key not-found)
+      not-found))
   Seqable
   (seq [this]
     (cond
@@ -151,14 +159,6 @@
       :else
       (rseq sorted-map)))
   MI
-  (mi-get [this key]
-    (if (in-range key start-test start-path end-test end-path)
-      (get sorted-map key)
-      nil))
-  (mi-get [this key not-found]
-    (if (in-range key start-test start-path end-test end-path)
-      (get sorted-map key not-found)
-      not-found))
   (mi-sub
     [this prefix]
     (let [[s-test s-path e-test e-path]

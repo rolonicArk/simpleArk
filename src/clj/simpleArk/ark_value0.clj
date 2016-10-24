@@ -25,9 +25,9 @@
 (defn get-rolon
   [ark-value uuid]
   (cond
-    (uuid/journal-entry-uuid? uuid) (mapish/mi-get (ark-value/get-journal-entries ark-value) uuid)
-    (uuid/index-uuid? uuid) (mapish/mi-get (ark-value/get-indexes ark-value) uuid)
-    (uuid/random-uuid? uuid) (mapish/mi-get (ark-value/get-random-rolons ark-value) uuid)
+    (uuid/journal-entry-uuid? uuid) (get (ark-value/get-journal-entries ark-value) uuid)
+    (uuid/index-uuid? uuid) (get (ark-value/get-indexes ark-value) uuid)
+    (uuid/random-uuid? uuid) (get (ark-value/get-random-rolons ark-value) uuid)
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn assoc-rolon
@@ -73,7 +73,7 @@
                                  nil nil nil nil))]
      (mapish/mi-assoc changes-by-property
                       property-name
-                      (update-property-changes (mapish/mi-get changes-by-property property-name)
+                      (update-property-changes (get changes-by-property property-name)
                                                je-uuid
                                                new-value)))))
 
@@ -162,7 +162,7 @@
   ([rolon property-path]
    (let [ark-value (:ark-value rolon)
          changes-by-property (get-changes-by-property rolon)
-         pc (mapish/mi-get changes-by-property property-path)]
+         pc (get changes-by-property property-path)]
      (if (nil? pc)
        nil
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))

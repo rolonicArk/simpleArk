@@ -1,15 +1,42 @@
 (ns simpleArk.mapish
-  (:require [simpleArk.vecish :refer [->Vecish]])
-  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection Associative)))
+  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection Associative IPersistentVector)))
 
 (set! *warn-on-reflection* true)
 
 (defprotocol MI
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
+(defn vec-lt [a b]
+  (if
+    (= a b)
+    false
+    (let [ac (count a)
+          bc (count b)
+          minc (min ac bc)]
+      (loop [i 0]
+        (if (>= i minc)
+          (< ac bc)
+          (let [ai (a i)
+                bi (b i)
+                r (compare ai bi)]
+            (if (not= r 0)
+              (if (nil? ai)
+                false
+                (if (nil? bi)
+                  true
+                  (= r -1)))
+              (recur (+ i 1)))))))))
+
+(defn vec-comp [a b]
+  (if (vec-lt a b)
+    -1
+    (if (= 0 (compare a b))
+       0
+       1)))
+
 (defn in-range [path stest spath etest epath]
-  (let [sc (compare path spath)
-        ec (compare path epath)]
+  (let [sc (vec-comp path spath)
+        ec (vec-comp path epath)]
     (and
       (cond
         (nil? spath)
@@ -35,9 +62,9 @@
    (if (nil? prefix)
      [start-test start-path end-test end-path]
      (mi-munge start-test start-path end-test end-path
-               >= prefix < (->Vecish (conj (:v prefix) nil)))))
+               >= prefix < (conj prefix nil))))
   ([start-test start-path end-test end-path stest spath etest epath]
-   (let [sc (compare spath start-path)
+   (let [sc (vec-comp spath start-path)
          s-test (cond
                   (nil? spath)
                   start-test
@@ -68,7 +95,7 @@
                   spath
                   :else
                   start-path)
-         ec (compare epath end-path)
+         ec (vec-comp epath end-path)
          e-test (cond
                   (nil? epath)
                   end-test
@@ -124,6 +151,10 @@
                   (= r -1)))
               (recur (+ i 1)))))))))
 
+(defn mapish [& keyvals]
+  (let [m (apply sorted-map-by vec-lt keyvals)]
+    (->MI-map m nil nil nil nil)))
+
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
   ILookup
   (valAt [this key]
@@ -158,6 +189,18 @@
   IPersistentCollection
   (count [this]
     (count (seq this)))
+  (cons [this o]
+    (if (instance? java.util.Map$Entry o)
+      (assoc this (key o) (val o))
+      (if (instance? IPersistentVector o)
+        (if (not= (count o) 2)
+          (throw (IllegalArgumentException. "Vector arg to map conj must be a pair"))
+          (assoc this (o 0) (o 1)))
+        (let [s (seq o)]
+          (reduce
+            (fn [mi me] (assoc mi (key me) (val me)))
+            this
+            s)))))
   Associative
   (assoc [this path value]
     (if (in-range path start-test start-path end-test end-path)

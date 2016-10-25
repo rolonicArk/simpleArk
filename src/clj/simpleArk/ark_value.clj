@@ -1,7 +1,6 @@
 (ns simpleArk.ark-value
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
-            [simpleArk.vecish :as vecish]
             [simpleArk.mapish :as mapish])
   (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection)))
 
@@ -39,8 +38,7 @@
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 
 (defn create-mi
-  ([ark-value] ((:create-mi ark-value)))
-  ([ark-value sorted-map] ((:create-mi ark-value) sorted-map)))
+  [ark-value & keyvals] (apply (:create-mi ark-value) keyvals))
 
 (defn select-time
   "Sets the ark to the time of the journal entry uuid,
@@ -92,14 +90,12 @@
 
 (defn validate-property-path
   [property-path]
-  (if (not (instance? simpleArk.vecish.Vecish property-path))
-    (throw (Exception. (str property-path " is not a vecish")))
-    (let [kw (first (:v property-path))]
-      (if (classifier? kw)
-        (if (< 1 (count (:v property-path)))
-          (throw (Exception. (str property-path " has too many elements for a classifier"))))
-        (if (not (descriptor? kw))
-          (throw (Exception. (str property-path " is neither a classifier nor a keyword"))))))))
+  (let [kw (first property-path)]
+    (if (classifier? kw)
+      (if (< 1 (count  property-path))
+        (throw (Exception. (str property-path " has too many elements for a classifier"))))
+      (if (not (descriptor? kw))
+        (throw (Exception. (str property-path " is neither a classifier nor a keyword")))))))
 
 (defn validate-property-paths
   [properties]
@@ -124,7 +120,7 @@
 (defn update-property
   [ark-value rolon-uuid property-path property-value]
   (validate-property-path property-path)
-  (update-properties ark-value rolon-uuid (create-mi ark-value (sorted-map property-path property-value))))
+  (update-properties ark-value rolon-uuid (create-mi ark-value property-path property-value)))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon"
@@ -216,12 +212,12 @@
   [ark-value index-uuid value]
   (map
     (fn [e]
-      ((:v (key e)) 2))
+      ((key e) 2))
     (filter
       #(some? (val %))
       (seq (mapish/mi-sub
         (get-property-values ark-value index-uuid)
-        (vecish/->Vecish [:descriptor/index value]))))))
+        [:descriptor/index value])))))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
@@ -238,13 +234,13 @@
   [ark-value index-uuid]
   (map
     (fn [e]
-      (let [v (:v (key e))]
+      (let [v (key e)]
       [(v 1) (v 2)]))
     (filter
       #(some? (val %))
       (seq (mapish/mi-sub
                        (get-property-values ark-value index-uuid)
-                       (vecish/->Vecish [:descriptor/index]))))))
+                       [:descriptor/index])))))
 
 (defn make-index-rolon-
   [ark-value classifier-keyword value uuid adding]
@@ -252,11 +248,12 @@
         ark-value (if (get-rolon ark-value iuuid)
                     ark-value
                     (make-rolon ark-value iuuid
-                                (create-mi ark-value (sorted-map (vecish/->Vecish [:classifier/index.name])
-                                                                 (name classifier-keyword)))))]
+                                (create-mi
+                                  ark-value
+                                  [:classifier/index.name] (name classifier-keyword))))]
     (update-property ark-value
                      iuuid
-                     (vecish/->Vecish [:descriptor/index value uuid])
+                     [:descriptor/index value uuid]
                      adding)))
 
 (defn make-index-rolon
@@ -264,7 +261,7 @@
   [ark-value uuid properties old-properties]
   (reduce #(let [ark-value %1
                  path (key %2)
-                 k (first (:v path))
+                 k (first path)
                  nv (val %2)
                  ov (get old-properties path)
                  ark-value (if (and ov (classifier? k))
@@ -279,7 +276,7 @@
 (defn get-updated-rolon-uuids
   "returns a mapish of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]
-  (mapish/mi-sub (get-property-values ark-value je-uuid) (vecish/->Vecish [:descriptor/modified])))
+  (mapish/mi-sub (get-property-values ark-value je-uuid) [:descriptor/modified]))
 
 (defmulti eval-transaction (fn [ark-value n s] n))
 
@@ -287,21 +284,18 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [rolon-uuid je-properties rolon-properties] (read-string s)
-        je-properties (into (sorted-map (vecish/->Vecish [:classifier/headline])
-                                        (str "update a rolon with " s))
-                            je-properties)]
+        je-properties (assoc je-properties [:classifier/headline] (str "update a rolon with " s))]
     (-> ark-value
-        (update-properties je-uuid (create-mi ark-value je-properties))
-        (make-rolon rolon-uuid (create-mi ark-value rolon-properties)))))
+        (update-properties je-uuid je-properties)
+        (make-rolon rolon-uuid rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties] (read-string s)
-        je-properties (into (sorted-map (vecish/->Vecish [:classifier/headline]) (str "destroy rolon " s))
-                            je-properties)]
+        je-properties (assoc je-properties [:classifier/headline] (str "destroy rolon " s))]
     (-> ark-value
-        (update-properties je-uuid (create-mi ark-value je-properties))
+        (update-properties je-uuid je-properties)
         (destroy-rolon uuid))))
 
 (defn reprocess-trans

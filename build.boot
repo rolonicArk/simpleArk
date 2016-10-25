@@ -26,5 +26,4 @@
                                 ;simpleArk.pub0-test
                                 ;simpleArk.tlog1-test
                                 simpleArk.mapish-test
-                                ;simpleArk.vecish-test
                                 })))

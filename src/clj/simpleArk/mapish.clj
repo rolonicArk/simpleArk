@@ -22,7 +22,7 @@
               (if (nil? bi)
                 -1
                 r))
-            (recur (+  i 1))))))));))
+            (recur (+  i 1))))))))
 
 (defn in-range [path stest spath etest epath]
   (let [sc (vec-comp path spath)

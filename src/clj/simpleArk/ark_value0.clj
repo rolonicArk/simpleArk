@@ -137,7 +137,7 @@
           nil
           nil
           <=
-          je-uuid)
+          [je-uuid])
         je-uuid
         (key
           (first

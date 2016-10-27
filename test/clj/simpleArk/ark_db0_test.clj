@@ -152,7 +152,7 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep (fn [x] (println
-                           (ark-value/get-property-value ark-value (key x) [:classifier/headline])))
+                           (ark-value/get-property-value ark-value (first (key x)) [:classifier/headline])))
                  (seq (ark-value/get-journal-entries ark-value)))))
 
   (println)
@@ -171,7 +171,7 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep #(println (val %)
                            "-"
-                           (ark-value/get-property-value ark-value (key %) [:classifier/headline]))
+                           (ark-value/get-property-value ark-value (first (key %)) [:classifier/headline]))
                  (rseq (ark-value/get-changes-by-property ark-value
                                                           bob-uuid
                                                           [:classifier/headline]))))))

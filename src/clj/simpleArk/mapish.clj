@@ -6,33 +6,23 @@
 (defprotocol MI
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 
-(defn vec-lt [a b]
-  (if
-    (= a b)
-    false
-    (let [ac (count a)
-          bc (count b)
-          minc (min ac bc)]
-      (loop [i 0]
-        (if (>= i minc)
-          (< ac bc)
-          (let [ai (a i)
-                bi (b i)
-                r (compare ai bi)]
-            (if (not= r 0)
-              (if (nil? ai)
-                false
-                (if (nil? bi)
-                  true
-                  (= r -1)))
-              (recur (+ i 1)))))))))
-
 (defn vec-comp [a b]
-  (if (vec-lt a b)
-    -1
-    (if (= 0 (compare a b))
-       0
-       1)))
+  (let [ac (count a)
+        bc (count b)
+        minc (min ac bc)]
+    (loop [i 0]
+      (if (>= i minc)
+        (compare ac bc)
+        (let [ai (a i)
+              bi (b i)
+              r (compare ai bi)]
+          (if (not= r 0)
+            (if (nil? ai)
+              1
+              (if (nil? bi)
+                -1
+                r))
+            (recur (+  i 1))))))));))
 
 (defn in-range [path stest spath etest epath]
   (let [sc (vec-comp path spath)
@@ -130,29 +120,8 @@
 
 (declare ->MI-map)
 
-(defn vec-lt [a b]
-  (if
-    (= a b)
-    false
-    (let [ac (count a)
-          bc (count b)
-          minc (min ac bc)]
-      (loop [i 0]
-        (if (>= i minc)
-          (< ac bc)
-          (let [ai (a i)
-                bi (b i)
-                r (compare ai bi)]
-            (if (not= r 0)
-              (if (nil? ai)
-                false
-                (if (nil? bi)
-                  true
-                  (= r -1)))
-              (recur (+ i 1)))))))))
-
 (defn mapish [& keyvals]
-  (let [m (apply sorted-map-by vec-lt keyvals)]
+  (let [m (apply sorted-map-by vec-comp keyvals)]
     (->MI-map m nil nil nil nil)))
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]

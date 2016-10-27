@@ -24,9 +24,9 @@
 (defn get-rolon
   [ark-value uuid]
   (cond
-    (uuid/journal-entry-uuid? uuid) (get (ark-value/get-journal-entries ark-value) uuid)
-    (uuid/index-uuid? uuid) (get (ark-value/get-indexes ark-value) uuid)
-    (uuid/random-uuid? uuid) (get (ark-value/get-random-rolons ark-value) uuid)
+    (uuid/journal-entry-uuid? uuid) (get (ark-value/get-journal-entries ark-value) [uuid])
+    (uuid/index-uuid? uuid) (get (ark-value/get-indexes ark-value) [uuid])
+    (uuid/random-uuid? uuid) (get (ark-value/get-random-rolons ark-value) [uuid])
     :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn assoc-rolon
@@ -35,15 +35,15 @@
   (cond
     (uuid/journal-entry-uuid? rolon-uuid)
     (let [journal-entries (get ark-value ::journal-entries)
-          journal-entries (assoc journal-entries rolon-uuid rolon)]
+          journal-entries (assoc journal-entries [rolon-uuid] rolon)]
       (assoc ark-value ::journal-entries journal-entries))
     (uuid/index-uuid? rolon-uuid)
     (let [indexes (get ark-value ::indexes)
-          indexes (assoc indexes rolon-uuid rolon)]
+          indexes (assoc indexes [rolon-uuid] rolon)]
       (assoc ark-value ::indexes indexes))
     (uuid/random-uuid? rolon-uuid)
     (let [rolons (get ark-value ::random-rolons)
-          rolons (assoc rolons rolon-uuid rolon)]
+          rolons (assoc rolons [rolon-uuid] rolon)]
       (assoc ark-value ::random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
@@ -54,7 +54,7 @@
                            (mapish/mapish))
         first-entry (first (seq property-changes))]
     (if (or (nil? first-entry) (not= new-value (val first-entry)))
-      (assoc property-changes je-uuid new-value)
+      (assoc property-changes [je-uuid] new-value)
       property-changes)))
 
 (defn update-changes-by-property

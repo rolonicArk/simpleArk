@@ -283,8 +283,10 @@
 (defmethod eval-transaction :ark/update-rolon-transaction!
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
-        [rolon-uuid je-properties rolon-properties] (read-string s)
-        je-properties (assoc je-properties [:classifier/headline] (str "update a rolon with " s))]
+        [rolon-uuid je-properties-map rolon-properties-map] (read-string s)
+        je-properties (mapish/mapish [:classifier/headline] (str "update a rolon with " s))
+        je-properties (into je-properties je-properties-map)
+        rolon-properties (into (mapish/mapish) rolon-properties-map)]
     (-> ark-value
         (update-properties je-uuid je-properties)
         (make-rolon rolon-uuid rolon-properties))))
@@ -292,8 +294,9 @@
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
-        [uuid je-properties] (read-string s)
-        je-properties (assoc je-properties [:classifier/headline] (str "destroy rolon " s))]
+        [uuid je-properties-map] (read-string s)
+        je-properties (mapish/mapish [:classifier/headline] (str "destroy rolon " s))
+        je-properties (into je-properties je-properties-map)]
     (-> ark-value
         (update-properties je-uuid je-properties)
         (destroy-rolon uuid))))

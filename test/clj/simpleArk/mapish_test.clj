@@ -15,7 +15,7 @@
 (def z [])
 
 (def sm0 (sorted-map-by
-           vec-lt
+           vec-comp
            [:a] 1
            [:b] 2
            [:e] 10
@@ -33,7 +33,7 @@
            [:b] 5))
 
 (deftest mapish-test
-  (println (sorted-set-by vec-lt a b c d e f))
+  (println (sorted-set-by vec-comp a b c d e f))
   (println sm0)
   (println mi0)
   (println (seq mi0))

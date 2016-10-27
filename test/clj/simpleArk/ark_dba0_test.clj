@@ -6,8 +6,7 @@
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-dba0 :as ark-dba0]
-            [simpleArk.closer :as closer]
-            [simpleArk.vecish :as vecish]))
+            [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)
 
@@ -20,7 +19,7 @@
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
-    (ark-value/update-property ark-value je-uuid (vecish/->Vecish [:classifier/headline]) "Just for fun!")))
+    (ark-value/update-property ark-value je-uuid [:classifier/headline] "Just for fun!")))
 
 (defn ark-dba0-test
   [ark-db]

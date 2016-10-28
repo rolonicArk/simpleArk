@@ -284,9 +284,9 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [rolon-uuid je-properties-map rolon-properties-map] (read-string s)
-        je-properties (mapish/mapish [:classifier/headline] (str "update a rolon with " s))
+        je-properties (create-mi ark-value [:classifier/headline] (str "update a rolon with " s))
         je-properties (into je-properties je-properties-map)
-        rolon-properties (into (mapish/mapish) rolon-properties-map)]
+        rolon-properties (into (create-mi ark-value) rolon-properties-map)]
     (-> ark-value
         (update-properties je-uuid je-properties)
         (make-rolon rolon-uuid rolon-properties))))
@@ -295,7 +295,7 @@
   [ark-value n s]
   (let [je-uuid (get-current-journal-entry-uuid ark-value)
         [uuid je-properties-map] (read-string s)
-        je-properties (mapish/mapish [:classifier/headline] (str "destroy rolon " s))
+        je-properties (create-mi ark-value [:classifier/headline] (str "destroy rolon " s))
         je-properties (into je-properties je-properties-map)]
     (-> ark-value
         (update-properties je-uuid je-properties)

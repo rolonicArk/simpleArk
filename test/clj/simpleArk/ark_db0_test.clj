@@ -61,7 +61,9 @@
           [:descriptor/brothers "Jeff"] true}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
+    (println :je-modified (seq (ark-value/get-updated-rolon-uuids ark-value make-bob-je-uuid)))
     (println :bob-properties (seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :je-modified (seq (ark-value/get-updated-rolon-uuids ark-value make-bob-je-uuid)))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
     (println :brothers
              (seq

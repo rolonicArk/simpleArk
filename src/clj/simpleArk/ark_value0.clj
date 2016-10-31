@@ -96,11 +96,16 @@
 (defn je-modified
   "track the rolons modified by the journal entry"
   [ark-value rolon-uuid]
-  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)]
+  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
+        ark-value (update-property- ark-value
+                                    journal-entry-uuid
+                                    journal-entry-uuid
+                                    [:descriptor/modified rolon-uuid]
+                                    true)]
     (update-property- ark-value
                       journal-entry-uuid
-                      journal-entry-uuid
-                      [:descriptor/modified rolon-uuid]
+                      rolon-uuid
+                      [:descriptor/journal-entry journal-entry-uuid]
                       true)))
 
 (defn destroy-rolon

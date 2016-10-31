@@ -227,7 +227,7 @@
 (defn name-lookup
   [ark-value rolon-name]
   (let [name-index-uuid (get-index-uuid ark-value "name")]
-    (first (index-lookup ark-value name-index-uuid rolon-name))))
+    (index-lookup ark-value name-index-uuid rolon-name)))
 
 (defn get-descriptor-index
   "returns a seq of [value uuid]"

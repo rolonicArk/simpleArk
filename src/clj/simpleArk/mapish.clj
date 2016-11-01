@@ -13,6 +13,20 @@
   (and (keyword? kw)
        (= 0 (compare "descriptor" (namespace kw)))))
 
+(defn validate-property-path
+  [property-path]
+  (let [kw (first property-path)]
+    (if (classifier? kw)
+      (if (< 1 (count  property-path))
+        (throw (Exception. (str property-path " has too many elements for a classifier"))))
+      (if (not (descriptor? kw))
+        (throw (Exception. (str property-path " is neither a classifier nor a keyword")))))))
+
+(defn validate-property-paths
+  [properties]
+  (reduce (fn [_ p] (validate-property-path p))
+          nil (keys (seq properties))))
+
 (defprotocol MI
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 

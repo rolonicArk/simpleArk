@@ -23,21 +23,6 @@
   "tests that even work with impl0"
   [ark-db]
 
-  (is (mapish/classifier? :classifier/x))
-  (is (not (mapish/classifier? :descriptor/y)))
-  (is (not (mapish/classifier? :x)))
-  (is (not (mapish/classifier? ":classifier/x")))
-  (is (mapish/descriptor? :descriptor/x))
-  (is (not (mapish/descriptor? :classifier/y)))
-  (is (not (mapish/descriptor? :x)))
-  (is (not (mapish/descriptor? ":descriptor/x")))
-
-  (ark-value/validate-property-paths (mapish/mapish
-                                       [:classifier/x] 1
-                                       [:descriptor/y] "fred"))
-  (is (thrown? Exception (ark-value/validate-property-paths (mapish/mapish :classifier/x 2))))
-  (is (thrown? Exception (ark-value/validate-property-paths (mapish/mapish [1] 2))))
-
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)

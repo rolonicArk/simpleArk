@@ -78,23 +78,9 @@
   [ark writer]
   (print-simple (ark-str ark) writer))
 
-(defn validate-property-path
-  [property-path]
-  (let [kw (first property-path)]
-    (if (mapish/classifier? kw)
-      (if (< 1 (count  property-path))
-        (throw (Exception. (str property-path " has too many elements for a classifier"))))
-      (if (not (mapish/descriptor? kw))
-        (throw (Exception. (str property-path " is neither a classifier nor a keyword")))))))
-
-(defn validate-property-paths
-  [properties]
-  (reduce (fn [_ p] (validate-property-path p))
-          nil (keys (seq properties))))
-
 (defn make-rolon
   [ark-value rolon-uuid properties]
-  (validate-property-paths properties)
+  (mapish/validate-property-paths properties)
   ((:make-rolon ark-value) ark-value rolon-uuid properties))
 
 (defn destroy-rolon
@@ -104,12 +90,12 @@
 
 (defn update-properties
   [ark-value rolon-uuid properties]
-  (validate-property-paths properties)
+  (mapish/validate-property-paths properties)
   ((:update-properties ark-value) ark-value rolon-uuid properties))
 
 (defn update-property
   [ark-value rolon-uuid property-path property-value]
-  (validate-property-path property-path)
+  (mapish/validate-property-path property-path)
   (update-properties ark-value rolon-uuid (create-mi ark-value property-path property-value)))
 
 (defn get-rolon-uuid
@@ -119,7 +105,7 @@
 
 (defn get-changes-by-property
   ([ark-value rolon-uuid property-path]
-   (validate-property-path property-path)
+   (mapish/validate-property-path property-path)
    (let [rolon (get-rolon ark-value rolon-uuid)]
      ((:get-changes-by-property rolon) rolon property-path)))
   ([ark-value rolon-uuid]
@@ -128,7 +114,7 @@
 
 (defn get-property-value
   [ark-value rolon-uuid property-path]
-  (validate-property-path property-path)
+  (mapish/validate-property-path property-path)
   (let [changes (get-changes-by-property ark-value rolon-uuid property-path)]
     (if changes
       (val (first (rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))

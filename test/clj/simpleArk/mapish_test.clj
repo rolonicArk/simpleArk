@@ -33,6 +33,22 @@
            [:b] 5))
 
 (deftest mapish-test
+
+  (is (classifier? :classifier/x))
+  (is (not (classifier? :descriptor/y)))
+  (is (not (classifier? :x)))
+  (is (not (classifier? ":classifier/x")))
+  (is (descriptor? :descriptor/x))
+  (is (not (descriptor? :classifier/y)))
+  (is (not (descriptor? :x)))
+  (is (not (descriptor? ":descriptor/x")))
+
+  (validate-property-paths (mapish
+                                    [:classifier/x] 1
+                                    [:descriptor/y] "fred"))
+  (is (thrown? Exception (validate-property-paths (mapish :classifier/x 2))))
+  (is (thrown? Exception (validate-property-paths (mapish [1] 2))))
+
   (println (sorted-set-by vec-comp a b c d e f))
   (println sm0)
   (println mi0)

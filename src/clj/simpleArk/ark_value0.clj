@@ -97,7 +97,7 @@
   (update-properties- ark-value
                       journal-entry-uuid
                       rolon-uuid
-                      (mapish/mapish property-path property-value)))
+                      (create-mi ark-value property-path property-value)))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
@@ -120,7 +120,7 @@
         rolon (ark-value/get-rolon ark-value rolon-uuid)
         old-property-values (ark-value/get-property-values ark-value rolon-uuid)
         property-values (reduce #(assoc %1 (key %2) nil)
-                                (mapish/mapish)
+                                (create-mi ark-value)
                                 (seq old-property-values))
         rolon (assoc rolon ::changes-by-property
                             (update-changes-by-property
@@ -192,7 +192,7 @@
       (ark-value/make-index-rolon ark-value
                                    rolon-uuid
                                    properties
-                                   (mapish/mapish)))))
+                                   (create-mi ark-value)))))
 
 (defn index-name-uuid
   [ark-value]
@@ -204,13 +204,19 @@
                       (assoc ::latest-journal-entry-uuid je-uuid)
                       (assoc ::active-journal-entry-uuid je-uuid)
                       (ark-value/make-rolon je-uuid
-                                            (mapish/mapish
-                                                [:classifier/transaction-name] transaction-name
-                                                [:descriptor/transaction-argument] s))
+                                            (create-mi
+                                              ark-value
+                                              [:classifier/transaction-name] transaction-name
+                                              [:descriptor/transaction-argument] s))
                       (ark-value/eval-transaction transaction-name s))]
     (if (::selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))
+
+(defn ark-value-assoc-mapish
+  [ark-value key]
+  (let [mi (create-mi ark-value)]
+    (assoc ark-value key mi)))
 
 (defn create-ark
   [this-db]
@@ -218,9 +224,9 @@
                              make-rolon destroy-rolon update-properties update-ark
                              get-current-journal-entry-uuid
                              select-time get-selected-time index-name-uuid create-mi)
-      (assoc ::journal-entries (mapish/mapish))
-      (assoc ::indexes (mapish/mapish))
-      (assoc ::random-rolons (mapish/mapish))
+      (ark-value-assoc-mapish ::journal-entries)
+      (ark-value-assoc-mapish ::indexes)
+      (ark-value-assoc-mapish ::random-rolons)
       (assoc ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))))
 
 (defn- build

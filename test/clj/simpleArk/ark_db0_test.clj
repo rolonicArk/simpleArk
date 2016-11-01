@@ -27,10 +27,10 @@
   (is (not (mapish/classifier? :descriptor/y)))
   (is (not (mapish/classifier? :x)))
   (is (not (mapish/classifier? ":classifier/x")))
-  (is (ark-value/descriptor? :descriptor/x))
-  (is (not (ark-value/descriptor? :classifier/y)))
-  (is (not (ark-value/descriptor? :x)))
-  (is (not (ark-value/descriptor? ":descriptor/x")))
+  (is (mapish/descriptor? :descriptor/x))
+  (is (not (mapish/descriptor? :classifier/y)))
+  (is (not (mapish/descriptor? :x)))
+  (is (not (mapish/descriptor? ":descriptor/x")))
 
   (ark-value/validate-property-paths (mapish/mapish
                                        [:classifier/x] 1

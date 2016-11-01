@@ -6,11 +6,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn descriptor?
-  [kw]
-  (and (keyword? kw)
-       (= 0 (compare "descriptor" (namespace kw)))))
-
 (defn create-ark
   [m]
   "returns a new ark"
@@ -89,7 +84,7 @@
     (if (mapish/classifier? kw)
       (if (< 1 (count  property-path))
         (throw (Exception. (str property-path " has too many elements for a classifier"))))
-      (if (not (descriptor? kw))
+      (if (not (mapish/descriptor? kw))
         (throw (Exception. (str property-path " is neither a classifier nor a keyword")))))))
 
 (defn validate-property-paths

@@ -8,6 +8,11 @@
   (and (keyword? kw)
        (= 0 (compare "classifier" (namespace kw)))))
 
+(defn descriptor?
+  [kw]
+  (and (keyword? kw)
+       (= 0 (compare "descriptor" (namespace kw)))))
+
 (defprotocol MI
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))
 

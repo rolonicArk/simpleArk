@@ -144,7 +144,7 @@
 
 (declare ->MI-map)
 
-(defn mapish [& keyvals]
+(defn new-MI-map [& keyvals]
   (let [m (apply sorted-map-by vec-comp keyvals)]
     (->MI-map m nil nil nil nil)))
 

@@ -23,8 +23,8 @@
 (def mi0 (->MI-map sm0 nil nil nil nil))
 (def mi1 (->MI-map sm0 >= [:b] <= [:e]))
 (def mi2 (->MI-map sm0 > [:a] < [:f]))
-(def mama (mapish))
-(def mea (mapish
+(def mama (new-MI-map))
+(def mea (new-MI-map
            [:a] 0
            [:a 1] 1
            [:a 1 :x] 2
@@ -43,11 +43,11 @@
   (is (not (descriptor? :x)))
   (is (not (descriptor? ":descriptor/x")))
 
-  (validate-property-paths (mapish
+  (validate-property-paths (new-MI-map
                                     [:classifier/x] 1
                                     [:descriptor/y] "fred"))
-  (is (thrown? Exception (validate-property-paths (mapish :classifier/x 2))))
-  (is (thrown? Exception (validate-property-paths (mapish [1] 2))))
+  (is (thrown? Exception (validate-property-paths (new-MI-map :classifier/x 2))))
+  (is (thrown? Exception (validate-property-paths (new-MI-map [1] 2))))
 
   (println (sorted-set-by vec-comp a b c d e f))
   (println sm0)

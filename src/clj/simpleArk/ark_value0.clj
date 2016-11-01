@@ -49,7 +49,6 @@
 
 (defn create-mi
   [ark-value & keyvals]
-  (apply mapish/mapish keyvals))
 
 (defn update-property-changes
   [ark-value property-changes je-uuid new-value]

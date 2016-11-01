@@ -204,12 +204,16 @@
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))
 
+(defn create-mi
+  [ark-value & keyvals]
+  (apply mapish/mapish keyvals))
+
 (defn create-ark
   [this-db]
   (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
                              get-current-journal-entry-uuid
-                             select-time get-selected-time index-name-uuid mapish/mapish)
+                             select-time get-selected-time index-name-uuid create-mi)
       (assoc ::journal-entries (mapish/mapish))
       (assoc ::indexes (mapish/mapish))
       (assoc ::random-rolons (mapish/mapish))

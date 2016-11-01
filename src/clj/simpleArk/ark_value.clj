@@ -38,7 +38,7 @@
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 
 (defn create-mi
-  [ark-value & keyvals] (apply (:create-mi ark-value) keyvals))
+  [ark-value & keyvals] (apply (:create-mi ark-value) ark-value keyvals))
 
 (defn select-time
   "Sets the ark to the time of the journal entry uuid,

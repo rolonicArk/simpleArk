@@ -52,10 +52,10 @@
   (apply mapish/mapish keyvals))
 
 (defn update-property-changes
-  [property-changes je-uuid new-value]
+  [ark-value property-changes je-uuid new-value]
   (let [property-changes (if (some? property-changes)
                            property-changes
-                           (mapish/mapish))
+                           (create-mi ark-value))
         first-entry (first (seq property-changes))]
     (if (or (nil? first-entry) (not= new-value (val first-entry)))
       (assoc property-changes [je-uuid] new-value)
@@ -72,7 +72,8 @@
                                (create-mi ark-value))]
      (assoc changes-by-property
                       property-name
-                      (update-property-changes (get changes-by-property property-name)
+                      (update-property-changes ark-value
+                                               (get changes-by-property property-name)
                                                je-uuid
                                                new-value)))))
 

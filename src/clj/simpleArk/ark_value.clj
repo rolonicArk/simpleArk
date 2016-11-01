@@ -6,11 +6,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn classifier?
-  [kw]
-  (and (keyword? kw)
-       (= 0 (compare "classifier" (namespace kw)))))
-
 (defn descriptor?
   [kw]
   (and (keyword? kw)
@@ -91,7 +86,7 @@
 (defn validate-property-path
   [property-path]
   (let [kw (first property-path)]
-    (if (classifier? kw)
+    (if (mapish/classifier? kw)
       (if (< 1 (count  property-path))
         (throw (Exception. (str property-path " has too many elements for a classifier"))))
       (if (not (descriptor? kw))
@@ -264,10 +259,10 @@
                  k (first path)
                  nv (val %2)
                  ov (get old-properties path)
-                 ark-value (if (and ov (classifier? k))
+                 ark-value (if (and ov (mapish/classifier? k))
                              (make-index-rolon- ark-value k ov uuid nil)
                              ark-value)
-                 ark-value (if (and nv (classifier? k))
+                 ark-value (if (and nv (mapish/classifier? k))
                              (make-index-rolon- ark-value k nv uuid true)
                              ark-value)]
             ark-value)

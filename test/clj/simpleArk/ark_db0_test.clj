@@ -23,10 +23,10 @@
   "tests that even work with impl0"
   [ark-db]
 
-  (is (ark-value/classifier? :classifier/x))
-  (is (not (ark-value/classifier? :descriptor/y)))
-  (is (not (ark-value/classifier? :x)))
-  (is (not (ark-value/classifier? ":classifier/x")))
+  (is (mapish/classifier? :classifier/x))
+  (is (not (mapish/classifier? :descriptor/y)))
+  (is (not (mapish/classifier? :x)))
+  (is (not (mapish/classifier? ":classifier/x")))
   (is (ark-value/descriptor? :descriptor/x))
   (is (not (ark-value/descriptor? :classifier/y)))
   (is (not (ark-value/descriptor? :x)))

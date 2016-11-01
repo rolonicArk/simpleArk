@@ -47,6 +47,10 @@
       (assoc ark-value ::random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
+(defn create-mi
+  [ark-value & keyvals]
+  (apply mapish/mapish keyvals))
+
 (defn update-property-changes
   [property-changes je-uuid new-value]
   (let [property-changes (if (some? property-changes)
@@ -58,14 +62,14 @@
       property-changes)))
 
 (defn update-changes-by-property
-  ([changes-by-property je-uuid changed-properties]
-   (reduce #(update-changes-by-property %1 je-uuid (key %2) (val %2))
+  ([ark-value changes-by-property je-uuid changed-properties]
+   (reduce #(update-changes-by-property ark-value %1 je-uuid (key %2) (val %2))
            changes-by-property
            (seq changed-properties)))
-  ([changes-by-property je-uuid property-name new-value]
+  ([ark-value changes-by-property je-uuid property-name new-value]
    (let [changes-by-property (if (some? changes-by-property)
                                changes-by-property
-                               (mapish/mapish))]
+                               (create-mi ark-value))]
      (assoc changes-by-property
                       property-name
                       (update-property-changes (get changes-by-property property-name)
@@ -76,7 +80,8 @@
   [ark-value journal-entry-uuid rolon-uuid properties]
   (let [rolon (ark-value/get-rolon ark-value rolon-uuid)
         rolon (assoc rolon ::changes-by-property
-                           (update-changes-by-property (::changes-by-property rolon)
+                           (update-changes-by-property ark-value
+                                                       (::changes-by-property rolon)
                                                        journal-entry-uuid
                                                        properties))
         property-values (ark-value/get-property-values ark-value rolon-uuid)
@@ -118,6 +123,7 @@
                                 (seq old-property-values))
         rolon (assoc rolon ::changes-by-property
                             (update-changes-by-property
+                              ark-value
                               (::changes-by-property rolon)
                               je-uuid
                               property-values))
@@ -176,7 +182,8 @@
                                    get-changes-by-property
                                    ark-value)
           rolon (assoc rolon ::changes-by-property
-                             (update-changes-by-property (::changes-by-property rolon)
+                             (update-changes-by-property ark-value
+                                                         (::changes-by-property rolon)
                                                          je-uuid
                                                          properties))
           ark-value (assoc-rolon ark-value rolon-uuid rolon)
@@ -203,10 +210,6 @@
     (if (::selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))
-
-(defn create-mi
-  [ark-value & keyvals]
-  (apply mapish/mapish keyvals))
 
 (defn create-ark
   [this-db]

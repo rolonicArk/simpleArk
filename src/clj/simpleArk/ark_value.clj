@@ -23,7 +23,7 @@
   [ark-value]
   (uuid/index-uuid (:this-db ark-value) :classifier/index.name))
 
-(defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
+(defrecord Ark-value [this-db get-journal-entries get-indexes get-random-rolons
                       make-rolon destroy-rolon update-properties update-ark
                       latest-journal-entry-uuid
                       select-time selected-time create-mi])
@@ -66,9 +66,12 @@
   ((:get-random-rolons ark-value) ark-value))
 
 (defn get-rolon
-  "returns the rolon identified by the uuid, or nil"
   [ark-value uuid]
-  ((:get-rolon ark-value) ark-value uuid))
+  (cond
+    (uuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-value) [uuid])
+    (uuid/index-uuid? uuid) (get (get-indexes ark-value) [uuid])
+    (uuid/random-uuid? uuid) (get (get-random-rolons ark-value) [uuid])
+    :else (throw (Exception. (str uuid " was not recognized")))))
 
 (defn ark-str
   [ark-value]

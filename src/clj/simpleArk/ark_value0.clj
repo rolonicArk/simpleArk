@@ -17,14 +17,6 @@
   [ark-value]
   (::random-rolons ark-value))
 
-(defn get-rolon
-  [ark-value uuid]
-  (cond
-    (uuid/journal-entry-uuid? uuid) (get (ark-value/get-journal-entries ark-value) [uuid])
-    (uuid/index-uuid? uuid) (get (ark-value/get-indexes ark-value) [uuid])
-    (uuid/random-uuid? uuid) (get (ark-value/get-random-rolons ark-value) [uuid])
-    :else (throw (Exception. (str uuid " was not recognized")))))
-
 (defn assoc-rolon
   "update the ark with the revised/new rolon"
   [ark-value rolon-uuid rolon]
@@ -201,7 +193,7 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
+  (-> (ark-value/->Ark-value this-db get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
                              nil
                              select-time nil create-mi)

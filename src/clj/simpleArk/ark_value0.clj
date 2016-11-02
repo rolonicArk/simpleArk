@@ -5,10 +5,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn get-indexes
-  [ark-value]
-  (::indexes ark-value))
-
 (defn get-random-rolons
   [ark-value]
   (::random-rolons ark-value))
@@ -22,9 +18,9 @@
           journal-entries (assoc journal-entries [rolon-uuid] rolon)]
       (assoc ark-value :journal-entries journal-entries))
     (uuid/index-uuid? rolon-uuid)
-    (let [indexes (get ark-value ::indexes)
+    (let [indexes (ark-value/get-indexes ark-value)
           indexes (assoc indexes [rolon-uuid] rolon)]
-      (assoc ark-value ::indexes indexes))
+      (assoc ark-value :indexes indexes))
     (uuid/random-uuid? rolon-uuid)
     (let [rolons (get ark-value ::random-rolons)
           rolons (assoc rolons [rolon-uuid] rolon)]
@@ -187,11 +183,10 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark-value this-db get-indexes get-random-rolons
+  (-> (ark-value/->Ark-value this-db get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
                              select-time create-mi)
       (ark-value/init-ark-value)
-      (ark-value/ark-value-assoc-mapish ::indexes)
       (ark-value/ark-value-assoc-mapish ::random-rolons)))
 
 (defn- build

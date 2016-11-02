@@ -5,24 +5,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn assoc-rolon
-  "update the ark with the revised/new rolon"
-  [ark-value rolon-uuid rolon]
-  (cond
-    (uuid/journal-entry-uuid? rolon-uuid)
-    (let [journal-entries (ark-value/get-journal-entries ark-value)
-          journal-entries (assoc journal-entries [rolon-uuid] rolon)]
-      (assoc ark-value :journal-entries journal-entries))
-    (uuid/index-uuid? rolon-uuid)
-    (let [indexes (ark-value/get-indexes ark-value)
-          indexes (assoc indexes [rolon-uuid] rolon)]
-      (assoc ark-value :indexes indexes))
-    (uuid/random-uuid? rolon-uuid)
-    (let [rolons (ark-value/get-random-rolons ark-value)
-          rolons (assoc rolons [rolon-uuid] rolon)]
-      (assoc ark-value :random-rolons rolons))
-    :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
-
 (defn create-mi
   [ark-value & keyvals]
   (apply mapish/new-MI-map keyvals))
@@ -40,7 +22,7 @@
                                                rolon-uuid
                                                properties
                                                property-values)]
-    (assoc-rolon ark-value rolon-uuid rolon)))
+    (ark-value/assoc-rolon ark-value rolon-uuid rolon)))
 
 (defn update-property-
   [ark-value journal-entry-uuid rolon-uuid property-path property-value]
@@ -82,7 +64,7 @@
                                               rolon-uuid
                                               property-values
                                               old-property-values)
-        ark-value (assoc-rolon ark-value rolon-uuid rolon)]
+        ark-value (ark-value/assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value rolon-uuid)))
 
 (defn update-properties
@@ -115,7 +97,7 @@
                                                          (::changes-by-property rolon)
                                                          je-uuid
                                                          properties))
-          ark-value (assoc-rolon ark-value rolon-uuid rolon)
+          ark-value (ark-value/assoc-rolon ark-value rolon-uuid rolon)
           ark-value (je-modified ark-value rolon-uuid)]
       (ark-value/make-index-rolon ark-value
                                    rolon-uuid

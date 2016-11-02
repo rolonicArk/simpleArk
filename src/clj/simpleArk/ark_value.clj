@@ -95,6 +95,24 @@
   [ark writer]
   (print-simple (ark-str ark) writer))
 
+(defn assoc-rolon
+  "update the ark with the revised/new rolon"
+  [ark-value rolon-uuid rolon]
+  (cond
+    (uuid/journal-entry-uuid? rolon-uuid)
+    (let [journal-entries (get-journal-entries ark-value)
+          journal-entries (assoc journal-entries [rolon-uuid] rolon)]
+      (assoc ark-value :journal-entries journal-entries))
+    (uuid/index-uuid? rolon-uuid)
+    (let [indexes (get-indexes ark-value)
+          indexes (assoc indexes [rolon-uuid] rolon)]
+      (assoc ark-value :indexes indexes))
+    (uuid/random-uuid? rolon-uuid)
+    (let [rolons (get-random-rolons ark-value)
+          rolons (assoc rolons [rolon-uuid] rolon)]
+      (assoc ark-value :random-rolons rolons))
+    :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
+
 (defn update-property-changes
   [ark-value property-changes je-uuid new-value]
   (let [property-changes (if (some? property-changes)

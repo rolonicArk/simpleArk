@@ -197,6 +197,7 @@
                              make-rolon destroy-rolon update-properties update-ark
                              nil
                              select-time nil create-mi)
+      (ark-value/init-ark-value)
       (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)
       (ark-value/ark-value-assoc-mapish ::random-rolons)))

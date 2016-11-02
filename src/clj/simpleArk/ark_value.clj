@@ -14,6 +14,10 @@
   (let [mi (create-mi ark-value)]
     (assoc ark-value key mi)))
 
+(defn init-ark-value
+  [ark-value]
+  ark-value)
+
 (defn create-ark
   [m]
   "returns a new ark"

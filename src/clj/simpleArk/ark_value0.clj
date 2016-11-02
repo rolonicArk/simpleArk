@@ -11,7 +11,7 @@
 
 (defn get-journal-entries
   [ark-value]
-  (::journal-entries ark-value))
+  (mapish/mi-sub (::journal-entries ark-value) nil nil <= (ark-value/get-selected-time ark-value)))
 
 (defn get-indexes
   [ark-value]
@@ -156,8 +156,7 @@
             (rseq jes)))]
     (-> ark-value
         (assoc ::journal-entries jes)
-        (assoc :selected-time je-uuid)
-        (assoc ::latest-journal-entry-uuid je-uuid))))
+        (assoc :selected-time je-uuid))))
 
 (defn get-changes-by-property
   ([rolon property-path]

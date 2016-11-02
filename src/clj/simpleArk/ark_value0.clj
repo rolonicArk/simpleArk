@@ -195,8 +195,7 @@
   [this-db]
   (-> (ark-value/->Ark-value this-db get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
-                             nil
-                             select-time nil create-mi)
+                             select-time create-mi)
       (ark-value/init-ark-value)
       (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)

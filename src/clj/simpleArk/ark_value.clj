@@ -23,14 +23,13 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
+(defrecord Ark-value [this-db get-journal-entries get-indexes get-random-rolons
+                      make-rolon destroy-rolon update-properties update-ark
+                      select-time create-mi])
+
 (defn index-name-uuid
   [ark-value]
   (uuid/index-uuid (:this-db ark-value) :classifier/index.name))
-
-(defrecord Ark-value [this-db get-journal-entries get-indexes get-random-rolons
-                      make-rolon destroy-rolon update-properties update-ark
-                      latest-journal-entry-uuid
-                      select-time selected-time create-mi])
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 

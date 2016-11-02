@@ -5,10 +5,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn get-random-rolons
-  [ark-value]
-  (::random-rolons ark-value))
-
 (defn assoc-rolon
   "update the ark with the revised/new rolon"
   [ark-value rolon-uuid rolon]
@@ -22,9 +18,9 @@
           indexes (assoc indexes [rolon-uuid] rolon)]
       (assoc ark-value :indexes indexes))
     (uuid/random-uuid? rolon-uuid)
-    (let [rolons (get ark-value ::random-rolons)
+    (let [rolons (ark-value/get-random-rolons ark-value)
           rolons (assoc rolons [rolon-uuid] rolon)]
-      (assoc ark-value ::random-rolons rolons))
+      (assoc ark-value :random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
 (defn create-mi
@@ -183,11 +179,9 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark-value this-db get-random-rolons
-                             make-rolon destroy-rolon update-properties update-ark
+  (-> (ark-value/->Ark-value this-db make-rolon destroy-rolon update-properties update-ark
                              select-time create-mi)
-      (ark-value/init-ark-value)
-      (ark-value/ark-value-assoc-mapish ::random-rolons)))
+      (ark-value/init-ark-value)))
 
 (defn- build
   "returns an ark db"

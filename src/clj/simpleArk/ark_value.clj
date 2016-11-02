@@ -18,15 +18,15 @@
   [ark-value]
   (-> ark-value
       (ark-value-assoc-mapish :journal-entries)
-      (ark-value-assoc-mapish :indexes)))
+      (ark-value-assoc-mapish :indexes)
+      (ark-value-assoc-mapish :random-rolons)))
 
 (defn create-ark
   [m]
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db get-random-rolons
-                      make-rolon destroy-rolon update-properties update-ark
+(defrecord Ark-value [this-db make-rolon destroy-rolon update-properties update-ark
                       select-time create-mi])
 
 (defn index-name-uuid
@@ -64,9 +64,8 @@
   (:indexes ark-value))
 
 (defn get-random-rolons
-  "returns a map of all the random rolons"
   [ark-value]
-  ((:get-random-rolons ark-value) ark-value))
+  (:random-rolons ark-value))
 
 (defn get-rolon
   [ark-value uuid]

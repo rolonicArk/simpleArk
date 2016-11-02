@@ -194,10 +194,6 @@
                                    properties
                                    (create-mi ark-value)))))
 
-(defn index-name-uuid
-  [ark-value]
-  (::index-name-uuid ark-value))
-
 (defn update-ark
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value

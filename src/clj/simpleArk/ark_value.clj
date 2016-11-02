@@ -25,7 +25,7 @@
 
 (defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                       make-rolon destroy-rolon update-properties update-ark
-                      get-latest-journal-entry-uuid
+                      latest-journal-entry-uuid
                       select-time selected-time create-mi])
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
@@ -43,7 +43,7 @@
 
 (defn get-latest-journal-entry-uuid
   [ark-value]
-  ((:get-latest-journal-entry-uuid ark-value) ark-value))
+  (:latest-journal-entry-uuid ark-value))
 
 (defn get-ark-db
   "returns the ark-db"

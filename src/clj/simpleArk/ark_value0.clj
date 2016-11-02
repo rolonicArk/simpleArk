@@ -5,10 +5,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn get-latest-journal-entry-uuid
-  [ark-value]
-  (::latest-journal-entry-uuid ark-value))
-
 (defn get-journal-entries
   [ark-value]
   (mapish/mi-sub (::journal-entries ark-value) nil nil <= (ark-value/get-selected-time ark-value)))
@@ -192,7 +188,7 @@
 (defn update-ark
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
-                      (assoc ::latest-journal-entry-uuid je-uuid)
+                      (assoc :latest-journal-entry-uuid je-uuid)
                       (ark-value/make-rolon je-uuid
                                             (create-mi
                                               ark-value
@@ -207,7 +203,7 @@
   [this-db]
   (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
-                             get-latest-journal-entry-uuid
+                             nil
                              select-time nil create-mi)
       (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)

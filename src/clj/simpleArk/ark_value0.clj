@@ -5,10 +5,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn get-journal-entries
-  [ark-value]
-  (mapish/mi-sub (::journal-entries ark-value) nil nil <= (ark-value/get-selected-time ark-value)))
-
 (defn get-indexes
   [ark-value]
   (::indexes ark-value))
@@ -22,9 +18,9 @@
   [ark-value rolon-uuid rolon]
   (cond
     (uuid/journal-entry-uuid? rolon-uuid)
-    (let [journal-entries (get ark-value ::journal-entries)
+    (let [journal-entries (ark-value/get-journal-entries ark-value)
           journal-entries (assoc journal-entries [rolon-uuid] rolon)]
-      (assoc ark-value ::journal-entries journal-entries))
+      (assoc ark-value :journal-entries journal-entries))
     (uuid/index-uuid? rolon-uuid)
     (let [indexes (get ark-value ::indexes)
           indexes (assoc indexes [rolon-uuid] rolon)]
@@ -142,9 +138,7 @@
         (key
           (first
             (rseq jes)))]
-    (-> ark-value
-        (assoc ::journal-entries jes)
-        (assoc :selected-time je-uuid))))
+    (assoc ark-value :selected-time je-uuid)))
 
 (defn get-changes-by-property
   ([rolon property-path]
@@ -193,11 +187,10 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark-value this-db get-journal-entries get-indexes get-random-rolons
+  (-> (ark-value/->Ark-value this-db get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
                              select-time create-mi)
       (ark-value/init-ark-value)
-      (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)
       (ark-value/ark-value-assoc-mapish ::random-rolons)))
 

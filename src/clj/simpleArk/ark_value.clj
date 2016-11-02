@@ -16,14 +16,15 @@
 
 (defn init-ark-value
   [ark-value]
-  ark-value)
+  (-> ark-value
+      (ark-value-assoc-mapish :journal-entries)))
 
 (defn create-ark
   [m]
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db get-journal-entries get-indexes get-random-rolons
+(defrecord Ark-value [this-db get-indexes get-random-rolons
                       make-rolon destroy-rolon update-properties update-ark
                       select-time create-mi])
 
@@ -54,9 +55,8 @@
   (:this-db ark-value))
 
 (defn get-journal-entries
-  "returns an MI of all the journal entry rolons"
   [ark-value]
-  ((:get-journal-entries ark-value) ark-value))
+  (mapish/mi-sub (:journal-entries ark-value) nil nil <= (get-selected-time ark-value)))
 
 (defn get-indexes
   "returns a sorted map of all the index rolons"

@@ -218,11 +218,10 @@
   (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
                              get-current-journal-entry-uuid
-                             select-time get-selected-time index-name-uuid create-mi)
+                             select-time get-selected-time create-mi)
       (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)
-      (ark-value/ark-value-assoc-mapish ::random-rolons)
-      (assoc ::index-name-uuid (uuid/index-uuid this-db :classifier/index.name))))
+      (ark-value/ark-value-assoc-mapish ::random-rolons)))
 
 (defn- build
   "returns an ark db"

@@ -30,7 +30,7 @@
 (defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                       make-rolon destroy-rolon update-properties update-ark
                       get-current-journal-entry-uuid
-                      select-time get-selected-time create-mi])
+                      select-time selected-time create-mi])
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 
@@ -43,7 +43,7 @@
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
   [ark-value]
-  ((:get-selected-time ark-value) ark-value))
+  (:selected-time ark-value))
 
 (defn get-ark-db
   "returns the ark-db"

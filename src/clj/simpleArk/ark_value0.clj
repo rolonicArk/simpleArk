@@ -156,12 +156,8 @@
             (rseq jes)))]
     (-> ark-value
         (assoc ::journal-entries jes)
-        (assoc ::selected-time je-uuid)
+        (assoc :selected-time je-uuid)
         (assoc ::active-journal-entry-uuid je-uuid))))
-
-(defn get-selected-time
-  [ark-value]
-  (::selected-time ark-value))
 
 (defn get-changes-by-property
   ([rolon property-path]
@@ -170,7 +166,7 @@
          pc (get changes-by-property property-path)]
      (if (nil? pc)
        nil
-       (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
+       (mapish/mi-sub pc nil nil <= (ark-value/get-selected-time ark-value)))))
   ([rolon]
    (::changes-by-property rolon)))
 
@@ -205,7 +201,7 @@
                                               [:classifier/transaction-name] transaction-name
                                               [:descriptor/transaction-argument] s))
                       (ark-value/eval-transaction transaction-name s))]
-    (if (::selected-time ark-value)
+    (if (:selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))
 
@@ -214,7 +210,7 @@
   (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
                              get-current-journal-entry-uuid
-                             select-time get-selected-time create-mi)
+                             select-time nil create-mi)
       (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)
       (ark-value/ark-value-assoc-mapish ::random-rolons)))

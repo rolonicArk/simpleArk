@@ -6,6 +6,14 @@
 
 (set! *warn-on-reflection* true)
 
+(defn create-mi
+  [ark-value & keyvals] (apply (:create-mi ark-value) ark-value keyvals))
+
+(defn ark-value-assoc-mapish
+  [ark-value key]
+  (let [mi (create-mi ark-value)]
+    (assoc ark-value key mi)))
+
 (defn create-ark
   [m]
   "returns a new ark"
@@ -26,9 +34,6 @@
                       create-mi])
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
-
-(defn create-mi
-  [ark-value & keyvals] (apply (:create-mi ark-value) ark-value keyvals))
 
 (defn select-time
   "Sets the ark to the time of the journal entry uuid,

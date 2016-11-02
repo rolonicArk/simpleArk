@@ -19,17 +19,13 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defn get-current-journal-entry-uuid
-  [ark-value]
-  ((:get-current-journal-entry-uuid ark-value) ark-value))
-
 (defn index-name-uuid
   [ark-value]
   (uuid/index-uuid (:this-db ark-value) :classifier/index.name))
 
 (defrecord Ark-value [this-db get-rolon get-journal-entries get-indexes get-random-rolons
                       make-rolon destroy-rolon update-properties update-ark
-                      get-current-journal-entry-uuid
+                      get-latest-journal-entry-uuid
                       select-time selected-time create-mi])
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
@@ -44,6 +40,10 @@
   "returns the journal entry uuid of the selected time"
   [ark-value]
   (:selected-time ark-value))
+
+(defn get-latest-journal-entry-uuid
+  [ark-value]
+  ((:get-latest-journal-entry-uuid ark-value) ark-value))
 
 (defn get-ark-db
   "returns the ark-db"
@@ -273,7 +273,7 @@
 
 (defmethod eval-transaction :ark/update-rolon-transaction!
   [ark-value n s]
-  (let [je-uuid (get-current-journal-entry-uuid ark-value)
+  (let [je-uuid (get-latest-journal-entry-uuid ark-value)
         [rolon-uuid je-properties-map rolon-properties-map] (read-string s)
         je-properties (create-mi ark-value [:classifier/headline] (str "update a rolon with " s))
         je-properties (into je-properties je-properties-map)
@@ -284,7 +284,7 @@
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value n s]
-  (let [je-uuid (get-current-journal-entry-uuid ark-value)
+  (let [je-uuid (get-latest-journal-entry-uuid ark-value)
         [uuid je-properties-map] (read-string s)
         je-properties (create-mi ark-value [:classifier/headline] (str "destroy rolon " s))
         je-properties (into je-properties je-properties-map)]

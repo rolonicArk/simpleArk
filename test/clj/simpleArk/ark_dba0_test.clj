@@ -18,7 +18,7 @@
 (defmethod ark-value/eval-transaction ::hello-world!
   [ark-value n s]
   (println "Hello," s)
-  (let [je-uuid (ark-value/get-current-journal-entry-uuid ark-value)]
+  (let [je-uuid (ark-value/get-latest-journal-entry-uuid ark-value)]
     (ark-value/update-property ark-value je-uuid [:classifier/headline] "Just for fun!")))
 
 (defn ark-dba0-test

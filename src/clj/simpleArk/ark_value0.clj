@@ -5,9 +5,9 @@
 
 (set! *warn-on-reflection* true)
 
-(defn get-current-journal-entry-uuid
+(defn get-latest-journal-entry-uuid
   [ark-value]
-  (::active-journal-entry-uuid ark-value))
+  (::latest-journal-entry-uuid ark-value))
 
 (defn get-journal-entries
   [ark-value]
@@ -102,7 +102,7 @@
 (defn je-modified
   "track the rolons modified by the journal entry"
   [ark-value rolon-uuid]
-  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
+  (let [journal-entry-uuid (::latest-journal-entry-uuid ark-value)
         ark-value (update-property- ark-value
                                     journal-entry-uuid
                                     journal-entry-uuid
@@ -116,7 +116,7 @@
 
 (defn destroy-rolon
   [ark-value rolon-uuid]
-  (let [je-uuid (::active-journal-entry-uuid ark-value)
+  (let [je-uuid (::latest-journal-entry-uuid ark-value)
         rolon (ark-value/get-rolon ark-value rolon-uuid)
         old-property-values (ark-value/get-property-values ark-value rolon-uuid)
         property-values (reduce #(assoc %1 (key %2) nil)
@@ -137,7 +137,7 @@
 
 (defn update-properties
   [ark-value rolon-uuid properties]
-  (let [journal-entry-uuid (::active-journal-entry-uuid ark-value)
+  (let [journal-entry-uuid (::latest-journal-entry-uuid ark-value)
         ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
     (je-modified ark-value rolon-uuid)))
 
@@ -157,7 +157,7 @@
     (-> ark-value
         (assoc ::journal-entries jes)
         (assoc :selected-time je-uuid)
-        (assoc ::active-journal-entry-uuid je-uuid))))
+        (assoc ::latest-journal-entry-uuid je-uuid))))
 
 (defn get-changes-by-property
   ([rolon property-path]
@@ -174,7 +174,7 @@
   [ark-value rolon-uuid properties]
   (if (ark-value/get-rolon ark-value rolon-uuid)
     (update-properties ark-value rolon-uuid properties)
-    (let [je-uuid (::active-journal-entry-uuid ark-value)
+    (let [je-uuid (::latest-journal-entry-uuid ark-value)
           rolon (ark-value/->Rolon rolon-uuid
                                    get-changes-by-property
                                    ark-value)
@@ -194,7 +194,7 @@
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
                       (assoc ::latest-journal-entry-uuid je-uuid)
-                      (assoc ::active-journal-entry-uuid je-uuid)
+                      (assoc ::latest-journal-entry-uuid je-uuid)
                       (ark-value/make-rolon je-uuid
                                             (create-mi
                                               ark-value
@@ -209,7 +209,7 @@
   [this-db]
   (-> (ark-value/->Ark-value this-db get-rolon get-journal-entries get-indexes get-random-rolons
                              make-rolon destroy-rolon update-properties update-ark
-                             get-current-journal-entry-uuid
+                             get-latest-journal-entry-uuid
                              select-time nil create-mi)
       (ark-value/ark-value-assoc-mapish ::journal-entries)
       (ark-value/ark-value-assoc-mapish ::indexes)

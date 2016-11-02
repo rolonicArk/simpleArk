@@ -28,11 +28,11 @@
 
 (defrecord Ark-value [this-db make-rolon destroy-rolon update-properties update-ark create-mi])
 
+(defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
+
 (defn index-name-uuid
   [ark-value]
   (uuid/index-uuid (:this-db ark-value) :classifier/index.name))
-
-(defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
@@ -139,16 +139,6 @@
                                           je-uuid
                                           new-value)))))
 
-(defn make-rolon
-  [ark-value rolon-uuid properties]
-  (mapish/validate-property-paths properties)
-  ((:make-rolon ark-value) ark-value rolon-uuid properties))
-
-(defn destroy-rolon
-  "deletes all the classifiers of a rolon"
-  [ark-value rolon-uuid]
-  ((:destroy-rolon ark-value) ark-value rolon-uuid))
-
 (defn update-properties
   [ark-value rolon-uuid properties]
   (mapish/validate-property-paths properties)
@@ -159,6 +149,16 @@
   (mapish/validate-property-path property-path)
   (update-properties ark-value rolon-uuid (create-mi ark-value property-path property-value)))
 
+(defn make-rolon
+  [ark-value rolon-uuid properties]
+  (mapish/validate-property-paths properties)
+  ((:make-rolon ark-value) ark-value rolon-uuid properties))
+
+(defn destroy-rolon
+  "deletes all the classifiers of a rolon"
+  [ark-value rolon-uuid]
+  ((:destroy-rolon ark-value) ark-value rolon-uuid))
+
 (defn get-rolon-uuid
   "returns the uuid of the rolon"
   [rolon]
@@ -167,11 +167,9 @@
 (defn get-changes-by-property
   ([ark-value rolon-uuid property-path]
    (mapish/validate-property-path property-path)
-   (let [rolon (get-rolon ark-value rolon-uuid)]
-     ((:get-changes-by-property rolon) rolon property-path)))
+   ((:get-changes-by-property (get-rolon ark-value rolon-uuid)) ark-value rolon-uuid property-path))
   ([ark-value rolon-uuid]
-   (let [rolon (get-rolon ark-value rolon-uuid)]
-     ((:get-changes-by-property rolon) rolon))))
+   ((:get-changes-by-property (get-rolon ark-value rolon-uuid)) ark-value rolon-uuid)))
 
 (defn get-property-value
   [ark-value rolon-uuid property-path]

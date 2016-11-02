@@ -26,20 +26,13 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db make-rolon destroy-rolon update-properties update-ark
-                      select-time create-mi])
+(defrecord Ark-value [this-db make-rolon destroy-rolon update-properties update-ark create-mi])
 
 (defn index-name-uuid
   [ark-value]
   (uuid/index-uuid (:this-db ark-value) :classifier/index.name))
 
 (defrecord Rolon [rolon-uuid get-changes-by-property ark-value])
-
-(defn select-time
-  "Sets the ark to the time of the journal entry uuid,
-  returns the updated ark-value"
-  [ark-value je-uuid]
-  ((:select-time ark-value) ark-value je-uuid))
 
 (defn get-selected-time
   "returns the journal entry uuid of the selected time"
@@ -67,6 +60,21 @@
   [ark-value]
   (:random-rolons ark-value))
 
+(defn select-time
+  [ark-value je-uuid]
+  (let [jes
+        (mapish/mi-sub
+          (get-journal-entries ark-value)
+          nil
+          nil
+          <=
+          [je-uuid])
+        je-uuid
+        (key
+          (first
+            (rseq jes)))]
+    (assoc ark-value :selected-time je-uuid)))
+
 (defn get-rolon
   [ark-value uuid]
   (cond
@@ -86,6 +94,32 @@
 (defmethod print-method Ark-value
   [ark writer]
   (print-simple (ark-str ark) writer))
+
+(defn update-property-changes
+  [ark-value property-changes je-uuid new-value]
+  (let [property-changes (if (some? property-changes)
+                           property-changes
+                           (create-mi ark-value))
+        first-entry (first (seq property-changes))]
+    (if (or (nil? first-entry) (not= new-value (val first-entry)))
+      (assoc property-changes [je-uuid] new-value)
+      property-changes)))
+
+(defn update-changes-by-property
+  ([ark-value changes-by-property je-uuid changed-properties]
+   (reduce #(update-changes-by-property ark-value %1 je-uuid (key %2) (val %2))
+           changes-by-property
+           (seq changed-properties)))
+  ([ark-value changes-by-property je-uuid property-name new-value]
+   (let [changes-by-property (if (some? changes-by-property)
+                               changes-by-property
+                               (create-mi ark-value))]
+     (assoc changes-by-property
+       property-name
+       (update-property-changes ark-value
+                                          (get changes-by-property property-name)
+                                          je-uuid
+                                          new-value)))))
 
 (defn make-rolon
   [ark-value rolon-uuid properties]

@@ -113,31 +113,27 @@
       (assoc ark-value :random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
-(defn update-property-changes
-  [ark-value property-changes je-uuid new-value]
-  (let [property-changes (if (some? property-changes)
-                           property-changes
-                           (create-mi ark-value))
-        first-entry (first (seq property-changes))]
-    (if (or (nil? first-entry) (not= new-value (val first-entry)))
-      (assoc property-changes [je-uuid] new-value)
-      property-changes)))
+(defn update-changes-for-property
+  [ark-value changes-by-property je-uuid property-name new-value]
+  (let [changes-by-property (if (some? changes-by-property)
+                              changes-by-property
+                              (create-mi ark-value))]
+    (assoc changes-by-property
+      property-name
+      (let [property-changes (get changes-by-property property-name)
+            property-changes (if (some? property-changes)
+                               property-changes
+                               (create-mi ark-value))
+            first-entry (first (seq property-changes))]
+        (if (or (nil? first-entry) (not= new-value (val first-entry)))
+          (assoc property-changes [je-uuid] new-value)
+          property-changes)))))
 
 (defn update-changes-by-property
-  ([ark-value changes-by-property je-uuid changed-properties]
-   (reduce #(update-changes-by-property ark-value %1 je-uuid (key %2) (val %2))
-           changes-by-property
-           (seq changed-properties)))
-  ([ark-value changes-by-property je-uuid property-name new-value]
-   (let [changes-by-property (if (some? changes-by-property)
-                               changes-by-property
-                               (create-mi ark-value))]
-     (assoc changes-by-property
-       property-name
-       (update-property-changes ark-value
-                                          (get changes-by-property property-name)
-                                          je-uuid
-                                          new-value)))))
+  [ark-value changes-by-property je-uuid changed-properties]
+  (reduce #(update-changes-for-property ark-value %1 je-uuid (key %2) (val %2))
+          changes-by-property
+          (seq changed-properties)))
 
 (defn update-properties
   [ark-value rolon-uuid properties]

@@ -12,9 +12,9 @@
 (deftest uuid0
   (def je-uuid0 (journal-entry-uuid ark-db))
   (def random-uuid0 (random-uuid ark-db))
-  (def index-uuid0 (index-uuid ark-db :classifier/z))
+  (def index-uuid0 (index-uuid ark-db :index/z))
   (is (thrown? Exception (index-uuid ark-db 1)))
-  (is (thrown? Exception (index-uuid ark-db :descriptor/y)))
+  (is (thrown? Exception (index-uuid ark-db :content/y)))
 
   (is (journal-entry-uuid? je-uuid0))
   (is (not (journal-entry-uuid? 42)))

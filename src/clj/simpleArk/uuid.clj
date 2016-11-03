@@ -12,8 +12,8 @@
   ((:uuid/random-uuid ark-db) ark-db))
 
 (defn index-uuid
-  [ark-db classifier]
-  ((:uuid/index-uuid ark-db) ark-db classifier))
+  [ark-db index]
+  ((:uuid/index-uuid ark-db) ark-db index))
 
 (defn lsw
   [uuid]

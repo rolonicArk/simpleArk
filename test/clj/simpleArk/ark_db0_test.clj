@@ -17,7 +17,7 @@
   [ark-value n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-latest-journal-entry-uuid ark-value)]
-    (ark-value/update-property ark-value je-uuid [:classifier/headline] "Just for fun!")))
+    (ark-value/update-property ark-value je-uuid [:index/headline] "Just for fun!")))
 
 (defn test0
   "tests that even work with impl0"
@@ -39,11 +39,11 @@
       :ark/update-rolon-transaction!
       (prn-str
         [bob-uuid
-         {[:classifier/headline] "make bob"}
-         {[:descriptor/age] 8
-          [:classifier/name] "Bob"
-          [:descriptor/brothers "John"] true
-          [:descriptor/brothers "Jeff"] true}])))
+         {[:index/headline] "make bob"}
+         {[:content/age] 8
+          [:index/name] "Bob"
+          [:content/brothers "John"] true
+          [:content/brothers "Jeff"] true}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (println :modifying-journal-entries (seq (ark-value/get-modifying-journal-entry-uuids ark-value bob-uuid)))
@@ -55,7 +55,7 @@
              (seq
                (mapish/mi-sub
                  (ark-value/get-property-values ark-value bob-uuid)
-                 [:descriptor/brothers]))))
+                 [:content/brothers]))))
 
   (println)
   (println ">>>>>>>>>>>> 4 updates to bob")
@@ -65,32 +65,32 @@
     :ark/update-rolon-transaction!
     (prn-str
       [bob-uuid
-       {[:classifier/headline] "bob update 1"}
-       {[:classifier/headline] "kissing is gross!"}]))
+       {[:index/headline] "bob update 1"}
+       {[:index/headline] "kissing is gross!"}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction!
     ark-db
     :ark/update-rolon-transaction!
     (prn-str
       [bob-uuid
-       {[:classifier/headline] "bob update 2"}
-       {[:descriptor/age] 9}]))
+       {[:index/headline] "bob update 2"}
+       {[:content/age] 9}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction!
     ark-db
     :ark/update-rolon-transaction!
     (prn-str
       [bob-uuid
-       {[:classifier/headline] "bob update 3"}
-       {[:classifier/headline] "who likes girls?"}]))
+       {[:index/headline] "bob update 3"}
+       {[:index/headline] "who likes girls?"}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (ark-db/process-transaction!
     ark-db
     :ark/update-rolon-transaction!
     (prn-str
       [bob-uuid
-       {[:classifier/headline] "bob update 4"}
-       {[:classifier/headline] "when do I get my own mobile!"}]))
+       {[:index/headline] "bob update 4"}
+       {[:index/headline] "when do I get my own mobile!"}]))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
@@ -103,10 +103,10 @@
       :ark/update-rolon-transaction!
       (prn-str
         [sam-uuid
-         {[:classifier/headline] "make sam"}
-         {[:descriptor/age] 10
-          [:classifier/name] "Sam"
-          [:classifier/headline] "I hate green eggs and ham!"}])))
+         {[:index/headline] "make sam"}
+         {[:content/age] 10
+          [:index/name] "Sam"
+          [:index/headline] "I hate green eggs and ham!"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
 
   (println)
@@ -118,7 +118,7 @@
       :ark/destroy-rolon-transaction!
       (prn-str
         [bob-uuid
-         {[:classifier/headline] "destroy bob"}])))
+         {[:index/headline] "destroy bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (println :bob-properties (seq (ark-value/get-property-values ark-value bob-uuid)))
@@ -140,7 +140,7 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep (fn [x] (println
-                           (ark-value/get-property-value ark-value (first (key x)) [:classifier/headline])))
+                           (ark-value/get-property-value ark-value (first (key x)) [:index/headline])))
                  (seq (ark-value/get-journal-entries ark-value)))))
 
   (println)
@@ -148,10 +148,10 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
         headline-index-uuid (ark-value/get-index-uuid ark-value "headline")
-        descriptor-index (ark-value/get-descriptor-index
+        content-index (ark-value/get-content-index
                            ark-value
                            headline-index-uuid)]
-    (doall (map #(println (first %)) descriptor-index)))
+    (doall (map #(println (first %)) content-index)))
 
   (println)
   (println ">>>>>>>>>>>> bob's headlines over time")
@@ -159,10 +159,10 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep #(println (val %)
                            "-"
-                           (ark-value/get-property-value ark-value (first (key %)) [:classifier/headline]))
+                           (ark-value/get-property-value ark-value (first (key %)) [:index/headline]))
                  (rseq (ark-value/get-changes-by-property ark-value
                                                           bob-uuid
-                                                          [:classifier/headline]))))))
+                                                          [:index/headline]))))))
 
 (deftest arks
   (println "impl0 tests")

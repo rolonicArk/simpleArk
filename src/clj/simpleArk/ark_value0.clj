@@ -16,8 +16,8 @@
                       (ark-value/make-rolon je-uuid
                                             (create-mi
                                               ark-value
-                                              [:classifier/transaction-name] transaction-name
-                                              [:descriptor/transaction-argument] s))
+                                              [:index/transaction-name] transaction-name
+                                              [:content/transaction-argument] s))
                       (ark-value/eval-transaction transaction-name s))]
     (if (:selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))

@@ -3,24 +3,39 @@
 
 (set! *warn-on-reflection* true)
 
-(defn classifier?
+(defn index?
   [kw]
   (and (keyword? kw)
-       (= 0 (compare "classifier" (namespace kw)))))
+       (= 0 (compare "index" (namespace kw)))))
 
-(defn descriptor?
+(defn bi-rel?
   [kw]
   (and (keyword? kw)
-       (= 0 (compare "descriptor" (namespace kw)))))
+       (= 0 (compare "bi-rel" (namespace kw)))))
+
+(defn rel?
+  [kw]
+  (and (keyword? kw)
+       (= 0 (compare "rel" (namespace kw)))))
+
+(defn inv-rel?
+  [kw]
+  (and (keyword? kw)
+       (= 0 (compare "inv-rel" (namespace kw)))))
+
+(defn content?
+  [kw]
+  (and (keyword? kw)
+       (= 0 (compare "content" (namespace kw)))))
 
 (defn validate-property-path
   [property-path]
   (let [kw (first property-path)]
-    (if (classifier? kw)
+    (if (or (index? kw) (bi-rel? kw) (rel? kw) (inv-rel? kw))
       (if (< 1 (count  property-path))
         (throw (Exception. (str property-path " has too many elements for a classifier"))))
-      (if (not (descriptor? kw))
-        (throw (Exception. (str property-path " is neither a classifier nor a keyword")))))))
+      (if (not (content? kw))
+        (throw (Exception. (str property-path " is neither a classifier nor a descriptor")))))))
 
 (defn validate-property-paths
   [properties]

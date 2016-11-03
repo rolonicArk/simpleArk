@@ -12,10 +12,10 @@
   (clj-uuid/v4))
 
 (defn index-uuid
-  [_ classifier]
-  (if (not (mapish/classifier? classifier))
-    (throw (Exception. (str classifier " is not a classifier keyword"))))
-  (clj-uuid/v5 clj-uuid/+null+ (name classifier)))
+  [_ index]
+  (if (not (mapish/index? index))
+    (throw (Exception. (str index " is not an index keyword"))))
+  (clj-uuid/v5 clj-uuid/+null+ (name index)))
 
 (defn- build
   [m]

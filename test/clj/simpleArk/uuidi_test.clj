@@ -11,7 +11,7 @@
                 {}))
   (def je-uuid0 (journal-entry-uuid ark-db))
   (def random-uuid0 (random-uuid ark-db))
-  (def index-uuid0 (index-uuid ark-db :classifier/z))
+  (def index-uuid0 (index-uuid ark-db :index/z))
 
   (is (journal-entry-uuid? je-uuid0))
   (is (random-uuid? random-uuid0))

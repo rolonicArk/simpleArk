@@ -26,7 +26,7 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db make-rolon destroy-rolon update-properties update-ark create-mi])
+(defrecord Ark-value [this-db make-rolon destroy-rolon update-ark create-mi])
 
 (defrecord Rolon [rolon-uuid])
 
@@ -155,16 +155,6 @@
                   (seq properties))]
     (assoc rolon :changes-by-property changes)))
 
-(defn update-properties
-  [ark-value rolon-uuid properties]
-  (mapish/validate-property-paths properties)
-  ((:update-properties ark-value) ark-value rolon-uuid properties))
-
-(defn update-property
-  [ark-value rolon-uuid property-path property-value]
-  (mapish/validate-property-path property-path)
-  (update-properties ark-value rolon-uuid (create-mi ark-value property-path property-value)))
-
 (defn make-rolon
   [ark-value rolon-uuid properties]
   (mapish/validate-property-paths properties)
@@ -281,6 +271,28 @@
              (get-property-values ark-value index-uuid)
              [:descriptor/index])))))
 
+(defn get-updated-rolon-uuids
+  "returns a lazy seq of the uuids of the rolons updated by a journal-entry rolon"
+  [ark-value je-uuid]
+  (map
+    (fn [e]
+      ((key e) 1))
+    (seq (mapish/mi-sub (get-property-values ark-value je-uuid) [:descriptor/modified]))))
+
+(declare update-properties- je-modified)
+
+(defn update-properties
+  [ark-value rolon-uuid properties]
+  (mapish/validate-property-paths properties)
+  (let [journal-entry-uuid (get-latest-journal-entry-uuid ark-value)
+        ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
+    (je-modified ark-value rolon-uuid)))
+
+(defn update-property
+  [ark-value rolon-uuid property-path property-value]
+  (mapish/validate-property-path property-path)
+  (update-properties ark-value rolon-uuid (create-mi ark-value property-path property-value)))
+
 (defn make-index-rolon-
   [ark-value classifier-keyword value uuid adding]
   (let [iuuid (uuid/index-uuid (get-ark-db ark-value) classifier-keyword)
@@ -344,14 +356,6 @@
                       rolon-uuid
                       [:descriptor/journal-entry journal-entry-uuid]
                       true)))
-
-(defn get-updated-rolon-uuids
-  "returns a lazy seq of the uuids of the rolons updated by a journal-entry rolon"
-  [ark-value je-uuid]
-  (map
-    (fn [e]
-      ((key e) 1))
-    (seq (mapish/mi-sub (get-property-values ark-value je-uuid) [:descriptor/modified]))))
 
 (defn get-modifying-journal-entry-uuids
   "returns a lazy seq of the uuids of the journal entries that updated a rolon"

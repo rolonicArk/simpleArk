@@ -273,7 +273,7 @@
 
 (defn update-properties
   [ark-value rolon-uuid properties]
-  (mapish/validate-property-paths properties)
+  (mapish/validate-properties properties)
   (let [journal-entry-uuid (get-latest-journal-entry-uuid ark-value)
         ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
     (je-modified ark-value rolon-uuid)))
@@ -285,7 +285,7 @@
 
 (defn make-rolon
   [ark-value rolon-uuid properties]
-  (mapish/validate-property-paths properties)
+  (mapish/validate-properties properties)
   (let [ark-value
         (if (get-rolon ark-value rolon-uuid)
           ark-value

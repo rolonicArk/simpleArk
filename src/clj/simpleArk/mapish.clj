@@ -37,10 +37,18 @@
       (if (not (content? kw))
         (throw (Exception. (str property-path " is neither a classifier nor a descriptor")))))))
 
-(defn validate-property-paths
+(defn validate-properties
   [properties]
-  (reduce (fn [_ p] (validate-property-path p))
-          nil (keys (seq properties))))
+  (reduce (fn [_ e]
+            (let [path (key e)
+                  kw (first path)
+                  v (val e)]
+              (validate-property-path path)
+              (if (and (or (bi-rel? kw) (rel? kw) (inv-rel? kw))
+                       (not (uuid? v)))
+                (throw (Exception. (str path " is not assigned a UUID"))))))
+          nil
+          (seq properties)))
 
 (defprotocol MI
   (mi-sub [this prefix] [this start-test start-key end-test end-key]))

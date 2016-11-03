@@ -43,11 +43,11 @@
   (is (not (content? :x)))
   (is (not (content? ":content/x")))
 
-  (validate-property-paths (new-MI-map
+  (validate-properties (new-MI-map
                                     [:index/x] 1
                                     [:content/y] "fred"))
-  (is (thrown? Exception (validate-property-paths (new-MI-map :index/x 2))))
-  (is (thrown? Exception (validate-property-paths (new-MI-map [1] 2))))
+  (is (thrown? Exception (validate-properties (new-MI-map :index/x 2))))
+  (is (thrown? Exception (validate-properties (new-MI-map [1] 2))))
 
   (println (sorted-set-by vec-comp a b c d e f))
   (println sm0)

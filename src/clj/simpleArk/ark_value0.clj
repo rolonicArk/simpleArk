@@ -48,16 +48,6 @@
         ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
     (je-modified ark-value rolon-uuid)))
 
-(defn get-changes-by-property
-  ([ark-value rolon-uuid property-path]
-   (let [changes-by-property (get-changes-by-property ark-value rolon-uuid)
-         pc (get changes-by-property property-path)]
-     (if (nil? pc)
-       nil
-       (mapish/mi-sub pc nil nil <= (ark-value/get-selected-time ark-value)))))
-  ([ark-value rolon-uuid]
-   (:changes-by-property (ark-value/get-rolon ark-value rolon-uuid))))
-
 (defn destroy-rolon
   [ark-value rolon-uuid]
   (let [old-property-values (ark-value/get-property-values ark-value rolon-uuid)
@@ -82,7 +72,7 @@
           (ark-value/assoc-rolon
             ark-value
             rolon-uuid
-            (ark-value/->Rolon rolon-uuid get-changes-by-property)))]
+            (ark-value/->Rolon rolon-uuid)))]
     (update-properties ark-value rolon-uuid properties)))
 
 (defn update-ark

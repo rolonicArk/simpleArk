@@ -28,7 +28,7 @@
 
 (defrecord Ark-value [this-db make-rolon destroy-rolon update-properties update-ark create-mi])
 
-(defrecord Rolon [rolon-uuid get-changes-by-property])
+(defrecord Rolon [rolon-uuid])
 
 (defn index-name-uuid
   [ark-value]
@@ -85,10 +85,13 @@
 
 (defn get-changes-by-property
   ([ark-value rolon-uuid property-path]
-   (mapish/validate-property-path property-path)
-   ((:get-changes-by-property (get-rolon ark-value rolon-uuid)) ark-value rolon-uuid property-path))
+   (let [changes-by-property (get-changes-by-property ark-value rolon-uuid)
+         pc (get changes-by-property property-path)]
+     (if (nil? pc)
+       nil
+       (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
   ([ark-value rolon-uuid]
-   ((:get-changes-by-property (get-rolon ark-value rolon-uuid)) ark-value rolon-uuid)))
+   (:changes-by-property (get-rolon ark-value rolon-uuid))))
 
 (defn get-rolon-uuid
   "returns the uuid of the rolon"

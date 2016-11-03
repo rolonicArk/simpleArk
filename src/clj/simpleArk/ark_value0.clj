@@ -9,23 +9,16 @@
   [ark-value & keyvals]
   (apply mapish/new-MI-map keyvals))
 
-(defn update-property-
-  [ark-value journal-entry-uuid rolon-uuid property-path property-value]
-  (ark-value/update-properties- ark-value
-                      journal-entry-uuid
-                      rolon-uuid
-                      (create-mi ark-value property-path property-value)))
-
 (defn je-modified
   "track the rolons modified by the journal entry"
   [ark-value rolon-uuid]
   (let [journal-entry-uuid (ark-value/get-latest-journal-entry-uuid ark-value)
-        ark-value (update-property- ark-value
+        ark-value (ark-value/update-property- ark-value
                                     journal-entry-uuid
                                     journal-entry-uuid
                                     [:descriptor/modified rolon-uuid]
                                     true)]
-    (update-property- ark-value
+    (ark-value/update-property- ark-value
                       journal-entry-uuid
                       rolon-uuid
                       [:descriptor/journal-entry journal-entry-uuid]

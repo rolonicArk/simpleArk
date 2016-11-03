@@ -155,12 +155,6 @@
                   (seq properties))]
     (assoc rolon :changes-by-property changes)))
 
-(defn update-changes-by-property
-  [ark-value changes-by-property je-uuid changed-properties]
-  (reduce #(update-changes-for-property ark-value %1 je-uuid (key %2) (val %2))
-          changes-by-property
-          (seq changed-properties)))
-
 (defn update-properties
   [ark-value rolon-uuid properties]
   (mapish/validate-property-paths properties)
@@ -328,6 +322,13 @@
         rolon (get-rolon ark-value rolon-uuid)
         rolon (update-rolon-properties ark-value rolon journal-entry-uuid properties)]
     (assoc-rolon ark-value rolon-uuid rolon)))
+
+(defn update-property-
+  [ark-value journal-entry-uuid rolon-uuid property-path property-value]
+  (update-properties- ark-value
+                                journal-entry-uuid
+                                rolon-uuid
+                                (create-mi ark-value property-path property-value)))
 
 (defn get-updated-rolon-uuids
   "returns a lazy seq of the uuids of the rolons updated by a journal-entry rolon"

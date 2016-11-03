@@ -9,20 +9,9 @@
   [ark-value & keyvals]
   (apply mapish/new-MI-map keyvals))
 
-(defn update-properties-
-  [ark-value journal-entry-uuid rolon-uuid properties]
-  (let [property-values (ark-value/get-property-values ark-value rolon-uuid)
-        ark-value (ark-value/make-index-rolon ark-value
-                                              rolon-uuid
-                                              properties
-                                              property-values)
-        rolon (ark-value/get-rolon ark-value rolon-uuid)
-        rolon (ark-value/update-rolon-properties ark-value rolon journal-entry-uuid properties)]
-    (ark-value/assoc-rolon ark-value rolon-uuid rolon)))
-
 (defn update-property-
   [ark-value journal-entry-uuid rolon-uuid property-path property-value]
-  (update-properties- ark-value
+  (ark-value/update-properties- ark-value
                       journal-entry-uuid
                       rolon-uuid
                       (create-mi ark-value property-path property-value)))
@@ -45,7 +34,7 @@
 (defn update-properties
   [ark-value rolon-uuid properties]
   (let [journal-entry-uuid (ark-value/get-latest-journal-entry-uuid ark-value)
-        ark-value (update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
+        ark-value (ark-value/update-properties- ark-value journal-entry-uuid rolon-uuid properties)]
     (je-modified ark-value rolon-uuid)))
 
 (defn destroy-rolon

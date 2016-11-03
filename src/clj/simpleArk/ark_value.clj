@@ -318,6 +318,17 @@
             ark-value)
           ark-value (seq properties)))
 
+(defn update-properties-
+  [ark-value journal-entry-uuid rolon-uuid properties]
+  (let [property-values (get-property-values ark-value rolon-uuid)
+        ark-value (make-index-rolon ark-value
+                                              rolon-uuid
+                                              properties
+                                              property-values)
+        rolon (get-rolon ark-value rolon-uuid)
+        rolon (update-rolon-properties ark-value rolon journal-entry-uuid properties)]
+    (assoc-rolon ark-value rolon-uuid rolon)))
+
 (defn get-updated-rolon-uuids
   "returns a lazy seq of the uuids of the rolons updated by a journal-entry rolon"
   [ark-value je-uuid]

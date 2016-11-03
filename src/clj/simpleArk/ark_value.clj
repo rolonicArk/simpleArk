@@ -26,7 +26,7 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db make-rolon update-ark create-mi])
+(defrecord Ark-value [this-db update-ark create-mi])
 
 (defrecord Rolon [rolon-uuid])
 
@@ -155,11 +155,6 @@
                   (seq properties))]
     (assoc rolon :changes-by-property changes)))
 
-(defn make-rolon
-  [ark-value rolon-uuid properties]
-  (mapish/validate-property-paths properties)
-  ((:make-rolon ark-value) ark-value rolon-uuid properties))
-
 (defn get-property-value
   [ark-value rolon-uuid property-path]
   (mapish/validate-property-path property-path)
@@ -287,6 +282,18 @@
   [ark-value rolon-uuid property-path property-value]
   (mapish/validate-property-path property-path)
   (update-properties ark-value rolon-uuid (create-mi ark-value property-path property-value)))
+
+(defn make-rolon
+  [ark-value rolon-uuid properties]
+  (mapish/validate-property-paths properties)
+  (let [ark-value
+        (if (get-rolon ark-value rolon-uuid)
+          ark-value
+          (assoc-rolon
+            ark-value
+            rolon-uuid
+            (->Rolon rolon-uuid)))]
+    (update-properties ark-value rolon-uuid properties)))
 
 (defn make-index-rolon-
   [ark-value classifier-keyword value uuid adding]

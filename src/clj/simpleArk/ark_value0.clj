@@ -9,17 +9,6 @@
   [ark-value & keyvals]
   (apply mapish/new-MI-map keyvals))
 
-(defn make-rolon
-  [ark-value rolon-uuid properties]
-  (let [ark-value
-        (if (ark-value/get-rolon ark-value rolon-uuid)
-          ark-value
-          (ark-value/assoc-rolon
-            ark-value
-            rolon-uuid
-            (ark-value/->Rolon rolon-uuid)))]
-    (ark-value/update-properties ark-value rolon-uuid properties)))
-
 (defn update-ark
   [ark-value je-uuid transaction-name s]
   (let [ark-value (-> ark-value
@@ -36,7 +25,7 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark-value this-db make-rolon update-ark create-mi)
+  (-> (ark-value/->Ark-value this-db update-ark create-mi)
       (ark-value/init-ark-value)))
 
 (defn- build

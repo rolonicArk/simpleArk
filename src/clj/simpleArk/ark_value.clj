@@ -255,8 +255,8 @@
     (filter
       #(some? (val %))
       (seq (mapish/mi-sub
-        (get-property-values ark-value index-uuid)
-        [:descriptor/index value])))))
+             (get-property-values ark-value index-uuid)
+             [:descriptor/index value])))))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
@@ -274,12 +274,12 @@
   (map
     (fn [e]
       (let [v (key e)]
-      [(v 1) (v 2)]))
+        [(v 1) (v 2)]))
     (filter
       #(some? (val %))
       (seq (mapish/mi-sub
-                       (get-property-values ark-value index-uuid)
-                       [:descriptor/index])))))
+             (get-property-values ark-value index-uuid)
+             [:descriptor/index])))))
 
 (defn make-index-rolon-
   [ark-value classifier-keyword value uuid adding]
@@ -316,9 +316,9 @@
   [ark-value journal-entry-uuid rolon-uuid properties]
   (let [property-values (get-property-values ark-value rolon-uuid)
         ark-value (make-index-rolon ark-value
-                                              rolon-uuid
-                                              properties
-                                              property-values)
+                                    rolon-uuid
+                                    properties
+                                    property-values)
         rolon (get-rolon ark-value rolon-uuid)
         rolon (update-rolon-properties ark-value rolon journal-entry-uuid properties)]
     (assoc-rolon ark-value rolon-uuid rolon)))
@@ -326,9 +326,24 @@
 (defn update-property-
   [ark-value journal-entry-uuid rolon-uuid property-path property-value]
   (update-properties- ark-value
-                                journal-entry-uuid
-                                rolon-uuid
-                                (create-mi ark-value property-path property-value)))
+                      journal-entry-uuid
+                      rolon-uuid
+                      (create-mi ark-value property-path property-value)))
+
+(defn je-modified
+  "track the rolons modified by the journal entry"
+  [ark-value rolon-uuid]
+  (let [journal-entry-uuid (get-latest-journal-entry-uuid ark-value)
+        ark-value (update-property- ark-value
+                                    journal-entry-uuid
+                                    journal-entry-uuid
+                                    [:descriptor/modified rolon-uuid]
+                                    true)]
+    (update-property- ark-value
+                      journal-entry-uuid
+                      rolon-uuid
+                      [:descriptor/journal-entry journal-entry-uuid]
+                      true)))
 
 (defn get-updated-rolon-uuids
   "returns a lazy seq of the uuids of the rolons updated by a journal-entry rolon"

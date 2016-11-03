@@ -26,7 +26,7 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db make-rolon destroy-rolon update-ark create-mi])
+(defrecord Ark-value [this-db make-rolon update-ark create-mi])
 
 (defrecord Rolon [rolon-uuid])
 
@@ -159,11 +159,6 @@
   [ark-value rolon-uuid properties]
   (mapish/validate-property-paths properties)
   ((:make-rolon ark-value) ark-value rolon-uuid properties))
-
-(defn destroy-rolon
-  "deletes all the classifiers of a rolon"
-  [ark-value rolon-uuid]
-  ((:destroy-rolon ark-value) ark-value rolon-uuid))
 
 (defn get-property-value
   [ark-value rolon-uuid property-path]
@@ -356,6 +351,22 @@
                       rolon-uuid
                       [:descriptor/journal-entry journal-entry-uuid]
                       true)))
+
+(defn destroy-rolon
+  [ark-value rolon-uuid]
+  (let [old-property-values (get-property-values ark-value rolon-uuid)
+        property-values (reduce #(assoc %1 (key %2) nil)
+                                (create-mi ark-value)
+                                (seq old-property-values))
+        ark-value (make-index-rolon ark-value
+                                              rolon-uuid
+                                              property-values
+                                              old-property-values)
+        je-uuid (get-latest-journal-entry-uuid ark-value)
+        rolon (get-rolon ark-value rolon-uuid)
+        rolon (update-rolon-properties ark-value rolon je-uuid property-values)
+        ark-value (assoc-rolon ark-value rolon-uuid rolon)]
+    (je-modified ark-value rolon-uuid)))
 
 (defn get-modifying-journal-entry-uuids
   "returns a lazy seq of the uuids of the journal entries that updated a rolon"

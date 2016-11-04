@@ -261,13 +261,13 @@
              (get-property-values ark-value index-uuid)
              [:content/index])))))
 
-(defn get-updated-rolon-uuids
-  "returns a lazy seq of the uuids of the rolons updated by a journal-entry rolon"
-  [ark-value je-uuid]
+(defn get-related-uuids
+  "returns a lazy seq of the related uuids"
+  [ark-value je-uuid relation]
   (map
     (fn [e]
       ((key e) 1))
-    (seq (mapish/mi-sub (get-property-values ark-value je-uuid) [:content/modified]))))
+    (seq (mapish/mi-sub (get-property-values ark-value je-uuid) [relation]))))
 
 (declare update-properties- je-modified)
 
@@ -351,12 +351,12 @@
         ark-value (update-property- ark-value
                                     journal-entry-uuid
                                     journal-entry-uuid
-                                    [:content/modified rolon-uuid]
+                                    [:rel/modified rolon-uuid]
                                     true)]
     (update-property- ark-value
                       journal-entry-uuid
                       rolon-uuid
-                      [:content/journal-entry journal-entry-uuid]
+                      [:inv-rel/modified journal-entry-uuid]
                       true)))
 
 (defn destroy-rolon
@@ -374,14 +374,6 @@
         rolon (update-rolon-properties ark-value rolon je-uuid property-values)
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value rolon-uuid)))
-
-(defn get-modifying-journal-entry-uuids
-  "returns a lazy seq of the uuids of the journal entries that updated a rolon"
-  [ark-value rolon-uuid]
-  (map
-    (fn [e]
-      ((key e) 1))
-    (seq (mapish/mi-sub (get-property-values ark-value rolon-uuid) [:content/journal-entry]))))
 
 (defmulti eval-transaction (fn [ark-value n s] n))
 

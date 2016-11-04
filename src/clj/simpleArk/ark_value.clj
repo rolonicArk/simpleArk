@@ -267,7 +267,9 @@
   (map
     (fn [e]
       ((key e) 1))
-    (seq (mapish/mi-sub (get-property-values ark-value uuid) [relation-keyword]))))
+    (filter
+      #(val %)
+      (seq (mapish/mi-sub (get-property-values ark-value uuid) [relation-keyword])))))
 
 (declare update-properties- je-modified)
 

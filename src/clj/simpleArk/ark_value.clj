@@ -263,11 +263,11 @@
 
 (defn get-related-uuids
   "returns a lazy seq of the related uuids"
-  [ark-value je-uuid relation]
+  [ark-value uuid relation-keyword]
   (map
     (fn [e]
       ((key e) 1))
-    (seq (mapish/mi-sub (get-property-values ark-value je-uuid) [relation]))))
+    (seq (mapish/mi-sub (get-property-values ark-value uuid) [relation-keyword]))))
 
 (declare update-properties- je-modified)
 

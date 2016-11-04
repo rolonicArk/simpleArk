@@ -42,10 +42,13 @@
   (is (not (content? :index/y)))
   (is (not (content? :x)))
   (is (not (content? ":content/x")))
+  (is (bi-rel? :bi-rel/fun))
+  (is (rel? :rel/larger))
+  (is (inv-rel? :inv-rel/larger))
 
   (validate-properties (new-MI-map
-                                    [:index/x] 1
-                                    [:content/y] "fred"))
+                         [:index/x] 1
+                         [:content/y] "fred"))
   (is (thrown? Exception (validate-properties (new-MI-map :index/x 2))))
   (is (thrown? Exception (validate-properties (new-MI-map [1] 2))))
 

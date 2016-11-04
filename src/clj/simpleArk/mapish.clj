@@ -1,5 +1,10 @@
 (ns simpleArk.mapish
-  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection Associative IPersistentVector)))
+  (:import (clojure.lang Reversible
+                         Seqable
+                         ILookup
+                         IPersistentCollection
+                         Associative
+                         IPersistentVector)))
 
 (set! *warn-on-reflection* true)
 

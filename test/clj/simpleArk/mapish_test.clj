@@ -14,6 +14,8 @@
 (def y [1])
 (def z [])
 
+(def uuid0 (java.util.UUID/randomUUID))
+
 (def sm0 (sorted-map-by
            vec-comp
            [:a] 1
@@ -48,9 +50,15 @@
 
   (validate-properties (new-MI-map
                          [:index/x] 1
-                         [:content/y] "fred"))
+                         [:content/y] "fred"
+                         [:bi-rel/fun] uuid0
+                         [:rel/larger] uuid0
+                         [:inv-rel/larger] uuid0))
   (is (thrown? Exception (validate-properties (new-MI-map :index/x 2))))
   (is (thrown? Exception (validate-properties (new-MI-map [1] 2))))
+  (is (thrown? Exception (validate-properties (new-MI-map [:bi-rel/fun] 2))))
+  (is (thrown? Exception (validate-properties (new-MI-map [:rel/larger] 2))))
+  (is (thrown? Exception (validate-properties (new-MI-map [:inv-rel/larger] 2))))
 
   (println (sorted-set-by vec-comp a b c d e f))
   (println sm0)

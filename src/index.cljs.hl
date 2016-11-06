@@ -1,0 +1,40 @@
+(page "index.html"
+      (:require
+        [clojure.string :as string]
+        [tiples.client :as tiples]
+        [tiples.login :as login]
+        [welcome.client]
+        [profile.client]
+        [contacts.client]))
+
+(defn opening
+      []
+      (reset! login/started true))
+
+(tiples/on-open opening)
+
+(tiples/start!)
+
+(html
+  (head
+    (link :href "main.css" :rel "stylesheet"))
+  (body
+    (div
+      :css {:display "none"}
+      :toggle login/show-app?
+      (table (tr
+               (for-tpl [capability login/capability-names]
+                        (td (if-tpl (cell= (= capability login/reroute))
+                                    (strong capability)
+                                    (a :href (cell= (str "/#" capability)) capability))
+                            " | "))
+               (td (form
+                     :submit #(login/logout!)
+                     (button :type "submit" "log off")))))
+      (div (for-tpl [capability login/capabilities]
+                    (div
+                      :css {:display "none"}
+                      :toggle (cell= (= login/reroute (name capability)))
+                      (login/add-element @capability)))))
+
+    (login/login-div)))

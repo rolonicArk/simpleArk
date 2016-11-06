@@ -1,0 +1,8 @@
+(ns welcome.client
+  (:require
+    [tiples.login :as login]))
+
+(def do-welcome
+  (h2 (text "Hello ~{(:full-name (:welcome login/user-data))}.")))
+
+(defmethod login/add-element :welcome [_] (do-welcome))

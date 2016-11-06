@@ -59,3 +59,21 @@
                                 simpleArk.tlog1-test
                                 simpleArk.mapish-test
                                 })))
+
+(deftask dev
+  "Build ws-simple for local development."
+  []
+  (comp
+    (serve
+      :handler 'demo/handler
+      :reload true
+      :port 8000
+      :httpkit true
+      :init 'strap/jetty-init
+      )
+    (watch)
+    (speak)
+    (hoplon)
+    (reload)
+    (cljs-repl)
+    (cljs)))

@@ -21,4 +21,5 @@
   (is (= (compare uuid2 uuid3) -1))
 
   (is (uuid? uuid1))
-  (is (uuid/uuid? uuid0)))
+  (is (uuid/uuid? uuid0))
+  )

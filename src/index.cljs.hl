@@ -5,7 +5,12 @@
         [tiples.login :as login]
         [welcome.client]
         [profile.client]
-        [contacts.client]))
+        [contacts.client]
+        [simpleArk.uuid :as suuid]))
+
+(def uuid5 (cljs.reader/read-string "#uuid \"9ced7028-3599-573c-90ef-9590f243b9b3\""))
+(.log js/console (suuid/index-uuid? uuid5))
+(.log js/console (suuid/random-uuid? uuid5))
 
 (defn opening
       []

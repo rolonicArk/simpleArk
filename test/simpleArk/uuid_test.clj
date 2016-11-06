@@ -1,5 +1,6 @@
 (ns simpleArk.uuid-test
   (:require [clojure.test :refer :all]
+            [simpleArk.uuid :refer [get-time]]
             [clj-uuid :as uuid]))
 
 (set! *warn-on-reflection* true)
@@ -22,4 +23,6 @@
 
   (is (uuid? uuid1))
   (is (uuid/uuid? uuid0))
+
+  (println (simpleArk.uuid/get-time uuid1))
   )

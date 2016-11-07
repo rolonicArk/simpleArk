@@ -110,4 +110,5 @@
   (println :mea mea)
   (println (seq (mi-sub mea [:a])))
   (println (seq (into mama {[:z] 55})))
+  (println (create-MI-map [[:a] 1 [:b] 2]))
   )

@@ -177,7 +177,8 @@
     (->MI-map m nil nil nil nil)))
 
 (defn create-MI-map [v]
-  (apply new-MI-map v))
+  (println v)
+  (->MI-map (into (sorted-map) v) nil nil nil nil))
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
   ILookup
@@ -280,7 +281,7 @@
 (defmethod print-method MI-map [v ^java.io.Writer w]
   (.write w "#mapish/MI-map [ ")
   (reduce (fn [_ i]
-            (.write w (str (key i) " " (val i) " "))
+            (.write w (str "[" (key i) (val i) "] "))
             ) nil (seq v))
   (.write w "]")
   )

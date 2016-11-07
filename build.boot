@@ -48,7 +48,7 @@
                                 ;simpleArk.log0-test
                                 ;simpleArk.logt-test
                                 ;simpleArk.closer-test
-                                simpleArk.uuid-test
+                                ;simpleArk.uuid-test
                                 ;simpleArk.uuid0-test
                                 ;simpleArk.uuidi-test
                                 ;simpleArk.ark-db0-test
@@ -57,7 +57,7 @@
                                 ;simpleArk.ark-dba1-test
                                 ;simpleArk.pub0-test
                                 ;simpleArk.tlog1-test
-                                ;simpleArk.mapish-test
+                                simpleArk.mapish-test
                                 })))
 
 (deftask dev

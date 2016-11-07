@@ -28,7 +28,6 @@
   (println)
   (def hello-je-uuid (ark-db/process-transaction! ark-db ::hello-world! "Fred"))
   (is (= :transaction ((log/get-msg ark-db) 1)))
-
   (println)
   (println ">>>>>>>>>>>> make-bob")
   (println)

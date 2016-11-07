@@ -273,3 +273,11 @@
             (= 0 (compare e-path end-path)))
         this
         (->MI-map sorted-map s-test s-path e-test e-path)))))
+
+(defmethod print-method MI-map [v ^java.io.Writer w]
+  (.write w "#mapish/MI-map {")
+  (reduce (fn [_ i]
+            (.write w (str (key i) " " (val i) ", "))
+            ) nil (seq v))
+  (.write w "}")
+  )

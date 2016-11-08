@@ -1,13 +1,12 @@
 (ns simpleArk.ark-value0
   (:require [simpleArk.ark-value :as ark-value]
-            [simpleArk.uuid :as uuid]
-            [simpleArk.mapish :as mapish]))
+            [simpleArk.miMap :as miMap]))
 
 (set! *warn-on-reflection* true)
 
 (defn create-mi
   [ark-value & keyvals]
-  (apply mapish/new-MI-map keyvals))
+  (apply miMap/new-MI-map keyvals))
 
 (defn update-ark
   [ark-value je-uuid transaction-name s]

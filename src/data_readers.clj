@@ -1,1 +1,1 @@
-{mapish/MI-map simpleArk.mapish/create-MI-map}
+{miMap/MI-map simpleArk.miMap/create-MI-map}

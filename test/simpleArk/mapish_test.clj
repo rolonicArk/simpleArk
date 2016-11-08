@@ -1,6 +1,7 @@
 (ns simpleArk.mapish-test
   (:require [clojure.test :refer :all]
-            [simpleArk.mapish :refer :all]))
+            [simpleArk.mapish :refer :all]
+            [simpleArk.miMap :refer :all]))
 
 (set! *warn-on-reflection* true)
 
@@ -111,5 +112,5 @@
   (println (seq (mi-sub mea [:a])))
   (println (seq (into mama {[:z] 55})))
   (println (create-MI-map [[[:a] 1] [[:b] 2]]))
-  (println :read (read-string "#mapish/MI-map [ [[:a]1] [[:b]2] ]"))
+  (println :read (read-string "#miMap/MI-map [ [[:a]1] [[:b]2] ]"))
   )

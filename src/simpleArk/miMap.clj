@@ -9,13 +9,15 @@
 
 (declare ->MI-map)
 
-(defn new-MI-map [& keyvals]
+(defn new-MI-map
+  [& keyvals]
   (let [m (apply sorted-map-by mapish/vec-comp keyvals)]
     (->MI-map m nil nil nil nil)))
 
-(defn create-MI-map [v]
-  (println v)
-  (->MI-map (into (sorted-map) v) nil nil nil nil))
+(defn create-map
+  [m]
+  (let [m (into (sorted-map-by mapish/vec-comp) m)]
+    (->MI-map m nil nil nil nil)))
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
   ILookup
@@ -116,9 +118,5 @@
         (->MI-map sorted-map s-test s-path e-test e-path)))))
 
 (defmethod print-method MI-map [v ^java.io.Writer w]
-  (.write w "#miMap/MI-map [ ")
-  (reduce (fn [_ i]
-            (.write w (str "[" (key i) (val i) "] "))
-            ) nil (seq v))
-  (.write w "]")
+  (.write w (str "#miMap/MI-map " (.sorted-map v)))
   )

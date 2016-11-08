@@ -1,6 +1,7 @@
 (ns simpleArk.mapish)
 
-(set! *warn-on-reflection* true)
+#?(:clj
+   (set! *warn-on-reflection* true))
 
 (defn index?
   [kw]
@@ -32,9 +33,11 @@
   (let [kw (first property-path)]
     (if (or (index? kw) (bi-rel? kw) (rel? kw) (inv-rel? kw))
       (if (< 1 (count  property-path))
-        (throw (Exception. (str property-path " has too many elements for a classifier"))))
+        #?(:clj (throw (Exception. (str property-path " has too many elements for a classifier")))
+           :cljs (throw (str property-path " has too many elements for a classifier"))))
       (if (not (content? kw))
-        (throw (Exception. (str property-path " is neither a classifier nor a descriptor")))))))
+        #?(:clj (throw (Exception. (str property-path " is neither a classifier nor a descriptor")))
+           :cljs (throw (str property-path " is neither a classifier nor a descriptor")))))))
 
 (defn validate-properties
   [properties]
@@ -45,7 +48,8 @@
               (validate-property-path path)
               (if (and (or (bi-rel? kw) (rel? kw) (inv-rel? kw))
                        (not (uuid? v)))
-                (throw (Exception. (str path " is not assigned a UUID"))))))
+                #?(:clj (throw (Exception. (str path " is not assigned a UUID")))
+                   :cljs (throw (str path " is not assigned a UUID"))))))
           nil
           (seq properties)))
 

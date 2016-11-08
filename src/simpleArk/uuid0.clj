@@ -1,21 +1,22 @@
 (ns simpleArk.uuid0
-  (:require [simpleArk.mapish :as mapish]))
+  (:require [simpleArk.mapish :as mapish]
+            [clj-uuid :refer [v1 v4 v5 +null+]]))
 
 (set! *warn-on-reflection* true)
 
 (defn journal-entry-uuid
   [_]
-  (clj-uuid/v1))
+  (v1))
 
 (defn random-uuid
   [_]
-  (clj-uuid/v4))
+  (v4))
 
 (defn index-uuid
   [_ index]
   (if (not (mapish/index? index))
     (throw (Exception. (str index " is not an index keyword"))))
-  (clj-uuid/v5 clj-uuid/+null+ (name index)))
+  (v5 +null+ (name index)))
 
 (defn- build
   [m]

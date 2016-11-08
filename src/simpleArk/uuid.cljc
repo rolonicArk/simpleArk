@@ -1,5 +1,5 @@
 (ns simpleArk.uuid
-  (:require #?(:clj  [clj-uuid :refer [get-version get-instant]])))
+  (:require #?(:clj  [clj-uuid :refer [get-version get-instant get-word-low]])))
 
 #?(:clj
    (set! *warn-on-reflection* true))

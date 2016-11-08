@@ -1,11 +1,12 @@
 (ns simpleArk.uuidi
-  (:require [simpleArk.uuid0 :as uuid0]))
+  (:require [simpleArk.uuid0 :as uuid0]
+            [clj-uuid :refer [v4]]))
 
 (set! *warn-on-reflection* true)
 
 (defn random-uuid
   [m]
-  (clj-uuid/v4 0 (swap! (::counter-atom m) inc)))
+  (v4 0 (swap! (::counter-atom m) inc)))
 
 (defn- build
   [m]

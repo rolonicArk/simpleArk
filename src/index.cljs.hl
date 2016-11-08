@@ -6,7 +6,9 @@
         [welcome.client]
         [profile.client]
         [contacts.client]
-        [simpleArk.uuid :as suuid]))
+        [simpleArk.uuid :as suuid]
+        [simpleArk.miMap :as miMap]
+        ))
 
 (def uuid5 (cljs.reader/read-string "#uuid \"9ced7028-3599-573c-90ef-9590f243b9b3\""))
 (.log js/console (suuid/index-uuid? uuid5))

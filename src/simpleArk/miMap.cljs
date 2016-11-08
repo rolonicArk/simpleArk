@@ -3,7 +3,25 @@
 
 (declare ->MI-map)
 
+(defn new-MI-map
+      [& keyvals]
+      (let [m (apply sorted-map-by mapish/vec-comp keyvals)]
+           (->MI-map m nil nil nil nil)))
+
+(defn create-map
+      [m]
+      (let [m (into (sorted-map-by mapish/vec-comp) m)]
+           (->MI-map m nil nil nil nil)))
+
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
+         IPrintWithWriter
+         (-pr-writer [^MI-map coll writer opts]
+                     (let [pr-pair (fn [keyval] (pr-sequential-writer writer pr-writer "" " " "" opts keyval))]
+                          (pr-sequential-writer writer pr-pair
+                                                "#miMap/MI-map {"
+                                                ", "
+                                                "}"
+                                                opts sorted-map)))
          mapish/MI
          (mi-sub
            [this prefix]

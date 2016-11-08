@@ -17,6 +17,7 @@
 (.log js/console (suuid/journal-entry-uuid? uuid1))
 (.log js/console (suuid/random-uuid? uuid1))
 (.log js/console (suuid/get-time uuid1))
+(.log js/console (pr-str (miMap/create-map {[:a] 1 [:b] 2})))
 
 (defn opening
       []

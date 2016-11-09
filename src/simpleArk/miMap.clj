@@ -66,6 +66,13 @@
             this
             s)))))
   Associative
+  (containsKey [this path]
+    (and (mapish/in-range path start-test start-path end-test end-path)
+             (contains? sorted-map path)))
+  (entryAt [this path]
+    (if (mapish/in-range path start-test start-path end-test end-path)
+      (.entryAt sorted-map)
+      nil))
   (assoc [this path value]
     (if (mapish/in-range path start-test start-path end-test end-path)
       (->MI-map

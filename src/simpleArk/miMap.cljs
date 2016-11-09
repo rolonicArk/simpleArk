@@ -14,14 +14,57 @@
            (->MI-map m nil nil nil nil)))
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
+         ISeqable
+         (-seq [this]
+               (cond
+                 (empty? sorted-map)
+                 nil
+                 (or start-path end-path)
+                 (let [start-test (if start-path
+                                    start-test
+                                    >=)
+                       start-path (if start-path
+                                    start-path
+                                    (key (first sorted-map)))
+                       end-test (if end-path
+                                  end-test
+                                  <=)
+                       end-path (if end-path
+                                  end-path
+                                  (key (last sorted-map)))]
+                      (subseq sorted-map start-test start-path end-test end-path))
+                 :else
+                 (seq sorted-map)))
+         IReversible
+         (-rseq [coll]
+                (cond
+                  (empty? sorted-map)
+                  nil
+                  (or start-path end-path)
+                  (let [start-test (if start-path
+                                     start-test
+                                     >=)
+                        start-path (if start-path
+                                     start-path
+                                     (key (first sorted-map)))
+                        end-test (if end-path
+                                   end-test
+                                   <=)
+                        end-path (if end-path
+                                   end-path
+                                   (key (last sorted-map)))]
+                       (rsubseq sorted-map start-test start-path end-test end-path))
+                  :else
+                  (rseq sorted-map)))
          IPrintWithWriter
          (-pr-writer [^MI-map coll writer opts]
-                     (let [pr-pair (fn [keyval] (pr-sequential-writer writer pr-writer "" " " "" opts keyval))]
+                     (let [pr-pair (fn [keyval]
+                                       (pr-sequential-writer writer pr-writer "" " " "" opts keyval))]
                           (pr-sequential-writer writer pr-pair
                                                 "#miMap/MI-map {"
                                                 ", "
                                                 "}"
-                                                opts sorted-map)))
+                                                opts (seq coll))))
          mapish/MI
          (mi-sub
            [this prefix]

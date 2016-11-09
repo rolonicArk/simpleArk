@@ -65,6 +65,16 @@
                                                 ", "
                                                 "}"
                                                 opts (seq coll))))
+         IAssociative
+         (-contains-key? [this path]
+                      (and (mapish/in-range path start-test start-path end-test end-path)
+                           (contains? sorted-map path)))
+         (-assoc [this path value]
+                (if (mapish/in-range path start-test start-path end-test end-path)
+                  (->MI-map
+                    (assoc sorted-map path value)
+                    start-test start-path end-test end-path)
+                  this))
          mapish/MI
          (mi-sub
            [this prefix]

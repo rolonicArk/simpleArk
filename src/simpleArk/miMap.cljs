@@ -75,6 +75,11 @@
                     (assoc sorted-map path value)
                     start-test start-path end-test end-path)
                   this))
+         ICollection
+         (-conj [this entry]
+                (if (vector? entry)
+                  (-assoc this (-nth entry 0) (-nth entry 1))
+                  (reduce -conj this entry)))
          mapish/MI
          (mi-sub
            [this prefix]

@@ -80,6 +80,15 @@
                 (if (vector? entry)
                   (-assoc this (-nth entry 0) (-nth entry 1))
                   (reduce -conj this entry)))
+         ILookup
+         (-lookup [this key]
+                (if (mapish/in-range key start-test start-path end-test end-path)
+                  (get sorted-map key)
+                  nil))
+         (-lookup [this key not-found]
+                (if (mapish/in-range key start-test start-path end-test end-path)
+                  (get sorted-map key not-found)
+                  not-found))
          mapish/MI
          (mi-sub
            [this prefix]

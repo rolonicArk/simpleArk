@@ -118,5 +118,6 @@
         (->MI-map sorted-map s-test s-path e-test e-path)))))
 
 (defmethod print-method MI-map [v ^java.io.Writer w]
-  (.write w (str "#miMap/MI-map " (.sorted-map v)))
-  )
+  (.write w (prn-str "#miMap/MI-map { "))
+  (reduce (fn [_ i] (.write w (prn-str (key i) (val i) ""))) nil (seq v))
+  (.write w (prn-str "}")))

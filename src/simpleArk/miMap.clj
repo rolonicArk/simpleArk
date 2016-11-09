@@ -5,7 +5,10 @@
                          ILookup
                          IPersistentCollection
                          Associative
-                         IPersistentVector)))
+                         IPersistentVector
+                         PersistentTreeMap)))
+
+(set! *warn-on-reflection* true)
 
 (declare ->MI-map)
 
@@ -19,7 +22,7 @@
   (let [m (into (sorted-map-by mapish/vec-comp) m)]
     (->MI-map m nil nil nil nil)))
 
-(deftype MI-map [sorted-map start-test start-path end-test end-path]
+(deftype MI-map [^PersistentTreeMap sorted-map start-test start-path end-test end-path]
   ILookup
   (valAt [this key]
     (if (mapish/in-range key start-test start-path end-test end-path)
@@ -71,7 +74,7 @@
              (contains? sorted-map path)))
   (entryAt [this path]
     (if (mapish/in-range path start-test start-path end-test end-path)
-      (.entryAt sorted-map)
+      (.entryAt sorted-map path)
       nil))
   (assoc [this path value]
     (if (mapish/in-range path start-test start-path end-test end-path)

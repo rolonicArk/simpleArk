@@ -13,6 +13,8 @@
       (let [m (into (sorted-map-by mapish/vec-comp) m)]
            (->MI-map m nil nil nil nil)))
 
+(cljs.reader/register-tag-parser! "miMap/MI-map" create-map)
+
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
          ISeqable
          (-seq [this]

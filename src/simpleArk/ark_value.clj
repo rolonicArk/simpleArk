@@ -27,18 +27,16 @@
   "returns a new ark"
   ((:ark-value/create-ark m) m))
 
-(defrecord Ark-value [this-db update-ark create-mi])
+(defrecord Ark-value [this-db update-ark create-mi]
+  ark-db/ark-queries
+  (get-selected-time [ark-value]
+    (:selected-time ark-value)))
 
 (defrecord Rolon [rolon-uuid])
 
 (defn index-name-uuid
   [ark-value]
   (uuid/index-uuid (:this-db ark-value) :index/index.name))
-
-(defn get-selected-time
-  "returns the journal entry uuid of the selected time, or nil"
-  [ark-value]
-  (:selected-time ark-value))
 
 (defn get-latest-journal-entry-uuid
   [ark-value]
@@ -51,7 +49,7 @@
 
 (defn get-journal-entries
   [ark-value]
-  (mapish/mi-sub (:journal-entries ark-value) nil nil <= (get-selected-time ark-value)))
+  (mapish/mi-sub (:journal-entries ark-value) nil nil <= (ark-db/get-selected-time ark-value)))
 
 (defn get-indexes
   [ark-value]
@@ -90,7 +88,7 @@
          pc (get changes-by-property property-path)]
      (if (nil? pc)
        nil
-       (mapish/mi-sub pc nil nil <= (get-selected-time ark-value)))))
+       (mapish/mi-sub pc nil nil <= (ark-db/get-selected-time ark-value)))))
   ([ark-value rolon-uuid]
    (:changes-by-property (get-rolon ark-value rolon-uuid))))
 
@@ -161,14 +159,14 @@
   (mapish/validate-property-path property-path)
   (let [changes (get-changes-by-property ark-value rolon-uuid property-path)]
     (if changes
-      (val (first (rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-value)))))
+      (val (first (rseq (mapish/mi-sub changes nil nil <= (ark-db/get-selected-time ark-value)))))
       nil)))
 
 (defn get-property-values
   ([ark-value rolon-uuid]
    (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))
   ([ark-value rolon-uuid all-changes]
-   (miView/->MI-view ark-value rolon-uuid all-changes get-selected-time get-property-values)))
+   (miView/->MI-view ark-value rolon-uuid all-changes)))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value"

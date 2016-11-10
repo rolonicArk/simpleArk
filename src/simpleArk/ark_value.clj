@@ -1,7 +1,8 @@
 (ns simpleArk.ark-value
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
-            [simpleArk.mapish :as mapish])
+            [simpleArk.mapish :as mapish]
+            [simpleArk.miView :as miView])
   (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection)))
 
 (set! *warn-on-reflection* true)
@@ -35,7 +36,7 @@
   (uuid/index-uuid (:this-db ark-value) :index/index.name))
 
 (defn get-selected-time
-  "returns the journal entry uuid of the selected time"
+  "returns the journal entry uuid of the selected time, or nil"
   [ark-value]
   (:selected-time ark-value))
 
@@ -167,64 +168,7 @@
   ([ark-value rolon-uuid]
    (get-property-values ark-value rolon-uuid (get-changes-by-property ark-value rolon-uuid)))
   ([ark-value rolon-uuid all-changes]
-   (reify
-
-     ILookup
-
-     (valAt [this property-path default]
-       (let [changes (get all-changes property-path)]
-         (if (nil? changes)
-           default
-           (let [changes (mapish/mi-sub changes nil nil <= (get-selected-time ark-value))
-                 fst (first (rseq changes))]
-             (if (nil? fst)
-               default
-               (val fst))))))
-
-     (valAt [this property-path]
-       (get this property-path nil))
-
-     Seqable
-
-     (seq [this]
-       (map
-         #(clojure.lang.MapEntry. (key %) (val (val %)))
-         (filter
-           #(some? (val %))
-           (map
-             #(clojure.lang.MapEntry.
-               (key %)
-               (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
-             (seq all-changes)))))
-
-     IPersistentCollection
-
-     (count [this]
-       (count (seq this)))
-
-     Reversible
-
-     (rseq [this]
-       (map
-         #(clojure.lang.MapEntry. (key %) (val (val %)))
-         (filter
-           #(some? (val %))
-           (map
-             #(clojure.lang.MapEntry.
-               (key %)
-               (first (rseq (mapish/mi-sub (val %) nil nil <= (get-selected-time ark-value)))))
-             (rseq all-changes)))))
-
-     mapish/MI
-
-     (mi-sub [this prefix]
-       (get-property-values ark-value
-                            rolon-uuid
-                            (mapish/mi-sub all-changes prefix)))
-     (mi-sub [this start-test start-key end-test end-key]
-       (get-property-values ark-value
-                            rolon-uuid
-                            (mapish/mi-sub all-changes start-test start-key end-test end-key))))))
+   (miView/->MI-view ark-value rolon-uuid all-changes get-selected-time get-property-values)))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value"

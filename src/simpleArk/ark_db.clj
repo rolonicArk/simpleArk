@@ -2,10 +2,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defprotocol ark-queries
-  (get-selected-time [ark-value])
-  )
-
 (defn open-ark!
   "Open the ark after ark-db is finalized."
   [ark-db]

@@ -167,3 +167,7 @@
                   :else
                   end-path)]
      [s-test s-path e-test e-path])))
+
+(defprotocol ark-queries
+  (get-selected-time [ark-value])
+  )

@@ -1,6 +1,5 @@
 (ns simpleArk.miView
-  (:require [simpleArk.mapish :as mapish]
-            [simpleArk.ark-db :as ark-db])
+  (:require [simpleArk.mapish :as mapish])
   (:import (clojure.lang Reversible
                          Seqable
                          ILookup
@@ -16,7 +15,7 @@
     (let [changes (get all-changes property-path)]
       (if (nil? changes)
         default
-        (let [changes (mapish/mi-sub changes nil nil <= (ark-db/get-selected-time ark-value))
+        (let [changes (mapish/mi-sub changes nil nil <= (mapish/get-selected-time ark-value))
               fst (first (rseq changes))]
           (if (nil? fst)
             default
@@ -32,7 +31,7 @@
         (map
           #(clojure.lang.MapEntry.
             (key %)
-            (first (rseq (mapish/mi-sub (val %) nil nil <= (ark-db/get-selected-time ark-value)))))
+            (first (rseq (mapish/mi-sub (val %) nil nil <= (mapish/get-selected-time ark-value)))))
           (seq all-changes)))))
   IPersistentCollection
   (count [this]
@@ -46,7 +45,7 @@
         (map
           #(clojure.lang.MapEntry.
             (key %)
-            (first (rseq (mapish/mi-sub (val %) nil nil <= (ark-db/get-selected-time ark-value)))))
+            (first (rseq (mapish/mi-sub (val %) nil nil <= (mapish/get-selected-time ark-value)))))
           (rseq all-changes)))))
   mapish/MI
 

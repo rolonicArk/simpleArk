@@ -64,3 +64,8 @@
                rolon-uuid
                (mapish/mi-sub all-changes start-test start-key end-test end-key)))
   )
+
+(defmethod print-method MI-view [v ^java.io.Writer w]
+  (.write w (prn-str "#miMap/MI-map { "))
+  (reduce (fn [_ i] (.write w (prn-str (key i) (val i) ""))) nil (seq v))
+  (.write w (prn-str "}")))

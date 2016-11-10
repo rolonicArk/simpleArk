@@ -45,15 +45,14 @@
           [:content/brothers "Jeff"] true}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (println :rel/modified (seq (ark-value/get-related-uuids ark-value make-bob-je-uuid :rel/modified)))
-    (println :inv-rel/modified (seq (ark-value/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified)))
-    (println :bob-properties (seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :rel/modified (ark-value/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
+    (println :inv-rel/modified (ark-value/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
+    (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
     (println :brothers
-             (seq
                (mapish/mi-sub
                  (ark-value/get-property-values ark-value bob-uuid)
-                 [:content/brothers]))))
+                 [:content/brothers])))
 
   (println)
   (println ">>>>>>>>>>>> 4 updates to bob")
@@ -119,17 +118,17 @@
          {[:index/headline] "destroy bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (println :bob-properties (seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-        _ (println "total je count:" (count (seq (ark-value/get-journal-entries ark-value))))
+        _ (println "total je count:" (count (ark-value/get-journal-entries ark-value)))
         ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
-    (println "selected je count:" (count (seq (ark-value/get-journal-entries ark-value))))
-    (println :bob-properties (seq (ark-value/get-property-values ark-value bob-uuid)))
+    (println "selected je count:" (count (ark-value/get-journal-entries ark-value)))
+    (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
     )
 

@@ -3,7 +3,8 @@
   (:import (clojure.lang Reversible
                          Seqable
                          ILookup
-                         IPersistentCollection)))
+                         IPersistentCollection
+                         Associative)))
 
 (set! *warn-on-reflection* true)
 
@@ -22,6 +23,12 @@
             (val fst))))))
   (valAt [this property-path]
     (get this property-path nil))
+  Associative
+  (containsKey [this path]
+    (some? (.valAt this path)))
+  (entryAt [this path]
+    (let [value (.valAt this path)]
+        (clojure.lang.MapEntry. path value)))
   Seqable
   (seq [this]
     (map
@@ -48,7 +55,6 @@
             (first (rseq (mapish/mi-sub (val %) nil nil <= (mapish/get-selected-time ark-value)))))
           (rseq all-changes)))))
   mapish/MI
-
   (mi-sub [this prefix]
     (->MI-view ark-value
                rolon-uuid

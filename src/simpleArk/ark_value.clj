@@ -2,8 +2,8 @@
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
-            [simpleArk.miView :as miView])
-  (:import (clojure.lang Reversible Seqable ILookup IPersistentCollection)))
+            [simpleArk.miView :as miView]
+            [simpleArk.rolonRecord :as rolonRecord]))
 
 (set! *warn-on-reflection* true)
 
@@ -31,8 +31,6 @@
   (:selected-time ark-value))
 
 (defrecord Ark-value [this-db update-ark create-mi])
-
-(defrecord Rolon [rolon-uuid])
 
 (defn index-name-uuid
   [ark-value]
@@ -236,7 +234,7 @@
           (assoc-rolon
             ark-value
             rolon-uuid
-            (->Rolon rolon-uuid)))]
+            (rolonRecord/->Rolon-record rolon-uuid)))]
     (update-properties ark-value rolon-uuid properties)))
 
 (defn make-index-rolon-

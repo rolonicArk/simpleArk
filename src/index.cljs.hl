@@ -8,6 +8,7 @@
         [contacts.client]
         [simpleArk.uuid :as suuid]
         [simpleArk.miMap :as miMap]
+        [simpleArk.miView :as miView]
         ))
 
 (def uuid5 (cljs.reader/read-string "#uuid \"9ced7028-3599-573c-90ef-9590f243b9b3\""))

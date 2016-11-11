@@ -66,7 +66,7 @@
                                                 "#miMap/MI-map {"
                                                 ", "
                                                 "}"
-                                                opts (seq coll))))
+                                                opts coll)))
          IAssociative
          (-contains-key? [this path]
                       (and (mapish/in-range path start-test start-path end-test end-path)

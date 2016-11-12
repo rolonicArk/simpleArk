@@ -9,7 +9,7 @@
   (apply miMap/new-MI-map keyvals))
 
 (defn update-ark
-  [ark-value je-uuid transaction-name s]
+  [ark-value ark-db je-uuid transaction-name s]
   (let [ark-value (-> ark-value
                       (assoc :latest-journal-entry-uuid je-uuid)
                       (ark-value/make-rolon je-uuid
@@ -17,7 +17,7 @@
                                               ark-value
                                               [:index/transaction-name] transaction-name
                                               [:content/transaction-argument] s))
-                      (ark-value/eval-transaction transaction-name s))]
+                      (ark-value/eval-transaction ark-db transaction-name s))]
     (if (:selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))

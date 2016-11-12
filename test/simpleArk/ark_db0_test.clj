@@ -14,7 +14,7 @@
 (set! *warn-on-reflection* true)
 
 (defmethod ark-value/eval-transaction ::hello-world!
-  [ark-value n s]
+  [ark-value ark-db n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-latest-journal-entry-uuid ark-value)]
     (ark-value/update-property ark-value je-uuid [:index/headline] "Just for fun!")))

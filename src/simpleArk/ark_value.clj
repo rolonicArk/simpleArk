@@ -326,10 +326,10 @@
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value rolon-uuid)))
 
-(defmulti eval-transaction (fn [ark-value n s] n))
+(defmulti eval-transaction (fn [ark-value ark-db n s] n))
 
 (defmethod eval-transaction :ark/update-rolon-transaction!
-  [ark-value n s]
+  [ark-value ark-db n s]
   (let [je-uuid (get-latest-journal-entry-uuid ark-value)
         [rolon-uuid je-properties-map rolon-properties-map] (read-string s)
         je-properties (create-mi ark-value [:index/headline] (str "update a rolon with " s))
@@ -340,7 +340,7 @@
         (make-rolon rolon-uuid rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
-  [ark-value n s]
+  [ark-value ark-db n s]
   (let [je-uuid (get-latest-journal-entry-uuid ark-value)
         [uuid je-properties-map] (read-string s)
         je-properties (create-mi ark-value [:index/headline] (str "destroy rolon " s))

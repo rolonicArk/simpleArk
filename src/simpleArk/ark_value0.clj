@@ -12,7 +12,8 @@
   [ark-value ark-db je-uuid transaction-name s]
   (let [ark-value (-> ark-value
                       (assoc :latest-journal-entry-uuid je-uuid)
-                      (ark-value/make-rolon je-uuid
+                      (ark-value/make-rolon ark-db
+                                            je-uuid
                                             (create-mi
                                               ark-value
                                               [:index/transaction-name] transaction-name

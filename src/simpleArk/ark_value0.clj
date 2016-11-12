@@ -24,14 +24,12 @@
 
 (defn create-ark
   [this-db]
-  (-> (ark-value/->Ark-value this-db update-ark create-mi)
+  (-> (ark-value/->Ark-value this-db create-mi)
       (ark-value/init-ark-value)))
-
-(defn- build
-  "returns an ark db"
-  [m]
-  (assoc m :ark-value/create-ark create-ark))
 
 (defn builder
   []
-  build)
+  (fn [m]
+    (-> m
+        (assoc :ark-value/update-ark update-ark)
+        (assoc :ark-value/create-ark create-ark))))

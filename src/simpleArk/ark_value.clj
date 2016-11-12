@@ -30,7 +30,7 @@
 (defn get-selected-time [ark-value]
   (:selected-time ark-value))
 
-(defrecord Ark-value [this-db update-ark create-mi])
+(defrecord Ark-value [this-db create-mi])
 
 (defn index-name-uuid
   [ark-value]

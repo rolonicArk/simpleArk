@@ -23,9 +23,9 @@
     ark-value))
 
 (defn create-ark
-  [this-db]
-  (-> (ark-value/->Ark-value this-db create-mi)
-      (ark-value/init-ark-value)))
+  [ark-db]
+  (-> (ark-value/->Ark-value ark-db create-mi)
+      (ark-value/init-ark-value ark-db)))
 
 (defn builder
   []

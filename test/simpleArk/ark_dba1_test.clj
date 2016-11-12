@@ -21,7 +21,7 @@
   [ark-value ark-db n s]
   (println "Hello," s)
   (let [je-uuid (ark-value/get-latest-journal-entry-uuid ark-value)]
-    (ark-value/update-property ark-value je-uuid [:index/headline] "Just for fun!")))
+    (ark-value/update-property ark-value ark-db je-uuid [:index/headline] "Just for fun!")))
 
 (defn ark-dba0-test
   [ark-db]

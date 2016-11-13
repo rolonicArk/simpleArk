@@ -1,5 +1,5 @@
 (ns simpleArk.uuid
-  (:require #?(:clj  [clj-uuid :refer [get-version get-instant get-word-low]])))
+  (:require #?(:clj  [clj-uuid :refer [get-version get-instant]])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -25,7 +25,8 @@
 
 (defn get-time [uuid]
   #?(:clj
-     (.getTime (get-instant uuid))
+     ;(.getTime (get-instant uuid))
+     (posix-time (timestamp uuid))
      :cljs
      (posix-time (timestamp uuid))
      ))

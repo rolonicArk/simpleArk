@@ -5,7 +5,7 @@
 (set! *warn-on-reflection* true)
 
 (defn create-mi
-  [ark-value & keyvals]
+  [ark-db & keyvals]
   (apply miMap/new-MI-map keyvals))
 
 (defn update-ark
@@ -15,7 +15,7 @@
                       (ark-value/make-rolon ark-db
                                             je-uuid
                                             (create-mi
-                                              ark-value
+                                              ark-db
                                               [:index/transaction-name] transaction-name
                                               [:content/transaction-argument] s))
                       (ark-value/eval-transaction ark-db transaction-name s))]
@@ -25,12 +25,13 @@
 
 (defn create-ark
   [ark-db]
-  (-> (ark-value/->Ark-value ark-db create-mi)
+  (-> (ark-value/->Ark-value ark-db)
       (ark-value/init-ark-value ark-db)))
 
 (defn builder
   []
   (fn [m]
     (-> m
+        (assoc :ark-value/create-mi create-mi)
         (assoc :ark-value/update-ark update-ark)
         (assoc :ark-value/create-ark create-ark))))

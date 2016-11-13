@@ -8,11 +8,11 @@
 (set! *warn-on-reflection* true)
 
 (defn create-mi
-  [ark-value & keyvals] (apply (:create-mi ark-value) ark-value keyvals))
+  [ark-db & keyvals] (apply (:ark-value/create-mi ark-db) ark-db keyvals))
 
 (defn ark-value-assoc-mapish
   [ark-value ark-db key]
-  (let [mi (create-mi ark-value)]
+  (let [mi (create-mi ark-db)]
     (assoc ark-value key mi)))
 
 (defn init-ark-value
@@ -30,7 +30,7 @@
 (defn get-selected-time [ark-value]
   (:selected-time ark-value))
 
-(defrecord Ark-value [this-db create-mi])
+(defrecord Ark-value [this-db])
 
 (defn index-name-uuid
   [ark-value]
@@ -129,13 +129,13 @@
   [ark-value ark-db changes-by-property je-uuid property-name new-value]
   (let [changes-by-property (if (some? changes-by-property)
                               changes-by-property
-                              (create-mi ark-value))]
+                              (create-mi ark-db))]
     (assoc changes-by-property
       property-name
       (let [property-changes (get changes-by-property property-name)
             property-changes (if (some? property-changes)
                                property-changes
-                               (create-mi ark-value))
+                               (create-mi ark-db))
             first-entry (first (seq property-changes))]
         (if (or (nil? first-entry) (not= new-value (val first-entry)))
           (assoc property-changes [je-uuid] new-value)
@@ -217,13 +217,13 @@
   [ark-value ark-db rolon-uuid properties]
   (mapish/validate-properties properties)
   (let [journal-entry-uuid (get-latest-journal-entry-uuid ark-value)
-        ark-value (update-properties- ark-value nil journal-entry-uuid rolon-uuid properties)]
-    (je-modified ark-value nil rolon-uuid)))
+        ark-value (update-properties- ark-value ark-db journal-entry-uuid rolon-uuid properties)]
+    (je-modified ark-value ark-db rolon-uuid)))
 
 (defn update-property
   [ark-value ark-db rolon-uuid property-path property-value]
   (mapish/validate-property-path property-path)
-  (update-properties ark-value ark-db rolon-uuid (create-mi ark-value property-path property-value)))
+  (update-properties ark-value ark-db rolon-uuid (create-mi ark-db property-path property-value)))
 
 (defn make-rolon
   [ark-value ark-db rolon-uuid properties]
@@ -244,7 +244,7 @@
                     ark-value
                     (make-rolon ark-value ark-db iuuid
                                 (create-mi
-                                  ark-value
+                                  ark-db
                                   [:index/index.name] (name index-keyword))))]
     (update-property ark-value
                      ark-db
@@ -287,7 +287,7 @@
                       ark-db
                       journal-entry-uuid
                       rolon-uuid
-                      (create-mi ark-value property-path property-value)))
+                      (create-mi ark-db property-path property-value)))
 
 (defn update-relation
   [ark-value ark-db relaton-name from-uuid to-uuid symmetrical add]
@@ -319,7 +319,7 @@
   [ark-value ark-db rolon-uuid]
   (let [old-property-values (get-property-values ark-value rolon-uuid)
         property-values (reduce #(assoc %1 (key %2) nil)
-                                (create-mi ark-value)
+                                (create-mi ark-db)
                                 (seq old-property-values))
         ark-value (make-index-rolon ark-value
                                     ark-db
@@ -338,9 +338,9 @@
   [ark-value ark-db n s]
   (let [je-uuid (get-latest-journal-entry-uuid ark-value)
         [rolon-uuid je-properties-map rolon-properties-map] (read-string s)
-        je-properties (create-mi ark-value [:index/headline] (str "update a rolon with " s))
+        je-properties (create-mi ark-db [:index/headline] (str "update a rolon with " s))
         je-properties (into je-properties je-properties-map)
-        rolon-properties (into (create-mi ark-value) rolon-properties-map)]
+        rolon-properties (into (create-mi ark-db) rolon-properties-map)]
     (-> ark-value
         (update-properties ark-db je-uuid je-properties)
         (make-rolon ark-db rolon-uuid rolon-properties))))
@@ -349,7 +349,7 @@
   [ark-value ark-db n s]
   (let [je-uuid (get-latest-journal-entry-uuid ark-value)
         [uuid je-properties-map] (read-string s)
-        je-properties (create-mi ark-value [:index/headline] (str "destroy rolon " s))
+        je-properties (create-mi ark-db [:index/headline] (str "destroy rolon " s))
         je-properties (into je-properties je-properties-map)]
     (-> ark-value
         (update-properties ark-db je-uuid je-properties)

@@ -23,6 +23,9 @@
   "tests that even work with impl0"
   [ark-db]
 
+  (let [ark-value (ark-db/get-ark-value ark-db)]
+    (println :empty-ark ark-value)
+    (println :round-trp (read-string (pr-str ark-value))))
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)

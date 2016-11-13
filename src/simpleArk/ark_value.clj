@@ -31,7 +31,7 @@
 (defn get-selected-time [ark-value]
   (:selected-time ark-value))
 
-(defrecord Ark-value [this-db])
+(defrecord Ark-value [])
 
 (defn get-latest-journal-entry-uuid
   [ark-value]

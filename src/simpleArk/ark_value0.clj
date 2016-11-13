@@ -25,7 +25,7 @@
 
 (defn create-ark
   [ark-db]
-  (-> (ark-value/->Ark-value ark-db)
+  (-> (ark-value/->Ark-value)
       (ark-value/init-ark-value ark-db)))
 
 (defn builder

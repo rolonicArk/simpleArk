@@ -11,27 +11,10 @@
 (defn create-mi
   [ark-db & keyvals] (apply (:ark-value/create-mi ark-db) ark-db keyvals))
 
-(defn ark-value-assoc-mapish
-  [ark-value ark-db key]
-  (let [mi (create-mi ark-db)]
-    (assoc ark-value key mi)))
-
-(defn init-ark-value
-  [ark-value ark-db]
-  (-> ark-value
-      (ark-value-assoc-mapish ark-db :journal-entries)
-      (ark-value-assoc-mapish ark-db :indexes)
-      (ark-value-assoc-mapish ark-db :random-rolons)))
-
-(defn create-ark
-  [m]
-  "returns a new ark"
-  ((:ark-value/create-ark m) m))
-
 (defn get-selected-time [ark-value]
   (:selected-time ark-value))
 
-(defrecord Ark-value [])
+(defrecord Ark-record [])
 
 (defn get-latest-journal-entry-uuid
   [ark-value]
@@ -86,18 +69,6 @@
   "returns the uuid of the rolon"
   [rolon]
   (:rolon-uuid rolon))
-
-(defn ark-str
-  [ark-value]
-  (let [s (str "\n" :ark "\n"
-               "\n" :index-rolons "\n\n" (seq (get-indexes ark-value)) "\n"
-               "\n" :journal-entry-rolons "\n\n" (seq (get-journal-entries ark-value)) "\n"
-               "\n" :random-rolons "\n\n" (get-random-rolons ark-value))]
-    s))
-
-(defmethod print-method Ark-value
-  [ark writer]
-  (print-simple (ark-str ark) writer))
 
 (defn assoc-rolon
   "update the ark with the revised/new rolon"

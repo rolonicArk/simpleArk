@@ -23,15 +23,9 @@
       (throw (Exception. "Transaction can not update ark with a selected time")))
     ark-value))
 
-(defn create-ark
-  [ark-db]
-  (-> (ark-value/->Ark-value)
-      (ark-value/init-ark-value ark-db)))
-
 (defn builder
   []
   (fn [m]
     (-> m
         (assoc :ark-value/create-mi create-mi)
-        (assoc :ark-value/update-ark update-ark)
-        (assoc :ark-value/create-ark create-ark))))
+        (assoc :ark-value/update-ark update-ark))))

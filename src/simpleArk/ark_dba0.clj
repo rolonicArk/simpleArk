@@ -4,7 +4,8 @@
             [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
             [clojure.core.async :as async]
-            [simpleArk.closer :as closer]))
+            [simpleArk.closer :as closer]
+            [simpleArk.arkRecord :as arkRecord]))
 
 (set! *warn-on-reflection* true)
 
@@ -32,7 +33,7 @@
 
 (defn open-ark!
   [ark-db]
-  (ark-db/init-ark! ark-db (ark-value/create-ark ark-db))
+  (ark-db/init-ark-db! ark-db (arkRecord/create-ark ark-db))
   (async/thread (process-transactions ark-db))
   (closer/open-component ark-db (::name ark-db) close-tran-chan)
   )

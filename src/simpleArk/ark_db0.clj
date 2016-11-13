@@ -2,13 +2,14 @@
   (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
-            [simpleArk.ark-db :as ark-db]))
+            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkRecord :as arkRecord]))
 
 (set! *warn-on-reflection* true)
 
 (defn open-ark!
   [ark-db]
-  (ark-db/init-ark! ark-db (ark-value/create-ark ark-db)))
+  (ark-db/init-ark-db! ark-db (arkRecord/create-ark ark-db)))
 
 (defn process-transaction!
   ([ark-db transaction-name s]

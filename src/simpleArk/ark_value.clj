@@ -3,7 +3,8 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
             [simpleArk.miView :as miView]
-            [simpleArk.rolonRecord :as rolonRecord]))
+            [simpleArk.rolonRecord :as rolonRecord])
+  (:import (java.util UUID)))
 
 (set! *warn-on-reflection* true)
 
@@ -32,18 +33,9 @@
 
 (defrecord Ark-value [this-db])
 
-(defn index-name-uuid
-  [ark-value]
-  (uuid/index-uuid (:this-db ark-value) :index/index.name))
-
 (defn get-latest-journal-entry-uuid
   [ark-value]
   (:latest-journal-entry-uuid ark-value))
-
-(defn get-ark-db
-  "returns the ark-db"
-  [ark-value]
-  (:this-db ark-value))
 
 (defn get-journal-entries
   [ark-value]
@@ -178,10 +170,12 @@
              (get-property-values ark-value index-uuid)
              [:content/index value])))))
 
+(def index-name-uuid (UUID/fromString "8cacc5db-70b3-5a83-85cf-c29541e14114"))
+
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."
   [ark-value index-name]
-  (first (index-lookup ark-value (index-name-uuid ark-value) index-name)))
+  (first (index-lookup ark-value index-name-uuid index-name)))
 
 (defn name-lookup
   [ark-value rolon-name]
@@ -239,7 +233,7 @@
 
 (defn make-index-rolon-
   [ark-value ark-db index-keyword value uuid adding]
-  (let [iuuid (uuid/index-uuid (get-ark-db ark-value) index-keyword)
+  (let [iuuid (uuid/index-uuid ark-db index-keyword)
         ark-value (if (get-rolon ark-value iuuid)
                     ark-value
                     (make-rolon ark-value ark-db iuuid

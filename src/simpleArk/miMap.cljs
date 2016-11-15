@@ -8,12 +8,12 @@
       (let [m (apply sorted-map-by mapish/vec-comp keyvals)]
            (->MI-map m nil nil nil nil)))
 
-(defn create-map
+(defn load-map
       [m]
       (let [m (into (sorted-map-by mapish/vec-comp) m)]
            (->MI-map m nil nil nil nil)))
 
-(cljs.reader/register-tag-parser! "miMap/MI-map" create-map)
+(cljs.reader/register-tag-parser! "miMap/MI-map" load-map)
 
 (deftype MI-map [sorted-map start-test start-path end-test end-path]
          ISeqable

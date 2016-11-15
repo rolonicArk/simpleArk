@@ -23,8 +23,5 @@
       (ark-value-assoc-mapish ark-db :random-rolons)))
 
 (defn create-ark [ark-db]
-     (-> (->Ark-record)
-         (init-ark-value ark-db)))
-
-#?(:cljs
-   (cljs.reader/register-tag-parser! "simpleArk.arkRecord.Ark-record" create-ark))
+  (-> (->Ark-record)
+      (init-ark-value ark-db)))

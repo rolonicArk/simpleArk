@@ -111,6 +111,6 @@
   (println :mea mea)
   (println (seq (mi-sub mea [:a])))
   (println (seq (into mama {[:z] 55})))
-  (println (create-map { [:a] 1 [:b] 2 }))
+  (println (load-map { [:a] 1 [:b] 2 }))
   (println :read (read-string "#miMap/MI-map { [:a] 1 [:b] 2 }"))
   )

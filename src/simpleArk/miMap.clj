@@ -17,7 +17,7 @@
   (let [m (apply sorted-map-by mapish/vec-comp keyvals)]
     (->MI-map m nil nil nil nil)))
 
-(defn create-map
+(defn load-map
   [m]
   (let [m (into (sorted-map-by mapish/vec-comp) m)]
     (->MI-map m nil nil nil nil)))

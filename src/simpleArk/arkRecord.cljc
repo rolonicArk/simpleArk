@@ -6,6 +6,9 @@
 
 (defrecord Ark-record [])
 
+(defn loadArk [m]
+  (into (->Ark-record) m))
+
 (defn create-mi
   [ark-db & keyvals]
   (apply (:ark-value/create-mi ark-db) ark-db keyvals))

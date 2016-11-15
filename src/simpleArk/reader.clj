@@ -1,24 +1,27 @@
 (ns simpleArk.reader
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn])
+  (:refer-clojure :exclude [read read-string]))
+
+(set! *warn-on-reflection* true)
 
 (defn opts-atom
-  [m]
-  (::opts-atom m))
+  [component-map]
+  (::opts-atom component-map))
 
 (defn opts
-  [m]
-  @(opts-atom m))
+  [component-map]
+  @(opts-atom component-map))
 
 (defn register-tag-parser!
-  [m tag f]
-  (swap! (opts-atom m)
+  [component-map tag f]
+  (swap! (opts-atom component-map)
          (fn [old]
            (assoc-in old [:readers tag] f))))
 
 (defn read-string
-  [m s]
-  (edn/read-string (opts m) s))
+  [component-map s]
+  (edn/read-string (opts component-map) s))
 
 (defn builder
   []
-  (fn [m] (assoc m ::opts-atom (atom nil))))
+  (fn [component-map] (assoc component-map ::opts-atom (atom nil))))

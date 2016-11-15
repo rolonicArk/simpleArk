@@ -1,5 +1,6 @@
 (ns simpleArk.miMap
-  (:require [simpleArk.mapish :as mapish])
+  (:require [simpleArk.mapish :as mapish]
+            [simpleArk.reader :as reader])
   (:import (clojure.lang Reversible
                          Seqable
                          ILookup
@@ -18,9 +19,13 @@
     (->MI-map m nil nil nil nil)))
 
 (defn load-map
-  [m]
-  (let [m (into (sorted-map-by mapish/vec-comp) m)]
-    (->MI-map m nil nil nil nil)))
+  [data-map]
+  (let [m (into (sorted-map-by mapish/vec-comp) data-map)]
+    (->MI-map data-map nil nil nil nil)))
+
+(defn register
+  [component-map]
+  (reader/register-tag-parser! component-map 'miMap/MI-map load-map))
 
 (deftype MI-map [^PersistentTreeMap sorted-map start-test start-path end-test end-path]
   ILookup

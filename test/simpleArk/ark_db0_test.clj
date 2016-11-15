@@ -9,7 +9,11 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-db0 :as ark-db0]
             [simpleArk.closer :as closer]
-            [simpleArk.mapish :as mapish]))
+            [simpleArk.mapish :as mapish]
+            [simpleArk.reader :as reader]
+            [simpleArk.miMap :as miMap]
+            [simpleArk.arkRecord :as arkRecord]
+            [simpleArk.rolonRecord :as rolonRecord]))
 
 (set! *warn-on-reflection* true)
 
@@ -25,7 +29,7 @@
 
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (println :empty-ark ark-value)
-    (println :round-trp (read-string (pr-str ark-value))))
+    (println :round-trp (reader/read-string ark-db (pr-str ark-value))))
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
@@ -36,7 +40,7 @@
     (println "-----------")
     (println :hello-je (pr-str r))
     (println "-----------")
-    (println :roundish (pr-str (read-string "#simpleArk.rolonRecord.Rolon-record{:rolon-uuid #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\", :changes-by-property #miMap/MI-map { [:content/transaction-argument] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] \"Fred\"}[:index/headline] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] \"Just for fun!\"}[:index/transaction-name] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] :simpleArk.ark-db0-test/hello-world!}[:inv-rel/modified #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"8cacc5db-70b3-5a83-85cf-c29541e14114\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"2a101331-82a5-5ab0-aa72-d0f9a01170ee\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"43a62bef-0682-54ae-a190-88fcca210532\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}}}")))
+    (println :roundish (pr-str (reader/read-string ark-db "#simpleArk.rolonRecord.Rolon-record{:rolon-uuid #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\", :changes-by-property #miMap/MI-map { [:content/transaction-argument] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] \"Fred\"}[:index/headline] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] \"Just for fun!\"}[:index/transaction-name] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] :simpleArk.ark-db0-test/hello-world!}[:inv-rel/modified #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"8cacc5db-70b3-5a83-85cf-c29541e14114\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"2a101331-82a5-5ab0-aa72-d0f9a01170ee\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"43a62bef-0682-54ae-a190-88fcca210532\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}}}")))
     (println "-----------")
     )
   (println)
@@ -180,8 +184,13 @@
                  (ark-value0/builder)
                  (uuidi/builder)
                  (closer/builder)
-                 (logt/builder))
+                 (logt/builder)
+                 (reader/builder))
                 {}))
+  (miMap/register ark-db)
+  (reader/register-tag-parser! ark-db 'simpleArk.arkRecord.Ark-record arkRecord/loadArk)
+  (reader/register-tag-parser! ark-db 'simpleArk.rolonRecord.Rolon-record rolonRecord/loadRolon)
+
   (ark-db/open-ark! ark-db)
   (try
     (test0 ark-db)

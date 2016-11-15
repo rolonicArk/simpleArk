@@ -1,7 +1,8 @@
 (ns simpleArk.mapish-test
   (:require [clojure.test :refer :all]
             [simpleArk.mapish :refer :all]
-            [simpleArk.miMap :refer :all]))
+            [simpleArk.miMap :refer :all]
+            [simpleArk.reader :as reader]))
 
 (set! *warn-on-reflection* true)
 
@@ -112,5 +113,10 @@
   (println (seq (mi-sub mea [:a])))
   (println (seq (into mama {[:z] 55})))
   (println (load-map { [:a] 1 [:b] 2 }))
-  (println :read (read-string "#miMap/MI-map { [:a] 1 [:b] 2 }"))
+
+  (def component-map ((comp
+                 (reader/builder))
+                {}))
+  (register component-map)
+  (println :read (reader/read-string component-map "#miMap/MI-map { [:a] 1 [:b] 2 }"))
   )

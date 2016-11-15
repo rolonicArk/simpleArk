@@ -1,5 +1,6 @@
 (ns simpleArk.arkRecord
-  (:require [simpleArk.reader :as reader]))
+  (:require #?(:clj [simpleArk.reader :as reader]
+               :cljs [cljs.reader :as reader])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -9,9 +10,12 @@
 (defn loadArk [m]
   (into (->Ark-record) m))
 
-(defn register
-  [component-map]
-  (reader/register-tag-parser! component-map 'simpleArk.arkRecord.Ark-record loadArk))
+#?(:clj
+   (defn register
+     [component-map]
+     (reader/register-tag-parser! component-map 'simpleArk.arkRecord.Ark-record loadArk))
+   :cljs
+   (reader/register-tag-parser! "simpleArk.arkRecord.Ark-record" loadArk))
 
 (defn create-mi
   [ark-db & keyvals]

@@ -1,5 +1,6 @@
 (ns simpleArk.rolonRecord
-  (:require [simpleArk.reader :as reader]))
+  (:require #?(:clj [simpleArk.reader :as reader]
+               :cljs [cljs.reader :as reader])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -9,6 +10,9 @@
 (defn loadRolon [m]
   (into (->Rolon-record (:rolon-uuid m)) (:changes-by-property m)))
 
-(defn register
-  [component-map]
-  (reader/register-tag-parser! component-map 'simpleArk.rolonRecord.Rolon-record loadRolon))
+#?(:clj
+   (defn register
+     [component-map]
+     (reader/register-tag-parser! component-map 'simpleArk.rolonRecord.Rolon-record loadRolon))
+   :cljs
+   (reader/register-tag-parser! "simpleArk.rolonRecord.Rolon-record" loadRolon))

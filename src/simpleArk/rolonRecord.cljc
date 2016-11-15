@@ -1,4 +1,5 @@
-(ns simpleArk.rolonRecord)
+(ns simpleArk.rolonRecord
+  (:require [simpleArk.reader :as reader]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -7,3 +8,7 @@
 
 (defn loadRolon [m]
   (into (->Rolon-record (:rolon-uuid m)) (:changes-by-property m)))
+
+(defn register
+  [component-map]
+  (reader/register-tag-parser! component-map 'simpleArk.rolonRecord.Rolon-record loadRolon))

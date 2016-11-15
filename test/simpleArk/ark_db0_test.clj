@@ -188,8 +188,8 @@
                  (reader/builder))
                 {}))
   (miMap/register ark-db)
-  (reader/register-tag-parser! ark-db 'simpleArk.arkRecord.Ark-record arkRecord/loadArk)
-  (reader/register-tag-parser! ark-db 'simpleArk.rolonRecord.Rolon-record rolonRecord/loadRolon)
+  (arkRecord/register ark-db)
+  (rolonRecord/register ark-db)
 
   (ark-db/open-ark! ark-db)
   (try

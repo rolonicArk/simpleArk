@@ -7,32 +7,12 @@
 
 (defrecord Ark-record [])
 
-(defn loadArk [m]
+(defn load-ark [m]
   (into (->Ark-record) m))
 
 #?(:clj
    (defn register
      [component-map]
-     (reader/register-tag-parser! component-map 'simpleArk.arkRecord.Ark-record loadArk))
+     (reader/register-tag-parser! component-map 'simpleArk.arkRecord.Ark-record load-ark))
    :cljs
-   (reader/register-tag-parser! "simpleArk.arkRecord.Ark-record" loadArk))
-
-(defn create-mi
-  [ark-db & keyvals]
-  (apply (:ark-value/create-mi ark-db) ark-db keyvals))
-
-(defn ark-value-assoc-mapish
-  [ark-value ark-db key]
-  (let [mi (create-mi ark-db)]
-    (assoc ark-value key mi)))
-
-(defn init-ark-value
-  [ark-value ark-db]
-  (-> ark-value
-      (ark-value-assoc-mapish ark-db :journal-entries)
-      (ark-value-assoc-mapish ark-db :indexes)
-      (ark-value-assoc-mapish ark-db :random-rolons)))
-
-(defn create-ark [ark-db]
-  (-> (->Ark-record)
-      (init-ark-value ark-db)))
+   (reader/register-tag-parser! "simpleArk.arkRecord.Ark-record" load-ark))

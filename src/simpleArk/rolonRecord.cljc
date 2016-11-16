@@ -7,12 +7,12 @@
 
 (defrecord Rolon-record [rolon-uuid])
 
-(defn loadRolon [m]
+(defn load-rolon [m]
   (into (->Rolon-record (:rolon-uuid m)) (:changes-by-property m)))
 
 #?(:clj
    (defn register
      [component-map]
-     (reader/register-tag-parser! component-map 'simpleArk.rolonRecord.Rolon-record loadRolon))
+     (reader/register-tag-parser! component-map 'simpleArk.rolonRecord.Rolon-record load-rolon))
    :cljs
-   (reader/register-tag-parser! "simpleArk.rolonRecord.Rolon-record" loadRolon))
+   (reader/register-tag-parser! "simpleArk.rolonRecord.Rolon-record" load-rolon))

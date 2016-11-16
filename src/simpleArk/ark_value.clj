@@ -3,13 +3,31 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
             [simpleArk.miView :as miView]
-            [simpleArk.rolonRecord :as rolonRecord])
+            [simpleArk.rolonRecord :as rolonRecord]
+            [simpleArk.arkRecord :as arkRecord])
   (:import (java.util UUID)))
 
 (set! *warn-on-reflection* true)
 
 (defn create-mi
-  [ark-db & keyvals] (apply (:ark-value/create-mi ark-db) ark-db keyvals))
+  [ark-db & keyvals]
+  (apply (:ark-value/create-mi ark-db) ark-db keyvals))
+
+(defn ark-value-assoc-mapish
+  [ark-value ark-db key]
+  (let [mi (create-mi ark-db)]
+    (assoc ark-value key mi)))
+
+(defn init-ark-value
+  [ark-value ark-db]
+  (-> ark-value
+      (ark-value-assoc-mapish ark-db :journal-entries)
+      (ark-value-assoc-mapish ark-db :indexes)
+      (ark-value-assoc-mapish ark-db :random-rolons)))
+
+(defn create-ark [ark-db]
+  (-> (arkRecord/->Ark-record)
+      (init-ark-value ark-db)))
 
 (defn get-selected-time [ark-value]
   (:selected-time ark-value))

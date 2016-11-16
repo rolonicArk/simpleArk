@@ -18,7 +18,7 @@
 (defmethod ark-value/eval-transaction ::hello-world!
   [ark-value ark-db n s]
   (println "Hello," s)
-  (let [je-uuid (ark-value/get-latest-journal-entry-uuid ark-value)]
+  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)]
     (ark-value/update-property ark-value ark-db je-uuid [:index/headline] "Just for fun!")))
 
 (defn ark-dba0-test

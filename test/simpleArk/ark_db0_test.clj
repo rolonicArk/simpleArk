@@ -20,7 +20,7 @@
 (defmethod ark-value/eval-transaction ::hello-world!
   [ark-value ark-db n s]
   (println "Hello," s)
-  (let [je-uuid (ark-value/get-latest-journal-entry-uuid ark-value)]
+  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)]
     (ark-value/update-property ark-value ark-db je-uuid [:index/headline] "Just for fun!")))
 
 (defn test0
@@ -36,7 +36,7 @@
   (def hello-je-uuid (ark-db/process-transaction! ark-db ::hello-world! "Fred"))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)
-        r (ark-value/get-rolon ark-value hello-je-uuid)]
+        r (arkRecord/get-rolon ark-value hello-je-uuid)]
     (println "-----------")
     (println :hello-je (pr-str r))
     (println "-----------")
@@ -140,9 +140,9 @@
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-        _ (println "total je count:" (count (ark-value/get-journal-entries ark-value)))
-        ark-value (ark-value/select-time ark-value make-bob-je-uuid)]
-    (println "selected je count:" (count (ark-value/get-journal-entries ark-value)))
+        _ (println "total je count:" (count (arkRecord/get-journal-entries ark-value)))
+        ark-value (arkRecord/select-time ark-value make-bob-je-uuid)]
+    (println "selected je count:" (count (arkRecord/get-journal-entries ark-value)))
     (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
     (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
     )
@@ -153,7 +153,7 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep (fn [x] (println
                            (ark-value/get-property-value ark-value (first (key x)) [:index/headline])))
-                 (seq (ark-value/get-journal-entries ark-value)))))
+                 (seq (arkRecord/get-journal-entries ark-value)))))
 
   (println)
   (println ">>>>>>>>>>>> all the latest headlines")
@@ -172,7 +172,7 @@
     (first (keep #(println (val %)
                            "-"
                            (ark-value/get-property-value ark-value (first (key %)) [:index/headline]))
-                 (rseq (ark-value/get-changes-by-property ark-value
+                 (rseq (arkRecord/get-changes-by-property ark-value
                                                           bob-uuid
                                                           [:index/headline]))))))
 

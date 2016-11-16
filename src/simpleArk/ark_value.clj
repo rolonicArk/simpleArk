@@ -74,29 +74,6 @@
                   (seq properties))]
     (assoc rolon-record :changes-by-property changes)))
 
-(defn get-content-index
-  "returns a seq of [value uuid]"
-  [ark-value index-uuid]
-  (map
-    (fn [e]
-      (let [v (key e)]
-        [(v 1) (v 2)]))
-    (filter
-      #(some? (val %))
-      (seq (mapish/mi-sub
-             (arkRecord/get-property-values ark-value index-uuid)
-             [:content/index])))))
-
-(defn get-related-uuids
-  "returns a lazy seq of the related uuids"
-  [ark-value uuid relation-keyword]
-  (map
-    (fn [e]
-      ((key e) 1))
-    (filter
-      #(val %)
-      (seq (mapish/mi-sub (arkRecord/get-property-values ark-value uuid) [relation-keyword])))))
-
 (declare update-properties- je-modified)
 
 (defn update-properties

@@ -60,8 +60,8 @@
           [:content/brothers "Jeff"] true}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (println :rel/modified (ark-value/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
-    (println :inv-rel/modified (ark-value/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
+    (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
+    (println :inv-rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
     (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
     (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
     (println :brothers
@@ -160,7 +160,7 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
         headline-index-uuid (arkRecord/get-index-uuid ark-value "headline")
-        content-index (ark-value/get-content-index
+        content-index (arkRecord/get-content-index
                            ark-value
                            headline-index-uuid)]
     (doall (map #(println (first %)) content-index)))

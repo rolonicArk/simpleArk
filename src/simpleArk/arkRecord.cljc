@@ -117,3 +117,26 @@
   [ark-record rolon-name]
   (let [name-index-uuid (get-index-uuid ark-record "name")]
     (index-lookup ark-record name-index-uuid rolon-name)))
+
+(defn get-content-index
+  "returns a seq of [value uuid]"
+  [ark-record index-uuid]
+  (map
+    (fn [e]
+      (let [v (key e)]
+        [(v 1) (v 2)]))
+    (filter
+      #(some? (val %))
+      (seq (mapish/mi-sub
+             (get-property-values ark-record index-uuid)
+             [:content/index])))))
+
+(defn get-related-uuids
+  "returns a lazy seq of the related uuids"
+  [ark-record uuid relation-keyword]
+  (map
+    (fn [e]
+      ((key e) 1))
+    (filter
+      #(val %)
+      (seq (mapish/mi-sub (get-property-values ark-record uuid) [relation-keyword])))))

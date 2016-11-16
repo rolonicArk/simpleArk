@@ -62,11 +62,11 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (println :rel/modified (ark-value/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
     (println :inv-rel/modified (ark-value/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
-    (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
-    (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
+    (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
+    (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
     (println :brothers
                (mapish/mi-sub
-                 (ark-value/get-property-values ark-value bob-uuid)
+                 (arkRecord/get-property-values ark-value bob-uuid)
                  [:content/brothers])))
 
   (println)
@@ -133,8 +133,8 @@
          {[:index/headline] "destroy bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
   (let [ark-value (ark-db/get-ark-value ark-db)]
-    (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
-    (println :lookup-bob (ark-value/name-lookup ark-value "Bob")))
+    (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
+    (println :lookup-bob (arkRecord/name-lookup ark-value "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
@@ -143,8 +143,8 @@
         _ (println "total je count:" (count (arkRecord/get-journal-entries ark-value)))
         ark-value (arkRecord/select-time ark-value make-bob-je-uuid)]
     (println "selected je count:" (count (arkRecord/get-journal-entries ark-value)))
-    (println :bob-properties (ark-value/get-property-values ark-value bob-uuid))
-    (println :lookup-bob (ark-value/name-lookup ark-value "Bob"))
+    (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
+    (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
     )
 
   (println)
@@ -152,14 +152,14 @@
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep (fn [x] (println
-                           (ark-value/get-property-value ark-value (first (key x)) [:index/headline])))
+                           (arkRecord/get-property-value ark-value (first (key x)) [:index/headline])))
                  (seq (arkRecord/get-journal-entries ark-value)))))
 
   (println)
   (println ">>>>>>>>>>>> all the latest headlines")
   (println)
   (let [ark-value (ark-db/get-ark-value ark-db)
-        headline-index-uuid (ark-value/get-index-uuid ark-value "headline")
+        headline-index-uuid (arkRecord/get-index-uuid ark-value "headline")
         content-index (ark-value/get-content-index
                            ark-value
                            headline-index-uuid)]
@@ -171,7 +171,7 @@
   (let [ark-value (ark-db/get-ark-value ark-db)]
     (first (keep #(println (val %)
                            "-"
-                           (ark-value/get-property-value ark-value (first (key %)) [:index/headline]))
+                           (arkRecord/get-property-value ark-value (first (key %)) [:index/headline]))
                  (rseq (arkRecord/get-changes-by-property ark-value
                                                           bob-uuid
                                                           [:index/headline]))))))

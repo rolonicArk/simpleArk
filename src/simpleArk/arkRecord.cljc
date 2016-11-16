@@ -3,8 +3,10 @@
                 [simpleArk.reader :as reader]
                :cljs
                [cljs.reader :as reader])
+                [simpleArk.miView :as miView]
                 [simpleArk.mapish :as mapish]
-                [simpleArk.uuid :as uuid]))
+                [simpleArk.uuid :as uuid])
+  (:import (java.util UUID)))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -72,3 +74,46 @@
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-record)))))
   ([ark-value rolon-uuid]
    (:changes-by-property (get-rolon ark-value rolon-uuid))))
+
+(defn get-property-value
+  [ark-record rolon-uuid property-path]
+  (mapish/validate-property-path property-path)
+  (let [changes (get-changes-by-property ark-record rolon-uuid property-path)]
+    (if changes
+      (val (first (rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-record)))))
+      nil)))
+
+(defn get-property-values
+  ([ark-record rolon-uuid]
+   (get-property-values ark-record rolon-uuid (get-changes-by-property ark-record rolon-uuid)))
+  ([ark-record rolon-uuid all-changes]
+   (miView/->MI-view ark-record rolon-uuid all-changes (get-selected-time ark-record))))
+
+(defn index-lookup
+  "returns the uuids for a given index-uuid and value"
+  [ark-record index-uuid value]
+  (map
+    (fn [e]
+      ((key e) 2))
+    (filter
+      #(some? (val %))
+      (seq (mapish/mi-sub
+             (get-property-values ark-record index-uuid)
+             [:content/index value])))))
+
+(def index-name-uuid-string "8cacc5db-70b3-5a83-85cf-c29541e14114")
+
+#?(:clj
+   (def index-name-uuid (UUID/fromString index-name-uuid-string))
+   :cljs
+   (def index-name-uuid (uuid index-name-uuid-string)))
+
+(defn get-index-uuid
+  "Looks up the index name in the index-name index rolon."
+  [ark-record index-name]
+  (first (index-lookup ark-record index-name-uuid index-name)))
+
+(defn name-lookup
+  [ark-record rolon-name]
+  (let [name-index-uuid (get-index-uuid ark-record "name")]
+    (index-lookup ark-record name-index-uuid rolon-name)))

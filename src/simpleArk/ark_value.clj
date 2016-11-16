@@ -2,7 +2,6 @@
   (:require [simpleArk.uuid :as uuid]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
-            [simpleArk.miView :as miView]
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.arkRecord :as arkRecord])
   (:import (java.util UUID)))
@@ -30,93 +29,50 @@
   (-> (arkRecord/->Ark-record)
       (init-ark-value component-map)))
 
-(defn get-rolon-uuid
-  "returns the uuid of the rolon"
-  [rolon]
-  (:rolon-uuid rolon))
-
 (defn assoc-rolon
   "update the ark with the revised/new rolon"
-  [ark-value rolon-uuid rolon]
+  [ark-record rolon-uuid rolon-record]
   (cond
     (uuid/journal-entry-uuid? rolon-uuid)
-    (let [journal-entries (arkRecord/get-journal-entries ark-value)
-          journal-entries (assoc journal-entries [rolon-uuid] rolon)]
-      (assoc ark-value :journal-entries journal-entries))
+    (let [journal-entries (arkRecord/get-journal-entries ark-record)
+          journal-entries (assoc journal-entries [rolon-uuid] rolon-record)]
+      (assoc ark-record :journal-entries journal-entries))
     (uuid/index-uuid? rolon-uuid)
-    (let [indexes (arkRecord/get-indexes ark-value)
-          indexes (assoc indexes [rolon-uuid] rolon)]
-      (assoc ark-value :indexes indexes))
+    (let [indexes (arkRecord/get-indexes ark-record)
+          indexes (assoc indexes [rolon-uuid] rolon-record)]
+      (assoc ark-record :indexes indexes))
     (uuid/random-uuid? rolon-uuid)
-    (let [rolons (arkRecord/get-random-rolons ark-value)
-          rolons (assoc rolons [rolon-uuid] rolon)]
-      (assoc ark-value :random-rolons rolons))
+    (let [rolons (arkRecord/get-random-rolons ark-record)
+          rolons (assoc rolons [rolon-uuid] rolon-record)]
+      (assoc ark-record :random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
 (defn update-changes-for-property
-  [ark-value ark-db changes-by-property je-uuid property-name new-value]
+  [changes-by-property component-map je-uuid property-name new-value]
   (let [changes-by-property (if (some? changes-by-property)
                               changes-by-property
-                              (create-mi ark-db))]
+                              (create-mi component-map))]
     (assoc changes-by-property
       property-name
       (let [property-changes (get changes-by-property property-name)
             property-changes (if (some? property-changes)
                                property-changes
-                               (create-mi ark-db))
+                               (create-mi component-map))
             first-entry (first (seq property-changes))]
         (if (or (nil? first-entry) (not= new-value (val first-entry)))
           (assoc property-changes [je-uuid] new-value)
           property-changes)))))
 
 (defn update-rolon-properties
-  [ark-value ark-db rolon je-uuid properties]
-  (let [rolon-uuid (get-rolon-uuid rolon)
-        changes (arkRecord/get-changes-by-property ark-value rolon-uuid)
+  [rolon-record ark-record component-map je-uuid properties]
+  (let [rolon-uuid (rolonRecord/get-rolon-uuid rolon-record)
+        changes (arkRecord/get-changes-by-property ark-record rolon-uuid)
         changes (reduce
                   (fn [ch pe]
-                    (update-changes-for-property ark-value ark-db ch je-uuid (key pe) (val pe)))
+                    (update-changes-for-property ch component-map je-uuid (key pe) (val pe)))
                   changes
                   (seq properties))]
-    (assoc rolon :changes-by-property changes)))
-
-(defn get-property-value
-  [ark-value rolon-uuid property-path]
-  (mapish/validate-property-path property-path)
-  (let [changes (arkRecord/get-changes-by-property ark-value rolon-uuid property-path)]
-    (if changes
-      (val (first (rseq (mapish/mi-sub changes nil nil <= (arkRecord/get-selected-time ark-value)))))
-      nil)))
-
-(defn get-property-values
-  ([ark-value rolon-uuid]
-   (get-property-values ark-value rolon-uuid (arkRecord/get-changes-by-property ark-value rolon-uuid)))
-  ([ark-value rolon-uuid all-changes]
-   (miView/->MI-view ark-value rolon-uuid all-changes (arkRecord/get-selected-time ark-value))))
-
-(defn index-lookup
-  "returns the uuids for a given index-uuid and value"
-  [ark-value index-uuid value]
-  (map
-    (fn [e]
-      ((key e) 2))
-    (filter
-      #(some? (val %))
-      (seq (mapish/mi-sub
-             (get-property-values ark-value index-uuid)
-             [:content/index value])))))
-
-(def index-name-uuid (UUID/fromString "8cacc5db-70b3-5a83-85cf-c29541e14114"))
-
-(defn get-index-uuid
-  "Looks up the index name in the index-name index rolon."
-  [ark-value index-name]
-  (first (index-lookup ark-value index-name-uuid index-name)))
-
-(defn name-lookup
-  [ark-value rolon-name]
-  (let [name-index-uuid (get-index-uuid ark-value "name")]
-    (index-lookup ark-value name-index-uuid rolon-name)))
+    (assoc rolon-record :changes-by-property changes)))
 
 (defn get-content-index
   "returns a seq of [value uuid]"
@@ -128,7 +84,7 @@
     (filter
       #(some? (val %))
       (seq (mapish/mi-sub
-             (get-property-values ark-value index-uuid)
+             (arkRecord/get-property-values ark-value index-uuid)
              [:content/index])))))
 
 (defn get-related-uuids
@@ -139,7 +95,7 @@
       ((key e) 1))
     (filter
       #(val %)
-      (seq (mapish/mi-sub (get-property-values ark-value uuid) [relation-keyword])))))
+      (seq (mapish/mi-sub (arkRecord/get-property-values ark-value uuid) [relation-keyword])))))
 
 (declare update-properties- je-modified)
 
@@ -201,14 +157,14 @@
 
 (defn update-properties-
   [ark-value ark-db journal-entry-uuid rolon-uuid properties]
-  (let [property-values (get-property-values ark-value rolon-uuid)
+  (let [property-values (arkRecord/get-property-values ark-value rolon-uuid)
         ark-value (make-index-rolon ark-value
                                     ark-db
                                     rolon-uuid
                                     properties
                                     property-values)
         rolon (arkRecord/get-rolon ark-value rolon-uuid)
-        rolon (update-rolon-properties ark-value ark-db rolon journal-entry-uuid properties)]
+        rolon (update-rolon-properties rolon ark-value ark-db journal-entry-uuid properties)]
     (assoc-rolon ark-value rolon-uuid rolon)))
 
 (defn update-property-
@@ -247,7 +203,7 @@
 
 (defn destroy-rolon
   [ark-value ark-db rolon-uuid]
-  (let [old-property-values (get-property-values ark-value rolon-uuid)
+  (let [old-property-values (arkRecord/get-property-values ark-value rolon-uuid)
         property-values (reduce #(assoc %1 (key %2) nil)
                                 (create-mi ark-db)
                                 (seq old-property-values))
@@ -258,7 +214,7 @@
                                     old-property-values)
         je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)
         rolon (arkRecord/get-rolon ark-value rolon-uuid)
-        rolon (update-rolon-properties ark-value ark-db rolon je-uuid property-values)
+        rolon (update-rolon-properties rolon ark-value ark-db je-uuid property-values)
         ark-value (assoc-rolon ark-value rolon-uuid rolon)]
     (je-modified ark-value ark-db rolon-uuid)))
 

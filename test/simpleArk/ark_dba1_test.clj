@@ -8,7 +8,8 @@
             [simpleArk.ark-dba1 :as ark-dba1]
             [simpleArk.tlog :as tlog]
             [simpleArk.tlog0 :as tlog0]
-            [simpleArk.closer :as closer]))
+            [simpleArk.closer :as closer]
+            [simpleArk.arkRecord :as arkRecord]))
 
 (set! *warn-on-reflection* true)
 

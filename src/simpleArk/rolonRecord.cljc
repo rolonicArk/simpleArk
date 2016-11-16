@@ -16,3 +16,8 @@
      (reader/register-tag-parser! component-map 'simpleArk.rolonRecord.Rolon-record load-rolon))
    :cljs
    (reader/register-tag-parser! "simpleArk.rolonRecord.Rolon-record" load-rolon))
+
+(defn get-rolon-uuid
+  "returns the uuid of the rolon"
+  [rolon-record]
+  (:rolon-uuid rolon-record))

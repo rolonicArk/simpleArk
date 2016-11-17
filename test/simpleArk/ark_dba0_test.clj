@@ -6,7 +6,8 @@
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-dba0 :as ark-dba0]
-            [simpleArk.closer :as closer]))
+            [simpleArk.closer :as closer]
+            [simpleArk.arkRecord :as arkRecord]))
 
 (set! *warn-on-reflection* true)
 

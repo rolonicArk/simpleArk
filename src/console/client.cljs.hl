@@ -9,6 +9,6 @@
        (partial swap! login/common-data assoc :console))
 
 (def do-console
-  (h2 my-ark-record))
+  (h2 (text (pr-str my-ark-record))))
 
 (defmethod login/add-element :console [_] (do-console))

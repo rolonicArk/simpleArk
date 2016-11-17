@@ -6,6 +6,7 @@
         [welcome.client]
         [profile.client]
         [contacts.client]
+        [console.client]
         [simpleArk.uuid :as suuid]
         [simpleArk.miMap :as miMap]
         [simpleArk.miView :as miView]

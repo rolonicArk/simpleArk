@@ -1,0 +1,8 @@
+(ns console.client
+  (:require
+    [tiples.login :as login]))
+
+(def do-console
+  (h2 (text "Ark Console")))
+
+(defmethod login/add-element :console [_] (do-console))

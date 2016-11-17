@@ -64,7 +64,8 @@
     (uuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record) [uuid])
     (uuid/index-uuid? uuid) (get (get-indexes ark-record) [uuid])
     (uuid/random-uuid? uuid) (get (get-random-rolons ark-record) [uuid])
-    :else (throw (Exception. (str uuid " was not recognized")))))
+    :else #?(:clj (throw (Exception. (str uuid " was not recognized")))
+             :cljs (throw (str uuid " was not recognized")))))
 
 (defn get-changes-by-property
   ([ark-record rolon-uuid property-path]

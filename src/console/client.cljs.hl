@@ -1,5 +1,6 @@
 (ns console.client
   (:require
+    [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]))
 
 (defc= my-ark-record

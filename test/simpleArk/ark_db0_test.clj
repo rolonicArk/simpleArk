@@ -13,7 +13,8 @@
             [simpleArk.reader :as reader]
             [simpleArk.miMap :as miMap]
             [simpleArk.arkRecord :as arkRecord]
-            [simpleArk.rolonRecord :as rolonRecord]))
+            [simpleArk.rolonRecord :as rolonRecord]
+            ))
 
 (set! *warn-on-reflection* true)
 

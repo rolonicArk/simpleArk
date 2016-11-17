@@ -2,7 +2,13 @@
   (:require
     [tiples.login :as login]))
 
+(defc= my-ark-record
+       (if login/common-data
+         (:console login/common-data)
+         nil)
+       (partial swap! login/common-data assoc :console))
+
 (def do-console
-  (h2 (text "Ark Console")))
+  (h2 my-ark-record))
 
 (defmethod login/add-element :console [_] (do-console))

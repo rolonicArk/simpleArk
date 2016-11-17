@@ -1,4 +1,4 @@
 (ns console.demo
   (:require [console.server :as console]))
 
-(console/update-ark-record! "Hello!")
+(console/update-ark-record! 42)

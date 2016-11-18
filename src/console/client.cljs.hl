@@ -1,5 +1,8 @@
 (ns console.client
   (:require
+    [simpleArk.uuid :as suuid]
+    [simpleArk.miMap :as miMap]
+    [simpleArk.rolonRecord :as rolonRecord]
     [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]))
 
@@ -9,7 +12,14 @@
          nil)
        (partial swap! login/common-data assoc :console))
 
+(defn je-count [ark-record]
+  (str "journal entry count: " (count (arkRecord/get-journal-entries ark-record))))
+
 (def do-console
-  (h2 (text (pr-str my-ark-record))))
+  (div
+    (h2 "Ark Console")
+    (p (text (pr-str my-ark-record)))
+    (p (text (je-count my-ark-record)))
+    ))
 
 (defmethod login/add-element :console [_] (do-console))

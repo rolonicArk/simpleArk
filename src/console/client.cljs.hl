@@ -1,10 +1,14 @@
 (ns console.client
   (:require
+    [cljs.reader :as reader]
     [simpleArk.uuid :as suuid]
+    [simpleArk.miView :as miView]
     [simpleArk.miMap :as miMap]
     [simpleArk.rolonRecord :as rolonRecord]
     [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]))
+
+(reader/register-tag-parser! "uuid" uuid)
 
 (defc= my-ark-record
        (if login/common-data
@@ -13,12 +17,13 @@
        (partial swap! login/common-data assoc :console))
 
 (defn je-count [ark-record]
-  (str "journal entry count: " (count (arkRecord/get-journal-entries ark-record))))
+  (if ark-record
+    (str "journal entry count: " (count (arkRecord/get-journal-entries ark-record)))
+    ""))
 
 (def do-console
   (div
     (h2 "Ark Console")
-    (p (text (pr-str my-ark-record)))
     (p (text (je-count my-ark-record)))
     ))
 

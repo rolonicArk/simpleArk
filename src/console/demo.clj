@@ -14,7 +14,14 @@
             [simpleArk.miMap :as miMap]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
+            [tiples.server :as tiples]
             ))
+
+(defmethod ark-value/eval-transaction ::hello-world!
+  [ark-value ark-db n s]
+  (println "Hello," s)
+  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)]
+    (ark-value/update-property ark-value ark-db je-uuid [:index/headline] "Just for fun!")))
 
 (def ark-db ((comp
                (ark-db/builder)
@@ -25,6 +32,12 @@
                (logt/builder)
                (reader/builder))
               {}))
-(ark-db/open-ark! ark-db)
 
-(console/update-ark-record! (ark-db/get-ark-value ark-db))
+(defn initializer
+  []
+  (miMap/register ark-db)
+  (arkRecord/register ark-db)
+  (rolonRecord/register ark-db)
+  (ark-db/open-ark! ark-db)
+  (ark-db/process-transaction! ark-db ::hello-world! "Fred")
+  (console/update-ark-record! (ark-db/get-ark-value ark-db)))

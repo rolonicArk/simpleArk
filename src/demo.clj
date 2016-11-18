@@ -3,6 +3,9 @@
              [welcome.demo]
              [profile.server]
              [contacts.demo]
-             [console.demo]))
+             [console.demo :as console]
+             ))
+
+(console/initializer)
 
 (def handler tiples/routes)

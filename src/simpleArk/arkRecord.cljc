@@ -39,7 +39,7 @@
   [ark-record]
   (:indexes ark-record))
 
-(defn get-random-rolons
+(defn get-application-rolons
   [ark-record]
   (:random-rolons ark-record))
 
@@ -63,7 +63,7 @@
   (cond
     (uuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record) [uuid])
     (uuid/index-uuid? uuid) (get (get-indexes ark-record) [uuid])
-    (uuid/random-uuid? uuid) (get (get-random-rolons ark-record) [uuid])
+    (uuid/random-uuid? uuid) (get (get-application-rolons ark-record) [uuid])
     :else #?(:clj (throw (Exception. (str uuid " was not recognized")))
              :cljs (throw (str uuid " was not recognized")))))
 

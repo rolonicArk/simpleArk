@@ -42,7 +42,7 @@
           indexes (assoc indexes [rolon-uuid] rolon-record)]
       (assoc ark-record :indexes indexes))
     (uuid/random-uuid? rolon-uuid)
-    (let [rolons (arkRecord/get-random-rolons ark-record)
+    (let [rolons (arkRecord/get-application-rolons ark-record)
           rolons (assoc rolons [rolon-uuid] rolon-record)]
       (assoc ark-record :random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))

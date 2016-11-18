@@ -21,10 +21,22 @@
     (str "journal entry count: " (count (arkRecord/get-journal-entries ark-record)))
     ""))
 
+(defn indexes-count [ark-record]
+  (if ark-record
+    (str "indexes count: " (count (arkRecord/get-indexes ark-record)))
+    ""))
+
+(defn application-rolons-count [ark-record]
+  (if ark-record
+    (str "application rolons count: " (count (arkRecord/get-application-rolons ark-record)))
+    ""))
+
 (def do-console
   (div
     (h2 "Ark Console")
     (p (text (je-count my-ark-record)))
+    (p (text (indexes-count my-ark-record)))
+    (p (text (application-rolons-count my-ark-record)))
     ))
 
 (defmethod login/add-element :console [_] (do-console))

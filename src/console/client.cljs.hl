@@ -6,7 +6,8 @@
     [simpleArk.miMap :as miMap]
     [simpleArk.rolonRecord :as rolonRecord]
     [simpleArk.arkRecord :as arkRecord]
-    [tiples.login :as login]))
+    [tiples.login :as login]
+    [tiples.client :as tiples]))
 
 (reader/register-tag-parser! "uuid" uuid)
 
@@ -37,6 +38,9 @@
     (p (text (je-count my-ark-record)))
     (p (text (indexes-count my-ark-record)))
     (p (text (application-rolons-count my-ark-record)))
+    (button
+      :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}])
+      "Hello Fred")
     ))
 
 (defmethod login/add-element :console [_] (do-console))

@@ -25,7 +25,7 @@
         (try
           (ark-db/update-ark-db ark-db je-uuid transaction-name s)
           (tlog/add-tran! ark-db je-uuid transaction-name s rsp-chan
-                         (ark-db/get-ark-value ark-db))
+                          (ark-db/get-ark-record ark-db))
           (catch Exception e
             (log/warn! ark-db "transaction failure" transaction-name s
                        (.toString e))

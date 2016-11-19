@@ -31,7 +31,7 @@
   [ark-db ark-value]
   (reset! (::ark-atom ark-db) ark-value))
 
-(defn get-ark-value
+(defn get-ark-record
   "returns the value of the ark"
   [ark-db]
   @(::ark-atom ark-db))

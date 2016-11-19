@@ -28,7 +28,7 @@
   "tests that even work with impl0"
   [ark-db]
 
-  (let [ark-value (ark-db/get-ark-value ark-db)]
+  (let [ark-value (ark-db/get-ark-record ark-db)]
     (println :empty-ark ark-value)
     (println :round-trp (reader/read-string ark-db (pr-str ark-value))))
   (println)
@@ -36,7 +36,7 @@
   (println)
   (def hello-je-uuid (ark-db/process-transaction! ark-db ::hello-world! "Fred"))
   (is (= :transaction ((log/get-msg ark-db) 1)))
-  (let [ark-value (ark-db/get-ark-value ark-db)
+  (let [ark-value (ark-db/get-ark-record ark-db)
         r (arkRecord/get-rolon ark-value hello-je-uuid)]
     (println "-----------")
     (println :hello-je (pr-str r))
@@ -60,7 +60,7 @@
           [:content/brothers "John"] true
           [:content/brothers "Jeff"] true}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
-  (let [ark-value (ark-db/get-ark-value ark-db)]
+  (let [ark-value (ark-db/get-ark-record ark-db)]
     (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
     (println :inv-rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
     (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
@@ -133,14 +133,14 @@
         [bob-uuid
          {[:index/headline] "destroy bob"}])))
   (is (= :transaction ((log/get-msg ark-db) 1)))
-  (let [ark-value (ark-db/get-ark-value ark-db)]
+  (let [ark-value (ark-db/get-ark-record ark-db)]
     (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
     (println :lookup-bob (arkRecord/name-lookup ark-value "Bob")))
 
   (println)
   (println ">>>>>>>>>> select time: make-bob-je-uuid")
   (println)
-  (let [ark-value (ark-db/get-ark-value ark-db)
+  (let [ark-value (ark-db/get-ark-record ark-db)
         _ (println "total je count:" (count (arkRecord/get-journal-entries ark-value)))
         ark-value (arkRecord/select-time ark-value make-bob-je-uuid)]
     (println "selected je count:" (count (arkRecord/get-journal-entries ark-value)))
@@ -151,7 +151,7 @@
   (println)
   (println ">>>>>>>>>>>> journal entry headlines")
   (println)
-  (let [ark-value (ark-db/get-ark-value ark-db)]
+  (let [ark-value (ark-db/get-ark-record ark-db)]
     (first (keep (fn [x] (println
                            (arkRecord/get-property-value ark-value (first (key x)) [:index/headline])))
                  (seq (arkRecord/get-journal-entries ark-value)))))
@@ -159,7 +159,7 @@
   (println)
   (println ">>>>>>>>>>>> all the latest headlines")
   (println)
-  (let [ark-value (ark-db/get-ark-value ark-db)
+  (let [ark-value (ark-db/get-ark-record ark-db)
         headline-index-uuid (arkRecord/get-index-uuid ark-value "headline")
         content-index (arkRecord/get-content-index
                            ark-value
@@ -169,7 +169,7 @@
   (println)
   (println ">>>>>>>>>>>> bob's headlines over time")
   (println)
-  (let [ark-value (ark-db/get-ark-value ark-db)]
+  (let [ark-value (ark-db/get-ark-record ark-db)]
     (first (keep #(println (val %)
                            "-"
                            (arkRecord/get-property-value ark-value (first (key %)) [:index/headline]))

@@ -17,10 +17,10 @@
         rsp-chan (async/chan 1)]
     (ark-db/init-ark-db! c "_")
     (tlog/add-tran! c 1 "a" "-" rsp-chan "x")
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
     (tlog/add-tran! c 2 "b" "-" rsp-chan "y")
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
     (tlog/add-tran! c 3 "c" "-" rsp-chan "z")
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
     (println (tlog/tran-seq c))
     (println (tlog/tran-seq c 2))))

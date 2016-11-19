@@ -15,7 +15,7 @@
         rsp-chan (async/chan 10)]
     (ark-db/init-ark-db! c "_")
     (pub/publish! c "x" [[rsp-chan 1]])
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
     (pub/publish! c "z" [[rsp-chan 2] [rsp-chan 3]])
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))
-    (println (async/<!! rsp-chan) (ark-db/get-ark-value c))))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
+    (println (async/<!! rsp-chan) (ark-db/get-ark-record c))))

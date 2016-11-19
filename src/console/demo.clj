@@ -19,4 +19,5 @@
 
   (ark-db/open-ark! ark-db)
   (ark-db/process-transaction! ark-db :hello-world! "Fred")
-  (console/update-ark-record! (ark-db/get-ark-record ark-db)))
+  (console/update-ark-record! (ark-db/get-ark-record ark-db))
+  )

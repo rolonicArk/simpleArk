@@ -46,6 +46,7 @@
       (try
         (println :transaction tran-keyword tran-data)
         (ark-db/process-transaction! ark-db tran-keyword tran-data)
+        (update-ark-record! (ark-db/get-ark-record ark-db))
         (println :broadcast)
         (users/broadcast! :console/update (ark-db/get-ark-record ark-db))
         (catch Exception e

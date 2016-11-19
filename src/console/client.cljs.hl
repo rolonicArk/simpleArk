@@ -9,8 +9,6 @@
     [tiples.login :as login]
     [tiples.client :as tiples]))
 
-(reader/register-tag-parser! "uuid" uuid)
-
 (defc= my-ark-record
        (if login/common-data
          (:console login/common-data)

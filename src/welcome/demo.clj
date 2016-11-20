@@ -1,6 +1,5 @@
 (ns welcome.demo
-  (:require [tiples.users :as users]
-            [welcome.server]))
+  (:require [tiples.users :as users]))
 
 (users/add-user! "Fred" "fred" {:welcome {:full-name "Freddy Krueger"}
                                 :profile {}

@@ -12,8 +12,6 @@
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.miMap :as miMap]))
 
-(users/add-capability :console)
-
 (defn update-ark-record!
   [ark-record]
   (swap! users/common-data

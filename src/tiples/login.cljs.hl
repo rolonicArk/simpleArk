@@ -15,7 +15,7 @@
 
 (defc= capability-names (reduce
                           (fn [v i]
-                              (conj v (name i)))
+                            (conj v (name i)))
                           []
                           capabilities))
 

@@ -15,6 +15,10 @@
          nil)
        (partial swap! login/common-data assoc :console))
 
+(defmethod tiples/chsk-recv :console/update
+           [id ark-record]
+           (reset! my-ark-record ark-record))
+
 (defn je-count [ark-record]
   (if ark-record
     (str "journal entry count: " (count (arkRecord/get-journal-entries ark-record)))

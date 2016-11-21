@@ -8,7 +8,8 @@
 
 (defn add-capability
   [capability]
-  (swap! capabilities conj capability))
+  (if (= -1 (.indexOf @capabilities capability))
+    (swap! capabilities conj capability)))
 
 (defrecord user [name password user-data])
 

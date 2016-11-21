@@ -11,7 +11,7 @@
 (defc user-data nil)
 (defc user-name "")
 (def error (cell false))
-(def route (route-cell))
+(def route (route-cell "#/home/"))
 
 (defc= capability-names (reduce
                           (fn [v i]

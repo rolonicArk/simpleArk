@@ -36,7 +36,7 @@
       (div (for-tpl [capability login/capabilities]
                     (div
                       :css {:display "none"}
-                      :toggle (cell= (= login/reroute (name capability)))
+                      :toggle (cell= (and (some? capability) (= login/reroute (name capability))))
                       (login/add-element @capability)))))
 
     (login/login-div)))

@@ -161,4 +161,5 @@
     (if (validate-user name password)
       (add-session client-id name)
       (do
-        (tiples/chsk-send! client-id [:users/login-error nil])))))
+        (tiples/chsk-send! client-id [:users/login-error nil])
+        ))))

@@ -9,6 +9,9 @@
     [tiples.login :as login]
     [tiples.client :as tiples]))
 
+(def transaction-error (cell false))
+(def transaction-error-msg (cell ""))
+
 (defc= my-ark-record
        (if login/common-data
          (:console login/common-data)
@@ -17,7 +20,13 @@
 
 (defmethod tiples/chsk-recv :console/update
            [id ark-record]
+           (reset! transaction-error false)
            (reset! my-ark-record ark-record))
+
+(defmethod tiples/chsk-recv :console/error
+           [id msg]
+           (reset! transaction-error true)
+           (reset! transaction-error-msg msg))
 
 (defn je-count [ark-record]
   (if ark-record
@@ -40,9 +49,24 @@
     (p (text (je-count my-ark-record)))
     (p (text (indexes-count my-ark-record)))
     (p (text (application-rolons-count my-ark-record)))
+
+        (div
+          :slide-toggle transaction-error
+          :css {:display "none"}
+          (h1 (text (str "Error: " transaction-error-msg)))
+          )
+
     (button
       :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}])
       "Hello Fred")
+
+    (button
+      :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
+      "Invalid!")
+
+    (button
+      :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
+      "Trouble!")
     ))
 
 (defmethod login/add-element :console [_] (do-console))

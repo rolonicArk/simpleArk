@@ -70,15 +70,15 @@
 (defn login-div []
       (div
         (div
-          :slide-toggle error
-          :css {:display "none"}
-          (h1 "login error")
-          )
-        (div
           :id "login-pane"
           :css {:display "none"}
           :toggle show-login?
           (h2 :style "background-color:#f0f8f8" "Welcome to Tiples")
+        (div
+          :slide-toggle error
+          :css {:display "none"}
+          (p :style "color:red" "login error")
+          )
           (let [user (cell "")
                 pass (cell "")
                 pass2 (cell "")]

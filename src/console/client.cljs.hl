@@ -58,7 +58,7 @@
           :slide-toggle transaction-error
           :css {:display "none"}
           :style "color:red"
-          (h1 (text (str "Error: " transaction-error-msg)))
+          (p (text (str "Error: " transaction-error-msg)))
           )
 
     (button

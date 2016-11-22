@@ -55,6 +55,18 @@
                  (reset! common-data (?data 1))
                  (reset! user-data (?data 2)))))
 
+(defn tabs-div []
+      (div
+      (table (tr
+               (for-tpl [capability capability-names]
+                        (td (if-tpl (cell= (= capability reroute))
+                                    (strong capability)
+                                    (a :href (cell= (str "/#" capability)) capability))
+                            " | "))
+               (td (form
+                     :submit #(logout!)
+                     (button :type "submit" "log off")))))))
+
 (defn login-div []
       (div
         (div

@@ -24,15 +24,7 @@
     (div
       :css {:display "none"}
       :toggle login/show-app?
-      (table (tr
-               (for-tpl [capability login/capability-names]
-                        (td (if-tpl (cell= (= capability login/reroute))
-                                    (strong capability)
-                                    (a :href (cell= (str "/#" capability)) capability))
-                            " | "))
-               (td (form
-                     :submit #(login/logout!)
-                     (button :type "submit" "log off")))))
+      (login/tabs-div)
       (div (for-tpl [capability login/capabilities]
                     (div
                       :css {:display "none"}

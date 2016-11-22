@@ -44,8 +44,12 @@
     ""))
 
 (def do-console
+(div
+(div :id header
+     :style "background-color:#f0f0ff"
+      (login/tabs-div)
+    (h2 "Ark Console"))
   (div
-    (h2 "Ark Console")
     (p (text (je-count my-ark-record)))
     (p (text (indexes-count my-ark-record)))
     (p (text (application-rolons-count my-ark-record)))
@@ -67,6 +71,7 @@
     (button
       :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
       "Trouble!")
-    ))
+    )))
 
-(defmethod login/add-element :console [_] (do-console))
+(defmethod login/add-element :console [_] (
+      (do-console)))

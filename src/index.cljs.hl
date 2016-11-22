@@ -24,7 +24,6 @@
     (div
       :css {:display "none"}
       :toggle login/show-app?
-      (login/tabs-div)
       (div (for-tpl [capability login/capabilities]
                     (div
                       :css {:display "none"}

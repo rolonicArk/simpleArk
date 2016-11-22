@@ -37,7 +37,10 @@
 
 (def do-profile
   (div
-    (h2 "Profile")
+(div :id header
+     :style "background-color:#f0fff0"
+      (login/tabs-div)
+    (h2 "Profile"))
     (form
       :submit #(submit-user-data)
       (table
@@ -62,4 +65,5 @@
         )
       )))
 
-(defmethod login/add-element :profile [_] (do-profile))
+(defmethod login/add-element :profile [_] (
+      (do-profile)))

@@ -37,12 +37,11 @@
 (defn disabled? []
   (j/cell= (= my-profile (:profile login/user-data))))
 
-(def do-profile
+(defmethod login/add-header-element :profile [_]
+  (h/h2 "Profile"))
+
+(defmethod login/add-body-element :profile [_]
   (h/div
-    (h/div :id "header"
-           :style "background-color:#f0fff0"
-           (login/tabs-div)
-           (h/h2 "Profile"))
     (h/form
       :submit #(submit-user-data)
       (h/table
@@ -67,5 +66,3 @@
         )
       )))
 
-(defmethod login/add-element :profile [_]
-  (do-profile))

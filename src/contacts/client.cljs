@@ -66,16 +66,15 @@
                label)
              (h/pre (j/cell= (pr-str parsed))))))
 
+(defmethod login/add-header-element :contacts [_]
+  (h/h2 "Contact list"))
+
 (def do-contacts
   (h/div
-    (h/div :id "header"
-         :style "background-color:#fff0f0"
-         (login/tabs-div)
-         (h/h2 "Contact list"))
     (h/table (contact-list :from my-contacts :sorted-by :last))
     (contact-input :to add-contact "Add contact")
     (h/hr)
     (h/p (h/em "Note: The Add contact button is disabled until you enter a valid contact.  A valid contact consists of two or three whitespace-delimited names."))))
 
-(defmethod login/add-element :contacts [_]
+(defmethod login/add-body-element :contacts [_]
   (do-contacts))

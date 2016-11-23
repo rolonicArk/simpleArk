@@ -4,7 +4,8 @@
     [javelin.core :as j]
     [tiples.client :as tiples]))
 
-(defmulti add-element identity)
+(defmulti add-header-element identity)
+(defmulti add-body-element identity)
 
 (j/defc started false)
 (j/defc capabilities nil)
@@ -60,6 +61,7 @@
   (reset! fullScreenElement (getFullScreenElement))
   (reset! windowInnerWidth window.innerWidth)
   (reset! windowInnerHeight window.innerHeight)
+  (.log js/console (pr-str "windowInnerHeight " @windowInnerHeight))
   )
 
 (set! (.-onresize js/window) resize)
@@ -86,7 +88,8 @@
                           " | "))
              (h/td (h/form
                    :submit #(logout!)
-                   (h/button :type "submit" "log off")))))))
+                   (h/button :type "submit" "log off"))))))
+  )
 
 (defn login-div []
   (h/div

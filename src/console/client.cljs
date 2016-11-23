@@ -45,12 +45,11 @@
     (str "application rolons count: " (count (arkRecord/get-application-rolons ark-record)))
     ""))
 
+(defmethod login/add-header-element :console [_]
+  (h/h2 "Ark Console"))
+
 (def do-console
   (h/div
-    (h/div :id "header"
-         :style "background-color:#f0f0ff"
-         (login/tabs-div)
-         (h/h2 "Ark Console"))
     (h/div
       (h/p (h/text (je-count my-ark-record)))
       (h/p (h/text (indexes-count my-ark-record)))
@@ -76,5 +75,5 @@
         "Trouble!")
       )))
 
-(defmethod login/add-element :console [_]
+(defmethod login/add-body-element :console [_]
   (do-console))

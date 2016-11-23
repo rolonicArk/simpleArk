@@ -1,69 +1,71 @@
 (ns profile.client
   (:require
+    [hoplon.core :as h]
+    [javelin.core :as j]
     [tiples.client :as tiples]
     [tiples.login :as login]))
 
-(defc my-profile nil)
+(j/defc my-profile nil)
 
 (defn watch-user-data [k r o n]
-      (reset! my-profile
-              (if n
-                (:profile n)
-                nil)))
+  (reset! my-profile
+          (if n
+            (:profile n)
+            nil)))
 
 (add-watch login/user-data :profile watch-user-data)
 
-(defc= my-phone
+(j/defc= my-phone
        (if my-profile
          (get my-profile :phone "")
          nil)
        (partial swap! my-profile assoc :phone))
 
-(defc= my-email
+(j/defc= my-email
        (if my-profile
          (get my-profile :email "")
          nil)
        (partial swap! my-profile assoc :email))
 
 (defn submit-user-data []
-      (swap! login/user-data assoc :profile @my-profile)
-      (tiples/chsk-send! [:profile/update @my-profile]))
+  (swap! login/user-data assoc :profile @my-profile)
+  (tiples/chsk-send! [:profile/update @my-profile]))
 
 (defn reset-user-data []
-      (reset! my-profile (:profile @login/user-data)))
+  (reset! my-profile (:profile @login/user-data)))
 
 (defn disabled? []
-      (cell= (= my-profile (:profile login/user-data))))
+  (j/cell= (= my-profile (:profile login/user-data))))
 
 (def do-profile
-  (div
-(div :id header
-     :style "background-color:#f0fff0"
-      (login/tabs-div)
-    (h2 "Profile"))
-    (form
+  (h/div
+    (h/div :id "header"
+         :style "background-color:#f0fff0"
+         (login/tabs-div)
+         (h/h2 "Profile"))
+    (h/form
       :submit #(submit-user-data)
-      (table
-        (tr
-          (td (label "Phone "))
-          (td (input :type "text"
+      (h/table
+        (h/tr
+          (h/td (h/label "Phone "))
+          (h/td (h/input :type "text"
                      :value my-phone
                      :keyup #(reset! my-phone @%))))
-        (tr
-          (td (label "Email "))
-          (td (input :type "text"
+        (h/tr
+          (h/td (h/label "Email "))
+          (h/td (h/input :type "text"
                      :value my-email
                      :keyup #(reset! my-email @%))))
-        (tr
-          (td (button :type "submit"
+        (h/tr
+          (h/td (h/button :type "submit"
                       :disabled (disabled?)
                       "submit"))
-          (td :style "text-align:right" (button :click #(reset-user-data)
+          (h/td :style "text-align:right" (h/button :click #(reset-user-data)
                                                 :disabled (disabled?)
                                                 "reset"))
           )
         )
       )))
 
-(defmethod login/add-element :profile [_] (
-      (do-profile)))
+(defmethod login/add-element :profile [_]
+  (do-profile))

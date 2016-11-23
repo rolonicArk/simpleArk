@@ -65,7 +65,7 @@
   []
   (comp
     (serve
-      :handler 'demo/handler
+      :handler 'welcome.demo/handler
       :reload true
       :port 8000
       :httpkit true

@@ -44,6 +44,26 @@
   [id ?data]
   (reset! error true))
 
+(defn getFullScreenElement [] (or (aget js.document "fullscreenElement")
+                                  (aget js.document "mozFullScreenElement")
+                                  (aget js.document "webkitFullscreenElement")))
+
+(def fullScreenElement (j/cell (getFullScreenElement)))
+(def windowInnerWidth (j/cell window.innerWidth))
+(def windowInnerHeight (j/cell window.innerHeight))
+
+(defn resize []
+  (.log js/console (pr-str "bodyWidth "
+                           (.-width (.getBoundingClientRect (.-body js/document)))))
+  (.log js/console (pr-str "bodyHeight "
+                           (.-height (.getBoundingClientRect (.-body js/document)))))
+  (reset! fullScreenElement (getFullScreenElement))
+  (reset! windowInnerWidth window.innerWidth)
+  (reset! windowInnerHeight window.innerHeight)
+  )
+
+(set! (.-onresize js/window) resize)
+
 (defmethod tiples/chsk-recv :users/logged-in
   [id ?data]
   (if (nil? ?data)

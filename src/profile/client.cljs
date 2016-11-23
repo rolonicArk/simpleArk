@@ -16,16 +16,16 @@
 (add-watch login/user-data :profile watch-user-data)
 
 (j/defc= my-phone
-       (if my-profile
-         (get my-profile :phone "")
-         nil)
-       (partial swap! my-profile assoc :phone))
+         (if my-profile
+           (get my-profile :phone "")
+           nil)
+         (partial swap! my-profile assoc :phone))
 
 (j/defc= my-email
-       (if my-profile
-         (get my-profile :email "")
-         nil)
-       (partial swap! my-profile assoc :email))
+         (if my-profile
+           (get my-profile :email "")
+           nil)
+         (partial swap! my-profile assoc :email))
 
 (defn submit-user-data []
   (swap! login/user-data assoc :profile @my-profile)
@@ -40,29 +40,29 @@
 (def do-profile
   (h/div
     (h/div :id "header"
-         :style "background-color:#f0fff0"
-         (login/tabs-div)
-         (h/h2 "Profile"))
+           :style "background-color:#f0fff0"
+           (login/tabs-div)
+           (h/h2 "Profile"))
     (h/form
       :submit #(submit-user-data)
       (h/table
         (h/tr
           (h/td (h/label "Phone "))
           (h/td (h/input :type "text"
-                     :value my-phone
-                     :keyup #(reset! my-phone @%))))
+                         :value my-phone
+                         :keyup #(reset! my-phone @%))))
         (h/tr
           (h/td (h/label "Email "))
           (h/td (h/input :type "text"
-                     :value my-email
-                     :keyup #(reset! my-email @%))))
+                         :value my-email
+                         :keyup #(reset! my-email @%))))
         (h/tr
           (h/td (h/button :type "submit"
-                      :disabled (disabled?)
-                      "submit"))
+                          :disabled (disabled?)
+                          "submit"))
           (h/td :style "text-align:right" (h/button :click #(reset-user-data)
-                                                :disabled (disabled?)
-                                                "reset"))
+                                                    :disabled (disabled?)
+                                                    "reset"))
           )
         )
       )))

@@ -48,6 +48,26 @@
 (defmethod login/add-header-element :console [_]
   (h/h2 "Ark Console"))
 
+(defn fred []
+  (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
+
+(j/defc= consoleheader-element nil)
+
+(add-watch login/all-logged-in :re
+             (fn [_ _ _ _]
+               (let [e (.getElementById js/document "consoleheader")]
+                   (j/prop-cell (.-display (.-style e))
+                                consoleheader-element
+                                #(.log js/console "tweet"))
+                   (.log js/console (pr-str "ho "
+                                            (.-display (.-style e))))
+                   )
+               ))
+
+#_(add-watch consoleheader-element :re
+           (fn [_ _ _ n]
+             (.log js/console (pr-str "new " n))))
+
 (def do-console
   (h/div
     (h/div
@@ -63,7 +83,7 @@
         )
 
       (h/button
-        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}])
+        :click #(fred)
         "Hello Fred")
 
       (h/button

@@ -66,6 +66,8 @@
 
 (set! (.-onresize js/window) resize)
 
+(j/defc all-logged-in false)
+
 (defmethod tiples/chsk-recv :users/logged-in
   [id ?data]
   (if (nil? ?data)
@@ -73,10 +75,15 @@
       (reset! capabilities nil)
       (reset! common-data nil)
       (reset! user-data nil))
-    (j/dosync
-      (reset! capabilities (?data 0))
-      (reset! common-data (?data 1))
-      (reset! user-data (?data 2)))))
+    (do
+      (j/dosync
+        (reset! capabilities (?data 0))
+        (reset! common-data (?data 1))
+        (reset! user-data (?data 2)))
+      (reset! all-logged-in true)
+      (let [e (.getElementById js/document "consoleheader")]
+        (.log js/console "blipper" (pr-str e)))
+      )))
 
 (defn tabs-div []
   (h/div

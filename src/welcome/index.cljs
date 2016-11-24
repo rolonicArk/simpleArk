@@ -17,6 +17,10 @@
 
 (tiples/on-open opening)
 
+(defn subid [cap]
+  (.log js/console (pr-str cap))
+  (str (name cap) "header"))
+
 (tiples/start!)
 
 (h/html
@@ -41,9 +45,11 @@
              (h/div
                (h/for-tpl [capability login/capabilities]
                           (h/div
+                            :id (subid @capability)
                             :css {:display "none"}
                             :toggle (j/cell= (and (some? capability) (= login/reroute (name capability))))
-                            (login/add-header-element @capability))))
+                            (login/add-header-element @capability)))
+               )
              )
       (h/div
         (h/for-tpl [capability login/capabilities]

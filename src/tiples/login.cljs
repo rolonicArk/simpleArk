@@ -66,7 +66,11 @@
 
 (set! (.-onresize js/window) resize)
 
-(j/defc all-logged-in false)
+(j/defc header-height nil)
+
+(add-watch header-height :uu
+           (fn [_ _ _ n]
+             (.log js/console (pr-str "header height " n))))
 
 (defmethod tiples/chsk-recv :users/logged-in
   [id ?data]
@@ -80,9 +84,10 @@
         (reset! capabilities (?data 0))
         (reset! common-data (?data 1))
         (reset! user-data (?data 2)))
-      (reset! all-logged-in true)
-      (let [e (.getElementById js/document "consoleheader")]
-        (.log js/console "blipper" (pr-str e)))
+        (js/setInterval
+          (fn []
+            (reset! header-height (.-height (.getBoundingClientRect (.getElementById js/document "header")))))
+          1000)
       )))
 
 (defn tabs-div []

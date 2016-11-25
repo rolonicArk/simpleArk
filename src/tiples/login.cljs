@@ -70,7 +70,7 @@
 
 (add-watch header-height :uu
            (fn [_ _ _ n]
-             (.log js/console (pr-str "header height " n))))
+             (.log js/console (str "header height " n))))
 
 (defmethod tiples/chsk-recv :users/logged-in
   [id ?data]
@@ -79,14 +79,15 @@
       (reset! capabilities nil)
       (reset! common-data nil)
       (reset! user-data nil))
-    (do
+    (let [he (.getElementById js/document "header")]
       (j/dosync
         (reset! capabilities (?data 0))
         (reset! common-data (?data 1))
         (reset! user-data (?data 2)))
         (js/setInterval
           (fn []
-            (reset! header-height (.-height (.getBoundingClientRect (.getElementById js/document "header")))))
+            (let [r (.getBoundingClientRect he)]
+              (reset! header-height (.-height r))))
           1000)
       )))
 

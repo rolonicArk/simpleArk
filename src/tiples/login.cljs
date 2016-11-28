@@ -45,32 +45,7 @@
   [id ?data]
   (reset! error true))
 
-(defn getFullScreenElement [] (or (aget js.document "fullscreenElement")
-                                  (aget js.document "mozFullScreenElement")
-                                  (aget js.document "webkitFullscreenElement")))
-
-(def fullScreenElement (j/cell (getFullScreenElement)))
-(def windowInnerWidth (j/cell window.innerWidth))
-(def windowInnerHeight (j/cell window.innerHeight))
-
-(defn resize []
-  (.log js/console (pr-str "bodyWidth "
-                           (.-width (.getBoundingClientRect (.-body js/document)))))
-  (.log js/console (pr-str "bodyHeight "
-                           (.-height (.getBoundingClientRect (.-body js/document)))))
-  (reset! fullScreenElement (getFullScreenElement))
-  (reset! windowInnerWidth window.innerWidth)
-  (reset! windowInnerHeight window.innerHeight)
-  (.log js/console (pr-str "windowInnerHeight " @windowInnerHeight))
-  )
-
-(set! (.-onresize js/window) resize)
-
 (j/defc header-height nil)
-
-(add-watch header-height :uu
-           (fn [_ _ _ n]
-             (.log js/console (str "header height " n))))
 
 (defmethod tiples/chsk-recv :users/logged-in
   [id ?data]
@@ -84,12 +59,31 @@
         (reset! capabilities (?data 0))
         (reset! common-data (?data 1))
         (reset! user-data (?data 2)))
-        (js/setInterval
-          (fn []
-            (let [r (.getBoundingClientRect he)]
-              (reset! header-height (.-height r))))
-          1000)
+      (js/setInterval
+        (fn []
+          (let [r (.getBoundingClientRect he)]
+            (reset! header-height (.-height r))))
+        1000)
       )))
+
+(defn getFullScreenElement [] (or (aget js.document "fullscreenElement")
+                                  (aget js.document "mozFullScreenElement")
+                                  (aget js.document "webkitFullscreenElement")))
+
+(def fullScreenElement (j/cell (getFullScreenElement)))
+(def windowInnerWidth (j/cell window.innerWidth))
+(def windowInnerHeight (j/cell window.innerHeight))
+
+(defn resize []
+ (reset! fullScreenElement (getFullScreenElement))
+  (reset! windowInnerWidth window.innerWidth)
+  (reset! windowInnerHeight window.innerHeight)
+  )
+
+(set! (.-onresize js/window) resize)
+
+(j/defc= body-height (do
+                       (- windowInnerHeight header-height)))
 
 (defn tabs-div []
   (h/div

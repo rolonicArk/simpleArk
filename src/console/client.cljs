@@ -15,10 +15,10 @@
 (def transaction-error-msg (j/cell ""))
 
 (j/defc= my-ark-record
-       (if login/common-data
-         (:console login/common-data)
-         nil)
-       (partial swap! login/common-data assoc :console))
+         (if login/common-data
+           (:console login/common-data)
+           nil)
+         (partial swap! login/common-data assoc :console))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
@@ -48,39 +48,57 @@
 (defmethod login/add-header-element :console [_]
   (h/div
     (h/h2 "Ark Console")
-    (h/p "?")))
+    (h/p "?")
+    ))
 
 (defn fred []
   (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
 
 (j/defc= consoleheader-element nil)
 
+(defn td-style [width]
+  (str "width:" (/ width 2) "px"))
+
+(defn tx-style [windowInnerHeight header-height]
+  (let [he (.getElementById js/document "header")
+        r (if he
+            (.getBoundingClientRect he)
+            nil)
+        h (if r (.-height r) 0)]
+    (str "overflow:scroll;height:" (- windowInnerHeight h 50) "px")))
+
 (def do-console
   (h/div
-    (h/div
-      (h/p (h/text (je-count my-ark-record)))
-      (h/p (h/text (indexes-count my-ark-record)))
-      (h/p (h/text (application-rolons-count my-ark-record)))
+         (h/table :style "width:100%"
+           (h/tr
+             (h/td :style (j/cell= (td-style  login/windowInnerWidth))
+               (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+                   (h/p "Hi!")))
+             (h/td :style (j/cell= (td-style  login/windowInnerWidth))
+               (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+                   (h/p (h/text (je-count my-ark-record)))
+                   (h/p (h/text (indexes-count my-ark-record)))
+                   (h/p (h/text (application-rolons-count my-ark-record)))
 
-      (h/div
-        :slide-toggle transaction-error
-        :css {:display "none"}
-        :style "color:red"
-        (h/p (h/text (str "Error: " transaction-error-msg)))
-        )
+                   (h/div
+                     :slide-toggle transaction-error
+                     :css {:display "none"}
+                     :style "color:red"
+                     (h/p (h/text (str "Error: " transaction-error-msg)))
+                     )
 
-      (h/button
-        :click #(fred)
-        "Hello Fred")
+                   (h/button
+                     :click #(fred)
+                     "Hello Fred")
 
-      (h/button
-        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
-        "Invalid!")
+                   (h/button
+                     :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
+                     "Invalid!")
 
-      (h/button
-        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-        "Trouble!")
-      )))
+                   (h/button
+                     :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
+                     "Trouble!")
+                   ))))))
 
 (defmethod login/add-body-element :console [_]
   (do-console))

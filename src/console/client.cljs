@@ -60,12 +60,8 @@
   (str "width:" (/ width 2) "px"))
 
 (defn tx-style [windowInnerHeight header-height]
-  (let [he (.getElementById js/document "header")
-        r (if he
-            (.getBoundingClientRect he)
-            nil)
-        h (if r (.-height r) 0)]
-    (str "overflow:scroll;height:" (- windowInnerHeight h 50) "px")))
+  (let [header-height (if (= header-height 0) 10 header-height)]
+    (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px")))
 
 (def do-console
   (h/div
@@ -81,10 +77,10 @@
                    (h/p (h/text (application-rolons-count my-ark-record)))
 
                    (h/div
-                     :slide-toggle transaction-error
-                     :css {:display "none"}
                      :style "color:red"
-                     (h/p (h/text (str "Error: " transaction-error-msg)))
+                     (h/p (h/text (if transaction-error
+                                    (str "Error: " transaction-error-msg)
+                                    "")))
                      )
 
                    (h/button

@@ -9,7 +9,8 @@
     [simpleArk.rolonRecord :as rolonRecord]
     [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]
-    [tiples.client :as tiples]))
+    [tiples.client :as tiples]
+    [clojure.string :as s]))
 
 (def transaction-error (j/cell false))
 (def transaction-error-msg (j/cell ""))
@@ -57,11 +58,25 @@
 (j/defc= consoleheader-element nil)
 
 (defn td-style [width]
-  (str "width:" (/ width 2) "px;vertical-align:bottom"))
+  (str "width:" (/ width 2) "px;vertical-align:top"))
 
 (defn tx-style [windowInnerHeight header-height]
   (let [header-height (if (= header-height 0) 10 header-height)]
     (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px")))
+
+(j/defc output [])
+
+(defn add-output! [line]
+  (swap! output conj line))
+         #_(conj (-> line
+                      (s/replace "&" "&amp;")
+                      (s/replace " " "&nbsp;")
+                      (s/replace "<" "&lt;")
+                      (s/replace ">" "&gt;")))
+
+(add-output! "Adam<>&")
+(add-output! " Baker")
+(add-output! "  Charly xxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxx")
 
 (def do-console
   (h/div
@@ -80,21 +95,34 @@
                                        "")))
                         )
 
-                      (h/button
-                        :click #(fred)
-                        "Hello Fred")
+                      (h/p "fun "
+                           (h/button
+                             :toggle true
+                             :click #(fred)
+                             "Hello Fred"))
 
-                      (h/button
-                        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
-                        "Invalid!")
+                      (h/p "games "
+                           (h/button
+                             :toggle false
+                             :click nil
+                             nil))
 
-                      (h/button
-                        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-                        "Trouble!")))
+                      (h/p
+                        (h/button
+                          :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
+                          "Invalid!"))
+
+                      (h/p
+                        (h/button
+                          :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
+                          "Trouble!"))))
+
              (h/td :style (j/cell= (td-style  login/windowInnerWidth))
-                   (h/p "Hi!"))
-               (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                   )))))
+                   (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+                          (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
+                                 (h/for-tpl [line output]
+                                            (h/div :html (j/cell= line)))))
+                    )))))
 
 (defmethod login/add-body-element :console [_]
   (do-console))

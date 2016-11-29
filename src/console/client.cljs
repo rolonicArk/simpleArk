@@ -121,7 +121,7 @@
                    (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
                           (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
                                  (h/for-tpl [line output]
-                                            (h/div :html (j/cell= line)))))
+                                            (h/div line))))
                     )))))
 
 (defmethod login/add-body-element :console [_]

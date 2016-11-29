@@ -57,7 +57,7 @@
 (j/defc= consoleheader-element nil)
 
 (defn td-style [width]
-  (str "width:" (/ width 2) "px"))
+  (str "width:" (/ width 2) "px;vertical-align:bottom"))
 
 (defn tx-style [windowInnerHeight header-height]
   (let [header-height (if (= header-height 0) 10 header-height)]
@@ -69,32 +69,32 @@
            (h/tr
              (h/td :style (j/cell= (td-style  login/windowInnerWidth))
                (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                   (h/p "Hi!")))
+                      (h/p (h/text (je-count my-ark-record)))
+                      (h/p (h/text (indexes-count my-ark-record)))
+                      (h/p (h/text (application-rolons-count my-ark-record)))
+
+                      (h/div
+                        :style "color:red"
+                        (h/p (h/text (if transaction-error
+                                       (str "Error: " transaction-error-msg)
+                                       "")))
+                        )
+
+                      (h/button
+                        :click #(fred)
+                        "Hello Fred")
+
+                      (h/button
+                        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
+                        "Invalid!")
+
+                      (h/button
+                        :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
+                        "Trouble!")))
              (h/td :style (j/cell= (td-style  login/windowInnerWidth))
+                   (h/p "Hi!"))
                (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                   (h/p (h/text (je-count my-ark-record)))
-                   (h/p (h/text (indexes-count my-ark-record)))
-                   (h/p (h/text (application-rolons-count my-ark-record)))
-
-                   (h/div
-                     :style "color:red"
-                     (h/p (h/text (if transaction-error
-                                    (str "Error: " transaction-error-msg)
-                                    "")))
-                     )
-
-                   (h/button
-                     :click #(fred)
-                     "Hello Fred")
-
-                   (h/button
-                     :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
-                     "Invalid!")
-
-                   (h/button
-                     :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-                     "Trouble!")
-                   ))))))
+                   )))))
 
 (defmethod login/add-body-element :console [_]
   (do-console))

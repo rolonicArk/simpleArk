@@ -58,25 +58,32 @@
 (j/defc= consoleheader-element nil)
 
 (defn td-style [width]
-  (str "width:" (/ width 2) "px;vertical-align:top"))
+  (str "width:" (/ width 2) "px"))
 
 (defn tx-style [windowInnerHeight header-height]
   (let [header-height (if (= header-height 0) 10 header-height)]
-    (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px")))
+    (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px;vertical-align:bottom")))
 
 (j/defc output [])
 
 (defn add-output! [line]
-  (swap! output conj line))
-         #_(conj (-> line
-                      (s/replace "&" "&amp;")
-                      (s/replace " " "&nbsp;")
-                      (s/replace "<" "&lt;")
-                      (s/replace ">" "&gt;")))
+  (swap! output (fn [old]
+                  (conj old [(str "disp" (count old)) line])))
+  (h/with-timeout 0
+                  (let [e (.getElementById js/document (str "disp" (- (count @output) 1)))]
+                    (if (some? e)
+                      (.scrollIntoView e true)))))
 
 (add-output! "Adam<>&")
 (add-output! " Baker")
 (add-output! "  Charly xxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxx")
+
+#_(defmethod h/do! :scroll-to-bottom
+  [elem _ v]
+  (when v
+    (let [body (js/jQuery "body,html")
+          elem (js/jQuery elem)]
+      (.animate body (clj->js {:scrollTop (.-top (.offset elem))})))))
 
 (def do-console
   (h/div
@@ -84,6 +91,19 @@
            (h/tr
              (h/td :style (j/cell= (td-style  login/windowInnerWidth))
                (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+                      (h/table
+                        (h/tr
+                          (h/th "Rolon Counts:")
+                          (h/td
+                            (h/button
+                              :click #(add-output! "fun")
+                              "applications"))
+                          (h/td
+                            (h/button
+                              "indexes"))
+                          (h/td
+                            (h/button
+                              "journal entries"))))
                       (h/p (h/text (je-count my-ark-record)))
                       (h/p (h/text (indexes-count my-ark-record)))
                       (h/p (h/text (application-rolons-count my-ark-record)))
@@ -120,8 +140,10 @@
              (h/td :style (j/cell= (td-style  login/windowInnerWidth))
                    (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
                           (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
-                                 (h/for-tpl [line output]
-                                            (h/div line))))
+                                 (h/for-tpl [[line-id txt] output]
+                                            (h/div
+                                              :id line-id
+                                              txt))))
                     )))))
 
 (defmethod login/add-body-element :console [_]

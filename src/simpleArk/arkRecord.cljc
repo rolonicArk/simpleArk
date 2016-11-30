@@ -5,9 +5,7 @@
                [cljs.reader :as reader])
                 [simpleArk.miView :as miView]
                 [simpleArk.mapish :as mapish]
-                [simpleArk.uuid :as uuid])
-  #?(:clj
-     (:import (java.util UUID))))
+                [simpleArk.uuid :as uuid]))
 
 #?(:clj
    (set! *warn-on-reflection* true))

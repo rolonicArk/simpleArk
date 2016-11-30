@@ -59,12 +59,9 @@
         (reset! capabilities (?data 0))
         (reset! common-data (?data 1))
         (reset! user-data (?data 2)))
-      (js/setInterval
-        (fn []
-          (let [r (.getBoundingClientRect he)]
-            (reset! header-height (.-height r))))
-        1000)
-      )))
+      (h/with-timeout 0
+                      (let [r (.getBoundingClientRect he)]
+                        (reset! header-height (.-height r)))))))
 
 (defn getFullScreenElement [] (or (aget js.document "fullscreenElement")
                                   (aget js.document "mozFullScreenElement")

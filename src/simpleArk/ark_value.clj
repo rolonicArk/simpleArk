@@ -3,8 +3,7 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
             [simpleArk.rolonRecord :as rolonRecord]
-            [simpleArk.arkRecord :as arkRecord])
-  (:import (java.util UUID)))
+            [simpleArk.arkRecord :as arkRecord]))
 
 (set! *warn-on-reflection* true)
 

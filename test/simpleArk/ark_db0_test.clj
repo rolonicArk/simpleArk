@@ -29,6 +29,7 @@
   [ark-db]
 
   (let [ark-value (ark-db/get-ark-record ark-db)]
+    (println :index.index-name (uuid/index-uuid ark-db :index/index.name))
     (println :empty-ark ark-value)
     (println :round-trp (reader/read-string ark-db (pr-str ark-value))))
   (println)

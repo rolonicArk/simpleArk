@@ -33,12 +33,12 @@
 
 (defn je-count [ark-record]
   (if ark-record
-    (str "journal entry count: " (count (arkRecord/get-journal-entries ark-record)))
+    (str "journal entry rolons count: " (count (arkRecord/get-journal-entries ark-record)))
     ""))
 
 (defn indexes-count [ark-record]
   (if ark-record
-    (str "indexes count: " (count (arkRecord/get-indexes ark-record)))
+    (str "index rolons count: " (count (arkRecord/get-indexes ark-record)))
     ""))
 
 (defn application-rolons-count [ark-record]
@@ -74,17 +74,6 @@
                     (if (some? e)
                       (.scrollIntoView e true)))))
 
-(add-output! "Adam<>&")
-(add-output! " Baker")
-(add-output! "  Charly xxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxx")
-
-#_(defmethod h/do! :scroll-to-bottom
-  [elem _ v]
-  (when v
-    (let [body (js/jQuery "body,html")
-          elem (js/jQuery elem)]
-      (.animate body (clj->js {:scrollTop (.-top (.offset elem))})))))
-
 (def do-console
   (h/div
          (h/table :style "width:100%"
@@ -96,17 +85,17 @@
                           (h/th "Rolon Counts:")
                           (h/td
                             (h/button
-                              :click #(add-output! "fun")
+                              :click #(add-output! (application-rolons-count @my-ark-record))
                               "applications"))
                           (h/td
                             (h/button
+                              :click #(add-output! (indexes-count @my-ark-record))
                               "indexes"))
                           (h/td
                             (h/button
-                              "journal entries"))))
-                      (h/p (h/text (je-count my-ark-record)))
-                      (h/p (h/text (indexes-count my-ark-record)))
-                      (h/p (h/text (application-rolons-count my-ark-record)))
+                              :click #(add-output! (je-count @my-ark-record))
+                              "journal entries"))
+                          ))
 
                       (h/div
                         :style "color:red"

@@ -1,5 +1,6 @@
 (ns simpleArk.uuid
-  (:require #?(:clj  [clj-uuid :refer [get-version get-instant]])))
+  (:require #?(:clj [clj-uuid :refer [get-version get-instant]]))
+  #?(:clj (:import (java.util UUID))))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -45,6 +46,9 @@
   [uuid]
   (and (uuid? uuid)
        (= (get-version uuid) 5)))
+
+#?(:clj (defn create-uuid [s] (UUID/fromString s))
+   :cljs (defn create-uuid [s] (uuid s)))
 
 #?(:clj
    (defn journal-entry-uuid

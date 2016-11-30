@@ -9,8 +9,7 @@
     [simpleArk.rolonRecord :as rolonRecord]
     [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]
-    [tiples.client :as tiples]
-    [clojure.string :as s]))
+    [tiples.client :as tiples]))
 
 (def transaction-error (j/cell false))
 (def transaction-error-msg (j/cell ""))
@@ -74,6 +73,18 @@
                     (if (some? e)
                       (.scrollIntoView e true)))))
 
+(defn list-indexes [ark-record]
+  (add-output! "index rolon list:")
+  (.log js/console (pr-str (keys (arkRecord/get-indexes ark-record))))
+  (.log js/console (pr-str (keys (get (arkRecord/get-indexes ark-record) [arkRecord/index-name-uuid]))))
+  (.log js/console (pr-str (get (get (arkRecord/get-indexes ark-record) [arkRecord/index-name-uuid])
+                                [:index/index.name])))
+  (let [content-index (arkRecord/get-content-index
+                        ark-record
+                        arkRecord/index-name-uuid)]
+    (.log js/console (some? content-index))
+    (doall (map #(add-output! (first %)) content-index))))
+
 (def do-console
   (h/div
          (h/table :style "width:100%"
@@ -94,8 +105,13 @@
                           (h/td
                             (h/button
                               :click #(add-output! (je-count @my-ark-record))
-                              "journal entries"))
-                          ))
+                              "journal entries")
+                            )))
+
+                      (h/button
+                        :click (fn []
+                                 (list-indexes @my-ark-record))
+                        "list index rolons")
 
                       (h/div
                         :style "color:red"
@@ -104,10 +120,9 @@
                                        "")))
                         )
 
-                      (h/p "fun "
-                           (h/button
-                             :toggle true
+                      (h/p (h/button
                              :click #(fred)
+                             :href ""
                              "Hello Fred"))
 
                       (h/p "games "

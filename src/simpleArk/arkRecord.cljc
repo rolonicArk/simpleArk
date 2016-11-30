@@ -105,10 +105,7 @@
 
 (def index-name-uuid-string "8cacc5db-70b3-5a83-85cf-c29541e14114")
 
-#?(:clj
-   (def index-name-uuid (UUID/fromString index-name-uuid-string))
-   :cljs
-   (def index-name-uuid (uuid index-name-uuid-string)))
+(def index-name-uuid (uuid/create-uuid index-name-uuid-string))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."

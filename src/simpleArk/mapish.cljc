@@ -3,6 +3,9 @@
 #?(:clj
    (set! *warn-on-reflection* true))
 
+#?(:clj (defn debug [a] (println a))
+   :cljs (defn debug [a] (.log js/console (pr-str a))))
+
 (defn index?
   [kw]
   (and (keyword? kw)

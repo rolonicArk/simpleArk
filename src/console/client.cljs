@@ -66,14 +66,22 @@
 
 (j/defc output [])
 
-(defn add-output! [line]
-  ;(mapish/debug [:line line])
+(defn default-style
+  [e v])
+
+(defn add-output!
+  ([line] (add-output! line default-style))
+  ([line style]
   (swap! output (fn [old]
-                  (conj old [(str "disp" (count old)) (str line)])))
-  (h/with-timeout 0
-                  (let [e (.getElementById js/document (str "disp" (- (count @output) 1)))]
-                    (if (some? e)
-                      (.scrollIntoView e true)))))
+                  (let [v [(str "disp" (count old)) (str line)]
+                        nw (conj old v)]
+                    (h/with-timeout
+                      0
+                      (let [e (.getElementById js/document (str "disp" (- (count @output) 1)))]
+                        (when (some? e)
+                          (style e v)
+                          (.scrollIntoView e true))))
+                    nw)))))
 
 (defn list-headlines [ark-record]
   (add-output! "headlines:")
@@ -84,15 +92,15 @@
     (doall (map #(add-output! (first %)) content-index)))
   (add-output! " "))
 
-  (defn list-transaction-names [ark-record]
-    (add-output! "transaction names:")
-    (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
-          content-index (arkRecord/get-content-index
-                          ark-record
-                          index-uuid)]
-      ;(mapish/debug [:content content-index])
-      (doall (map #(add-output! (first %)) content-index)))
-    (add-output! " "))
+(defn list-transaction-names [ark-record]
+  (add-output! "transaction names:")
+  (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
+        content-index (arkRecord/get-content-index
+                        ark-record
+                        index-uuid)]
+    ;(mapish/debug [:content content-index])
+    (doall (map #(add-output! (first %)) content-index)))
+  (add-output! " "))
 
 (defn list-index-names [ark-record]
   (add-output! "index names:")
@@ -104,78 +112,78 @@
 
 (def do-console
   (h/div
-         (h/table :style "width:100%"
-           (h/tr
-             (h/td :style (j/cell= (td-style  login/windowInnerWidth))
-               (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                      (h/table
-                        (h/tr
-                          (h/th "Rolon Counts:")
-                          (h/td
+    (h/table :style "width:100%"
+             (h/tr
+               (h/td :style (j/cell= (td-style login/windowInnerWidth))
+                     (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+                            (h/table
+                              (h/tr
+                                (h/th "Rolon Counts:")
+                                (h/td
+                                  (h/button
+                                    :click #(add-output! (application-rolons-count @my-ark-record))
+                                    "applications"))
+                                (h/td
+                                  (h/button
+                                    :click #(add-output! (indexes-count @my-ark-record))
+                                    "indexes"))
+                                (h/td
+                                  (h/button
+                                    :click #(add-output! (je-count @my-ark-record))
+                                    "journal entries")
+                                  )))
+
                             (h/button
-                              :click #(add-output! (application-rolons-count @my-ark-record))
-                              "applications"))
-                          (h/td
+                              :click (fn []
+                                       (list-index-names @my-ark-record))
+                              "list indexes")
+
                             (h/button
-                              :click #(add-output! (indexes-count @my-ark-record))
-                              "indexes"))
-                          (h/td
+                              :click (fn []
+                                       (list-headlines @my-ark-record))
+                              "list headlines")
+
                             (h/button
-                              :click #(add-output! (je-count @my-ark-record))
-                              "journal entries")
-                            )))
+                              :click (fn []
+                                       (list-transaction-names @my-ark-record))
+                              "list transaction names")
 
-                      (h/button
-                        :click (fn []
-                                 (list-index-names @my-ark-record))
-                        "list indexes")
+                            (h/div
+                              :style "color:red"
+                              (h/p (h/text (if transaction-error
+                                             (str "Error: " transaction-error-msg)
+                                             "")))
+                              )
 
-                      (h/button
-                        :click (fn []
-                                 (list-headlines @my-ark-record))
-                        "list headlines")
+                            (h/p (h/button
+                                   :click #(fred)
+                                   :href ""
+                                   "Hello Fred"))
 
-                      (h/button
-                        :click (fn []
-                                 (list-transaction-names @my-ark-record))
-                        "list transaction names")
+                            (h/p "games "
+                                 (h/button
+                                   :toggle false
+                                   :click nil
+                                   nil))
 
-                      (h/div
-                        :style "color:red"
-                        (h/p (h/text (if transaction-error
-                                       (str "Error: " transaction-error-msg)
-                                       "")))
-                        )
+                            (h/p
+                              (h/button
+                                :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
+                                "Invalid!"))
 
-                      (h/p (h/button
-                             :click #(fred)
-                             :href ""
-                             "Hello Fred"))
+                            (h/p
+                              (h/button
+                                :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
+                                "Trouble!"))))
 
-                      (h/p "games "
-                           (h/button
-                             :toggle false
-                             :click nil
-                             nil))
-
-                      (h/p
-                        (h/button
-                          :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
-                          "Invalid!"))
-
-                      (h/p
-                        (h/button
-                          :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-                          "Trouble!"))))
-
-             (h/td :style (j/cell= (td-style  login/windowInnerWidth))
-                   (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                          (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
-                                 (h/for-tpl [[line-id txt] output]
-                                            (h/div
-                                              :id line-id
-                                              txt))))
-                    )))))
+               (h/td :style (j/cell= (td-style login/windowInnerWidth))
+                     (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+                            (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
+                                   (h/for-tpl [[line-id txt] output]
+                                              (h/div
+                                                :id line-id
+                                                txt))))
+                     )))))
 
 (defmethod login/add-body-element :console [_]
   (do-console))

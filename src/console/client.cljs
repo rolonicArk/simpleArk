@@ -116,6 +116,12 @@
              (h/tr
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+
+                            (h/button
+                              :click (fn []
+                                       (reset! output []))
+                              "clear display")
+
                             (h/table
                               (h/tr
                                 (h/th "Rolon Counts:")

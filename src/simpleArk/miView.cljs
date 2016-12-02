@@ -16,11 +16,11 @@
          IReversible
          (-rseq [this]
                 (map
-                  #([(key %) (val (val %))])
+                  #(vec [(key %) (val (val %))])
                   (filter
                     #(some? (val %))
                     (map
-                      #([(key %) (first (rseq (mapish/mi-sub (val %) nil nil <= selected-time)))])
+                      #(vec [(key %) (first (rseq (mapish/mi-sub (val %) nil nil <= selected-time)))])
                       (rseq all-changes)))))
          IPrintWithWriter
          (-pr-writer [this writer opts]

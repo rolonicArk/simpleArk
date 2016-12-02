@@ -49,6 +49,17 @@
     )
 
   (println)
+  (println ">>>>>>>>>>>> transaction names")
+  (println)
+  (let [ark-record (ark-db/get-ark-record ark-db)
+        index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
+        content-index (arkRecord/get-content-index
+                        ark-record
+                        index-uuid)]
+    (mapish/debug [:content content-index])
+    (doall (map #(println (first %)) content-index)))
+
+  (println)
   (println ">>>>>>>>>>>> all the latest headlines")
   (println)
   (let [ark-record (ark-db/get-ark-record ark-db)

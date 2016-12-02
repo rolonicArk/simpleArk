@@ -62,7 +62,7 @@
     (uuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record) [uuid])
     (uuid/index-uuid? uuid) (get (get-indexes ark-record) [uuid])
     (uuid/random-uuid? uuid) (get (get-application-rolons ark-record) [uuid])
-    :else #?(:clj (throw (Exception. (str uuid " was not recognized")))
+    :else #?(:clj  (throw (Exception. (str uuid " was not recognized")))
              :cljs (throw (str uuid " was not recognized")))))
 
 (defn get-changes-by-property
@@ -73,6 +73,7 @@
        nil
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-record)))))
   ([ark-value rolon-uuid]
+   ;(mapish/debug [:rolon-uuid rolon-uuid :rolon (get-rolon ark-value rolon-uuid)])
    (:changes-by-property (get-rolon ark-value rolon-uuid))))
 
 (defn get-property-value
@@ -87,19 +88,25 @@
   ([ark-record rolon-uuid]
    (get-property-values ark-record rolon-uuid (get-changes-by-property ark-record rolon-uuid)))
   ([ark-record rolon-uuid all-changes]
+   ;(mapish/debug [:get-selected-time (get-selected-time ark-record)])
+   ;(mapish/debug [:all-changes all-changes])
    (miView/->MI-view ark-record rolon-uuid all-changes (get-selected-time ark-record))))
 
 (defn index-lookup
   "returns the uuids for a given index-uuid and value"
   [ark-record index-uuid value]
-  (map
-    (fn [e]
-      ((key e) 2))
-    (filter
-      #(some? (val %))
-      (seq (mapish/mi-sub
-             (get-property-values ark-record index-uuid)
-             [:content/index value])))))
+  ;(mapish/debug [:ark-record ark-record])
+  ;(mapish/debug [:index-uuid index-uuid :value value])
+  (let [property-values (get-property-values ark-record index-uuid)]
+    ;(mapish/debug [:property-values property-values])
+    (map
+      (fn [e]
+        ((key e) 2))
+      (filter
+        #(some? (val %))
+        (seq (mapish/mi-sub
+               property-values
+               [:content/index value]))))))
 
 (def index-name-uuid-string "8cacc5db-70b3-5a83-85cf-c29541e14114")
 

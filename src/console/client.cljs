@@ -9,7 +9,8 @@
     [simpleArk.rolonRecord :as rolonRecord]
     [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]
-    [tiples.client :as tiples]))
+    [tiples.client :as tiples]
+    [simpleArk.mapish :as mapish]))
 
 (def transaction-error (j/cell false))
 (def transaction-error-msg (j/cell ""))
@@ -66,24 +67,40 @@
 (j/defc output [])
 
 (defn add-output! [line]
+  ;(mapish/debug [:line line])
   (swap! output (fn [old]
-                  (conj old [(str "disp" (count old)) line])))
+                  (conj old [(str "disp" (count old)) (str line)])))
   (h/with-timeout 0
                   (let [e (.getElementById js/document (str "disp" (- (count @output) 1)))]
                     (if (some? e)
                       (.scrollIntoView e true)))))
 
-(defn list-indexes [ark-record]
-  (add-output! "index rolon list:")
-  (.log js/console (pr-str (keys (arkRecord/get-indexes ark-record))))
-  (.log js/console (pr-str (keys (get (arkRecord/get-indexes ark-record) [arkRecord/index-name-uuid]))))
-  (.log js/console (pr-str (get (get (arkRecord/get-indexes ark-record) [arkRecord/index-name-uuid])
-                                [:index/index.name])))
+(defn list-headlines [ark-record]
+  (add-output! "headlines:")
+  (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
+        content-index (arkRecord/get-content-index
+                        ark-record
+                        index-uuid)]
+    (doall (map #(add-output! (first %)) content-index)))
+  (add-output! " "))
+
+  (defn list-transaction-names [ark-record]
+    (add-output! "transaction names:")
+    (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
+          content-index (arkRecord/get-content-index
+                          ark-record
+                          index-uuid)]
+      ;(mapish/debug [:content content-index])
+      (doall (map #(add-output! (first %)) content-index)))
+    (add-output! " "))
+
+(defn list-index-names [ark-record]
+  (add-output! "index names:")
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (.log js/console (some? content-index))
-    (doall (map #(add-output! (first %)) content-index))))
+    (doall (map #(add-output! (first %)) content-index)))
+  (add-output! " "))
 
 (def do-console
   (h/div
@@ -110,8 +127,18 @@
 
                       (h/button
                         :click (fn []
-                                 (list-indexes @my-ark-record))
-                        "list index rolons")
+                                 (list-index-names @my-ark-record))
+                        "list indexes")
+
+                      (h/button
+                        :click (fn []
+                                 (list-headlines @my-ark-record))
+                        "list headlines")
+
+                      (h/button
+                        :click (fn []
+                                 (list-transaction-names @my-ark-record))
+                        "list transaction names")
 
                       (h/div
                         :style "color:red"

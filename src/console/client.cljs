@@ -86,6 +86,10 @@
   []
   "")
 
+(defn bold-style
+  []
+  "font-weight: bold")
+
 (defn clickable-style
   []
   "color:blue;cursor:pointer")
@@ -110,7 +114,7 @@
                      nw)))))
 
 (defn list-headlines [ark-record]
-  (add-output! "headlines:\n")
+  (add-output! "headlines:\n" bold-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
         content-index (arkRecord/get-content-index
                         ark-record
@@ -119,7 +123,7 @@
   (add-output! "\n"))
 
 (defn list-transaction-names [ark-record]
-  (add-output! "transaction names:\n")
+  (add-output! "transaction names:\n" bold-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
         content-index (arkRecord/get-content-index
                         ark-record
@@ -129,7 +133,7 @@
   (add-output! "\n"))
 
 (defn list-index-names [ark-record]
-  (add-output! "index names:\n")
+  (add-output! "index names:\n" bold-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
@@ -137,7 +141,7 @@
   (add-output! "\n"))
 
 (defn list-application-names [ark-record]
-  (add-output! "application names:\n")
+  (add-output! "application names:\n" bold-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "name")
         content-index (arkRecord/get-content-index
                         ark-record

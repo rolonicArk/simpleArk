@@ -69,7 +69,7 @@
                         headline-index-uuid)]
     (doall (map #(println (first %)) content-index)))
 
-  #_(do
+  (do
     (println)
     (println ">>>>>>>>>>>> make-bob")
     (println)
@@ -84,7 +84,8 @@
            {[:content/age]             8
             [:index/name]              "Bob"
             [:content/brothers "John"] true
-            [:content/brothers "Jeff"] true}])))
+            [:content/brothers "Jeff"] true}])
+        ))
     (is (= :transaction ((log/get-msg ark-db) 1)))
     (let [ark-value (ark-db/get-ark-record ark-db)]
       (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
@@ -201,8 +202,8 @@
                              (arkRecord/get-property-value ark-value (first (key %)) [:index/headline]))
                    (rseq (arkRecord/get-changes-by-property ark-value
                                                             bob-uuid
-                                                            [:index/headline]))))))
-  )
+                                                            [:index/headline])))))
+  ))
 
 (deftest arks
   (println "impl0 tests")

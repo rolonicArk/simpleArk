@@ -55,6 +55,9 @@
 (defn fred []
   (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
 
+(defn make-bob []
+  (tiples/chsk-send! [:console/process-transaction {:tran-keyword :ark/update-rolon-transaction! :tran-data "Fred"}]))
+
 (j/defc= consoleheader-element nil)
 
 (defn td-style [width]
@@ -84,7 +87,7 @@
   ([txt style] (add-output! txt style no-click nil))
   ([txt style on-click arg]
   (swap! output (fn [old]
-                  (let [v [(str "disp" (count old)) (str txt) (style) on-click arg]
+                  (let [v [(str "disp" (count old)) txt (style) on-click arg]
                         nw (conj old v)]
                     (h/with-timeout
                       0
@@ -197,7 +200,7 @@
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                            (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
+                            (h/div :style "white-space:pre-wrap"
                                    (h/for-tpl [[txt-id txt style on-click arg] output]
                                               (h/output :id txt-id
                                                      :style style

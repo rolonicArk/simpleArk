@@ -205,7 +205,10 @@
         rolon-properties (into (create-mi ark-db) rolon-properties-map)]
     (-> ark-value
         (update-properties ark-db je-uuid je-properties)
-        (make-rolon ark-db rolon-uuid rolon-properties))))
+        (make-rolon ark-db
+                    (if (some? rolon-uuid) rolon-uuid
+                                           (uuid/random-uuid ark-db))
+                    rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!
   [ark-value ark-db n s]

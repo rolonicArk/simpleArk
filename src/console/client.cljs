@@ -67,19 +67,25 @@
 (j/defc output [])
 
 (defn default-style
-  [e v])
+  [e]
+  (set! (.-style e) ""))
+
+(defn clickable-style
+  [e]
+  (set! (.-style e) "color:blue"))
 
 (defn add-output!
   ([line] (add-output! line default-style))
   ([line style]
   (swap! output (fn [old]
-                  (let [v [(str "disp" (count old)) (str line)]
+                  (let [v [(str "disp" (count old))]
                         nw (conj old v)]
                     (h/with-timeout
                       0
-                      (let [e (.getElementById js/document (str "disp" (- (count @output) 1)))]
+                      (let [e (.getElementById js/document (str "disp" (- (count nw) 1)))]
                         (when (some? e)
-                          (style e v)
+                          (style e)
+                          (aset e "innerHTML" (str line))
                           (.scrollIntoView e true))))
                     nw)))))
 
@@ -89,7 +95,7 @@
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (first %)) content-index)))
+    (doall (map #(add-output! (first %) clickable-style) content-index)))
   (add-output! " "))
 
 (defn list-transaction-names [ark-record]
@@ -99,7 +105,7 @@
                         ark-record
                         index-uuid)]
     ;(mapish/debug [:content content-index])
-    (doall (map #(add-output! (first %)) content-index)))
+    (doall (map #(add-output! (first %) clickable-style) content-index)))
   (add-output! " "))
 
 (defn list-index-names [ark-record]
@@ -107,7 +113,7 @@
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (doall (map #(add-output! (first %)) content-index)))
+    (doall (map #(add-output! (first %) clickable-style) content-index)))
   (add-output! " "))
 
 (def do-console
@@ -127,15 +133,21 @@
                                 (h/th "Rolon Counts:")
                                 (h/td
                                   (h/button
-                                    :click #(add-output! (application-rolons-count @my-ark-record))
+                                    :click (fn []
+                                             (add-output! (application-rolons-count @my-ark-record))
+                                             (add-output! " "))
                                     "applications"))
                                 (h/td
                                   (h/button
-                                    :click #(add-output! (indexes-count @my-ark-record))
+                                    :click (fn []
+                                             (add-output! (indexes-count @my-ark-record))
+                                             (add-output! " "))
                                     "indexes"))
                                 (h/td
                                   (h/button
-                                    :click #(add-output! (je-count @my-ark-record))
+                                    :click (fn []
+                                             (add-output! (je-count @my-ark-record))
+                                             (add-output! " "))
                                     "journal entries")
                                   )))
 
@@ -185,10 +197,8 @@
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
                             (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
-                                   (h/for-tpl [[line-id txt] output]
-                                              (h/div
-                                                :id line-id
-                                                txt))))
+                                   (h/for-tpl [[line-id] output]
+                                              (h/div :id line-id))))
                      )))))
 
 (defmethod login/add-body-element :console [_]

@@ -43,9 +43,9 @@
     (when (users/get-client-data :console client-id)
       (try
         (println :transaction tran-keyword tran-data)
-        (ark-db/process-transaction! ark-db tran-keyword tran-data)
-        (update-ark-record! (ark-db/get-ark-record ark-db))
-        (users/broadcast! :console/update (ark-db/get-ark-record ark-db))
+        (let [je-uuid (ark-db/process-transaction! ark-db tran-keyword tran-data)]
+          (update-ark-record! (ark-db/get-ark-record ark-db))
+          (users/broadcast! :console/update (ark-db/get-ark-record ark-db))
+          (tiples/chsk-send! client-id [:console/transaction-response (str je-uuid)]))
         (catch Exception e
-          (tiples/chsk-send! client-id [:console/error (.getMessage e)])
-          )))))
+          (tiples/chsk-send! client-id [:console/error (.getMessage e)]))))))

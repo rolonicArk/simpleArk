@@ -12,6 +12,7 @@
     [tiples.client :as tiples]
     [simpleArk.mapish :as mapish]))
 
+(def transaction-je-uuid-string (j/cell nil))
 (def transaction-error (j/cell false))
 (def transaction-error-msg (j/cell ""))
 
@@ -25,6 +26,10 @@
   [id ark-record]
   (reset! transaction-error false)
   (reset! my-ark-record ark-record))
+
+(defmethod tiples/chsk-recv :console/transaction-response
+  [id je-uuid-string]
+  (reset! transaction-je-uuid-string je-uuid-string))
 
 (defmethod tiples/chsk-recv :console/error
   [id msg]
@@ -228,7 +233,14 @@
 
                             (h/button
                               :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-                              "Trouble!")))
+                              "Trouble!")
+
+                            (h/p
+                              (h/text
+                                (if (some? transaction-je-uuid-string)
+                                  (str "Last requested transaction Journal Entry UUID: " transaction-je-uuid-string)
+                                  "")))
+                            ))
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))

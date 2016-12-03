@@ -33,17 +33,17 @@
 
 (defn je-count [ark-record]
   (if ark-record
-    (str "journal entry rolons count: " (count (arkRecord/get-journal-entries ark-record)))
+    (str "journal entry rolons count: " (count (arkRecord/get-journal-entries ark-record)) "\n\n")
     ""))
 
 (defn indexes-count [ark-record]
   (if ark-record
-    (str "index rolons count: " (count (arkRecord/get-indexes ark-record)))
+    (str "index rolons count: " (count (arkRecord/get-indexes ark-record)) "\n\n")
     ""))
 
 (defn application-rolons-count [ark-record]
   (if ark-record
-    (str "application rolons count: " (count (arkRecord/get-application-rolons ark-record)))
+    (str "application rolons count: " (count (arkRecord/get-application-rolons ark-record)) "\n\n")
     ""))
 
 (defmethod login/add-header-element :console [_]
@@ -80,11 +80,11 @@
   (.log js/console arg))
 
 (defn add-output!
-  ([line] (add-output! line default-style))
-  ([line style] (add-output! line style no-click nil))
-  ([line style on-click arg]
+  ([txt] (add-output! txt default-style))
+  ([txt style] (add-output! txt style no-click nil))
+  ([txt style on-click arg]
   (swap! output (fn [old]
-                  (let [v [(str "disp" (count old)) (str line) (style) on-click arg]
+                  (let [v [(str "disp" (count old)) (str txt) (style) on-click arg]
                         nw (conj old v)]
                     (h/with-timeout
                       0
@@ -94,31 +94,31 @@
                     nw)))))
 
 (defn list-headlines [ark-record]
-  (add-output! "headlines:")
+  (add-output! "headlines:\n")
   (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (first %) clickable-style log-click "headline") content-index)))
-  (add-output! " "))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "headline") content-index)))
+  (add-output! "\n"))
 
 (defn list-transaction-names [ark-record]
-  (add-output! "transaction names:")
+  (add-output! "transaction names:\n")
   (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
     ;(mapish/debug [:content content-index])
-    (doall (map #(add-output! (first %) clickable-style log-click "transaction") content-index)))
-  (add-output! " "))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "transaction") content-index)))
+  (add-output! "\n"))
 
 (defn list-index-names [ark-record]
-  (add-output! "index names:")
+  (add-output! "index names:\n")
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (doall (map #(add-output! (first %) clickable-style log-click "index") content-index)))
-  (add-output! " "))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index)))
+  (add-output! "\n"))
 
 (def do-console
   (h/div
@@ -138,20 +138,17 @@
                                 (h/td
                                   (h/button
                                     :click (fn []
-                                             (add-output! (application-rolons-count @my-ark-record))
-                                             (add-output! " "))
+                                             (add-output! (application-rolons-count @my-ark-record)))
                                     "applications"))
                                 (h/td
                                   (h/button
                                     :click (fn []
-                                             (add-output! (indexes-count @my-ark-record))
-                                             (add-output! " "))
+                                             (add-output! (indexes-count @my-ark-record)))
                                     "indexes"))
                                 (h/td
                                   (h/button
                                     :click (fn []
-                                             (add-output! (je-count @my-ark-record))
-                                             (add-output! " "))
+                                             (add-output! (je-count @my-ark-record)))
                                     "journal entries")
                                   )))
 
@@ -201,11 +198,11 @@
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
                             (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
-                                   (h/for-tpl [[line-id line style on-click arg] output]
-                                              (h/div :id line-id
+                                   (h/for-tpl [[txt-id txt style on-click arg] output]
+                                              (h/output :id txt-id
                                                      :style style
                                                      :click (fn [] (@on-click @arg))
-                                                     line))))
+                                                     txt))))
                      )))))
 
 (defmethod login/add-body-element :console [_]

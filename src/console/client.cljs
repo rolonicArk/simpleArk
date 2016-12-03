@@ -66,6 +66,7 @@
          {[:index/headline] "make bob"}
          {[:content/age]             8
           [:index/name]              "Bob"
+          [:index/headline] "First application Rolon"
           [:content/brothers "John"] true
           [:content/brothers "Jeff"] true}])
       }]))

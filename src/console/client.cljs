@@ -56,7 +56,19 @@
   (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
 
 (defn make-bob []
-  (tiples/chsk-send! [:console/process-transaction {:tran-keyword :ark/update-rolon-transaction! :tran-data "Fred"}]))
+  (tiples/chsk-send!
+    [:console/process-transaction
+     {:tran-keyword
+      :ark/update-rolon-transaction!
+      :tran-data
+      (prn-str
+        [nil
+         {[:index/headline] "make bob"}
+         {[:content/age]             8
+          [:index/name]              "Bob"
+          [:content/brothers "John"] true
+          [:content/brothers "Jeff"] true}])
+      }]))
 
 (j/defc= consoleheader-element nil)
 
@@ -86,15 +98,15 @@
   ([txt] (add-output! txt default-style))
   ([txt style] (add-output! txt style no-click nil))
   ([txt style on-click arg]
-  (swap! output (fn [old]
-                  (let [v [(str "disp" (count old)) txt (style) on-click arg]
-                        nw (conj old v)]
-                    (h/with-timeout
-                      0
-                      (let [e (.getElementById js/document (str "disp" (- (count nw) 1)))]
-                        (if (some? e)
-                          (.scrollIntoView e true))))
-                    nw)))))
+   (swap! output (fn [old]
+                   (let [v [(str "disp" (count old)) txt (style) on-click arg]
+                         nw (conj old v)]
+                     (h/with-timeout
+                       0
+                       (let [e (.getElementById js/document (str "disp" (- (count nw) 1)))]
+                         (if (some? e)
+                           (.scrollIntoView e true))))
+                     nw)))))
 
 (defn list-headlines [ark-record]
   (add-output! "headlines:\n")
@@ -182,11 +194,10 @@
                                    :href ""
                                    "Hello Fred"))
 
-                            (h/p "games "
-                                 (h/button
-                                   :toggle false
-                                   :click nil
-                                   nil))
+                            (h/p (h/button
+                                   :click #(make-bob)
+                                   :href ""
+                                   "Make Bob"))
 
                             (h/p
                               (h/button
@@ -203,9 +214,9 @@
                             (h/div :style "white-space:pre-wrap"
                                    (h/for-tpl [[txt-id txt style on-click arg] output]
                                               (h/output :id txt-id
-                                                     :style style
-                                                     :click (fn [] (@on-click @arg))
-                                                     txt))))
+                                                        :style style
+                                                        :click (fn [] (@on-click @arg))
+                                                        txt))))
                      )))))
 
 (defmethod login/add-body-element :console [_]

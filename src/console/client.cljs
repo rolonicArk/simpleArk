@@ -67,12 +67,12 @@
 (j/defc output [])
 
 (defn default-style
-  [e]
-  (set! (.-style e) ""))
+  []
+  "")
 
 (defn clickable-style
-  [e]
-  (set! (.-style e) "color:blue;cursor:pointer"))
+  []
+  "color:blue;cursor:pointer")
 
 (defn no-click [arg])
 
@@ -84,14 +84,12 @@
   ([line style] (add-output! line style no-click nil))
   ([line style on-click arg]
   (swap! output (fn [old]
-                  (let [v [(str "disp" (count old)) on-click arg]
+                  (let [v [(str "disp" (count old)) (str line) (style) on-click arg]
                         nw (conj old v)]
                     (h/with-timeout
                       0
                       (let [e (.getElementById js/document (str "disp" (- (count nw) 1)))]
-                        (when (some? e)
-                          (style e)
-                          (aset e "innerHTML" (str line))
+                        (if (some? e)
                           (.scrollIntoView e true))))
                     nw)))))
 
@@ -203,9 +201,11 @@
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
                             (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
-                                   (h/for-tpl [[line-id on-click arg] output]
+                                   (h/for-tpl [[line-id line style on-click arg] output]
                                               (h/div :id line-id
-                                                     :click (fn [] (@on-click @arg))))))
+                                                     :style style
+                                                     :click (fn [] (@on-click @arg))
+                                                     line))))
                      )))))
 
 (defmethod login/add-body-element :console [_]

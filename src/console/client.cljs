@@ -72,13 +72,19 @@
 
 (defn clickable-style
   [e]
-  (set! (.-style e) "color:blue"))
+  (set! (.-style e) "color:blue;cursor:pointer"))
+
+(defn no-click [arg])
+
+(defn log-click [arg]
+  (.log js/console arg))
 
 (defn add-output!
   ([line] (add-output! line default-style))
-  ([line style]
+  ([line style] (add-output! line style no-click nil))
+  ([line style on-click arg]
   (swap! output (fn [old]
-                  (let [v [(str "disp" (count old))]
+                  (let [v [(str "disp" (count old)) on-click arg]
                         nw (conj old v)]
                     (h/with-timeout
                       0
@@ -95,7 +101,7 @@
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (first %) clickable-style) content-index)))
+    (doall (map #(add-output! (first %) clickable-style log-click "headline") content-index)))
   (add-output! " "))
 
 (defn list-transaction-names [ark-record]
@@ -105,7 +111,7 @@
                         ark-record
                         index-uuid)]
     ;(mapish/debug [:content content-index])
-    (doall (map #(add-output! (first %) clickable-style) content-index)))
+    (doall (map #(add-output! (first %) clickable-style log-click "transaction") content-index)))
   (add-output! " "))
 
 (defn list-index-names [ark-record]
@@ -113,7 +119,7 @@
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (doall (map #(add-output! (first %) clickable-style) content-index)))
+    (doall (map #(add-output! (first %) clickable-style log-click "index") content-index)))
   (add-output! " "))
 
 (def do-console
@@ -197,8 +203,9 @@
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
                             (h/div :style "white-space:pre-wrap;font-family:\"Lucida Console\", monospace"
-                                   (h/for-tpl [[line-id] output]
-                                              (h/div :id line-id))))
+                                   (h/for-tpl [[line-id on-click arg] output]
+                                              (h/div :id line-id
+                                                     :click (fn [] (@on-click @arg))))))
                      )))))
 
 (defmethod login/add-body-element :console [_]

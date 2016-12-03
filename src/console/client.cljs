@@ -135,6 +135,15 @@
     (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index)))
   (add-output! "\n"))
 
+(defn list-application-names [ark-record]
+  (add-output! "application names:\n")
+  (let [index-uuid (arkRecord/get-index-uuid ark-record "name")
+        content-index (arkRecord/get-content-index
+                        ark-record
+                        index-uuid)]
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index)))
+  (add-output! "\n"))
+
 (def do-console
   (h/div
     (h/table :style "width:100%"
@@ -167,20 +176,27 @@
                                     "journal entries")
                                   )))
 
+                            (h/output (h/strong "Index content: "))
+
                             (h/button
                               :click (fn []
                                        (list-index-names @my-ark-record))
-                              "list indexes")
+                              "indexes")
 
                             (h/button
                               :click (fn []
                                        (list-headlines @my-ark-record))
-                              "list headlines")
+                              "headlines")
 
                             (h/button
                               :click (fn []
                                        (list-transaction-names @my-ark-record))
-                              "list transaction names")
+                              "transaction names")
+
+                            (h/button
+                              :click (fn []
+                                       (list-application-names @my-ark-record))
+                              "application names")
 
                             (h/div
                               :style "color:red"
@@ -189,25 +205,25 @@
                                              "")))
                               )
 
-                            (h/p (h/button
-                                   :click #(fred)
-                                   :href ""
-                                   "Hello Fred"))
+                            (h/output (h/strong "Transactions: "))
 
-                            (h/p (h/button
-                                   :click #(make-bob)
-                                   :href ""
-                                   "Make Bob"))
+                            (h/button
+                              :click #(fred)
+                              :href ""
+                              "Hello Fred")
 
-                            (h/p
-                              (h/button
-                                :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
-                                "Invalid!"))
+                            (h/button
+                              :click #(make-bob)
+                              :href ""
+                              "Make Bob")
 
-                            (h/p
-                              (h/button
-                                :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-                                "Trouble!"))))
+                            (h/button
+                              :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
+                              "Invalid!")
+
+                            (h/button
+                              :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
+                              "Trouble!")))
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))

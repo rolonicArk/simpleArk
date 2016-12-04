@@ -95,6 +95,10 @@
   []
   "font-weight: bold")
 
+(defn italic-style
+  []
+  "font-style: italic")
+
 (defn clickable-style
   []
   "color:blue;cursor:pointer")
@@ -117,6 +121,12 @@
                          (if (some? e)
                            (.scrollIntoView e true))))
                      nw)))))
+
+(defn my-ark-record-updated [_ _ _ n]
+  (add-output! "\n***ark updated***\n" italic-style)
+  )
+
+(add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
 (defn list-headlines [ark-record]
   (add-output! "headlines:\n" bold-style)

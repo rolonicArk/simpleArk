@@ -125,15 +125,18 @@
 (defn get-content-index
   "returns a seq of [value uuid]"
   [ark-record index-uuid]
-  (map
-    (fn [e]
-      (let [v (key e)]
-        [(v 1) (v 2)]))
-    (filter
-      #(some? (val %))
-      (seq (mapish/mi-sub
-             (get-property-values ark-record index-uuid)
-             [:content/index])))))
+  (let [property-values (get-property-values ark-record index-uuid)]
+    (if (nil? property-values)
+      nil
+      (map
+        (fn [e]
+          (let [v (key e)]
+            [(v 1) (v 2)]))
+        (filter
+          #(some? (val %))
+          (seq (mapish/mi-sub
+                 property-values
+                 [:content/index])))))))
 
 (defn get-related-uuids
   "returns a lazy seq of the related uuids"

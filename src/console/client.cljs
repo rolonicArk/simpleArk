@@ -36,25 +36,9 @@
   (reset! transaction-error true)
   (reset! transaction-error-msg msg))
 
-(defn je-count [ark-record]
-  (if ark-record
-    (str "journal entry rolons count: " (count (arkRecord/get-journal-entries ark-record)) "\n\n")
-    ""))
-
-(defn indexes-count [ark-record]
-  (if ark-record
-    (str "index rolons count: " (count (arkRecord/get-indexes ark-record)) "\n\n")
-    ""))
-
-(defn application-rolons-count [ark-record]
-  (if ark-record
-    (str "application rolons count: " (count (arkRecord/get-application-rolons ark-record)) "\n\n")
-    ""))
-
 (defmethod login/add-header-element :console [_]
   (h/div
     (h/h2 "Ark Console")
-    (h/p "?")
     ))
 
 (defn fred []
@@ -91,13 +75,21 @@
   []
   "")
 
-(defn bold-style
+(defn command-style
   []
-  "font-weight: bold")
+  "font-weight:bold; display:block; background-color:MistyRose")
 
-(defn italic-style
+(defn command-prefix-style
   []
-  "font-style: italic")
+  "font-weight:bold; background-color:MistyRose")
+
+(defn block-style
+  []
+  "display:block")
+
+(defn event-style
+  []
+  "font-style:italic; display:block; background-color:yellow")
 
 (defn clickable-style
   []
@@ -123,46 +115,54 @@
                      nw)))))
 
 (defn my-ark-record-updated [_ _ _ n]
-  (add-output! "\n***ark updated***\n" italic-style)
+  (add-output! "***ark updated***" event-style)
   )
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
+(defn je-count [ark-record]
+  (add-output! "journal entry rolons count: " command-prefix-style)
+  (add-output! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
+
+(defn indexes-count [ark-record]
+  (add-output! "index rolons count: " command-prefix-style)
+  (add-output! (str (count (arkRecord/get-indexes ark-record)) "\n")))
+
+(defn application-rolons-count [ark-record]
+  (add-output! "application rolons count: " command-prefix-style)
+  (add-output! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
+
 (defn list-headlines [ark-record]
-  (add-output! "headlines:\n" bold-style)
+  (add-output! "headlines:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "headline") content-index)))
-  (add-output! "\n"))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "headline") content-index))))
 
 (defn list-transaction-names [ark-record]
-  (add-output! "transaction names:\n" bold-style)
+  (add-output! "transaction names:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
     ;(mapish/debug [:content content-index])
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "transaction") content-index)))
-  (add-output! "\n"))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "transaction") content-index))))
 
 (defn list-index-names [ark-record]
-  (add-output! "index names:\n" bold-style)
+  (add-output! "index names:" command-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index)))
-  (add-output! "\n"))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index))))
 
 (defn list-application-names [ark-record]
-  (add-output! "application names:\n" bold-style)
+  (add-output! "application names:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "name")
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index)))
-  (add-output! "\n"))
+    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index))))
 
 (def do-console
   (h/div
@@ -182,17 +182,17 @@
                                 (h/td
                                   (h/button
                                     :click (fn []
-                                             (add-output! (application-rolons-count @my-ark-record)))
+                                             (application-rolons-count @my-ark-record))
                                     "applications"))
                                 (h/td
                                   (h/button
                                     :click (fn []
-                                             (add-output! (indexes-count @my-ark-record)))
+                                             (indexes-count @my-ark-record))
                                     "indexes"))
                                 (h/td
                                   (h/button
                                     :click (fn []
-                                             (add-output! (je-count @my-ark-record)))
+                                             (je-count @my-ark-record))
                                     "journal entries")
                                   )))
 

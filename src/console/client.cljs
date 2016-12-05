@@ -298,17 +298,25 @@
                                              "")))
                               )
 
-                            (h/p
-                              (h/text
-                                (if (some? transaction-je-uuid-string)
-                                  (str "Last requested transaction Journal Entry UUID: " transaction-je-uuid-string)
-                                  "")))
+                            (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (some? transaction-je-uuid-string))
+                              "Last requested transaction Journal Entry UUID: "
+                              (h/span
+                                :style "color:blue;cursor:pointer"
+                                :click #(uuid-click (str @latest-journal-entry-uuid))
+                                (h/text
+                                  transaction-je-uuid-string)))
 
-                            (h/p
-                              (h/text
-                                (if (some? latest-journal-entry-uuid)
-                                  (str "Latest Journal Entry UUID: " latest-journal-entry-uuid)
-                                  "")))
+                            (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (some? latest-journal-entry-uuid))
+                              "Latest Journal Entry UUID: "
+                              (h/span
+                                :style "color:blue;cursor:pointer"
+                                :click #(uuid-click (str @latest-journal-entry-uuid))
+                                (h/text
+                                  latest-journal-entry-uuid)))
                             ))
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))

@@ -213,7 +213,7 @@
                             (h/hr)
 
                             (h/div
-                              "Selected Index: "
+                              (h/strong "Selected Index: ")
                               (h/span
                                 :style (j/cell= (if (= "" selected-index)
                                                   ""
@@ -227,6 +227,7 @@
                             (h/div
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :disabled (j/cell= (= "" selected-index))
                                 :click (fn []
                                          (add-output! "> clear index selection" command-style)
@@ -234,6 +235,7 @@
                                 "clear selection")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :disabled (j/cell= (= "" selected-index))
                                 :click (fn []
                                          (list-index-content @my-ark-record
@@ -241,6 +243,7 @@
                                 "list index content")
 
                             (h/button
+                              :style "background-color:MistyRose"
                               :click (fn []
                                        (list-index-names @my-ark-record))
                               "list indexes"))
@@ -252,16 +255,19 @@
                               (h/output (h/strong "Rolon Counts: "))
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (application-rolons-count @my-ark-record))
                                 "applications")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (indexes-count @my-ark-record))
                                 "indexes")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (je-count @my-ark-record))
                                 "journal entries"))
@@ -271,6 +277,7 @@
                               (h/output (h/strong "Transactions: "))
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-output! "> Hello Fred transaction" command-style)
                                          (fred))
@@ -278,6 +285,7 @@
                                 "Hello Fred")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-output! "> Make Bob transaction" command-style)
                                          (make-bob))
@@ -285,12 +293,14 @@
                                 "Make Bob")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-output! "> Invalid!" command-style)
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
                                 "Invalid!")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-output! "> Trouble!" command-style)
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
@@ -308,7 +318,7 @@
                             (h/div
                               :css {:display "none"}
                               :toggle (j/cell= (some? transaction-je-uuid-string))
-                              "Last requested transaction Journal Entry UUID: "
+                              (h/strong "Last requested transaction Journal Entry UUID: ")
                               (h/span
                                 :style "color:blue;cursor:pointer"
                                 :click #(uuid-click (str @latest-journal-entry-uuid))
@@ -318,7 +328,7 @@
                             (h/div
                               :css {:display "none"}
                               :toggle (j/cell= (some? latest-journal-entry-uuid))
-                              "Latest Journal Entry UUID: "
+                              (h/strong "Latest Journal Entry UUID: ")
                               (h/span
                                 :style "color:blue;cursor:pointer"
                                 :click #(uuid-click (str @latest-journal-entry-uuid))

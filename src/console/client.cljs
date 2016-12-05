@@ -150,7 +150,13 @@
                         ark-record
                         index-uuid)]
     ;(mapish/debug [:content content-index])
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "transaction") content-index))))
+    (doall (map (fn [kv]
+                  (let [k (str (key kv) " ")
+                        v (str (val kv))]
+                  (add-output! k)
+                  (add-output! (str v "\n")
+                              clickable-style log-click v)))
+                content-index))))
 
 (defn list-index-names [ark-record]
   (add-output! "> index names:" command-style)

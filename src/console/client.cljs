@@ -22,6 +22,9 @@
            nil)
          (partial swap! login/common-data assoc :console))
 
+(j/defc= latest-journal-entry-uuid
+        (arkRecord/get-latest-journal-entry-uuid my-ark-record))
+
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
   (reset! transaction-error false)
@@ -121,19 +124,19 @@
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
 (defn je-count [ark-record]
-  (add-output! "journal entry rolons count: " command-prefix-style)
+  (add-output! "> journal entry rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
 
 (defn indexes-count [ark-record]
-  (add-output! "index rolons count: " command-prefix-style)
+  (add-output! "> index rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-indexes ark-record)) "\n")))
 
 (defn application-rolons-count [ark-record]
-  (add-output! "application rolons count: " command-prefix-style)
+  (add-output! "> application rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
 
 (defn list-headlines [ark-record]
-  (add-output! "headlines:" command-style)
+  (add-output! "> headlines:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
         content-index (arkRecord/get-content-index
                         ark-record
@@ -141,7 +144,7 @@
     (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "headline") content-index))))
 
 (defn list-transaction-names [ark-record]
-  (add-output! "transaction names:" command-style)
+  (add-output! "> transaction names:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
         content-index (arkRecord/get-content-index
                         ark-record
@@ -150,14 +153,14 @@
     (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "transaction") content-index))))
 
 (defn list-index-names [ark-record]
-  (add-output! "index names:" command-style)
+  (add-output! "> index names:" command-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
     (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index))))
 
 (defn list-application-names [ark-record]
-  (add-output! "application names:" command-style)
+  (add-output! "> application names:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "name")
         content-index (arkRecord/get-content-index
                         ark-record
@@ -218,6 +221,34 @@
                                        (list-application-names @my-ark-record))
                               "application names")
 
+                            (h/output (h/strong "Transactions: "))
+
+                            (h/button
+                              :click (fn []
+                                       (add-output! "> Hello Fred transaction" command-style)
+                                       (fred))
+                              :href ""
+                              "Hello Fred")
+
+                            (h/button
+                              :click (fn []
+                                       (add-output! "> Make Bob transaction" command-style)
+                                       (make-bob))
+                              :href ""
+                              "Make Bob")
+
+                            (h/button
+                              :click (fn []
+                                       (add-output! "> Invalid!" command-style)
+                                       (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
+                              "Invalid!")
+
+                            (h/button
+                              :click (fn []
+                                       (add-output! "> Trouble!" command-style)
+                                       (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
+                              "Trouble!")
+
                             (h/div
                               :style "color:red"
                               (h/p (h/text (if transaction-error
@@ -225,30 +256,16 @@
                                              "")))
                               )
 
-                            (h/output (h/strong "Transactions: "))
-
-                            (h/button
-                              :click #(fred)
-                              :href ""
-                              "Hello Fred")
-
-                            (h/button
-                              :click #(make-bob)
-                              :href ""
-                              "Make Bob")
-
-                            (h/button
-                              :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}])
-                              "Invalid!")
-
-                            (h/button
-                              :click #(tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}])
-                              "Trouble!")
-
                             (h/p
                               (h/text
                                 (if (some? transaction-je-uuid-string)
                                   (str "Last requested transaction Journal Entry UUID: " transaction-je-uuid-string)
+                                  "")))
+
+                            (h/p
+                              (h/text
+                                (if (some? latest-journal-entry-uuid)
+                                  (str "Latest Journal Entry UUID: " latest-journal-entry-uuid)
                                   "")))
                             ))
 

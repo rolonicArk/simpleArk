@@ -23,7 +23,7 @@
          (partial swap! login/common-data assoc :console))
 
 (j/defc= latest-journal-entry-uuid
-        (arkRecord/get-latest-journal-entry-uuid my-ark-record))
+         (arkRecord/get-latest-journal-entry-uuid my-ark-record))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
@@ -58,7 +58,7 @@
          {[:index/headline] "make bob"}
          {[:content/age]             8
           [:index/name]              "Bob"
-          [:index/headline] "First application Rolon"
+          [:index/headline]          "First application Rolon"
           [:content/brothers "John"] true
           [:content/brothers "Jeff"] true}])
       }]))
@@ -189,78 +189,82 @@
                                        (reset! output []))
                               "clear display")
 
-                            (h/output (h/strong "\nRolon Counts:"))
+                            (h/hr)
 
-                            (h/table :style "dislay:inline"
-                              (h/tr
-                                (h/td
-                                  (h/button
-                                    :click (fn []
-                                             (application-rolons-count @my-ark-record))
-                                    "applications"))
-                                (h/td
-                                  (h/button
-                                    :click (fn []
-                                             (indexes-count @my-ark-record))
-                                    "indexes"))
-                                (h/td
-                                  (h/button
-                                    :click (fn []
-                                             (je-count @my-ark-record))
-                                    "journal entries")
-                                  )))
+                            (h/div
 
-                            (h/output (h/strong "\nIndex content: "))
+                              (h/output (h/strong "Rolon Counts: "))
 
-                            (h/button
-                              :click (fn []
-                                       (list-index-names @my-ark-record))
-                              "indexes")
+                              (h/button
+                                :click (fn []
+                                         (application-rolons-count @my-ark-record))
+                                "applications")
 
-                            (h/button
-                              :click (fn []
-                                       (list-headlines @my-ark-record))
-                              "headlines")
+                              (h/button
+                                :click (fn []
+                                         (indexes-count @my-ark-record))
+                                "indexes")
 
-                            (h/button
-                              :click (fn []
-                                       (list-transaction-names @my-ark-record))
-                              "transaction names")
+                              (h/button
+                                :click (fn []
+                                         (je-count @my-ark-record))
+                                "journal entries"))
 
-                            (h/button
-                              :click (fn []
-                                       (list-application-names @my-ark-record))
-                              "application names")
+                            (h/div
 
-                            (h/br)
+                              (h/output (h/strong "Index content: "))
 
-                            (h/output (h/strong "Transactions: "))
+                              (h/button
+                                :click (fn []
+                                         (list-index-names @my-ark-record))
+                                "indexes")
 
-                            (h/button
-                              :click (fn []
-                                       (add-output! "> Hello Fred transaction" command-style)
-                                       (fred))
-                              :href ""
-                              "Hello Fred")
+                              (h/button
+                                :click (fn []
+                                         (list-headlines @my-ark-record))
+                                "headlines")
 
-                            (h/button
-                              :click (fn []
-                                       (add-output! "> Make Bob transaction" command-style)
-                                       (make-bob))
-                              :href ""
-                              "Make Bob")
+                              (h/button
+                                :click (fn []
+                                         (list-transaction-names @my-ark-record))
+                                "transaction names")
 
-                            (h/button
-                              :click (fn []
-                                       (add-output! "> Invalid!" command-style)
-                                       (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
-                              "Invalid!")
+                              (h/button
+                                :click (fn []
+                                         (list-application-names @my-ark-record))
+                                "application names"))
 
-                            (h/button
-                              :click (fn []
-                                       (add-output! "> Trouble!" command-style)
-                                       (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
-                              "Trouble!")
+                            (h/div
+
+                              (h/output (h/strong "Transactions: "))
+
+                              (h/button
+                                :click (fn []
+                                         (add-output! "> Hello Fred transaction" command-style)
+                                         (fred))
+                                :href ""
+                                "Hello Fred")
+
+                              (h/button
+                                :click (fn []
+                                         (add-output! "> Make Bob transaction" command-style)
+                                         (make-bob))
+                                :href ""
+                                "Make Bob")
+
+                              (h/button
+                                :click (fn []
+                                         (add-output! "> Invalid!" command-style)
+                                         (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
+                                "Invalid!")
+
+                              (h/button
+                                :click (fn []
+                                         (add-output! "> Trouble!" command-style)
+                                         (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
+                                "Trouble!"))
+
+                            (h/hr)
 
                             (h/div
                               :style "color:red"

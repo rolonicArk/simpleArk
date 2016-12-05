@@ -189,9 +189,10 @@
                                        (reset! output []))
                               "clear display")
 
-                            (h/table
+                            (h/output (h/strong "\nRolon Counts:"))
+
+                            (h/table :style "dislay:inline"
                               (h/tr
-                                (h/th "Rolon Counts:")
                                 (h/td
                                   (h/button
                                     :click (fn []
@@ -209,7 +210,7 @@
                                     "journal entries")
                                   )))
 
-                            (h/output (h/strong "Index content: "))
+                            (h/output (h/strong "\nIndex content: "))
 
                             (h/button
                               :click (fn []

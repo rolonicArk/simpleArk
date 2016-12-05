@@ -213,10 +213,17 @@
                             (h/hr)
 
                             (h/div
-
-                              (h/output
+                              "Selected Index: "
+                              (h/span
+                                :style (j/cell= (if (= "" selected-index)
+                                                  ""
+                                                  "color:blue;cursor:pointer"
+                                                  ))
+                                :click #(uuid-click @selected-index)
                                 (h/text
-                                  (str "Selected Index: " selected-index))))
+                                  (if (= "" selected-index)
+                                    "none"
+                                    (str selected-index)))))
                             (h/div
 
                               (h/button
@@ -316,7 +323,8 @@
                                 :style "color:blue;cursor:pointer"
                                 :click #(uuid-click (str @latest-journal-entry-uuid))
                                 (h/text
-                                  latest-journal-entry-uuid)))
+                                  latest-journal-entry-uuid))
+                              )
                             ))
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))

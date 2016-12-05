@@ -30,14 +30,17 @@
              :style "background-color:#f8f8f0"
              (h/div
                (h/table (h/tr
+                          (h/td login/user-name ":")
                           (h/for-tpl [capability login/capability-names]
                                      (h/td (h/if-tpl (j/cell= (= capability login/reroute))
                                                      (h/strong capability)
                                                      (h/a :href (j/cell= (str "/#" capability)) capability))
                                            " | "))
                           (h/td (h/form
-                                  :submit #(login/logout!)
-                                  (h/button :type "submit" "log off"))))))
+                                  :submit (fn []
+                                            (login/logout!))
+                                  (h/button :type "submit" "log off")))
+                          )))
              (h/div
                (h/for-tpl [capability login/capabilities]
                           (h/div

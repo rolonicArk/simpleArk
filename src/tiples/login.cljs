@@ -16,10 +16,10 @@
 (def route (h/route-cell "#/home/"))
 
 (j/defc= capability-names (reduce
-                          (fn [v i]
-                            (conj v (name i)))
-                          []
-                          capabilities))
+                            (fn [v i]
+                              (conj v (name i)))
+                            []
+                            capabilities))
 
 (defn redo-route [cn r]
   (let [r (if r
@@ -72,7 +72,7 @@
 (def windowInnerHeight (j/cell window.innerHeight))
 
 (defn resize []
- (reset! fullScreenElement (getFullScreenElement))
+  (reset! fullScreenElement (getFullScreenElement))
   (reset! windowInnerWidth window.innerWidth)
   (reset! windowInnerHeight window.innerHeight)
   )
@@ -81,19 +81,6 @@
 
 (j/defc= body-height (do
                        (- windowInnerHeight header-height)))
-
-(defn tabs-div []
-  (h/div
-    (h/table (h/tr
-             (h/for-tpl [capability capability-names]
-                      (h/td (h/if-tpl (j/cell= (= capability reroute))
-                                  (h/strong capability)
-                                  (h/a :href (j/cell= (str "/#" capability)) capability))
-                          " | "))
-             (h/td (h/form
-                   :submit #(logout!)
-                   (h/button :type "submit" "log off"))))))
-  )
 
 (defn login-div []
   (h/div
@@ -116,14 +103,14 @@
             (h/tr
               (h/td (h/label "Username "))
               (h/td (h/input :type "text"
-                         :autofocus "autofocus"
-                         :value user
-                         :change #(reset! user @%))))
+                             :autofocus "autofocus"
+                             :value user
+                             :change #(reset! user @%))))
             (h/tr
               (h/td (h/label "Password "))
               (h/td (h/input :type "password"
-                         :value pass
-                         :change #(reset! pass @%))))
+                             :value pass
+                             :change #(reset! pass @%))))
             (h/tr
               (h/td "")
               (h/td :style "text-align:right" (h/button :type "submit" "login"))

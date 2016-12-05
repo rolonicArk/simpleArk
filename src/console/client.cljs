@@ -135,13 +135,23 @@
   (add-output! "> application rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
 
+(defn display-index
+  [content-index]
+  (doall (map (fn [kv]
+                (let [k (str (key kv) " ")
+                      v (str (val kv))]
+                  (add-output! k)
+                  (add-output! (str v "\n")
+                               clickable-style log-click v)))
+              content-index)))
+
 (defn list-headlines [ark-record]
   (add-output! "> headlines:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "headline") content-index))))
+    (display-index content-index)))
 
 (defn list-transaction-names [ark-record]
   (add-output! "> transaction names:" command-style)
@@ -150,20 +160,14 @@
                         ark-record
                         index-uuid)]
     ;(mapish/debug [:content content-index])
-    (doall (map (fn [kv]
-                  (let [k (str (key kv) " ")
-                        v (str (val kv))]
-                  (add-output! k)
-                  (add-output! (str v "\n")
-                              clickable-style log-click v)))
-                content-index))))
+    (display-index content-index)))
 
 (defn list-index-names [ark-record]
   (add-output! "> index names:" command-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index))))
+    (display-index content-index)))
 
 (defn list-application-names [ark-record]
   (add-output! "> application names:" command-style)
@@ -171,7 +175,7 @@
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (doall (map #(add-output! (str (first %) "\n") clickable-style log-click "index") content-index))))
+    (display-index content-index)))
 
 (def do-console
   (h/div
@@ -227,6 +231,8 @@
                                        (list-application-names @my-ark-record))
                               "application names")
 
+                            (h/br)
+
                             (h/output (h/strong "Transactions: "))
 
                             (h/button
@@ -277,7 +283,7 @@
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-                            (h/div :style "white-space:pre-wrap"
+                            (h/div :style "white-space:pre-wrap; font-family:monospace"
                                    (h/for-tpl [[txt-id txt style on-click arg] output]
                                               (h/output :id txt-id
                                                         :style style

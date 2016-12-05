@@ -96,18 +96,15 @@
   []
   "font-style:italic; display:block; background-color:yellow")
 
+(defn selection-style
+  []
+  "font-style:italic; display:block; background-color:lightGrey")
+
 (defn clickable-style
   []
   "color:blue;cursor:pointer")
 
 (defn no-click [arg])
-
-(defn uuid-click [arg]
-  (cond
-    (suuid/index-uuid? (suuid/create-uuid arg))
-    (reset! selected-index arg)
-    :else
-    (.log js/console arg)))
 
 (defn add-output!
   ([txt] (add-output! txt default-style))
@@ -122,6 +119,15 @@
                          (if (some? e)
                            (.scrollIntoView e true))))
                      nw)))))
+
+(defn uuid-click [arg]
+  (cond
+    (suuid/index-uuid? (suuid/create-uuid arg))
+    (do
+      (reset! selected-index arg)
+      (add-output! (str "selected index: " arg) selection-style))
+    :else
+    (.log js/console arg)))
 
 (defn my-ark-record-updated [_ _ _ n]
   (add-output! "***ark updated***" event-style)
@@ -151,6 +157,15 @@
                                clickable-style uuid-click v)))
               content-index)))
 
+(defn list-index-content [ark-record index-uuid]
+  (add-output! "> list index content:" command-style)
+  (add-output! "index: ")
+  (add-output! (str index-uuid "\n") clickable-style uuid-click (str index-uuid))
+  (let [content-index (arkRecord/get-content-index
+                        ark-record
+                        index-uuid)]
+    (display-index content-index)))
+
 (defn list-headlines [ark-record]
   (add-output! "> headlines:" command-style)
   (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
@@ -169,7 +184,7 @@
     (display-index content-index)))
 
 (defn list-index-names [ark-record]
-  (add-output! "> index names:" command-style)
+  (add-output! "> list indexes:" command-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
@@ -205,10 +220,23 @@
                             (h/div
 
                               (h/button
+                                :disabled (j/cell= (= "" selected-index))
                                 :click (fn []
+                                         (add-output! "> clear index selection" command-style)
                                          (reset! selected-index ""))
                                 "clear selection")
-                              )
+
+                              (h/button
+                                :disabled (j/cell= (= "" selected-index))
+                                :click (fn []
+                                         (list-index-content @my-ark-record
+                                                             (suuid/create-uuid @selected-index)))
+                                "list index content")
+
+                            (h/button
+                              :click (fn []
+                                       (list-index-names @my-ark-record))
+                              "list indexes"))
 
                             (h/hr)
 
@@ -230,30 +258,6 @@
                                 :click (fn []
                                          (je-count @my-ark-record))
                                 "journal entries"))
-
-                            (h/div
-
-                              (h/output (h/strong "Index content: "))
-
-                              (h/button
-                                :click (fn []
-                                         (list-index-names @my-ark-record))
-                                "indexes")
-
-                              (h/button
-                                :click (fn []
-                                         (list-headlines @my-ark-record))
-                                "headlines")
-
-                              (h/button
-                                :click (fn []
-                                         (list-transaction-names @my-ark-record))
-                                "transaction names")
-
-                              (h/button
-                                :click (fn []
-                                         (list-application-names @my-ark-record))
-                                "application names"))
 
                             (h/div
 

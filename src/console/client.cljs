@@ -25,6 +25,8 @@
 (j/defc= latest-journal-entry-uuid
          (arkRecord/get-latest-journal-entry-uuid my-ark-record))
 
+(def selected-index (j/cell ""))
+
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
   (reset! transaction-error false)
@@ -100,8 +102,12 @@
 
 (defn no-click [arg])
 
-(defn log-click [arg]
-  (.log js/console arg))
+(defn uuid-click [arg]
+  (cond
+    (suuid/index-uuid? (suuid/create-uuid arg))
+    (reset! selected-index arg)
+    :else
+    (.log js/console arg)))
 
 (defn add-output!
   ([txt] (add-output! txt default-style))
@@ -142,7 +148,7 @@
                       v (str (val kv))]
                   (add-output! k)
                   (add-output! (str v "\n")
-                               clickable-style log-click v)))
+                               clickable-style uuid-click v)))
               content-index)))
 
 (defn list-headlines [ark-record]
@@ -188,6 +194,21 @@
                               :click (fn []
                                        (reset! output []))
                               "clear display")
+
+                            (h/hr)
+
+                            (h/div
+
+                              (h/output
+                                (h/text
+                                  (str "Selected Index: " selected-index))))
+                            (h/div
+
+                              (h/button
+                                :click (fn []
+                                         (reset! selected-index ""))
+                                "clear selection")
+                              )
 
                             (h/hr)
 

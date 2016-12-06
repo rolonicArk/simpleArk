@@ -73,7 +73,7 @@
        nil
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-record)))))
   ([ark-value rolon-uuid]
-   ;(mapish/debug [:rolon-uuid rolon-uuid :rolon (get-rolon ark-value rolon-uuid)])
+    ;(mapish/debug [:rolon-uuid rolon-uuid :rolon (get-rolon ark-value rolon-uuid)])
    (:changes-by-property (get-rolon ark-value rolon-uuid))))
 
 (defn get-property-value
@@ -88,8 +88,8 @@
   ([ark-record rolon-uuid]
    (get-property-values ark-record rolon-uuid (get-changes-by-property ark-record rolon-uuid)))
   ([ark-record rolon-uuid all-changes]
-   ;(mapish/debug [:get-selected-time (get-selected-time ark-record)])
-   ;(mapish/debug [:all-changes all-changes])
+    ;(mapish/debug [:get-selected-time (get-selected-time ark-record)])
+    ;(mapish/debug [:all-changes all-changes])
    (miView/->MI-view ark-record rolon-uuid all-changes (get-selected-time ark-record))))
 
 (defn index-lookup

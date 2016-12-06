@@ -1,5 +1,5 @@
 (ns simpleArk.ark-value
-  (:require [simpleArk.uuid :as uuid]
+  (:require [simpleArk.uuid :as suuid]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
             [simpleArk.rolonRecord :as rolonRecord]
@@ -32,15 +32,15 @@
   "update the ark with the revised/new rolon"
   [ark-record rolon-uuid rolon-record]
   (cond
-    (uuid/journal-entry-uuid? rolon-uuid)
+    (suuid/journal-entry-uuid? rolon-uuid)
     (let [journal-entries (arkRecord/get-journal-entries ark-record)
           journal-entries (assoc journal-entries [rolon-uuid] rolon-record)]
       (assoc ark-record :journal-entries journal-entries))
-    (uuid/index-uuid? rolon-uuid)
+    (suuid/index-uuid? rolon-uuid)
     (let [indexes (arkRecord/get-indexes ark-record)
           indexes (assoc indexes [rolon-uuid] rolon-record)]
       (assoc ark-record :indexes indexes))
-    (uuid/random-uuid? rolon-uuid)
+    (suuid/random-uuid? rolon-uuid)
     (let [rolons (arkRecord/get-application-rolons ark-record)
           rolons (assoc rolons [rolon-uuid] rolon-record)]
       (assoc ark-record :random-rolons rolons))
@@ -101,7 +101,7 @@
 
 (defn make-index-rolon-
   [ark-value ark-db index-keyword value uuid adding]
-  (let [iuuid (uuid/index-uuid ark-db index-keyword)
+  (let [iuuid (suuid/index-uuid ark-db index-keyword)
         ark-value (if (arkRecord/get-rolon ark-value iuuid)
                     ark-value
                     (make-rolon ark-value ark-db iuuid
@@ -207,7 +207,7 @@
         (update-properties ark-db je-uuid je-properties)
         (make-rolon ark-db
                     (if (some? rolon-uuid) rolon-uuid
-                                           (uuid/random-uuid ark-db))
+                                           (suuid/random-uuid ark-db))
                     rolon-properties))))
 
 (defmethod eval-transaction :ark/destroy-rolon-transaction!

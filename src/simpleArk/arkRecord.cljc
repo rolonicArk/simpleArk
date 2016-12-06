@@ -5,7 +5,7 @@
                [cljs.reader :as reader])
                 [simpleArk.miView :as miView]
                 [simpleArk.mapish :as mapish]
-                [simpleArk.uuid :as uuid]))
+                [simpleArk.uuid :as suuid]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -59,9 +59,9 @@
 (defn get-rolon
   [ark-record uuid]
   (cond
-    (uuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record) [uuid])
-    (uuid/index-uuid? uuid) (get (get-indexes ark-record) [uuid])
-    (uuid/random-uuid? uuid) (get (get-application-rolons ark-record) [uuid])
+    (suuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record) [uuid])
+    (suuid/index-uuid? uuid) (get (get-indexes ark-record) [uuid])
+    (suuid/random-uuid? uuid) (get (get-application-rolons ark-record) [uuid])
     :else #?(:clj  (throw (Exception. (str uuid " was not recognized")))
              :cljs (throw (str uuid " was not recognized")))))
 
@@ -110,7 +110,7 @@
 
 (def index-name-uuid-string "8cacc5db-70b3-5a83-85cf-c29541e14114")
 
-(def index-name-uuid (uuid/create-uuid index-name-uuid-string))
+(def index-name-uuid (suuid/create-uuid index-name-uuid-string))
 
 (defn get-index-uuid
   "Looks up the index name in the index-name index rolon."

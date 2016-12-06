@@ -25,12 +25,7 @@
   (- (quot ts 10000) 12219292800000))
 
 (defn get-time [uuid]
-  #?(:clj
-     ;(.getTime (get-instant uuid))
-     (posix-time (timestamp uuid))
-     :cljs
-     (posix-time (timestamp uuid))
-     ))
+  (posix-time (timestamp uuid)))
 
 (defn journal-entry-uuid?
   [uuid]
@@ -46,6 +41,11 @@
   [uuid]
   (and (uuid? uuid)
        (= (get-version uuid) 5)))
+
+(defn rolon-key [uuid]
+  (if (journal-entry-uuid? uuid)
+    (get-time uuid)
+    uuid))
 
 #?(:clj (defn create-uuid [s] (UUID/fromString s))
    :cljs (defn create-uuid [s] (uuid s)))

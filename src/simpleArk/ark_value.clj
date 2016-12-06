@@ -162,20 +162,22 @@
                                     ark-db
                                     journal-entry-uuid
                                     from-uuid
-                                    [rel to-uuid]
+                                    [rel (suuid/rolon-key to-uuid)]
                                     add)]
     (update-property- ark-value
                       ark-db
                       journal-entry-uuid
                       to-uuid
-                      [irel from-uuid]
+                      [irel (suuid/rolon-key from-uuid)]
                       add)))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
-  [ark-value ark-db rolon-uuid]
-  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)]
-    (update-relation ark-value ark-db "modified" je-uuid rolon-uuid false true)))
+  [ark-record ark-db rolon-uuid]
+  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)]
+    (if (= je-uuid rolon-uuid)
+      ark-record
+      (update-relation ark-record ark-db "modified" je-uuid rolon-uuid false true))))
 
 (defn destroy-rolon
   [ark-value ark-db rolon-uuid]

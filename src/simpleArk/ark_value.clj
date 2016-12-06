@@ -34,7 +34,7 @@
   (cond
     (suuid/journal-entry-uuid? rolon-uuid)
     (let [journal-entries (arkRecord/get-journal-entries ark-record)
-          journal-entries (assoc journal-entries [rolon-uuid] rolon-record)]
+          journal-entries (assoc journal-entries [(suuid/rolon-key rolon-uuid)] rolon-record)]
       (assoc ark-record :journal-entries journal-entries))
     (suuid/index-uuid? rolon-uuid)
     (let [indexes (arkRecord/get-indexes ark-record)
@@ -59,7 +59,7 @@
                                (create-mi component-map))
             first-entry (first (seq property-changes))]
         (if (or (nil? first-entry) (not= new-value (val first-entry)))
-          (assoc property-changes [je-uuid] new-value)
+          (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)
           property-changes)))))
 
 (defn update-rolon-properties

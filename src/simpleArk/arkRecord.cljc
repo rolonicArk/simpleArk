@@ -5,7 +5,8 @@
                [cljs.reader :as reader])
                 [simpleArk.miView :as miView]
                 [simpleArk.mapish :as mapish]
-                [simpleArk.uuid :as suuid]))
+                [simpleArk.uuid :as suuid]
+                [simpleArk.rolonRecord :as rolonRecord]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -22,8 +23,11 @@
    :cljs
    (reader/register-tag-parser! "simpleArk.arkRecord.Ark-record" load-ark))
 
-(defn get-selected-time [ark-record]
+(defn get-selected-je-uuid [ark-record]
   (:selected-time ark-record))
+
+(defn get-selected-time [ark-record]
+  (suuid/rolon-key (get-selected-je-uuid ark-record)))
 
 (defn get-latest-journal-entry-uuid
   [ark-record]
@@ -49,7 +53,7 @@
           nil
           nil
           <=
-          [je-uuid])
+          [(suuid/rolon-key je-uuid)])
         je-uuid
         (key
           (first
@@ -59,11 +63,20 @@
 (defn get-rolon
   [ark-record uuid]
   (cond
-    (suuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record) [uuid])
-    (suuid/index-uuid? uuid) (get (get-indexes ark-record) [uuid])
-    (suuid/random-uuid? uuid) (get (get-application-rolons ark-record) [uuid])
+    (suuid/journal-entry-uuid? uuid) (get (get-journal-entries ark-record)
+                                          [(suuid/rolon-key uuid)])
+    (suuid/index-uuid? uuid) (get (get-indexes ark-record)
+                                  [uuid])
+    (suuid/random-uuid? uuid) (get (get-application-rolons ark-record)
+                                   [uuid])
     :else #?(:clj  (throw (Exception. (str uuid " was not recognized")))
              :cljs (throw (str uuid " was not recognized")))))
+
+(defn get-journal-entry [ark-record timestamp]
+  (get (get-journal-entries ark-record) [timestamp]))
+
+(defn get-journal-entry-uuid [ark-record timestamp]
+  (rolonRecord/get-rolon-uuid (get-journal-entry ark-record timestamp)))
 
 (defn get-changes-by-property
   ([ark-record rolon-uuid property-path]

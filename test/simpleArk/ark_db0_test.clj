@@ -171,16 +171,17 @@
           _ (println "total je count:" (count (arkRecord/get-journal-entries ark-value)))
           ark-value (arkRecord/select-time ark-value make-bob-je-uuid)]
       (println "selected je count:" (count (arkRecord/get-journal-entries ark-value)))
-      (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
       (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
+      (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
       )
 
     (println)
     (println ">>>>>>>>>>>> journal entry headlines")
     (println)
     (let [ark-value (ark-db/get-ark-record ark-db)]
-      (first (keep (fn [x] (println
-                             (arkRecord/get-property-value ark-value (first (key x)) [:index/headline])))
+      (first (keep (fn
+                     [x]
+                     (println (arkRecord/get-property-value ark-value (rolonRecord/get-rolon-uuid (val x)) [:index/headline])))
                    (seq (arkRecord/get-journal-entries ark-value)))))
 
     (println)
@@ -197,9 +198,12 @@
     (println ">>>>>>>>>>>> bob's headlines over time")
     (println)
     (let [ark-value (ark-db/get-ark-record ark-db)]
-      (first (keep #(println (val %)
-                             "-"
-                             (arkRecord/get-property-value ark-value (first (key %)) [:index/headline]))
+      (first (keep (fn [x]
+                     (println (val x)
+                              "-"
+                              (arkRecord/get-property-value ark-value
+                                                            (arkRecord/get-journal-entry-uuid ark-value (first (key x)))
+                                                            [:index/headline])))
                    (rseq (arkRecord/get-changes-by-property ark-value
                                                             bob-uuid
                                                             [:index/headline])))))

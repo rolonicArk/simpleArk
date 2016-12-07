@@ -213,6 +213,29 @@
                             (h/hr)
 
                             (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (some? transaction-je-uuid-string))
+                              (h/strong "My last Journal Entry: ")
+                              (h/span
+                                :style "color:blue;cursor:pointer"
+                                :click #(uuid-click (str @latest-journal-entry-uuid))
+                                (h/text
+                                  transaction-je-uuid-string)))
+
+                            (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (some? latest-journal-entry-uuid))
+                              (h/strong "Latest Journal Entry: ")
+                              (h/span
+                                :style "color:blue;cursor:pointer"
+                                :click #(uuid-click (str @latest-journal-entry-uuid))
+                                (h/text
+                                  latest-journal-entry-uuid))
+                              )
+
+                            (h/hr)
+
+                            (h/div
                               (h/strong "Selected Index: ")
                               (h/span
                                 :style (j/cell= (if (= "" selected-index)
@@ -306,34 +329,11 @@
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
                                 "Trouble!"))
 
-                            (h/hr)
-
                             (h/div
                               :style "color:red"
                               (h/p (h/text (if transaction-error
                                              (str "Error: " transaction-error-msg)
                                              "")))
-                              )
-
-                            (h/div
-                              :css {:display "none"}
-                              :toggle (j/cell= (some? transaction-je-uuid-string))
-                              (h/strong "Last requested transaction Journal Entry UUID: ")
-                              (h/span
-                                :style "color:blue;cursor:pointer"
-                                :click #(uuid-click (str @latest-journal-entry-uuid))
-                                (h/text
-                                  transaction-je-uuid-string)))
-
-                            (h/div
-                              :css {:display "none"}
-                              :toggle (j/cell= (some? latest-journal-entry-uuid))
-                              (h/strong "Latest Journal Entry UUID: ")
-                              (h/span
-                                :style "color:blue;cursor:pointer"
-                                :click #(uuid-click (str @latest-journal-entry-uuid))
-                                (h/text
-                                  latest-journal-entry-uuid))
                               )
                             ))
 

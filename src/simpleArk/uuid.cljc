@@ -44,7 +44,7 @@
 
 (defn rolon-key [uuid]
   (if (journal-entry-uuid? uuid)
-    (get-time uuid)
+    (timestamp uuid)
     uuid))
 
 #?(:clj (defn create-uuid [s] (UUID/fromString s))

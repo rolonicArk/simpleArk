@@ -139,6 +139,14 @@
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
+(defn pretty-uuid
+  [ark-record uuid]
+  (cond
+    (suuid/journal-entry-uuid? uuid)
+    (str (suuid/rolon-key uuid))
+    :else
+    (str uuid)))
+
 (defn je-count [ark-record]
   (add-output! "> journal entry rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
@@ -157,14 +165,14 @@
                 (let [k (str (key kv) " ")
                       v (val kv)]
                   (add-output! k)
-                  (add-output! (str (arkRecord/pretty-uuid my-ark-record v) "\n")
+                  (add-output! (str (pretty-uuid my-ark-record v) "\n")
                                clickable-style uuid-click (str v))))
               content-index)))
 
 (defn list-index-content [ark-record index-uuid]
   (add-output! "> list index content:" command-style)
   (add-output! "index: ")
-  (add-output! (str (arkRecord/pretty-uuid my-ark-record index-uuid) "\n") clickable-style uuid-click (str index-uuid))
+  (add-output! (str (pretty-uuid my-ark-record index-uuid) "\n") clickable-style uuid-click (str index-uuid))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
@@ -218,7 +226,7 @@
                               (h/span
                                 :style "color:blue;cursor:pointer"
                                 :click #(uuid-click @transaction-je-uuid-string)
-                                (h/text (arkRecord/pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
+                                (h/text (pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
 
                             (h/div
                               :css {:display "none"}
@@ -228,7 +236,7 @@
                                 :style "color:blue;cursor:pointer"
                                 :click #(uuid-click (str @latest-journal-entry-uuid))
                                 (h/text
-                                  (arkRecord/pretty-uuid my-ark-record latest-journal-entry-uuid)))
+                                  (pretty-uuid my-ark-record latest-journal-entry-uuid)))
                               )
 
                             (h/hr)
@@ -244,7 +252,7 @@
                                 (h/text
                                   (if (= "" selected-index)
                                     "none"
-                                    (arkRecord/pretty-uuid my-ark-record selected-index)))))
+                                    (pretty-uuid my-ark-record selected-index)))))
                             (h/div
 
                               (h/button

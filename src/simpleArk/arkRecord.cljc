@@ -160,7 +160,3 @@
     (filter
       #(val %)
       (seq (mapish/mi-sub (get-property-values ark-record uuid) [relation-keyword])))))
-
-(defn pretty-uuid
-  [ark-record uuid]
-  (str (suuid/rolon-key uuid)))

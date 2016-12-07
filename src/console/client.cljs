@@ -10,7 +10,12 @@
     [simpleArk.arkRecord :as arkRecord]
     [tiples.login :as login]
     [tiples.client :as tiples]
-    [simpleArk.mapish :as mapish]))
+    [simpleArk.mapish :as mapish]
+    [cljs-time.core :as time]
+    [cljs-time.coerce :as cotime]
+    [cljs-time.format :as ftime]))
+
+(def format-time (ftime/formatters :mysql))
 
 (def transaction-je-uuid-string (j/cell nil))
 (def transaction-error (j/cell false))
@@ -143,7 +148,11 @@
   [ark-record uuid]
   (cond
     (suuid/journal-entry-uuid? uuid)
-    (str (suuid/rolon-key uuid))
+    (do
+      (let [tm (suuid/get-time uuid)
+            dt (cotime/to-date-time tm)
+            ldt (time/to-default-time-zone dt)]
+        (ftime/unparse format-time ldt)))
     :else
     (str uuid)))
 

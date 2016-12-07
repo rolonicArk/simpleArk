@@ -27,6 +27,7 @@
                   [http-kit                  "2.2.0"]
                   [com.taoensso/sente        "1.10.0"]
                   [com.rpl/specter           "0.13.0"]
+                  [com.andrewmcveigh/cljs-time "0.4.0"]
                   ]
   :source-paths #{"src" "test"}
   :resource-paths #{"assets"})

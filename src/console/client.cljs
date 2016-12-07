@@ -25,6 +25,10 @@
 (j/defc= latest-journal-entry-uuid
          (arkRecord/get-latest-journal-entry-uuid my-ark-record))
 
+(j/defc output [])
+
+(j/defc= consoleheader-element nil)
+
 (def selected-index (j/cell ""))
 
 (defmethod tiples/chsk-recv :console/update
@@ -44,7 +48,11 @@
 (defmethod login/add-header-element :console [_]
   (h/div
     (h/h2 "Ark Console")
-    ))
+
+    (h/button
+      :click (fn []
+               (reset! output []))
+      "clear display")))
 
 (defn fred []
   (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
@@ -65,16 +73,12 @@
           [:content/brothers "Jeff"] true}])
       }]))
 
-(j/defc= consoleheader-element nil)
-
 (defn td-style [width]
   (str "width:" (/ width 2) "px"))
 
 (defn tx-style [windowInnerHeight header-height]
   (let [header-height (if (= header-height 0) 10 header-height)]
     (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px;vertical-align:bottom")))
-
-(j/defc output [])
 
 (defn default-style
   []
@@ -151,16 +155,16 @@
   [content-index]
   (doall (map (fn [kv]
                 (let [k (str (key kv) " ")
-                      v (str (val kv))]
+                      v (val kv)]
                   (add-output! k)
-                  (add-output! (str v "\n")
-                               clickable-style uuid-click v)))
+                  (add-output! (str (arkRecord/pretty-uuid my-ark-record v) "\n")
+                               clickable-style uuid-click (str v))))
               content-index)))
 
 (defn list-index-content [ark-record index-uuid]
   (add-output! "> list index content:" command-style)
   (add-output! "index: ")
-  (add-output! (str index-uuid "\n") clickable-style uuid-click (str index-uuid))
+  (add-output! (str (arkRecord/pretty-uuid my-ark-record index-uuid) "\n") clickable-style uuid-click (str index-uuid))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
@@ -205,11 +209,6 @@
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
 
-                            (h/button
-                              :click (fn []
-                                       (reset! output []))
-                              "clear display")
-
                             (h/hr)
 
                             (h/div
@@ -218,9 +217,8 @@
                               (h/strong "My last Journal Entry: ")
                               (h/span
                                 :style "color:blue;cursor:pointer"
-                                :click #(uuid-click (str @latest-journal-entry-uuid))
-                                (h/text
-                                  transaction-je-uuid-string)))
+                                :click #(uuid-click @transaction-je-uuid-string)
+                                (h/text (arkRecord/pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
 
                             (h/div
                               :css {:display "none"}
@@ -230,7 +228,7 @@
                                 :style "color:blue;cursor:pointer"
                                 :click #(uuid-click (str @latest-journal-entry-uuid))
                                 (h/text
-                                  latest-journal-entry-uuid))
+                                  (arkRecord/pretty-uuid my-ark-record latest-journal-entry-uuid)))
                               )
 
                             (h/hr)
@@ -246,7 +244,7 @@
                                 (h/text
                                   (if (= "" selected-index)
                                     "none"
-                                    (str selected-index)))))
+                                    (arkRecord/pretty-uuid my-ark-record selected-index)))))
                             (h/div
 
                               (h/button

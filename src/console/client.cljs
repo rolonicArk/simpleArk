@@ -109,7 +109,7 @@
 
 (defn selection-style
   []
-  "font-style:italic; display:block; background-color:lightGrey")
+  "font-style:italic; background-color:lightGrey")
 
 (defn clickable-style
   []
@@ -131,26 +131,6 @@
                            (.scrollIntoView e true))))
                      nw)))))
 
-(defn uuid-click [arg]
-  (let [uuid (suuid/create-uuid arg)]
-  (cond
-    (suuid/index-uuid? uuid)
-    (do
-      (reset! selected-index arg)
-      (add-output! (str "selected index: " uuid) selection-style))
-    (suuid/journal-entry-uuid? uuid)
-    (do
-      (reset! selected-time arg)
-      (add-output! (str "selected time: " uuid) selection-style))
-    :else
-    (.log js/console arg))))
-
-(defn my-ark-record-updated [_ _ _ n]
-  (add-output! "***ark updated***" event-style)
-  )
-
-(add-watch my-ark-record :my-ark-record my-ark-record-updated)
-
 (defn pretty-uuid
   [ark-record uuid]
   (cond
@@ -162,6 +142,30 @@
         (ftime/unparse format-time ldt)))
     :else
     (str uuid)))
+
+(defn uuid-click [ark-record arg]
+  (let [uuid (suuid/create-uuid arg)]
+  (cond
+    (suuid/index-uuid? uuid)
+    (do
+      (reset! selected-index arg)
+      (add-output! "\nselected index:" selection-style)
+      (add-output! " ")
+      (add-output! (pretty-uuid ark-record uuid) clickable-style))
+    (suuid/journal-entry-uuid? uuid)
+    (do
+      (reset! selected-time arg)
+      (add-output! "\nselected time:" selection-style)
+      (add-output! " ")
+      (add-output! (pretty-uuid ark-record uuid) clickable-style))
+    :else
+    (.log js/console arg))))
+
+(defn my-ark-record-updated [_ _ _ n]
+  (add-output! "***ark updated***" event-style)
+  )
+
+(add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
 (defn je-count [ark-record]
   (add-output! "> journal entry rolons count: " command-prefix-style)
@@ -240,7 +244,7 @@
                                                   ""
                                                   "color:blue;cursor:pointer"
                                                   ))
-                                :click #(uuid-click @selected-time)
+                                :click #(uuid-click @my-ark-record @selected-time)
                                 (h/text
                                   (if (= "" selected-time)
                                     "now"
@@ -251,6 +255,7 @@
                               :toggle (j/cell= (not= "" selected-time))
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-output! "> clear time selection" command-style)
                                          (reset! selected-time ""))
@@ -265,7 +270,7 @@
                               (h/strong "My last Journal Entry: ")
                               (h/span
                                 :style "color:blue;cursor:pointer"
-                                :click #(uuid-click @transaction-je-uuid-string)
+                                :click #(uuid-click @my-ark-record @transaction-je-uuid-string)
                                 (h/text (pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
 
                             (h/div
@@ -274,7 +279,7 @@
                               (h/strong "Latest Journal Entry: ")
                               (h/span
                                 :style "color:blue;cursor:pointer"
-                                :click #(uuid-click (str @latest-journal-entry-uuid))
+                                :click #(uuid-click @my-ark-record (str @latest-journal-entry-uuid))
                                 (h/text
                                   (pretty-uuid my-ark-record latest-journal-entry-uuid)))
                               )
@@ -288,7 +293,7 @@
                                                   ""
                                                   "color:blue;cursor:pointer"
                                                   ))
-                                :click #(uuid-click @selected-index)
+                                :click #(uuid-click @my-ark-record @selected-index)
                                 (h/text
                                   (if (= "" selected-index)
                                     "none"
@@ -297,7 +302,7 @@
                             (h/div
 
                               (h/button
-                                :css {:display "none"}
+                                :css {:display "none" :background-color "MistyRose"}
                                 :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
                                          (add-output! "> clear index selection" command-style)
@@ -305,7 +310,7 @@
                                 "clear index selection")
 
                               (h/button
-                                :css {:display "none"}
+                                :css {:display "none" :background-color "MistyRose"}
                                 :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
                                          (list-index-content @my-ark-record
@@ -392,7 +397,7 @@
                                    (h/for-tpl [[txt-id txt style on-click arg] output]
                                               (h/output :id txt-id
                                                         :style style
-                                                        :click (fn [] (@on-click @arg))
+                                                        :click (fn [] (@on-click  @my-ark-record @arg))
                                                         txt))))
                      )))))
 

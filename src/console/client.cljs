@@ -247,10 +247,10 @@
                                     (pretty-uuid my-ark-record (suuid/create-uuid selected-time))))))
 
                             (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (not= "" selected-time))
 
                               (h/button
-                                :style "background-color:MistyRose"
-                                :disabled (j/cell= (= "" selected-time))
                                 :click (fn []
                                          (add-output! "> clear time selection" command-style)
                                          (reset! selected-time ""))
@@ -297,16 +297,16 @@
                             (h/div
 
                               (h/button
-                                :style "background-color:MistyRose"
-                                :disabled (j/cell= (= "" selected-index))
+                                :css {:display "none"}
+                                :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
                                          (add-output! "> clear index selection" command-style)
                                          (reset! selected-index ""))
                                 "clear index selection")
 
                               (h/button
-                                :style "background-color:MistyRose"
-                                :disabled (j/cell= (= "" selected-index))
+                                :css {:display "none"}
+                                :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
                                          (list-index-content @my-ark-record
                                                              (suuid/create-uuid @selected-index)))
@@ -343,6 +343,8 @@
                                 "journal entries"))
 
                             (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (= "" selected-time))
 
                               (h/output (h/strong "Transactions: "))
 

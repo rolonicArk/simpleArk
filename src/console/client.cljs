@@ -21,6 +21,8 @@
 (def transaction-error (j/cell false))
 (def transaction-error-msg (j/cell ""))
 
+(def selected-time (j/cell ""))
+
 (j/defc= my-ark-record
          (if login/common-data
            (:console login/common-data)
@@ -130,13 +132,18 @@
                      nw)))))
 
 (defn uuid-click [arg]
+  (let [uuid (suuid/create-uuid arg)]
   (cond
-    (suuid/index-uuid? (suuid/create-uuid arg))
+    (suuid/index-uuid? uuid)
     (do
       (reset! selected-index arg)
-      (add-output! (str "selected index: " arg) selection-style))
+      (add-output! (str "selected index: " uuid) selection-style))
+    (suuid/journal-entry-uuid? uuid)
+    (do
+      (reset! selected-time arg)
+      (add-output! (str "selected time: " uuid) selection-style))
     :else
-    (.log js/console arg)))
+    (.log js/console arg))))
 
 (defn my-ark-record-updated [_ _ _ n]
   (add-output! "***ark updated***" event-style)
@@ -226,6 +233,19 @@
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
 
+                            (h/div
+                              (h/strong "Selected time: ")
+                              (h/span
+                                :style (j/cell= (if (= "" selected-time)
+                                                  ""
+                                                  "color:blue;cursor:pointer"
+                                                  ))
+                                :click #(uuid-click @selected-time)
+                                (h/text
+                                  (if (= "" selected-time)
+                                    "now"
+                                    (pretty-uuid my-ark-record (suuid/create-uuid selected-time))))))
+
                             (h/hr)
 
                             (h/div
@@ -261,7 +281,8 @@
                                 (h/text
                                   (if (= "" selected-index)
                                     "none"
-                                    (pretty-uuid my-ark-record selected-index)))))
+                                    (pretty-uuid my-ark-record (suuid/create-uuid selected-index))))))
+
                             (h/div
 
                               (h/button

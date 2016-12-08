@@ -25,7 +25,10 @@
 
 (j/defc= my-ark-record
          (if login/common-data
-           (:console login/common-data)
+           (let [n (:console login/common-data)]
+             (if (= "" selected-time)
+               n
+               (arkRecord/select-time n (suuid/create-uuid selected-time))))
            nil)
          (partial swap! login/common-data assoc :console))
 
@@ -162,8 +165,8 @@
     (.log js/console arg))))
 
 (defn my-ark-record-updated [_ _ _ n]
-  (add-output! "***ark updated***" event-style)
-  )
+  (if (= "" @selected-time)
+    (add-output! "***ark updated***" event-style)))
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 

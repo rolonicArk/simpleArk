@@ -246,6 +246,17 @@
                                     "now"
                                     (pretty-uuid my-ark-record (suuid/create-uuid selected-time))))))
 
+                            (h/div
+
+                              (h/button
+                                :style "background-color:MistyRose"
+                                :disabled (j/cell= (= "" selected-time))
+                                :click (fn []
+                                         (add-output! "> clear time selection" command-style)
+                                         (reset! selected-time ""))
+                                "clear time selection")
+                              )
+
                             (h/hr)
 
                             (h/div
@@ -291,7 +302,7 @@
                                 :click (fn []
                                          (add-output! "> clear index selection" command-style)
                                          (reset! selected-index ""))
-                                "clear selection")
+                                "clear index selection")
 
                               (h/button
                                 :style "background-color:MistyRose"

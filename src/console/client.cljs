@@ -22,6 +22,7 @@
 (def transaction-error-msg (j/cell ""))
 
 (def selected-time (j/cell ""))
+(def old-ark-record (j/cell nil))
 
 (j/defc= my-ark-record
          (if login/common-data
@@ -157,6 +158,7 @@
       (add-output! (pretty-uuid ark-record uuid) clickable-style))
     (suuid/journal-entry-uuid? uuid)
     (do
+      (reset! old-ark-record (:console @login/common-data))
       (reset! selected-time arg)
       (add-output! "\nselected time:" selection-style)
       (add-output! " ")
@@ -165,7 +167,8 @@
     (.log js/console arg))))
 
 (defn my-ark-record-updated [_ _ _ n]
-  (if (= "" @selected-time)
+  (if (and (= "" @selected-time)
+           (not= n @old-ark-record))
     (add-output! "***ark updated***" event-style)))
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)

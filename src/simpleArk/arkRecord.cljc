@@ -139,7 +139,7 @@
   "returns a seq of [value uuid]"
   [ark-record index-uuid]
   (let [property-values (get-property-values ark-record index-uuid)]
-    (if (nil? property-values)
+    (if (nil? (first property-values))
       nil
       (map
         (fn [e]

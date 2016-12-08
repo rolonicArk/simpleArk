@@ -115,9 +115,28 @@
   []
   "font-style:italic; background-color:lightGrey")
 
-(defn clickable-style
+(defn clickable-je-style
+  []
+  "color:orange;cursor:pointer")
+
+(defn clickable-index-style
   []
   "color:blue;cursor:pointer")
+
+(defn clickable-application-style
+  []
+  "color:green;cursor:pointer")
+
+(defn clickable-styles
+  [uuid]
+  (cond
+    (suuid/journal-entry-uuid? uuid)
+    clickable-je-style
+    (suuid/index-uuid? uuid)
+    clickable-index-style
+    (suuid/random-uuid? uuid)
+    clickable-application-style
+    ))
 
 (defn no-click [arg])
 
@@ -155,14 +174,14 @@
       (reset! selected-index arg)
       (add-output! "\nselected index:" selection-style)
       (add-output! " ")
-      (add-output! (pretty-uuid ark-record uuid) clickable-style))
+      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid)))
     (suuid/journal-entry-uuid? uuid)
     (do
       (reset! old-ark-record (:console @login/common-data))
       (reset! selected-time arg)
       (add-output! "\nselected time:" selection-style)
       (add-output! " ")
-      (add-output! (pretty-uuid ark-record uuid) clickable-style))
+      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid)))
     :else
     (.log js/console arg))))
 
@@ -187,18 +206,19 @@
 
 (defn display-index
   [content-index]
+  ;(.log js/console (pr-str :display-index content-index))
   (doall (map (fn [kv]
                 (let [k (str (key kv) " ")
                       v (val kv)]
                   (add-output! k)
                   (add-output! (str (pretty-uuid my-ark-record v) "\n")
-                               clickable-style uuid-click (str v))))
+                               (clickable-styles v) uuid-click (str v))))
               content-index)))
 
 (defn list-index-content [ark-record index-uuid]
   (add-output! "> list index content:" command-style)
   (add-output! "index: ")
-  (add-output! (str (pretty-uuid my-ark-record index-uuid) "\n") clickable-style uuid-click (str index-uuid))
+  (add-output! (str (pretty-uuid my-ark-record index-uuid) "\n") (clickable-styles index-uuid) uuid-click (str index-uuid))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
@@ -244,11 +264,14 @@
                      (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
 
                             (h/div
-                              (h/strong "Selected time: ")
+                              (h/span
+                                :style "color:orange"
+                                (h/strong
+                                  "Selected time: "))
                               (h/span
                                 :style (j/cell= (if (= "" selected-time)
                                                   ""
-                                                  "color:blue;cursor:pointer"
+                                                  "color:green;cursor:pointer"
                                                   ))
                                 :click #(uuid-click @my-ark-record @selected-time)
                                 (h/text
@@ -275,7 +298,7 @@
                               :toggle (j/cell= (some? transaction-je-uuid-string))
                               (h/strong "My last Journal Entry: ")
                               (h/span
-                                :style "color:blue;cursor:pointer"
+                                :style "color:orange;cursor:pointer"
                                 :click #(uuid-click @my-ark-record @transaction-je-uuid-string)
                                 (h/text (pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
 
@@ -284,7 +307,7 @@
                               :toggle (j/cell= (some? latest-journal-entry-uuid))
                               (h/strong "Latest Journal Entry: ")
                               (h/span
-                                :style "color:blue;cursor:pointer"
+                                :style "color:orange;cursor:pointer"
                                 :click #(uuid-click @my-ark-record (str @latest-journal-entry-uuid))
                                 (h/text
                                   (pretty-uuid my-ark-record latest-journal-entry-uuid)))
@@ -297,7 +320,7 @@
                               (h/span
                                 :style (j/cell= (if (= "" selected-index)
                                                   ""
-                                                  "color:blue;cursor:pointer"
+                                                  "color:green;cursor:pointer"
                                                   ))
                                 :click #(uuid-click @my-ark-record @selected-index)
                                 (h/text

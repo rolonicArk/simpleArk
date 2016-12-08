@@ -296,7 +296,9 @@
                             (h/div
                               :css {:display "none"}
                               :toggle (j/cell= (some? transaction-je-uuid-string))
-                              (h/strong "My last Journal Entry: ")
+                              (h/span
+                                :style "color:orange"
+                                (h/strong "My last Journal Entry: "))
                               (h/span
                                 :style "color:orange;cursor:pointer"
                                 :click #(uuid-click @my-ark-record @transaction-je-uuid-string)
@@ -305,7 +307,9 @@
                             (h/div
                               :css {:display "none"}
                               :toggle (j/cell= (some? latest-journal-entry-uuid))
-                              (h/strong "Latest Journal Entry: ")
+                              (h/span
+                                :style "color:orange"
+                                (h/strong "Latest Journal Entry: "))
                               (h/span
                                 :style "color:orange;cursor:pointer"
                                 :click #(uuid-click @my-ark-record (str @latest-journal-entry-uuid))
@@ -316,7 +320,9 @@
                             (h/hr)
 
                             (h/div
-                              (h/strong "Selected Index: ")
+                              (h/span
+                                :style "color:blue"
+                                (h/strong "Selected Index: "))
                               (h/span
                                 :style (j/cell= (if (= "" selected-index)
                                                   ""

@@ -161,11 +161,14 @@
   [ark-record uuid]
   (cond
     (suuid/journal-entry-uuid? uuid)
-    (do
-      (let [tm (suuid/get-time uuid)
-            dt (cotime/to-date-time tm)
-            ldt (time/to-default-time-zone dt)]
-        (ftime/unparse format-time ldt)))
+    (let [tm (suuid/get-time uuid)
+          dt (cotime/to-date-time tm)
+          ldt (time/to-default-time-zone dt)]
+      (ftime/unparse format-time ldt))
+    (suuid/random-uuid? uuid)
+    (let [name (arkRecord/get-property-value ark-record uuid [:index/name])]
+      (.log js/console (pr-str name))
+      (if name name ""))
     :else
     (str uuid)))
 
@@ -236,7 +239,7 @@
                 (let [k (str (key kv) " ")
                       v (val kv)]
                   (add-output! k)
-                  (add-output! (str (pretty-uuid my-ark-record v) "\n")
+                  (add-output! (str (pretty-uuid @my-ark-record v) "\n")
                                (clickable-styles v) uuid-click (str v))))
               content-index)))
 

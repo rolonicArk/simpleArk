@@ -43,6 +43,7 @@
 (def selected-index (j/cell ""))
 
 (def selected-rolon (j/cell ""))
+(def alternate-rolon (j/cell ""))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
@@ -172,6 +173,13 @@
   (let [uuid (suuid/create-uuid arg)]
     (reset! selected-rolon arg)
     (add-output! "\nselected rolon:" selection-style)
+    (add-output! " ")
+    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid))))
+
+(defn alternate-click [ark-record arg]
+  (let [uuid (suuid/create-uuid arg)]
+    (reset! alternate-rolon arg)
+    (add-output! "\nalternate rolon:" selection-style)
     (add-output! " ")
     (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid))))
 
@@ -373,11 +381,25 @@
                                                   ""
                                                   "color:green;cursor:pointer"
                                                   ))
-                                :click #(rolon-click @my-ark-record @selected-rolon)
+                                :click #(alternate-click @my-ark-record @selected-rolon)
                                 (h/text
                                   (if (= "" selected-rolon)
                                     "none"
                                     (pretty-uuid my-ark-record (suuid/create-uuid selected-rolon))))))
+
+                            (h/div
+                              (h/span
+                                (h/strong "Alternate Rolon: "))
+                              (h/span
+                                :style (j/cell= (if (= "" alternate-rolon)
+                                                  ""
+                                                  "color:green;cursor:pointer"
+                                                  ))
+                                :click #(rolon-click @my-ark-record @alternate-rolon)
+                                (h/text
+                                  (if (= "" alternate-rolon)
+                                    "none"
+                                    (pretty-uuid my-ark-record (suuid/create-uuid alternate-rolon))))))
 
                             (h/hr)
 

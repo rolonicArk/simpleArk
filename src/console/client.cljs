@@ -212,7 +212,7 @@
 
 (defn my-ark-record-updated [_ _ _ n]
   (if (and (= "" @selected-time)
-           (not= n @old-ark-record))
+           (not (identical? n @old-ark-record)))
     (add-output! "***ark updated***" event-style)))
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)

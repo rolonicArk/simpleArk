@@ -167,8 +167,10 @@
       (ftime/unparse format-time ldt))
     (suuid/random-uuid? uuid)
     (let [name (arkRecord/get-property-value ark-record uuid [:index/name])]
-      (.log js/console (pr-str name))
       (if name name ""))
+    (suuid/index-uuid? uuid)
+    (let [index-name (arkRecord/get-property-value ark-record uuid [:index/index.name])]
+      (if index-name index-name ""))
     :else
     (str uuid)))
 

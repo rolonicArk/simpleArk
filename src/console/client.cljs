@@ -388,6 +388,19 @@
                                     (pretty-uuid my-ark-record (suuid/create-uuid selected-rolon))))))
 
                             (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (not= "" selected-rolon))
+
+                              (h/button
+                                :css {:display "none" :background-color "MistyRose"}
+                                :toggle (j/cell= (not= "" selected-rolon))
+                                :click (fn []
+                                         (add-output! "> clear rolon selection" command-style)
+                                         (reset! selected-rolon ""))
+                                "clear rolon selection")
+                              )
+
+                            (h/div
                               (h/span
                                 (h/strong "Alternate Rolon: "))
                               (h/span
@@ -400,6 +413,19 @@
                                   (if (= "" alternate-rolon)
                                     "none"
                                     (pretty-uuid my-ark-record (suuid/create-uuid alternate-rolon))))))
+
+                            (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (not= "" alternate-rolon))
+
+                              (h/button
+                                :css {:display "none" :background-color "MistyRose"}
+                                :toggle (j/cell= (not= "" alternate-rolon))
+                                :click (fn []
+                                         (add-output! "> clear alternate selection" command-style)
+                                         (reset! alternate-rolon ""))
+                                "clear alternate selection")
+                              )
 
                             (h/hr)
 

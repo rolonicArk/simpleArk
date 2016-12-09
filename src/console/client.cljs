@@ -169,19 +169,21 @@
     :else
     (str uuid)))
 
+(declare uuid-click)
+
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! selected-rolon arg)
     (add-output! "\nselected rolon:" selection-style)
     (add-output! " ")
-    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid))))
+    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))
 
 (defn alternate-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! alternate-rolon arg)
     (add-output! "\nalternate rolon:" selection-style)
     (add-output! " ")
-    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid))))
+    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))
 
 (defn uuid-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
@@ -191,14 +193,14 @@
       (reset! selected-index arg)
       (add-output! "\nselected index:" selection-style)
       (add-output! " ")
-      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid)))
+      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg))
     (suuid/journal-entry-uuid? uuid)
     (do
       (reset! old-ark-record (:console @login/common-data))
       (reset! selected-time arg)
       (add-output! "\nselected time:" selection-style)
       (add-output! " ")
-      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid)))
+      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg))
     (suuid/random-uuid? uuid)
     (rolon-click ark-record arg))))
 

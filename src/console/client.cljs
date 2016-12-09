@@ -174,16 +174,22 @@
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! selected-rolon arg)
-    (add-output! "\nselected rolon:" selection-style)
-    (add-output! " ")
-    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))
+    (if (= "" arg)
+      (add-output! "\ncleared selected rolon" selection-style)
+      (do
+        (add-output! "\nselected rolon:" selection-style)
+        (add-output! " ")
+        (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))))
 
 (defn alternate-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! alternate-rolon arg)
-    (add-output! "\nalternate rolon:" selection-style)
-    (add-output! " ")
-    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))
+    (if (= "" arg)
+      (add-output! "\ncleared alternate rolon" selection-style)
+      (do
+        (add-output! "\nalternate rolon:" selection-style)
+        (add-output! " ")
+        (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))))
 
 (defn uuid-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
@@ -394,8 +400,6 @@
                               :toggle (j/cell= (not= "" selected-rolon))
 
                               (h/button
-                                :css {:display "none" :background-color "MistyRose"}
-                                :toggle (j/cell= (not= "" selected-rolon))
                                 :click (fn []
                                          (add-output! "> clear rolon selection" command-style)
                                          (reset! selected-rolon ""))
@@ -421,12 +425,20 @@
                               :toggle (j/cell= (not= "" alternate-rolon))
 
                               (h/button
-                                :css {:display "none" :background-color "MistyRose"}
-                                :toggle (j/cell= (not= "" alternate-rolon))
                                 :click (fn []
                                          (add-output! "> clear alternate selection" command-style)
                                          (reset! alternate-rolon ""))
                                 "clear alternate selection")
+
+                              (h/button
+                                :css {:display "none"}
+                                :toggle (j/cell= (not= selected-rolon alternate-rolon))
+                                :click (fn []
+                                         (let [r @selected-rolon
+                                               a @alternate-rolon]
+                                           (rolon-click @my-ark-record a)
+                                           (alternate-click @my-ark-record r)))
+                                "swap with rolon selection")
                               )
 
                             (h/hr)

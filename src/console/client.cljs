@@ -42,6 +42,8 @@
 
 (def selected-index (j/cell ""))
 
+(def selected-rolon (j/cell ""))
+
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
   (reset! transaction-error false)
@@ -166,6 +168,13 @@
     :else
     (str uuid)))
 
+(defn rolon-click [ark-record arg]
+  (let [uuid (suuid/create-uuid arg)]
+    (reset! selected-rolon arg)
+    (add-output! "\nselected rolon:" selection-style)
+    (add-output! " ")
+    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid))))
+
 (defn uuid-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
   (cond
@@ -182,8 +191,8 @@
       (add-output! "\nselected time:" selection-style)
       (add-output! " ")
       (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid)))
-    :else
-    (.log js/console arg))))
+    (suuid/random-uuid? uuid)
+    (rolon-click ark-record arg))))
 
 (defn my-ark-record-updated [_ _ _ n]
   (if (and (= "" @selected-time)
@@ -272,7 +281,7 @@
                                                   ""
                                                   "color:green;cursor:pointer"
                                                   ))
-                                :click #(uuid-click @my-ark-record @selected-time)
+                                :click #(rolon-click @my-ark-record @selected-time)
                                 (h/text
                                   (if (= "" selected-time)
                                     "now"
@@ -324,7 +333,7 @@
                                                   ""
                                                   "color:green;cursor:pointer"
                                                   ))
-                                :click #(uuid-click @my-ark-record @selected-index)
+                                :click #(rolon-click @my-ark-record @selected-index)
                                 (h/text
                                   (if (= "" selected-index)
                                     "none"
@@ -353,6 +362,22 @@
                               :click (fn []
                                        (list-index-names @my-ark-record))
                               "list indexes"))
+
+                            (h/hr)
+
+                            (h/div
+                              (h/span
+                                (h/strong "Selected Rolon: "))
+                              (h/span
+                                :style (j/cell= (if (= "" selected-rolon)
+                                                  ""
+                                                  "color:green;cursor:pointer"
+                                                  ))
+                                :click #(rolon-click @my-ark-record @selected-rolon)
+                                (h/text
+                                  (if (= "" selected-rolon)
+                                    "none"
+                                    (pretty-uuid my-ark-record (suuid/create-uuid selected-rolon))))))
 
                             (h/hr)
 

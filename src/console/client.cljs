@@ -170,7 +170,7 @@
       (if name name ""))
     (suuid/index-uuid? uuid)
     (let [index-name (arkRecord/get-property-value ark-record uuid [:index/index.name])]
-      (if index-name index-name ""))
+      (if index-name (str ":index/" index-name) ""))
     :else
     (str uuid)))
 
@@ -235,56 +235,34 @@
   (add-output! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
 
 (defn display-index
-  [content-index]
-  ;(.log js/console (pr-str :display-index content-index))
-  (doall (map (fn [kv]
-                (let [k (str (key kv) " ")
-                      v (val kv)]
-                  (add-output! k)
-                  (add-output! (str (pretty-uuid @my-ark-record v) "\n")
-                               (clickable-styles v) uuid-click (str v))))
-              content-index)))
+  [ark-record content-index index-uuid]
+  (let [name (arkRecord/get-property-value ark-record index-uuid [:index/index.name])]
+    (doall (map (fn [kv]
+                  (let [k (str (key kv) " ")
+                        v (val kv)]
+                    (case name
+                      "index.name" ()
+                      "name" ()
+                      (add-output! k))
+                    (add-output! (str (pretty-uuid ark-record v) "\n")
+                                 (clickable-styles v) uuid-click (str v))))
+                content-index))))
 
 (defn list-index-content [ark-record index-uuid]
   (add-output! "> list index content:" command-style)
   (add-output! "index: ")
-  (add-output! (str (pretty-uuid my-ark-record index-uuid) "\n") (clickable-styles index-uuid) uuid-click (str index-uuid))
+  (add-output! (str (pretty-uuid ark-record index-uuid) "\n") (clickable-styles index-uuid) uuid-click (str index-uuid))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (display-index content-index)))
-
-(defn list-headlines [ark-record]
-  (add-output! "> headlines:" command-style)
-  (let [index-uuid (arkRecord/get-index-uuid ark-record "headline")
-        content-index (arkRecord/get-content-index
-                        ark-record
-                        index-uuid)]
-    (display-index content-index)))
-
-(defn list-transaction-names [ark-record]
-  (add-output! "> transaction names:" command-style)
-  (let [index-uuid (arkRecord/get-index-uuid ark-record "transaction-name")
-        content-index (arkRecord/get-content-index
-                        ark-record
-                        index-uuid)]
-    ;(mapish/debug [:content content-index])
-    (display-index content-index)))
+    (display-index ark-record content-index index-uuid)))
 
 (defn list-index-names [ark-record]
   (add-output! "> list indexes:" command-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
-    (display-index content-index)))
-
-(defn list-application-names [ark-record]
-  (add-output! "> application names:" command-style)
-  (let [index-uuid (arkRecord/get-index-uuid ark-record "name")
-        content-index (arkRecord/get-content-index
-                        ark-record
-                        index-uuid)]
-    (display-index content-index)))
+    (display-index ark-record content-index arkRecord/index-name-uuid)))
 
 (def do-console
   (h/div

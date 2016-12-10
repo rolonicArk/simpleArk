@@ -15,7 +15,13 @@
     [cljs-time.coerce :as cotime]
     [cljs-time.format :as ftime]))
 
-(def format-time (ftime/formatters :mysql))
+(defn local-date-time [uuid]
+  (let [tm (suuid/get-time uuid)
+        dt (cotime/to-date-time tm)]
+    (time/to-default-time-zone dt)))
+
+(def format-date-time (ftime/formatters :mysql))
+(def format-time (ftime/formatters :hour-minute-second))
 
 (def transaction-je-uuid-string (j/cell nil))
 (def transaction-error (j/cell false))
@@ -35,6 +41,17 @@
 
 (j/defc= latest-journal-entry-uuid
          (arkRecord/get-latest-journal-entry-uuid my-ark-record))
+
+(defn ark-time []
+  (if (= "" @selected-time)
+    @latest-journal-entry-uuid
+    (suuid/create-uuid @selected-time)))
+
+(defn prompt-time []
+  (let [t (ark-time)]
+    (if t
+      (ftime/unparse format-time (local-date-time t))
+      nil)))
 
 (j/defc output [])
 
@@ -161,10 +178,7 @@
   [ark-record uuid]
   (cond
     (suuid/journal-entry-uuid? uuid)
-    (let [tm (suuid/get-time uuid)
-          dt (cotime/to-date-time tm)
-          ldt (time/to-default-time-zone dt)]
-      (ftime/unparse format-time ldt))
+    (ftime/unparse format-date-time (local-date-time uuid))
     (suuid/random-uuid? uuid)
     (let [name (arkRecord/get-property-value ark-record uuid [:index/name])]
       (if name name ""))
@@ -176,25 +190,35 @@
 
 (declare uuid-click)
 
+(defn add-prompt []
+  (let [t (prompt-time)]
+    (if t
+      (add-output! t clickable-je-style uuid-click (str (ark-time))))))
+
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! selected-rolon arg)
+    (add-prompt)
+    (add-output! " ")
     (if (= "" arg)
-      (add-output! "\ncleared selected rolon" selection-style)
       (do
-        (add-output! "\nselected rolon:" selection-style)
+        (add-output! "cleared selected rolon\n" selection-style))
+      (do
+        (add-output! "selected rolon:" selection-style)
         (add-output! " ")
-        (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))))
+        (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn alternate-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! alternate-rolon arg)
+    (add-prompt)
+    (add-output! " ")
     (if (= "" arg)
-      (add-output! "\ncleared alternate rolon" selection-style)
+      (add-output! "cleared alternate rolon\n" selection-style)
       (do
-        (add-output! "\nalternate rolon:" selection-style)
+        (add-output! "alternate rolon:" selection-style)
         (add-output! " ")
-        (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg)))))
+        (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn uuid-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
@@ -202,16 +226,20 @@
     (suuid/index-uuid? uuid)
     (do
       (reset! selected-index arg)
-      (add-output! "\nselected index:" selection-style)
+      (add-prompt)
       (add-output! " ")
-      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg))
+      (add-output! "selected index:" selection-style)
+      (add-output! " ")
+      (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
     (suuid/journal-entry-uuid? uuid)
     (do
       (reset! old-ark-record (:console @login/common-data))
       (reset! selected-time arg)
-      (add-output! "\nselected time:" selection-style)
+      (add-prompt)
       (add-output! " ")
-      (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click arg))
+      (add-output! "selected time:" selection-style)
+      (add-output! " ")
+      (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
     (suuid/random-uuid? uuid)
     (rolon-click ark-record arg))))
 
@@ -223,15 +251,18 @@
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
 (defn je-count [ark-record]
-  (add-output! "> journal entry rolons count: " command-prefix-style)
+  (add-prompt)
+  (add-output! ">journal entry rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
 
 (defn indexes-count [ark-record]
-  (add-output! "> index rolons count: " command-prefix-style)
+  (add-prompt)
+  (add-output! ">index rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-indexes ark-record)) "\n")))
 
 (defn application-rolons-count [ark-record]
-  (add-output! "> application rolons count: " command-prefix-style)
+  (add-prompt)
+  (add-output! ">application rolons count: " command-prefix-style)
   (add-output! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
 
 (defn display-index
@@ -249,7 +280,8 @@
                 content-index))))
 
 (defn list-index-content [ark-record index-uuid]
-  (add-output! "> list index content:" command-style)
+  (add-prompt)
+  (add-output! ">list index content:\n" command-prefix-style)
   (add-output! "index: ")
   (add-output! (str (pretty-uuid ark-record index-uuid) "\n") (clickable-styles index-uuid) uuid-click (str index-uuid))
   (let [content-index (arkRecord/get-content-index
@@ -258,7 +290,8 @@
     (display-index ark-record content-index index-uuid)))
 
 (defn list-index-names [ark-record]
-  (add-output! "> list indexes:" command-style)
+  (add-prompt)
+  (add-output! ">list indexes:\n" command-prefix-style)
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
@@ -293,7 +326,8 @@
                               (h/button
                                 :style "background-color:MistyRose"
                                 :click (fn []
-                                         (add-output! "> clear time selection" command-style)
+                                         (add-prompt)
+                                         (add-output! ">clear time selection\n" command-prefix-style)
                                          (reset! selected-time ""))
                                 "clear time selection")
                               )
@@ -344,7 +378,8 @@
                                 :css {:display "none" :background-color "MistyRose"}
                                 :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
-                                         (add-output! "> clear index selection" command-style)
+                                         (add-prompt)
+                                         (add-output! ">clear index selection\n" command-prefix-style)
                                          (reset! selected-index ""))
                                 "clear index selection")
 
@@ -384,7 +419,8 @@
 
                               (h/button
                                 :click (fn []
-                                         (add-output! "> clear rolon selection" command-style)
+                                         (add-prompt)
+                                         (add-output! ">clear rolon selection\n" command-prefix-style)
                                          (reset! selected-rolon ""))
                                 "clear rolon selection")
                               )
@@ -409,7 +445,8 @@
 
                               (h/button
                                 :click (fn []
-                                         (add-output! "> clear alternate selection" command-style)
+                                         (add-prompt)
+                                         (add-output! ">clear alternate selection\n" command-prefix-style)
                                          (reset! alternate-rolon ""))
                                 "clear alternate selection")
 
@@ -457,7 +494,8 @@
                               (h/button
                                 :style "background-color:MistyRose"
                                 :click (fn []
-                                         (add-output! "> Hello Fred transaction" command-style)
+                                         (add-prompt)
+                                         (add-output! ">Hello Fred transaction\n" command-prefix-style)
                                          (fred))
                                 :href ""
                                 "Hello Fred")
@@ -465,7 +503,8 @@
                               (h/button
                                 :style "background-color:MistyRose"
                                 :click (fn []
-                                         (add-output! "> Make Bob transaction" command-style)
+                                         (add-prompt)
+                                         (add-output! ">Make Bob transaction\n" command-prefix-style)
                                          (make-bob))
                                 :href ""
                                 "Make Bob")
@@ -473,14 +512,16 @@
                               (h/button
                                 :style "background-color:MistyRose"
                                 :click (fn []
-                                         (add-output! "> Invalid!" command-style)
+                                         (add-prompt)
+                                         (add-output! ">Invalid!\n" command-prefix-style)
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
                                 "Invalid!")
 
                               (h/button
                                 :style "background-color:MistyRose"
                                 :click (fn []
-                                         (add-output! "> Trouble!" command-style)
+                                         (add-prompt)
+                                         (add-output! ">Trouble!\n" command-prefix-style)
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
                                 "Trouble!"))
 

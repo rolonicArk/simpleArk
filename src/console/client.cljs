@@ -233,13 +233,13 @@
       (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
     (suuid/journal-entry-uuid? uuid)
     (do
-      (reset! old-ark-record (:console @login/common-data))
-      (reset! selected-time arg)
       (add-prompt)
       (add-output! " ")
       (add-output! "selected time:" selection-style)
       (add-output! " ")
-      (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
+      (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+      (reset! old-ark-record (:console @login/common-data))
+      (reset! selected-time arg))
     (suuid/random-uuid? uuid)
     (rolon-click ark-record arg))))
 

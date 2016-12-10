@@ -56,6 +56,7 @@
       nil)))
 
 (def output (j/cell []))
+(def history (j/cell []))
 
 (def selected-index (j/cell ""))
 
@@ -82,8 +83,8 @@
 
     (h/button
       :click (fn []
-               (reset! output []))
-      "clear display")))
+               (reset! history []))
+      "clear history")))
 
 (defn fred []
   (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
@@ -110,6 +111,10 @@
 (defn tx-style [windowInnerHeight header-height]
   (let [header-height (if (= header-height 0) 10 header-height)]
     (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px;vertical-align:bottom")))
+
+(defn tx2-style [windowInnerHeight header-height]
+  (let [header-height (if (= header-height 0) 10 header-height)]
+    (str "overflow:scroll;height:" (quot (- windowInnerHeight header-height 50) 2) "px;vertical-align:bottom")))
 
 (defn default-style
   []
@@ -160,16 +165,34 @@
 
 (defn no-click [arg])
 
+(defn add-history!
+  ([txt] (add-history! txt default-style))
+  ([txt style] (add-history! txt style no-click nil))
+  ([txt style on-click arg]
+   (swap! history (fn [old]
+                   (let [v [(str "his" (count old)) txt (style) on-click arg]
+                         nw (conj old v)]
+                     (h/with-timeout
+                       0
+                       (let [e (.getElementById js/document (str "his" (- (count nw) 1)))]
+                         (if (some? e)
+                           (.scrollIntoView e true))))
+                     nw)))))
+
+(defn clear-output!
+  []
+  (reset! output []))
+
 (defn add-output!
   ([txt] (add-output! txt default-style))
   ([txt style] (add-output! txt style no-click nil))
   ([txt style on-click arg]
    (swap! output (fn [old]
-                   (let [v [(str "disp" (count old)) txt (style) on-click arg]
+                   (let [v [(str "out" (count old)) txt (style) on-click arg]
                          nw (conj old v)]
                      (h/with-timeout
                        0
-                       (let [e (.getElementById js/document (str "disp" (- (count nw) 1)))]
+                       (let [e (.getElementById js/document (str "out" (- (count nw) 1)))]
                          (if (some? e)
                            (.scrollIntoView e true))))
                      nw)))))
@@ -193,32 +216,32 @@
 (defn add-prompt []
   (let [t (prompt-time)]
     (if t
-      (add-output! t clickable-je-style uuid-click (str (ark-time))))))
+      (add-history! t clickable-je-style uuid-click (str (ark-time))))))
 
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! selected-rolon arg)
     (add-prompt)
-    (add-output! " ")
+    (add-history! " ")
     (if (= "" arg)
       (do
-        (add-output! "cleared selected rolon\n" selection-style))
+        (add-history! "cleared selected rolon\n" selection-style))
       (do
-        (add-output! "selected rolon:" selection-style)
-        (add-output! " ")
-        (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
+        (add-history! "selected rolon:" selection-style)
+        (add-history! " ")
+        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn alternate-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! alternate-rolon arg)
     (add-prompt)
-    (add-output! " ")
+    (add-history! " ")
     (if (= "" arg)
-      (add-output! "cleared alternate rolon\n" selection-style)
+      (add-history! "cleared alternate rolon\n" selection-style)
       (do
-        (add-output! "alternate rolon:" selection-style)
-        (add-output! " ")
-        (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
+        (add-history! "alternate rolon:" selection-style)
+        (add-history! " ")
+        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn uuid-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
@@ -227,17 +250,17 @@
     (do
       (reset! selected-index arg)
       (add-prompt)
-      (add-output! " ")
-      (add-output! "selected index:" selection-style)
-      (add-output! " ")
-      (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
+      (add-history! " ")
+      (add-history! "selected index:" selection-style)
+      (add-history! " ")
+      (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
     (suuid/journal-entry-uuid? uuid)
     (do
       (add-prompt)
-      (add-output! " ")
-      (add-output! "selected time:" selection-style)
-      (add-output! " ")
-      (add-output! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+      (add-history! " ")
+      (add-history! "selected time:" selection-style)
+      (add-history! " ")
+      (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
       (reset! old-ark-record (:console @login/common-data))
       (reset! selected-time arg))
     (suuid/random-uuid? uuid)
@@ -246,24 +269,30 @@
 (defn my-ark-record-updated [_ _ _ n]
   (if (and (= "" @selected-time)
            (not (identical? n @old-ark-record)))
-    (add-output! "***ark updated***" event-style)))
+    (add-history! "***ark updated***" event-style)))
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
 (defn je-count [ark-record]
   (add-prompt)
-  (add-output! ">journal entry rolons count: " command-prefix-style)
-  (add-output! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
+  (add-history! ">")
+  (add-history! "journal entry rolons count:" command-prefix-style)
+  (add-history! " ")
+  (add-history! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
 
 (defn indexes-count [ark-record]
   (add-prompt)
-  (add-output! ">index rolons count: " command-prefix-style)
-  (add-output! (str (count (arkRecord/get-indexes ark-record)) "\n")))
+  (add-history! ">")
+  (add-history! "index rolons count:" command-prefix-style)
+  (add-history! " ")
+  (add-history! (str (count (arkRecord/get-indexes ark-record)) "\n")))
 
 (defn application-rolons-count [ark-record]
   (add-prompt)
-  (add-output! ">application rolons count: " command-prefix-style)
-  (add-output! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
+  (add-history! ">")
+  (add-history! "application rolons count:" command-prefix-style)
+  (add-history! " ")
+  (add-history! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
 
 (defn display-index
   [ark-record content-index index-uuid]
@@ -281,7 +310,9 @@
 
 (defn list-index-content [ark-record index-uuid]
   (add-prompt)
-  (add-output! ">list index content:\n" command-prefix-style)
+  (add-history! ">")
+  (add-history! "list index content\n" command-prefix-style)
+  (clear-output!)
   (add-output! "index: ")
   (add-output! (str (pretty-uuid ark-record index-uuid) "\n") (clickable-styles index-uuid) uuid-click (str index-uuid))
   (let [content-index (arkRecord/get-content-index
@@ -291,7 +322,15 @@
 
 (defn list-index-names [ark-record]
   (add-prompt)
-  (add-output! ">list indexes:\n" command-prefix-style)
+  (add-history! ">")
+  (add-history! "list indexes\n" command-prefix-style)
+  (clear-output!)
+  (add-output! "index: ")
+  (let [index-uuid (suuid/create-uuid arkRecord/index-name-uuid-string)]
+    (add-output! (str (pretty-uuid ark-record index-uuid) "\n")
+                 (clickable-styles index-uuid)
+                 uuid-click
+                 arkRecord/index-name-uuid-string))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         arkRecord/index-name-uuid)]
@@ -327,7 +366,8 @@
                                 :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">clear time selection\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "clear time selection\n" command-prefix-style)
                                          (reset! selected-time ""))
                                 "clear time selection")
                               )
@@ -379,7 +419,8 @@
                                 :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">clear index selection\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "clear index selection\n" command-prefix-style)
                                          (reset! selected-index ""))
                                 "clear index selection")
 
@@ -420,7 +461,8 @@
                               (h/button
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">clear rolon selection\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "clear rolon selection\n" command-prefix-style)
                                          (reset! selected-rolon ""))
                                 "clear rolon selection")
                               )
@@ -446,7 +488,8 @@
                               (h/button
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">clear alternate selection\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "clear alternate selection\n" command-prefix-style)
                                          (reset! alternate-rolon ""))
                                 "clear alternate selection")
 
@@ -495,7 +538,8 @@
                                 :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">Hello Fred transaction\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "Hello Fred transaction\n" command-prefix-style)
                                          (fred))
                                 :href ""
                                 "Hello Fred")
@@ -504,7 +548,8 @@
                                 :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">Make Bob transaction\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "Make Bob transaction\n" command-prefix-style)
                                          (make-bob))
                                 :href ""
                                 "Make Bob")
@@ -513,7 +558,8 @@
                                 :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">Invalid!\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "Invalid!\n" command-prefix-style)
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
                                 "Invalid!")
 
@@ -521,7 +567,8 @@
                                 :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
-                                         (add-output! ">Trouble!\n" command-prefix-style)
+                                         (add-history! ">")
+                                         (add-history! "Trouble!\n" command-prefix-style)
                                          (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
                                 "Trouble!"))
 
@@ -534,7 +581,16 @@
                             ))
 
                (h/td :style (j/cell= (td-style login/windowInnerWidth))
-                     (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+
+                     (h/div :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+                            (h/div :style "white-space:pre-wrap; font-family:monospace"
+                                   (h/for-tpl [[txt-id txt style on-click arg] history]
+                                              (h/output :id txt-id
+                                                        :style style
+                                                        :click (fn [] (@on-click  @my-ark-record @arg))
+                                                        txt))))
+
+                     (h/div :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
                             (h/div :style "white-space:pre-wrap; font-family:monospace"
                                    (h/for-tpl [[txt-id txt style on-click arg] output]
                                               (h/output :id txt-id

@@ -30,17 +30,19 @@
 (def selected-time (j/cell ""))
 (def old-ark-record (j/cell nil))
 
-(j/defc= my-ark-record
-         (if login/common-data
-           (let [n (:console login/common-data)]
-             (if (= "" selected-time)
-               n
-               (arkRecord/select-time n (suuid/create-uuid selected-time))))
-           nil)
-         (partial swap! login/common-data assoc :console))
+(def my-ark-record
+  (j/cell=
+    (if login/common-data
+      (let [n (:console login/common-data)]
+        (if (= "" selected-time)
+          n
+          (arkRecord/select-time n (suuid/create-uuid selected-time))))
+      nil)
+    (partial swap! login/common-data assoc :console)))
 
-(j/defc= latest-journal-entry-uuid
-         (arkRecord/get-latest-journal-entry-uuid my-ark-record))
+(def latest-journal-entry-uuid
+  (j/cell=
+    (arkRecord/get-latest-journal-entry-uuid my-ark-record)))
 
 (defn ark-time []
   (if (= "" @selected-time)
@@ -53,9 +55,7 @@
       (ftime/unparse format-time (local-date-time t))
       nil)))
 
-(j/defc output [])
-
-(j/defc= consoleheader-element nil)
+(def output (j/cell []))
 
 (def selected-index (j/cell ""))
 
@@ -145,7 +145,7 @@
 
 (defn clickable-application-style
   []
-  "color:green;cursor:pointer")
+  "color:YellowGreen;cursor:pointer")
 
 (defn clickable-styles
   [uuid]
@@ -311,7 +311,7 @@
                               (h/span
                                 :style (j/cell= (if (= "" selected-time)
                                                   ""
-                                                  "color:green;cursor:pointer"
+                                                  "color:YellowGreen;cursor:pointer"
                                                   ))
                                 :click #(rolon-click @my-ark-record @selected-time)
                                 (h/text
@@ -364,7 +364,7 @@
                               (h/span
                                 :style (j/cell= (if (= "" selected-index)
                                                   ""
-                                                  "color:green;cursor:pointer"
+                                                  "color:YellowGreen;cursor:pointer"
                                                   ))
                                 :click #(rolon-click @my-ark-record @selected-index)
                                 (h/text
@@ -405,7 +405,7 @@
                               (h/span
                                 :style (j/cell= (if (= "" selected-rolon)
                                                   ""
-                                                  "color:green;cursor:pointer"
+                                                  "color:YellowGreen;cursor:pointer"
                                                   ))
                                 :click #(alternate-click @my-ark-record @selected-rolon)
                                 (h/text
@@ -431,7 +431,7 @@
                               (h/span
                                 :style (j/cell= (if (= "" alternate-rolon)
                                                   ""
-                                                  "color:green;cursor:pointer"
+                                                  "color:YellowGreen;cursor:pointer"
                                                   ))
                                 :click #(rolon-click @my-ark-record @alternate-rolon)
                                 (h/text

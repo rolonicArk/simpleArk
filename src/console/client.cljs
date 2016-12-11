@@ -336,6 +336,25 @@
                         arkRecord/index-name-uuid)]
     (display-index ark-record content-index arkRecord/index-name-uuid)))
 
+(defn list-current-micro-properties [ark-record]
+  (add-prompt)
+  (add-history! ">")
+  (add-history! "list current micro-properties\n" command-prefix-style)
+  (clear-output!)
+  (add-output! "current micro-properties of ")
+  (let [uuid (suuid/create-uuid @selected-rolon)
+        properties (arkRecord/get-property-values ark-record uuid)]
+    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click @selected-rolon)
+    (add-output! ":\n\n")
+    (reduce
+      (fn [_ [k v]]
+        (add-output! (pr-str k))
+        (add-output! " ")
+        (add-output! (pr-str v))
+        (add-output! "\n\n"))
+      nil properties))
+  )
+
 (def do-console
   (h/div
     (h/table :style "width:100%"
@@ -459,13 +478,21 @@
                               :toggle (j/cell= (not= "" selected-rolon))
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
                                          (add-history! ">")
                                          (add-history! "clear rolon selection\n" command-prefix-style)
                                          (reset! selected-rolon ""))
                                 "clear rolon selection")
+
+                              (h/button
+                                :style "background-color:MistyRose"
+                                :click (fn [] (list-current-micro-properties @my-ark-record))
+                                "list current micro-properties")
                               )
+
+                            (h/hr)
 
                             (h/div
                               (h/span
@@ -486,6 +513,7 @@
                               :toggle (j/cell= (not= "" alternate-rolon))
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :click (fn []
                                          (add-prompt)
                                          (add-history! ">")
@@ -494,6 +522,7 @@
                                 "clear alternate selection")
 
                               (h/button
+                                :style "background-color:MistyRose"
                                 :css {:display "none"}
                                 :toggle (j/cell= (not= selected-rolon alternate-rolon))
                                 :click (fn []

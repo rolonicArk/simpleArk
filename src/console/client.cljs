@@ -337,16 +337,24 @@
     (display-index ark-record content-index arkRecord/index-name-uuid)))
 
 (defn format-path [ark-record path]
-  (add-output! "[")
-  (reduce
-    (fn [space k]
-      (if space (add-output! " "))
-      (if (uuid? k)
-        (add-output! (pretty-uuid ark-record k) (clickable-styles k) uuid-click (str k))
-        (add-output! (pr-str k)))
-      true)
-    false path)
-  (add-output! "]"))
+  (let [fk (first path)
+        rel (or
+              (mapish/bi-rel? fk)
+              (mapish/rel? fk)
+              (mapish/inv-rel? fk))]
+    (add-output! "[")
+    (reduce
+      (fn [space k]
+        (if space (add-output! " "))
+        (if (uuid? k)
+          (add-output! (pretty-uuid ark-record k) (clickable-styles k) uuid-click (str k))
+          (if (and space rel)
+            (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
+              (add-output! (pretty-uuid ark-record je-uuid) (clickable-styles je-uuid) uuid-click (str je-uuid)))
+            (add-output! (pr-str k))))
+        true)
+      false path)
+    (add-output! "]")))
 
 (defn list-current-micro-properties [ark-record]
   (add-prompt)

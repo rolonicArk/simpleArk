@@ -192,7 +192,7 @@
                          nw (conj old v)]
                      (h/with-timeout
                        0
-                       (let [e (.getElementById js/document (str "out" (- (count nw) 1)))]
+                       (let [e (.getElementById js/document (str "out" 0))]
                          (if (some? e)
                            (.scrollIntoView e true))))
                      nw)))))

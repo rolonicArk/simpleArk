@@ -170,14 +170,14 @@
   ([txt style] (add-history! txt style no-click nil))
   ([txt style on-click arg]
    (swap! history (fn [old]
-                   (let [v [(str "his" (count old)) txt (style) on-click arg]
-                         nw (conj old v)]
-                     (h/with-timeout
-                       0
-                       (let [e (.getElementById js/document (str "his" (- (count nw) 1)))]
-                         (if (some? e)
-                           (.scrollIntoView e true))))
-                     nw)))))
+                    (let [v [(str "his" (count old)) txt (style) on-click arg]
+                          nw (conj old v)]
+                      (h/with-timeout
+                        0
+                        (let [e (.getElementById js/document (str "his" (- (count nw) 1)))]
+                          (if (some? e)
+                            (.scrollIntoView e true))))
+                      nw)))))
 
 (defn clear-output!
   []
@@ -245,26 +245,26 @@
 
 (defn uuid-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
-  (cond
-    (suuid/index-uuid? uuid)
-    (do
-      (reset! selected-index arg)
-      (add-prompt)
-      (add-history! " ")
-      (add-history! "selected index:" selection-style)
-      (add-history! " ")
-      (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
-    (suuid/journal-entry-uuid? uuid)
-    (do
-      (add-prompt)
-      (add-history! " ")
-      (add-history! "selected time:" selection-style)
-      (add-history! " ")
-      (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
-      (reset! old-ark-record (:console @login/common-data))
-      (reset! selected-time arg))
-    (suuid/random-uuid? uuid)
-    (rolon-click ark-record arg))))
+    (cond
+      (suuid/index-uuid? uuid)
+      (do
+        (reset! selected-index arg)
+        (add-prompt)
+        (add-history! " ")
+        (add-history! "selected index:" selection-style)
+        (add-history! " ")
+        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
+      (suuid/journal-entry-uuid? uuid)
+      (do
+        (add-prompt)
+        (add-history! " ")
+        (add-history! "selected time:" selection-style)
+        (add-history! " ")
+        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+        (reset! old-ark-record (:console @login/common-data))
+        (reset! selected-time arg))
+      (suuid/random-uuid? uuid)
+      (rolon-click ark-record arg))))
 
 (defn my-ark-record-updated [_ _ _ n]
   (if (and (= "" @selected-time)
@@ -304,8 +304,16 @@
                       "index.name" ()
                       "name" ()
                       (add-output! k))
-                    (add-output! (str (pretty-uuid ark-record v) "\n")
-                                 (clickable-styles v) uuid-click (str v))))
+                    (add-output! (pretty-uuid ark-record v)
+                                 (clickable-styles v) uuid-click (str v))
+                    (if (not= name "headline")
+                      (let [headline (arkRecord/get-property-value
+                                       ark-record
+                                       (suuid/create-uuid v)
+                                       [:index/headline])]
+                        (if (some? headline)
+                          (add-output! (str " - " headline)))))
+                    (add-output! "\n")))
                 content-index))))
 
 (defn list-index-content [ark-record index-uuid]
@@ -314,7 +322,10 @@
   (add-history! "list index content\n" command-prefix-style)
   (clear-output!)
   (add-output! "index: ")
-  (add-output! (str (pretty-uuid ark-record index-uuid) "\n") (clickable-styles index-uuid) uuid-click (str index-uuid))
+  (add-output! (str (pretty-uuid ark-record index-uuid) "\n")
+               (clickable-styles index-uuid)
+               uuid-click
+               (str index-uuid))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
@@ -671,7 +682,7 @@
                                    (h/for-tpl [[txt-id txt style on-click arg] history]
                                               (h/output :id txt-id
                                                         :style style
-                                                        :click (fn [] (@on-click  @my-ark-record @arg))
+                                                        :click (fn [] (@on-click @my-ark-record @arg))
                                                         txt))))
 
                      (h/div :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
@@ -679,7 +690,7 @@
                                    (h/for-tpl [[txt-id txt style on-click arg] output]
                                               (h/output :id txt-id
                                                         :style style
-                                                        :click (fn [] (@on-click  @my-ark-record @arg))
+                                                        :click (fn [] (@on-click @my-ark-record @arg))
                                                         txt))))
                      )))))
 

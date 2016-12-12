@@ -699,24 +699,31 @@
                                      txt))))
 
 (def do-output
-  (h/div :style "white-space:pre-wrap; font-family:monospace"
-         (h/for-tpl [[txt-id txt style on-click arg] output]
-                    (h/output :id txt-id
-                              :style style
-                              :click (fn [] (@on-click @my-ark-record @arg))
-                              txt))))
+  (h/div
+    :style "white-space:pre-wrap; font-family:monospace"
+    (h/for-tpl [[txt-id txt style on-click arg] output]
+               (h/output
+                 :id txt-id
+                 :style style
+                 :click (fn [] (@on-click @my-ark-record @arg))
+                 txt))))
 
 (def do-console
   (h/div
-    (h/table :style "width:100%"
-             (h/tr
-               (h/td :style (j/cell= (td-style login/windowInnerWidth))
-                     (do-commands))
-               (h/td :style (j/cell= (td-style login/windowInnerWidth))
-                     (h/div :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-                            (do-history))
-                     (h/div :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-                            (do-output)))))))
+    (h/table
+      :style "width:100%"
+      (h/tr
+        (h/td
+          :style (j/cell= (td-style login/windowInnerWidth))
+          (do-commands))
+        (h/td
+          :style (j/cell= (td-style login/windowInnerWidth))
+          (h/div
+            :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+            (do-history))
+          (h/div
+            :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+            (do-output)))))))
 
 (defmethod login/add-body-element :console [_]
   (do-console))
@@ -725,11 +732,28 @@
   (h/div
     (h/h2 "Ark Console")
 
-    (h/div
-      "connected: "
-      (h/text channel-open)
-      " "
-      (h/button
-        :click (fn []
-                 (reset! history []))
-        "clear history"))))
+    (h/table
+      :style "width:100%"
+      (h/tr
+        (h/td
+          :style "width:16%"
+          "connected: "
+          (h/text channel-open))
+        (h/td
+          :style "width:16%"
+          (h/button
+            :click (fn []
+                     (reset! history []))
+            "clear history"))
+        (h/td
+          :style "width:16%"
+          (h/span "all"))
+        (h/td
+          :style "width:16%"
+          (h/span "commands"))
+        (h/td
+          :style "width:16%"
+          (h/span "history"))
+        (h/td
+          :style "width:16%"
+          (h/span "output"))))))

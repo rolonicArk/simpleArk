@@ -69,8 +69,7 @@
                                   [uuid])
     (suuid/random-uuid? uuid) (get (get-application-rolons ark-record)
                                    [uuid])
-    :else #?(:clj  (throw (Exception. (str uuid " was not recognized")))
-             :cljs (throw (str uuid " was not recognized")))))
+    :else (get (get-journal-entries ark-record) [uuid])))
 
 (defn get-journal-entry [ark-record timestamp]
   (get (get-journal-entries ark-record) [timestamp]))

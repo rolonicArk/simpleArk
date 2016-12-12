@@ -580,6 +580,23 @@
 
                             (h/div
                               :css {:display "none"}
+                              :toggle (j/cell= (and
+                                                 (not= "" alternate-rolon)
+                                                 (some? (arkRecord/get-property-value
+                                                          my-ark-record
+                                                          (suuid/create-uuid alternate-rolon)
+                                                          [:index/headline]))))
+                              (h/text
+                                (str
+                                  "headline: "
+                                  (if (not= "" alternate-rolon)
+                                    (arkRecord/get-property-value
+                                      my-ark-record
+                                      (suuid/create-uuid alternate-rolon)
+                                      [:index/headline])))))
+
+                            (h/div
+                              :css {:display "none"}
                               :toggle (j/cell= (not= "" alternate-rolon))
 
                               (h/button

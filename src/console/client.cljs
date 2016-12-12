@@ -399,6 +399,23 @@
 
                             (h/div
                               :css {:display "none"}
+                              :toggle (j/cell= (and
+                                                 (not= "" selected-time)
+                                                 (some? (arkRecord/get-property-value
+                                                          my-ark-record
+                                                          (suuid/create-uuid selected-time)
+                                                          [:index/headline]))))
+                              (h/text
+                                (str
+                                  "headline: "
+                                  (if (not= "" selected-time)
+                                    (arkRecord/get-property-value
+                                      my-ark-record
+                                      (suuid/create-uuid selected-time)
+                                      [:index/headline])))))
+
+                            (h/div
+                              :css {:display "none"}
                               :toggle (j/cell= (not= "" selected-time))
 
                               (h/button
@@ -452,6 +469,23 @@
                                     (pretty-uuid my-ark-record (suuid/create-uuid selected-index))))))
 
                             (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (and
+                                                 (not= "" selected-index)
+                                                 (some? (arkRecord/get-property-value
+                                                          my-ark-record
+                                                          (suuid/create-uuid selected-index)
+                                                          [:index/headline]))))
+                              (h/text
+                                (str
+                                  "headline: "
+                                  (if (not= "" selected-index)
+                                    (arkRecord/get-property-value
+                                      my-ark-record
+                                      (suuid/create-uuid selected-index)
+                                      [:index/headline])))))
+
+                            (h/div
 
                               (h/button
                                 :css {:display "none" :background-color "MistyRose"}
@@ -492,6 +526,23 @@
                                   (if (= "" selected-rolon)
                                     "none"
                                     (pretty-uuid my-ark-record (suuid/create-uuid selected-rolon))))))
+
+                            (h/div
+                              :css {:display "none"}
+                              :toggle (j/cell= (and
+                                                 (not= "" selected-rolon)
+                                                 (some? (arkRecord/get-property-value
+                                                          my-ark-record
+                                                          (suuid/create-uuid selected-rolon)
+                                                          [:index/headline]))))
+                              (h/text
+                                (str
+                                  "headline: "
+                                  (if (not= "" selected-rolon)
+                                    (arkRecord/get-property-value
+                                      my-ark-record
+                                      (suuid/create-uuid selected-rolon)
+                                      [:index/headline])))))
 
                             (h/div
                               :css {:display "none"}

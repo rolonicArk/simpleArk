@@ -488,6 +488,12 @@
                             (h/div
 
                               (h/button
+                                :style "background-color:MistyRose"
+                                :click (fn []
+                                         (list-index-names @my-ark-record))
+                                "list indexes")
+
+                              (h/button
                                 :css {:display "none" :background-color "MistyRose"}
                                 :toggle (j/cell= (not= "" selected-index))
                                 :click (fn []
@@ -503,13 +509,7 @@
                                 :click (fn []
                                          (list-index-content @my-ark-record
                                                              (suuid/create-uuid @selected-index)))
-                                "list index content")
-
-                            (h/button
-                              :style "background-color:MistyRose"
-                              :click (fn []
-                                       (list-index-names @my-ark-record))
-                              "list indexes"))
+                                "list index content"))
 
                             (h/hr)
 

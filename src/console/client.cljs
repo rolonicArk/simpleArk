@@ -77,14 +77,25 @@
   (reset! transaction-error true)
   (reset! transaction-error-msg msg))
 
+(def channel-open (j/cell true))
+
+(defn watch-state [_ _ _ n]
+  (reset! channel-open (:open? n)))
+
+(add-watch tiples/chsk-state :open? watch-state)
+
 (defmethod login/add-header-element :console [_]
   (h/div
     (h/h2 "Ark Console")
 
-    (h/button
-      :click (fn []
-               (reset! history []))
-      "clear history")))
+    (h/div
+      "connected: "
+      (h/text channel-open)
+      " "
+      (h/button
+        :click (fn []
+                 (reset! history []))
+        "clear history"))))
 
 (defn fred []
   (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
@@ -646,7 +657,9 @@
 
                             (h/div
                               :css {:display "none"}
-                              :toggle (j/cell= (= "" selected-time))
+                              :toggle (j/cell= (and
+                                                 channel-open
+                                                 (= "" selected-time)))
 
                               (h/output (h/strong "Transactions: "))
 

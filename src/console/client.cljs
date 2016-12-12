@@ -320,22 +320,6 @@
                         index-uuid)]
     (display-index ark-record content-index index-uuid)))
 
-(defn list-index-names [ark-record]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "list indexes\n" command-prefix-style)
-  (clear-output!)
-  (add-output! "index: ")
-  (let [index-uuid (suuid/create-uuid arkRecord/index-name-uuid-string)]
-    (add-output! (str (pretty-uuid ark-record index-uuid) "\n")
-                 (clickable-styles index-uuid)
-                 uuid-click
-                 arkRecord/index-name-uuid-string))
-  (let [content-index (arkRecord/get-content-index
-                        ark-record
-                        arkRecord/index-name-uuid)]
-    (display-index ark-record content-index arkRecord/index-name-uuid)))
-
 (defn format-path [ark-record path]
   (let [fk (first path)
         rel (or
@@ -490,7 +474,7 @@
                               (h/button
                                 :style "background-color:MistyRose"
                                 :click (fn []
-                                         (list-index-names @my-ark-record))
+                                         (list-index-content @my-ark-record arkRecord/index-name-uuid))
                                 "list indexes")
 
                               (h/button

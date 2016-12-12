@@ -120,6 +120,10 @@
   []
   "")
 
+(defn bold-style
+  []
+  "font-weight:bold")
+
 (defn command-style
   []
   "font-weight:bold; display:block; background-color:MistyRose")
@@ -303,7 +307,7 @@
                     (case name
                       "index.name" ()
                       "name" ()
-                      (add-output! k))
+                      (add-output! k bold-style))
                     (add-output! (pretty-uuid ark-record v)
                                  (clickable-styles v) uuid-click (str v))
                     (if (not= name "headline")

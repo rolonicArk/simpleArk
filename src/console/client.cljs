@@ -165,9 +165,13 @@
                           nw (conj old v)]
                       (h/with-timeout
                         0
-                        (let [e (.getElementById js/document (str "his" (- (count nw) 1)))]
-                          (if (some? e)
-                            (.scrollIntoView e true))))
+                        (let [a (.getElementById js/document (str "ahis" (- (count nw) 1)))
+                              b (.getElementById js/document (str "bhis" (- (count nw) 1)))]
+                          (if (some? a)
+                            (.scrollIntoView a true))
+                          (if (some? b)
+                            (.scrollIntoView b true))
+                          ))
                       nw)))))
 
 (defn clear-output!
@@ -183,9 +187,13 @@
                          nw (conj old v)]
                      (h/with-timeout
                        0
-                       (let [e (.getElementById js/document (str "out" 0))]
-                         (if (some? e)
-                           (.scrollIntoView e true))))
+                       (let [a (.getElementById js/document (str "aout" 0))
+                             b (.getElementById js/document (str "bout" 0))]
+                         (if (some? a)
+                           (.scrollIntoView a true))
+                         (if (some? b)
+                           (.scrollIntoView b true))
+                         ))
                      nw)))))
 
 (defn pretty-uuid
@@ -361,7 +369,8 @@
       nil properties))
   )
 
-(defn do-commands []
+(defn do-commands
+  []
   (h/div
     (h/div
       (h/span
@@ -678,15 +687,18 @@
                      (str "Error: " transaction-error-msg)
                      ""))))))
 
-(def do-history
+(defn do-history
+  [id-prefix]
   (h/div :style "white-space:pre-wrap; font-family:monospace"
          (h/for-tpl [[txt-id txt style on-click arg] history]
-                    (h/output :id txt-id
-                              :style style
-                              :click (fn [] (@on-click @my-ark-record @arg))
-                              txt))))
+                    (h/output
+                      :id (j/cell= (str id-prefix txt-id))
+                      :style style
+                      :click (fn [] (@on-click @my-ark-record @arg))
+                      txt))))
 
-(def do-output
+(defn do-output
+  []
   (h/div
     :style "white-space:pre-wrap; font-family:monospace"
     (h/for-tpl [[txt-id txt style on-click arg] output]
@@ -720,7 +732,7 @@
         :style (j/cell= (td2-style login/windowInnerWidth))
         (h/div
           :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-          (do-history))
+          (do-history "a"))
         (h/div
           :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
           (do-output))))))
@@ -734,12 +746,23 @@
       :toggle (j/cell= (= 0 display-mode))
       (do-all))
     (h/div
-      :css {:display "none"}
+      :css {:display "none" :width "100%"}
       :toggle (j/cell= (= 1 display-mode))
-      :style "width:100%"
       (h/div
         :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
         (do-commands)))
+    (h/div
+      :css {:display "none" :width "100%"}
+      :toggle (j/cell= (= 3 display-mode))
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (do-history "b")))
+    (h/div
+      :css {:display "none" :width "100%"}
+      :toggle (j/cell= (= 4 display-mode))
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (do-output)))
     ))
 
 (defmethod login/add-header-element :console [_]
@@ -750,7 +773,9 @@
       (h/tr
         (h/td
           :style "width:16%"
-          "connected: "
+          (h/span
+            :style "font-weight:bold"
+            "connected: ")
           (h/text channel-open))
         (h/td
           :style "width:16%"
@@ -758,6 +783,9 @@
             :click (fn []
                      (reset! history []))
             "clear history"))
+        (h/td
+          :style "font-weight:bold; width:16%; text-align: center"
+          "display mode:")
         (h/td
           :style (j/cell= (if (= 0 display-mode)
                           "font-weight:bold; text-align:center"

@@ -361,7 +361,7 @@
       nil properties))
   )
 
-(def do-commands
+(defn do-commands []
   (h/div
     (h/div
       (h/span
@@ -759,18 +759,26 @@
                      (reset! history []))
             "clear history"))
         (h/td
-          :style "width:16%; color:purple; cursor:pointer"
+          :style (j/cell= (if (= 0 display-mode)
+                          "font-weight:bold; text-align:center"
+                          "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
           :click #(reset! display-mode 0)
           (h/span "all 3"))
         (h/td
-          :style "width:16%; color:purple; cursor:pointer"
+          :style (j/cell= (if (= 1 display-mode)
+                            "font-weight:bold; text-align:center"
+                            "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
           :click #(reset! display-mode 1)
           (h/span "commands"))
         (h/td
-          :style "width:16%; color:purple; cursor:pointer"
+          :style (j/cell= (if (= 3 display-mode)
+                            "font-weight:bold; text-align:center"
+                            "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
           :click #(reset! display-mode 3)
           (h/span "history"))
         (h/td
-          :style "width:16%; color:purple; cursor:pointer"
+          :style (j/cell= (if (= 4 display-mode)
+                            "font-weight:bold; text-align:center"
+                            "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
           :click #(reset! display-mode 4)
           (h/span "output"))))))

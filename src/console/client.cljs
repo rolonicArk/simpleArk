@@ -103,17 +103,6 @@
           [:content/brothers "Jeff"] true}])
       }]))
 
-(defn td-style [width]
-  (str "width:" (/ width 2) "px"))
-
-(defn tx-style [windowInnerHeight header-height]
-  (let [header-height (if (= header-height 0) 10 header-height)]
-    (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px;vertical-align:bottom")))
-
-(defn tx2-style [windowInnerHeight header-height]
-  (let [header-height (if (= header-height 0) 10 header-height)]
-    (str "overflow:scroll;height:" (quot (- windowInnerHeight header-height 50) 2) "px;vertical-align:bottom")))
-
 (defn default-style
   []
   "")
@@ -373,330 +362,329 @@
   )
 
 (def do-commands
-  (h/div :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+  (h/div
+    (h/div
+      (h/span
+        (h/strong
+          "Selected time: "))
+      (h/span
+        :style (j/cell= (if (= "" selected-time)
+                          ""
+                          "color:YellowGreen;cursor:pointer"
+                          ))
+        :click #(rolon-click @my-ark-record @selected-time)
+        (h/text
+          (if (= "" selected-time)
+            "now"
+            (pretty-uuid my-ark-record (suuid/create-uuid selected-time))))))
 
-         (h/div
-           (h/span
-             (h/strong
-               "Selected time: "))
-           (h/span
-             :style (j/cell= (if (= "" selected-time)
-                               ""
-                               "color:YellowGreen;cursor:pointer"
-                               ))
-             :click #(rolon-click @my-ark-record @selected-time)
-             (h/text
-               (if (= "" selected-time)
-                 "now"
-                 (pretty-uuid my-ark-record (suuid/create-uuid selected-time))))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (and
+                         (not= "" selected-time)
+                         (some? (arkRecord/get-property-value
+                                  my-ark-record
+                                  (suuid/create-uuid selected-time)
+                                  [:index/headline]))))
+      (h/text
+        (str
+          "headline: "
+          (if (not= "" selected-time)
+            (arkRecord/get-property-value
+              my-ark-record
+              (suuid/create-uuid selected-time)
+              [:index/headline])))))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (and
-                              (not= "" selected-time)
-                              (some? (arkRecord/get-property-value
-                                       my-ark-record
-                                       (suuid/create-uuid selected-time)
-                                       [:index/headline]))))
-           (h/text
-             (str
-               "headline: "
-               (if (not= "" selected-time)
-                 (arkRecord/get-property-value
-                   my-ark-record
-                   (suuid/create-uuid selected-time)
-                   [:index/headline])))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (not= "" selected-time))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (not= "" selected-time))
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "clear time selection\n" command-prefix-style)
+                 (reset! selected-time ""))
+        "clear time selection")
+      )
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "clear time selection\n" command-prefix-style)
-                      (reset! selected-time ""))
-             "clear time selection")
-           )
+    (h/hr)
 
-         (h/hr)
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (some? transaction-je-uuid-string))
+      (h/span
+        (h/strong "My last Journal Entry: "))
+      (h/span
+        :style "color:orange;cursor:pointer"
+        :click #(uuid-click @my-ark-record @transaction-je-uuid-string)
+        (h/text (pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (some? transaction-je-uuid-string))
-           (h/span
-             (h/strong "My last Journal Entry: "))
-           (h/span
-             :style "color:orange;cursor:pointer"
-             :click #(uuid-click @my-ark-record @transaction-je-uuid-string)
-             (h/text (pretty-uuid my-ark-record (suuid/create-uuid transaction-je-uuid-string)))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (some? latest-journal-entry-uuid))
+      (h/span
+        (h/strong "Latest Journal Entry: "))
+      (h/span
+        :style "color:orange;cursor:pointer"
+        :click #(uuid-click @my-ark-record (str @latest-journal-entry-uuid))
+        (h/text
+          (pretty-uuid my-ark-record latest-journal-entry-uuid)))
+      )
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (some? latest-journal-entry-uuid))
-           (h/span
-             (h/strong "Latest Journal Entry: "))
-           (h/span
-             :style "color:orange;cursor:pointer"
-             :click #(uuid-click @my-ark-record (str @latest-journal-entry-uuid))
-             (h/text
-               (pretty-uuid my-ark-record latest-journal-entry-uuid)))
-           )
+    (h/hr)
 
-         (h/hr)
+    (h/div
+      (h/span
+        (h/strong "Selected Index: "))
+      (h/span
+        :style (j/cell= (if (= "" selected-index)
+                          ""
+                          "color:YellowGreen;cursor:pointer"
+                          ))
+        :click #(rolon-click @my-ark-record @selected-index)
+        (h/text
+          (if (= "" selected-index)
+            "none"
+            (pretty-uuid my-ark-record (suuid/create-uuid selected-index))))))
 
-         (h/div
-           (h/span
-             (h/strong "Selected Index: "))
-           (h/span
-             :style (j/cell= (if (= "" selected-index)
-                               ""
-                               "color:YellowGreen;cursor:pointer"
-                               ))
-             :click #(rolon-click @my-ark-record @selected-index)
-             (h/text
-               (if (= "" selected-index)
-                 "none"
-                 (pretty-uuid my-ark-record (suuid/create-uuid selected-index))))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (and
+                         (not= "" selected-index)
+                         (some? (arkRecord/get-property-value
+                                  my-ark-record
+                                  (suuid/create-uuid selected-index)
+                                  [:index/headline]))))
+      (h/text
+        (str
+          "headline: "
+          (if (not= "" selected-index)
+            (arkRecord/get-property-value
+              my-ark-record
+              (suuid/create-uuid selected-index)
+              [:index/headline])))))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (and
-                              (not= "" selected-index)
-                              (some? (arkRecord/get-property-value
-                                       my-ark-record
-                                       (suuid/create-uuid selected-index)
-                                       [:index/headline]))))
-           (h/text
-             (str
-               "headline: "
-               (if (not= "" selected-index)
-                 (arkRecord/get-property-value
-                   my-ark-record
-                   (suuid/create-uuid selected-index)
-                   [:index/headline])))))
+    (h/div
 
-         (h/div
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (list-index-content @my-ark-record arkRecord/index-name-uuid))
+        "list indexes")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (list-index-content @my-ark-record arkRecord/index-name-uuid))
-             "list indexes")
+      (h/button
+        :css {:display "none" :background-color "MistyRose"}
+        :toggle (j/cell= (not= "" selected-index))
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "clear index selection\n" command-prefix-style)
+                 (reset! selected-index ""))
+        "clear index selection")
 
-           (h/button
-             :css {:display "none" :background-color "MistyRose"}
-             :toggle (j/cell= (not= "" selected-index))
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "clear index selection\n" command-prefix-style)
-                      (reset! selected-index ""))
-             "clear index selection")
+      (h/button
+        :css {:display "none" :background-color "MistyRose"}
+        :toggle (j/cell= (not= "" selected-index))
+        :click (fn []
+                 (list-index-content @my-ark-record
+                                     (suuid/create-uuid @selected-index)))
+        "list index content"))
 
-           (h/button
-             :css {:display "none" :background-color "MistyRose"}
-             :toggle (j/cell= (not= "" selected-index))
-             :click (fn []
-                      (list-index-content @my-ark-record
-                                          (suuid/create-uuid @selected-index)))
-             "list index content"))
+    (h/hr)
 
-         (h/hr)
+    (h/div
+      (h/span
+        (h/strong "Selected Rolon: "))
+      (h/span
+        :style (j/cell= (if (= "" selected-rolon)
+                          ""
+                          "color:YellowGreen;cursor:pointer"
+                          ))
+        :click #(alternate-click @my-ark-record @selected-rolon)
+        (h/text
+          (if (= "" selected-rolon)
+            "none"
+            (pretty-uuid my-ark-record (suuid/create-uuid selected-rolon))))))
 
-         (h/div
-           (h/span
-             (h/strong "Selected Rolon: "))
-           (h/span
-             :style (j/cell= (if (= "" selected-rolon)
-                               ""
-                               "color:YellowGreen;cursor:pointer"
-                               ))
-             :click #(alternate-click @my-ark-record @selected-rolon)
-             (h/text
-               (if (= "" selected-rolon)
-                 "none"
-                 (pretty-uuid my-ark-record (suuid/create-uuid selected-rolon))))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (and
+                         (not= "" selected-rolon)
+                         (some? (arkRecord/get-property-value
+                                  my-ark-record
+                                  (suuid/create-uuid selected-rolon)
+                                  [:index/headline]))))
+      (h/text
+        (str
+          "headline: "
+          (if (not= "" selected-rolon)
+            (arkRecord/get-property-value
+              my-ark-record
+              (suuid/create-uuid selected-rolon)
+              [:index/headline])))))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (and
-                              (not= "" selected-rolon)
-                              (some? (arkRecord/get-property-value
-                                       my-ark-record
-                                       (suuid/create-uuid selected-rolon)
-                                       [:index/headline]))))
-           (h/text
-             (str
-               "headline: "
-               (if (not= "" selected-rolon)
-                 (arkRecord/get-property-value
-                   my-ark-record
-                   (suuid/create-uuid selected-rolon)
-                   [:index/headline])))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (not= "" selected-rolon))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (not= "" selected-rolon))
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "clear rolon selection\n" command-prefix-style)
+                 (reset! selected-rolon ""))
+        "clear rolon selection")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "clear rolon selection\n" command-prefix-style)
-                      (reset! selected-rolon ""))
-             "clear rolon selection")
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn [] (list-current-micro-properties @my-ark-record))
+        "list current micro-properties")
+      )
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn [] (list-current-micro-properties @my-ark-record))
-             "list current micro-properties")
-           )
+    (h/hr)
 
-         (h/hr)
+    (h/div
+      (h/span
+        (h/strong "Alternate Rolon: "))
+      (h/span
+        :style (j/cell= (if (= "" alternate-rolon)
+                          ""
+                          "color:YellowGreen;cursor:pointer"
+                          ))
+        :click #(rolon-click @my-ark-record @alternate-rolon)
+        (h/text
+          (if (= "" alternate-rolon)
+            "none"
+            (pretty-uuid my-ark-record (suuid/create-uuid alternate-rolon))))))
 
-         (h/div
-           (h/span
-             (h/strong "Alternate Rolon: "))
-           (h/span
-             :style (j/cell= (if (= "" alternate-rolon)
-                               ""
-                               "color:YellowGreen;cursor:pointer"
-                               ))
-             :click #(rolon-click @my-ark-record @alternate-rolon)
-             (h/text
-               (if (= "" alternate-rolon)
-                 "none"
-                 (pretty-uuid my-ark-record (suuid/create-uuid alternate-rolon))))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (and
+                         (not= "" alternate-rolon)
+                         (some? (arkRecord/get-property-value
+                                  my-ark-record
+                                  (suuid/create-uuid alternate-rolon)
+                                  [:index/headline]))))
+      (h/text
+        (str
+          "headline: "
+          (if (not= "" alternate-rolon)
+            (arkRecord/get-property-value
+              my-ark-record
+              (suuid/create-uuid alternate-rolon)
+              [:index/headline])))))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (and
-                              (not= "" alternate-rolon)
-                              (some? (arkRecord/get-property-value
-                                       my-ark-record
-                                       (suuid/create-uuid alternate-rolon)
-                                       [:index/headline]))))
-           (h/text
-             (str
-               "headline: "
-               (if (not= "" alternate-rolon)
-                 (arkRecord/get-property-value
-                   my-ark-record
-                   (suuid/create-uuid alternate-rolon)
-                   [:index/headline])))))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (not= "" alternate-rolon))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (not= "" alternate-rolon))
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "clear alternate selection\n" command-prefix-style)
+                 (reset! alternate-rolon ""))
+        "clear alternate selection")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "clear alternate selection\n" command-prefix-style)
-                      (reset! alternate-rolon ""))
-             "clear alternate selection")
+      (h/button
+        :style "background-color:MistyRose"
+        :css {:display "none"}
+        :toggle (j/cell= (not= selected-rolon alternate-rolon))
+        :click (fn []
+                 (let [r @selected-rolon
+                       a @alternate-rolon]
+                   (rolon-click @my-ark-record a)
+                   (alternate-click @my-ark-record r)))
+        "swap with rolon selection")
+      )
 
-           (h/button
-             :style "background-color:MistyRose"
-             :css {:display "none"}
-             :toggle (j/cell= (not= selected-rolon alternate-rolon))
-             :click (fn []
-                      (let [r @selected-rolon
-                            a @alternate-rolon]
-                        (rolon-click @my-ark-record a)
-                        (alternate-click @my-ark-record r)))
-             "swap with rolon selection")
-           )
+    (h/hr)
 
-         (h/hr)
+    (h/div
 
-         (h/div
+      (h/output (h/strong "Rolon Counts: "))
 
-           (h/output (h/strong "Rolon Counts: "))
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (application-rolons-count @my-ark-record))
+        "applications")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (application-rolons-count @my-ark-record))
-             "applications")
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (indexes-count @my-ark-record))
+        "indexes")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (indexes-count @my-ark-record))
-             "indexes")
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (je-count @my-ark-record))
+        "journal entries"))
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (je-count @my-ark-record))
-             "journal entries"))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (and
+                         channel-open
+                         (= "" selected-time)))
 
-         (h/div
-           :css {:display "none"}
-           :toggle (j/cell= (and
-                              channel-open
-                              (= "" selected-time)))
+      (h/output (h/strong "Transactions: "))
 
-           (h/output (h/strong "Transactions: "))
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "Hello Fred transaction\n" command-prefix-style)
+                 (fred))
+        :href ""
+        "Hello Fred")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "Hello Fred transaction\n" command-prefix-style)
-                      (fred))
-             :href ""
-             "Hello Fred")
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "Make Bob transaction\n" command-prefix-style)
+                 (make-bob))
+        :href ""
+        "Make Bob")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "Make Bob transaction\n" command-prefix-style)
-                      (make-bob))
-             :href ""
-             "Make Bob")
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "Invalid!\n" command-prefix-style)
+                 (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
+        "Invalid!")
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "Invalid!\n" command-prefix-style)
-                      (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
-             "Invalid!")
+      (h/button
+        :style "background-color:MistyRose"
+        :click (fn []
+                 (add-prompt)
+                 (add-history! ">")
+                 (add-history! "Trouble!\n" command-prefix-style)
+                 (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
+        "Trouble!"))
 
-           (h/button
-             :style "background-color:MistyRose"
-             :click (fn []
-                      (add-prompt)
-                      (add-history! ">")
-                      (add-history! "Trouble!\n" command-prefix-style)
-                      (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
-             "Trouble!"))
-
-         (h/div
-           :style "color:red"
-           (h/p (h/text (if transaction-error
-                          (str "Error: " transaction-error-msg)
-                          ""))))))
+    (h/div
+      :style "color:red"
+      (h/p (h/text (if transaction-error
+                     (str "Error: " transaction-error-msg)
+                     ""))))))
 
 (def do-history
-         (h/div :style "white-space:pre-wrap; font-family:monospace"
-                (h/for-tpl [[txt-id txt style on-click arg] history]
-                           (h/output :id txt-id
-                                     :style style
-                                     :click (fn [] (@on-click @my-ark-record @arg))
-                                     txt))))
+  (h/div :style "white-space:pre-wrap; font-family:monospace"
+         (h/for-tpl [[txt-id txt style on-click arg] history]
+                    (h/output :id txt-id
+                              :style style
+                              :click (fn [] (@on-click @my-ark-record @arg))
+                              txt))))
 
 (def do-output
   (h/div
@@ -708,30 +696,55 @@
                  :click (fn [] (@on-click @my-ark-record @arg))
                  txt))))
 
-(def do-console
-  (h/div
-    (h/table
-      :style "width:100%"
-      (h/tr
-        (h/td
-          :style (j/cell= (td-style login/windowInnerWidth))
-          (do-commands))
-        (h/td
-          :style (j/cell= (td-style login/windowInnerWidth))
-          (h/div
-            :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-            (do-history))
-          (h/div
-            :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-            (do-output)))))))
+(defn td2-style [width]
+  (str "width:" (/ width 2) "px"))
+
+(defn tx-style [windowInnerHeight header-height]
+  (let [header-height (if (= header-height 0) 10 header-height)]
+    (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px;vertical-align:bottom")))
+
+(defn tx2-style [windowInnerHeight header-height]
+  (let [header-height (if (= header-height 0) 10 header-height)]
+    (str "overflow:scroll;height:" (quot (- windowInnerHeight header-height 50) 2) "px;vertical-align:bottom")))
+
+(def do-all
+  (h/table
+    :style "width:100%"
+    (h/tr
+      (h/td
+        :style (j/cell= (td2-style login/windowInnerWidth))
+        (h/div
+          :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+          (do-commands)))
+      (h/td
+        :style (j/cell= (td2-style login/windowInnerWidth))
+        (h/div
+          :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+          (do-history))
+        (h/div
+          :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+          (do-output))))))
+
+(def display-mode (j/cell 0))
 
 (defmethod login/add-body-element :console [_]
-  (do-console))
+  (h/div
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (= 0 display-mode))
+      (do-all))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (= 1 display-mode))
+      :style "width:100%"
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (do-commands)))
+    ))
 
 (defmethod login/add-header-element :console [_]
   (h/div
     (h/h2 "Ark Console")
-
     (h/table
       :style "width:100%"
       (h/tr
@@ -746,14 +759,18 @@
                      (reset! history []))
             "clear history"))
         (h/td
-          :style "width:16%"
-          (h/span "all"))
+          :style "width:16%; color:purple; cursor:pointer"
+          :click #(reset! display-mode 0)
+          (h/span "all 3"))
         (h/td
-          :style "width:16%"
+          :style "width:16%; color:purple; cursor:pointer"
+          :click #(reset! display-mode 1)
           (h/span "commands"))
         (h/td
-          :style "width:16%"
+          :style "width:16%; color:purple; cursor:pointer"
+          :click #(reset! display-mode 3)
           (h/span "history"))
         (h/td
-          :style "width:16%"
+          :style "width:16%; color:purple; cursor:pointer"
+          :click #(reset! display-mode 4)
           (h/span "output"))))))

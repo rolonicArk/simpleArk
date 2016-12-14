@@ -425,6 +425,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "clear time selection\n" command-prefix-style)
@@ -494,6 +495,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (list-index-content @my-ark-record arkRecord/index-name-uuid))
         "list indexes")
 
@@ -501,6 +503,7 @@
         :css {:display "none" :background-color "MistyRose"}
         :toggle (j/cell= (not= "" selected-index))
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "clear index selection\n" command-prefix-style)
@@ -511,6 +514,7 @@
         :css {:display "none" :background-color "MistyRose"}
         :toggle (j/cell= (not= "" selected-index))
         :click (fn []
+                 (reset! display-mode 0)
                  (list-index-content @my-ark-record
                                      (suuid/create-uuid @selected-index)))
         "list index content"))
@@ -555,6 +559,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "clear rolon selection\n" command-prefix-style)
@@ -563,7 +568,9 @@
 
       (h/button
         :style "background-color:MistyRose"
-        :click (fn [] (list-current-micro-properties @my-ark-record))
+        :click (fn []
+                 (reset! display-mode 0)
+                 (list-current-micro-properties @my-ark-record))
         "list current micro-properties")
       )
 
@@ -607,6 +614,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "clear alternate selection\n" command-prefix-style)
@@ -618,6 +626,7 @@
         :css {:display "none"}
         :toggle (j/cell= (not= selected-rolon alternate-rolon))
         :click (fn []
+                 (reset! display-mode 0)
                  (let [r @selected-rolon
                        a @alternate-rolon]
                    (rolon-click @my-ark-record a)
@@ -634,18 +643,21 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (application-rolons-count @my-ark-record))
         "applications")
 
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (indexes-count @my-ark-record))
         "indexes")
 
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (je-count @my-ark-record))
         "journal entries"))
 
@@ -660,6 +672,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "Hello Fred transaction\n" command-prefix-style)
@@ -670,6 +683,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "Make Bob transaction\n" command-prefix-style)
@@ -680,6 +694,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "Invalid!\n" command-prefix-style)
@@ -689,6 +704,7 @@
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
+                 (reset! display-mode 0)
                  (add-prompt)
                  (add-history! ">")
                  (add-history! "Trouble!\n" command-prefix-style)
@@ -795,6 +811,7 @@
           :style "width:16%"
           (h/button
             :click (fn []
+                     (reset! display-mode 0)
                      (reset! history []))
             "clear history"))
         (h/td

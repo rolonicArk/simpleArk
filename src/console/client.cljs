@@ -156,6 +156,22 @@
 
 (defn no-click [arg])
 
+(defn scroll-history
+  [nw]
+  (let [a (.getElementById js/document (str "ahis" (- (count nw) 1)))
+        b (.getElementById js/document (str "bhis" (- (count nw) 1)))]
+    (if (some? a)
+      (.scrollIntoView a true))
+    (if (some? b)
+      (.scrollIntoView b true)))
+  )
+
+(defn display-mode-change
+  [_ _ _ _]
+  (h/with-timeout
+    0
+    (scroll-history @history)))
+
 (defn add-history!
   ([txt] (add-history! txt default-style))
   ([txt style] (add-history! txt style no-click nil))
@@ -165,13 +181,7 @@
                           nw (conj old v)]
                       (h/with-timeout
                         0
-                        (let [a (.getElementById js/document (str "ahis" (- (count nw) 1)))
-                              b (.getElementById js/document (str "bhis" (- (count nw) 1)))]
-                          (if (some? a)
-                            (.scrollIntoView a true))
-                          (if (some? b)
-                            (.scrollIntoView b true))
-                          ))
+                        (scroll-history nw))
                       nw)))))
 
 (defn clear-output!
@@ -738,6 +748,8 @@
           (do-output))))))
 
 (def display-mode (j/cell 0))
+
+(add-watch display-mode :display-mode display-mode-change)
 
 (defmethod login/add-body-element :console [_]
   (h/div

@@ -40,6 +40,8 @@
       nil)
     (partial swap! login/common-data assoc :console)))
 
+(def display-mode (j/cell 0))
+
 (def latest-journal-entry-uuid
   (j/cell=
     (arkRecord/get-latest-journal-entry-uuid my-ark-record)))
@@ -253,6 +255,8 @@
         (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn uuid-click [ark-record arg]
+  (if (< 1 @display-mode)
+    (reset! display-mode 1))
   (let [uuid (suuid/create-uuid arg)]
     (cond
       (suuid/index-uuid? uuid)
@@ -746,8 +750,6 @@
         (h/div
           :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
           (do-output))))))
-
-(def display-mode (j/cell 0))
 
 (add-watch display-mode :display-mode display-mode-change)
 

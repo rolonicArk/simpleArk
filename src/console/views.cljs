@@ -5,6 +5,61 @@
     [tiples.login :as login]
     [console.client :as client]))
 
+(defn td2-style [width]
+  (str "width:" (/ width 2) "px"))
+
+(defn tx-style [windowInnerHeight header-height]
+  (let [header-height (if (= header-height 0) 10 header-height)]
+    (str "overflow:scroll;height:" (- windowInnerHeight header-height 50) "px;vertical-align:bottom")))
+
+(defn tx2-style [windowInnerHeight header-height]
+  (let [header-height (if (= header-height 0) 10 header-height)]
+    (str "overflow:scroll;height:" (quot (- windowInnerHeight header-height 50) 2) "px;vertical-align:bottom")))
+
+(def do-all
+  (h/table
+    :style "width:100%"
+    (h/tr
+      (h/td
+        :style (j/cell= (td2-style login/windowInnerWidth))
+        (h/div
+          :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+          (client/do-commands)))
+      (h/td
+        :style (j/cell= (td2-style login/windowInnerWidth))
+        (h/div
+          :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+          (client/do-history "a"))
+        (h/div
+          :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+          (client/do-output))))))
+
+(defmethod login/add-body-element :console [_]
+  (h/div
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (= 0 client/display-mode))
+      (do-all))
+    (h/div
+      :css {:display "none" :width "100%"}
+      :toggle (j/cell= (= 1 client/display-mode))
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (client/do-commands)))
+    (h/div
+      :css {:display "none" :width "100%"}
+      :toggle (j/cell= (= 3 client/display-mode))
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (client/do-history "b")))
+    (h/div
+      :css {:display "none" :width "100%"}
+      :toggle (j/cell= (= 4 client/display-mode))
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (client/do-output)))
+    ))
+
 (defmethod login/add-header-element :console [_]
   (h/div
     (h/h2 "Ark Console")

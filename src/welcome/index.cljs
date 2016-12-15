@@ -8,9 +8,7 @@
     [welcome.client]
     [profile.client]
     [contacts.client]
-    [console.client]
-    [console.views]
-    ))
+    [console.views]))
 
 (defn opening
   []

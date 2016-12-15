@@ -7,9 +7,9 @@
 (defmulti add-header-element identity)
 (defmulti add-body-element identity)
 
-(j/defc started false)
+(def started (j/cell false))
 (j/defc capabilities nil)
-(j/defc common-data nil)
+(def common-data (j/cell nil))
 (j/defc user-data nil)
 (j/defc user-name "")
 (def error (j/cell false))

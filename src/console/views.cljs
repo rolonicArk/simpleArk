@@ -3,6 +3,8 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [tiples.login :as login]
+    [console.history-view :as history-view]
+    [console.output-view :as output-view]
     [console.client :as client]))
 
 (defn td2-style [width]
@@ -29,10 +31,10 @@
         :style (j/cell= (td2-style login/windowInnerWidth))
         (h/div
           :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-          (client/do-history "a"))
+          (history-view/do-history "a"))
         (h/div
           :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
-          (client/do-output))))))
+          (output-view/do-output))))))
 
 (defmethod login/add-body-element :console [_]
   (h/div
@@ -51,13 +53,13 @@
       :toggle (j/cell= (= 3 client/display-mode))
       (h/div
         :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-        (client/do-history "b")))
+        (history-view/do-history "b")))
     (h/div
       :css {:display "none" :width "100%"}
       :toggle (j/cell= (= 4 client/display-mode))
       (h/div
         :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-        (client/do-output)))
+        (output-view/do-output)))
     ))
 
 (defmethod login/add-header-element :console [_]

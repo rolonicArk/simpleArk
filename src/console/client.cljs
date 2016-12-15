@@ -750,25 +750,4 @@
                      (str "Error: " transaction-error-msg)
                      ""))))))
 
-(defn do-history
-  [id-prefix]
-  (h/div :style "white-space:pre-wrap; font-family:monospace"
-         (h/for-tpl [[txt-id txt style on-click arg] history]
-                    (h/output
-                      :id (j/cell= (str id-prefix txt-id))
-                      :style style
-                      :click (fn [] (@on-click @my-ark-record @arg))
-                      txt))))
-
-(defn do-output
-  []
-  (h/div
-    :style "white-space:pre-wrap; font-family:monospace"
-    (h/for-tpl [[txt-id txt style on-click arg] output]
-               (h/output
-                 :id txt-id
-                 :style style
-                 :click (fn [] (@on-click @my-ark-record @arg))
-                 txt))))
-
 (add-watch display-mode :display-mode display-mode-change)

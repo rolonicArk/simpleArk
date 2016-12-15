@@ -289,7 +289,7 @@
 (defn je-count [ark-record]
   (add-prompt)
   (add-history! ">")
-  (add-history! "journal entry rolons count:" command-prefix-style)
+  (add-history! "transactions count:" command-prefix-style)
   (add-history! " ")
   (add-history! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
 
@@ -364,7 +364,8 @@
       false path)
     (add-output! "]")))
 
-(defn list-current-micro-properties [ark-record]
+(defn list-current-micro-properties
+  [ark-record]
   (add-prompt)
   (add-history! ">")
   (add-history! "list current micro-properties\n" command-prefix-style)
@@ -380,8 +381,34 @@
         (add-output! " ")
         (add-output! (pr-str value))
         (add-output! "\n\n"))
-      nil properties))
-  )
+      nil properties)))
+
+(defn list-modifying-transactions
+  [ark-record]
+  (add-prompt)
+  (add-history! ">")
+  (add-history! "list modifying transactions\n" command-prefix-style)
+  (clear-output!)
+  (add-output! "transactions that modifified ")
+  (let [uuid (suuid/create-uuid @selected-rolon)
+        all-properties (arkRecord/get-property-values ark-record uuid)
+        properties (mapish/mi-sub all-properties [:inv-rel/modified])]
+    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click @selected-rolon)
+    (add-output! "\n\n")
+    (.log js/console (pr-str properties))
+    (reduce
+      (fn [_ [path value]]
+        (let [k (nth path 1)
+              u (arkRecord/get-journal-entry-uuid ark-record k)]
+          (add-output! (pretty-uuid ark-record u) (clickable-styles u) uuid-click (str u))
+          (let [headline (arkRecord/get-property-value
+                           ark-record
+                           u
+                           [:index/headline])]
+            (if (some? headline)
+              (add-output! (str " - " headline)))))
+        (add-output! "\n"))
+      nil properties)))
 
 (defn do-commands
   []
@@ -439,7 +466,7 @@
       :css {:display "none"}
       :toggle (j/cell= (some? transaction-je-uuid-string))
       (h/span
-        (h/strong "My last Journal Entry: "))
+        (h/strong "My last Transaction: "))
       (h/span
         :style "color:orange;cursor:pointer"
         :click #(uuid-click @my-ark-record @transaction-je-uuid-string)
@@ -449,7 +476,7 @@
       :css {:display "none"}
       :toggle (j/cell= (some? latest-journal-entry-uuid))
       (h/span
-        (h/strong "Latest Journal Entry: "))
+        (h/strong "Latest Transaction: "))
       (h/span
         :style "color:orange;cursor:pointer"
         :click #(uuid-click @my-ark-record (str @latest-journal-entry-uuid))
@@ -572,6 +599,14 @@
                  (reset! display-mode 0)
                  (list-current-micro-properties @my-ark-record))
         "list current micro-properties")
+
+      (h/button
+        :css {:display "none" :background-color "MistyRose"}
+        :toggle (j/cell= (not (suuid/journal-entry-uuid? (suuid/create-uuid selected-rolon))))
+        :click (fn []
+                 (reset! display-mode 0)
+                 (list-modifying-transactions @my-ark-record))
+        "list modifying transactions")
       )
 
     (h/hr)
@@ -659,7 +694,7 @@
         :click (fn []
                  (reset! display-mode 0)
                  (je-count @my-ark-record))
-        "journal entries"))
+        "transactions"))
 
     (h/div
       :css {:display "none"}
@@ -819,8 +854,8 @@
           "views:")
         (h/td
           :style (j/cell= (if (= 0 display-mode)
-                          "font-weight:bold; text-align:center"
-                          "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
+                            "font-weight:bold; text-align:center"
+                            "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
           :click #(reset! display-mode 0)
           (h/span "composite"))
         (h/td

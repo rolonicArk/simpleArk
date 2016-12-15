@@ -3,6 +3,7 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [tiples.login :as login]
+    [console.commands-view :as commands-view]
     [console.history-view :as history-view]
     [console.output-view :as output-view]
     [console.client :as client]))
@@ -26,7 +27,7 @@
         :style (j/cell= (td2-style login/windowInnerWidth))
         (h/div
           :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-          (client/do-commands)))
+          (commands-view/do-commands)))
       (h/td
         :style (j/cell= (td2-style login/windowInnerWidth))
         (h/div
@@ -47,7 +48,7 @@
       :toggle (j/cell= (= 1 client/display-mode))
       (h/div
         :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-        (client/do-commands)))
+        (commands-view/do-commands)))
     (h/div
       :css {:display "none" :width "100%"}
       :toggle (j/cell= (= 3 client/display-mode))

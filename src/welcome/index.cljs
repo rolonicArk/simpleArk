@@ -9,6 +9,7 @@
     [profile.client]
     [contacts.client]
     [console.client]
+    [console.views]
     ))
 
 (defn opening

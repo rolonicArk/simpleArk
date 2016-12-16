@@ -84,25 +84,6 @@
 
 (add-watch tiples/chsk-state :open? watch-state)
 
-(defn fred []
-  (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
-
-(defn make-bob []
-  (tiples/chsk-send!
-    [:console/process-transaction
-     {:tran-keyword
-      :ark/update-rolon-transaction!
-      :tran-data
-      (prn-str
-        [nil
-         {[:index/headline] "make bob"}
-         {[:content/age]             8
-          [:index/name]              "Bob"
-          [:index/headline]          "First application Rolon"
-          [:content/brothers "John"] true
-          [:content/brothers "Jeff"] true}])
-      }]))
-
 (defn default-style
   []
   "")
@@ -286,64 +267,6 @@
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
-(defn je-count [ark-record]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "transactions count:" command-prefix-style)
-  (add-history! " ")
-  (add-history! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
-
-(defn indexes-count [ark-record]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "index rolons count:" command-prefix-style)
-  (add-history! " ")
-  (add-history! (str (count (arkRecord/get-indexes ark-record)) "\n")))
-
-(defn application-rolons-count [ark-record]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "application rolons count:" command-prefix-style)
-  (add-history! " ")
-  (add-history! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
-
-(defn display-index
-  [ark-record content-index index-uuid]
-  (let [name (arkRecord/get-property-value ark-record index-uuid [:index/index.name])]
-    (doall (map (fn [kv]
-                  (let [k (str (key kv) " ")
-                        v (val kv)]
-                    (case name
-                      "index.name" ()
-                      "name" ()
-                      (add-output! k bold-style))
-                    (add-output! (pretty-uuid ark-record v)
-                                 (clickable-styles v) uuid-click (str v))
-                    (if (not= name "headline")
-                      (let [headline (arkRecord/get-property-value
-                                       ark-record
-                                       (suuid/create-uuid v)
-                                       [:index/headline])]
-                        (if (some? headline)
-                          (add-output! (str " - " headline)))))
-                    (add-output! "\n")))
-                content-index))))
-
-(defn list-index-content [ark-record index-uuid]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "list index content\n" command-prefix-style)
-  (clear-output!)
-  (add-output! "index: ")
-  (add-output! (str (pretty-uuid ark-record index-uuid) "\n")
-               (clickable-styles index-uuid)
-               uuid-click
-               (str index-uuid))
-  (let [content-index (arkRecord/get-content-index
-                        ark-record
-                        index-uuid)]
-    (display-index ark-record content-index index-uuid)))
-
 (defn format-path [ark-record path]
   (let [fk (first path)
         rel (or
@@ -363,49 +286,3 @@
         true)
       false path)
     (add-output! "]")))
-
-(defn list-current-micro-properties
-  [ark-record]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "list current micro-properties\n" command-prefix-style)
-  (clear-output!)
-  (add-output! "current micro-properties of ")
-  (let [uuid (suuid/create-uuid @selected-rolon)
-        properties (arkRecord/get-property-values ark-record uuid)]
-    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click @selected-rolon)
-    (add-output! ":\n\n")
-    (reduce
-      (fn [_ [path value]]
-        (format-path ark-record path)
-        (add-output! " ")
-        (add-output! (pr-str value))
-        (add-output! "\n\n"))
-      nil properties)))
-
-(defn list-modifying-transactions
-  [ark-record]
-  (add-prompt)
-  (add-history! ">")
-  (add-history! "list modifying transactions\n" command-prefix-style)
-  (clear-output!)
-  (add-output! "transactions that modifified ")
-  (let [uuid (suuid/create-uuid @selected-rolon)
-        all-properties (arkRecord/get-property-values ark-record uuid)
-        properties (mapish/mi-sub all-properties [:inv-rel/modified])]
-    (add-output! (pretty-uuid ark-record uuid) (clickable-styles uuid) uuid-click @selected-rolon)
-    (add-output! "\n\n")
-    (.log js/console (pr-str properties))
-    (reduce
-      (fn [_ [path value]]
-        (let [k (nth path 1)
-              u (arkRecord/get-journal-entry-uuid ark-record k)]
-          (add-output! (pretty-uuid ark-record u) (clickable-styles u) uuid-click (str u))
-          (let [headline (arkRecord/get-property-value
-                           ark-record
-                           u
-                           [:index/headline])]
-            (if (some? headline)
-              (add-output! (str " - " headline)))))
-        (add-output! "\n"))
-      nil properties)))

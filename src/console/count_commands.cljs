@@ -6,6 +6,27 @@
     [simpleArk.arkRecord :as arkRecord]
     [console.client :as client]))
 
+(defn application-rolons-count [ark-record]
+  (client/add-prompt)
+  (client/add-history! ">")
+  (client/add-history! "application rolons count:" client/command-prefix-style)
+  (client/add-history! " ")
+  (client/add-history! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
+
+(defn indexes-count [ark-record]
+  (client/add-prompt)
+  (client/add-history! ">")
+  (client/add-history! "index rolons count:" client/command-prefix-style)
+  (client/add-history! " ")
+  (client/add-history! (str (count (arkRecord/get-indexes ark-record)) "\n")))
+
+(defn je-count [ark-record]
+  (client/add-prompt)
+  (client/add-history! ">")
+  (client/add-history! "transactions count:" client/command-prefix-style)
+  (client/add-history! " ")
+  (client/add-history! (str (count (arkRecord/get-journal-entries ark-record)) "\n")))
+
 (defn do-count-commands
   []
   (h/div
@@ -17,20 +38,20 @@
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/application-rolons-count @client/my-ark-record))
+                 (application-rolons-count @client/my-ark-record))
         "applications")
 
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/indexes-count @client/my-ark-record))
+                 (indexes-count @client/my-ark-record))
         "indexes")
 
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/je-count @client/my-ark-record))
+                 (je-count @client/my-ark-record))
         "transactions"))
     ))

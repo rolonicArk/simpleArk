@@ -5,6 +5,25 @@
     [tiples.client :as tiples]
     [console.client :as client]))
 
+(defn fred []
+  (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
+
+(defn make-bob []
+  (tiples/chsk-send!
+    [:console/process-transaction
+     {:tran-keyword
+      :ark/update-rolon-transaction!
+      :tran-data
+      (prn-str
+        [nil
+         {[:index/headline] "make bob"}
+         {[:content/age]             8
+          [:index/name]              "Bob"
+          [:index/headline]          "First application Rolon"
+          [:content/brothers "John"] true
+          [:content/brothers "Jeff"] true}])
+      }]))
+
 (defn do-transaction-commands
   []
   (h/div
@@ -22,7 +41,7 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "Hello Fred transaction\n" client/command-prefix-style)
-               (client/fred))
+               (fred))
       :href ""
       "Hello Fred")
 
@@ -33,7 +52,7 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "Make Bob transaction\n" client/command-prefix-style)
-               (client/make-bob))
+               (make-bob))
       :href ""
       "Make Bob")
 
@@ -55,11 +74,11 @@
                (client/add-history! ">")
                (client/add-history! "Trouble!\n" client/command-prefix-style)
                (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
-      "Trouble!"))
+      "Trouble!")
 
   (h/div
     :style "color:red"
     (h/p (h/text (if client/transaction-error
                    (str "Error: " client/transaction-error-msg)
-                   ""))))
+                   "")))))
   )

@@ -1,6 +1,7 @@
 (ns simpleArk.rolonRecord
   (:require #?(:clj [simpleArk.reader :as reader]
-               :cljs [cljs.reader :as reader])))
+               :cljs [cljs.reader :as reader])
+                    [simpleArk.mapish :as mapish]))
 
 #?(:clj
    (set! *warn-on-reflection* true))

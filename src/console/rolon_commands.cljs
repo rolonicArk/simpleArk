@@ -24,7 +24,32 @@
         (client/add-output! " ")
         (client/add-output! (pr-str value))
         (client/add-output! "\n\n"))
-      nil properties)))
+      nil properties)
+    ))
+
+(defn list-modified-micro-properties
+  [ark-record]
+  (client/add-prompt)
+  (client/add-history! ">")
+  (client/add-history! "list modified micro-properties\n" client/command-prefix-style)
+  (client/clear-output!)
+  (client/add-output! "modified micro-properties of ")
+  (let [uuid (suuid/create-uuid @client/selected-rolon)
+        properties (arkRecord/get-changes-by-property ark-record uuid)]
+    (client/add-output! (client/pretty-uuid ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
+    (client/add-output! ":\n\n")
+    ;(mapish/debug [:properties properties])
+    (reduce
+      (fn [_ [path value]]
+        (let [[[k] v] (first value)
+              st (suuid/rolon-key (suuid/create-uuid @client/selected-time))]
+          (when (= k st)
+            (client/format-path ark-record path)
+            (client/add-output! " ")
+            (client/add-output! (pr-str v))
+            (client/add-output! "\n\n"))))
+      nil properties)
+    ))
 
 (defn list-modifying-transactions
   [ark-record]
@@ -104,6 +129,14 @@
         "clear rolon selection")
 
       (h/button
+        :css {:display "none" :background-color "MistyRose"}
+        :toggle (j/cell= (not (suuid/journal-entry-uuid? (suuid/create-uuid client/selected-rolon))))
+        :click (fn []
+                 (reset! client/display-mode 0)
+                 (list-modifying-transactions @client/my-ark-record))
+        "list modifying transactions")
+
+      (h/button
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
@@ -112,10 +145,12 @@
 
       (h/button
         :css {:display "none" :background-color "MistyRose"}
-        :toggle (j/cell= (not (suuid/journal-entry-uuid? (suuid/create-uuid client/selected-rolon))))
+        :toggle (j/cell= (and
+                           (not (suuid/journal-entry-uuid? (suuid/create-uuid client/selected-rolon)))
+                           (not= "" client/selected-time)))
         :click (fn []
                  (reset! client/display-mode 0)
-                 (list-modifying-transactions @client/my-ark-record))
-        "list modifying transactions")
+                 (list-modified-micro-properties @client/my-ark-record))
+        "list modified micro-properties")
       )
     ))

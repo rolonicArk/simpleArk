@@ -291,5 +291,9 @@
 
 (defn path-str [ark-record path]
   (str "["
-       (string/join ", " path)
+       (string/join ", " (map
+                           #(if (uuid? %)
+                              (pretty-uuid ark-record %)
+                              %)
+                           path))
        "]"))

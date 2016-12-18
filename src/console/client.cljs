@@ -1,5 +1,6 @@
 (ns console.client
   (:require
+    [clojure.string :as string]
     [hoplon.core :as h]
     [javelin.core :as j]
     [simpleArk.uuid :as suuid]
@@ -287,3 +288,8 @@
         true)
       false path)
     (add-output! "]")))
+
+(defn path-str [ark-record path]
+  (str "["
+       (string/join ", " path)
+       "]"))

@@ -62,6 +62,7 @@
 
 (def selected-rolon (j/cell ""))
 (def alternate-rolon (j/cell ""))
+(def selected-micro-property (j/cell ""))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]

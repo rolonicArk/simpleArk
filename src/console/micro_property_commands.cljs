@@ -8,10 +8,13 @@
   []
   (h/div
     :css {:display "none"}
-    :toggle (j/cell= (not= "" client/selected-micro-property))
+    :toggle (j/cell= (not (false? client/selected-microp)))
     (h/div
       (h/span
         (h/strong
           "Selected micro-property: "))
+      (h/span
+        (h/text
+          client/selected-microp))
       )
     ))

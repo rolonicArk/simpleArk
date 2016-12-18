@@ -55,8 +55,7 @@
         "clear alternate selection")
 
       (h/button
-        :style "background-color:MistyRose"
-        :css {:display "none"}
+        :css {:display "none" :background-color "MistyRose"}
         :toggle (j/cell= (not= client/selected-rolon client/alternate-rolon))
         :click (fn []
                  (reset! client/display-mode 0)

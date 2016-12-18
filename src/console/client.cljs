@@ -62,7 +62,7 @@
 
 (def selected-rolon (j/cell ""))
 (def alternate-rolon (j/cell ""))
-(def selected-micro-property (j/cell ""))
+(def selected-microp (j/cell false))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
@@ -268,7 +268,7 @@
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
-(defn format-path [ark-record path]
+(defn output-path [ark-record path]
   (let [fk (first path)
         rel (or
               (mapish/bi-rel? fk)

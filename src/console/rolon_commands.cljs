@@ -7,6 +7,14 @@
     [simpleArk.arkRecord :as arkRecord]
     [console.client :as client]))
 
+(defn micro-property-style [] "color:chocolate;cursor:pointer")
+
+(defn micro-property-click [ark-record arg]
+  (if (< 1 @client/display-mode)
+    (reset! client/display-mode 1))
+  (reset! client/selected-microp arg)
+  )
+
 (defn list-current-micro-properties
   [ark-record]
   (client/add-prompt)
@@ -20,7 +28,9 @@
     (client/add-output! ":\n\n")
     (reduce
       (fn [_ [path value]]
-        (client/format-path ark-record path)
+        (client/add-output! "=" micro-property-style micro-property-click path)
+        (client/add-output! " ")
+        (client/output-path ark-record path)
         (client/add-output! " ")
         (client/add-output! (pr-str value))
         (client/add-output! "\n\n"))
@@ -40,7 +50,9 @@
     (client/add-output! ":\n\n")
     (reduce
       (fn [_ [path _]]
-        (client/format-path ark-record path)
+        (client/add-output! "=" micro-property-style micro-property-click path)
+        (client/add-output! " ")
+        (client/output-path ark-record path)
         (client/add-output! "\n\n"))
       nil properties)
     ))
@@ -62,7 +74,9 @@
         (let [[[k] v] (first value)
               st (suuid/rolon-key (suuid/create-uuid @client/selected-time))]
           (when (= k st)
-            (client/format-path ark-record path)
+            (client/add-output! "=" micro-property-style micro-property-click path)
+            (client/add-output! " ")
+            (client/output-path ark-record path)
             (client/add-output! " ")
             (client/add-output! (pr-str v))
             (client/add-output! "\n\n"))))
@@ -113,7 +127,8 @@
         (h/text
           (if (= "" client/selected-rolon)
             "none"
-            (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/selected-rolon))))))
+            (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/selected-rolon)))))
+      )
 
     (h/div
       :css {:display "none"}

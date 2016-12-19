@@ -10,13 +10,5 @@
     :css {:display "none"}
     :toggle (j/cell= (not= false client/selected-microp))
     (h/div
-      (h/span
-        (h/strong
-          "Selected micro-property: "))
-      (h/span
-        (h/text
-          (if (not= false client/selected-microp)
-            (client/path-str client/my-ark-record client/selected-microp)
-            "")))
-      )
-    ))
+      (h/strong "Selected micro-property: ")
+      (client/display-selected-path))))

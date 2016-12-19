@@ -278,7 +278,7 @@
     (add-output! "[")
     (reduce
       (fn [space k]
-        (if space (add-output! " "))
+        (if space (add-output! ", "))
         (if (uuid? k)
           (add-output! (pretty-uuid ark-record k) (clickable-styles k) uuid-click (str k))
           (if (and space rel)
@@ -297,3 +297,28 @@
                               %)
                            path))
        "]"))
+
+(defn display-selected-path []
+  (h/span
+    "["
+    (h/for-tpl
+      [v
+       (j/cell=
+         (if (= false selected-microp)
+           []
+           (map
+             (fn [i] [i (nth selected-microp i)])
+             (range (count selected-microp)))))]
+      (h/span
+        (h/text
+          (let [[p k] v
+                s (< 0 p)]
+            (if s ", " "")))
+        (h/text
+          (let [[p k] v
+                s (< 0 p)]
+            (if (uuid? k)
+              (pretty-uuid my-ark-record k)
+              k)))
+        ))
+    "]"))

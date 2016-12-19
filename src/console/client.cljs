@@ -298,6 +298,28 @@
                            path))
        "]"))
 
+(defn selected-path-space
+  [v]
+  (let[[p _] v
+       s (< 0 p)]
+    (if s ", " "")))
+
+(defn selected-path-pretty
+  [ark-record path v]
+  (let [[p k] v
+        s (< 0 p)
+        fk (first path)
+        rel (or
+              (mapish/bi-rel? fk)
+              (mapish/rel? fk)
+              (mapish/inv-rel? fk))]
+    (if (uuid? k)
+      (pretty-uuid @my-ark-record k)
+      (if (and s rel)
+        (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
+          (pretty-uuid ark-record je-uuid))
+        (pr-str k)))))
+
 (defn display-selected-path []
   (h/span
     "["
@@ -311,14 +333,7 @@
              (range (count selected-microp)))))]
       (h/span
         (h/text
-          (let [[p k] v
-                s (< 0 p)]
-            (if s ", " "")))
+          (selected-path-space v))
         (h/text
-          (let [[p k] v
-                s (< 0 p)]
-            (if (uuid? k)
-              (pretty-uuid my-ark-record k)
-              k)))
-        ))
+          (selected-path-pretty my-ark-record selected-microp v))))
     "]"))

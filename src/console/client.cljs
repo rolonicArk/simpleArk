@@ -63,7 +63,7 @@
 
 (def selected-rolon (j/cell ""))
 (def alternate-rolon (j/cell ""))
-(def selected-microp (j/cell false))
+(def selected-microp (j/cell []))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
@@ -304,7 +304,7 @@
     (h/for-tpl
       [v
        (j/cell=
-         (if (= false selected-microp)
+         (if (= 0 (count selected-microp))
            []
            (map
              (fn [i] [i (nth selected-microp i)])

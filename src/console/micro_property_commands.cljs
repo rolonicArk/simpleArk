@@ -8,7 +8,7 @@
   []
   (h/div
     :css {:display "none"}
-    :toggle (j/cell= (not= false client/selected-microp))
+    :toggle (j/cell= (< 0 (count client/selected-microp)))
     (h/div
       (h/strong "Selected micro-property: ")
       (client/display-selected-path))))

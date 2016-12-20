@@ -269,34 +269,33 @@
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
-(defn output-path [ark-record path]
+(defn display-path [ark-record path add!]
   (let [fk (first path)
         rel (or
               (mapish/bi-rel? fk)
               (mapish/rel? fk)
               (mapish/inv-rel? fk))]
-    (add-output! "[")
+    (add! "[")
     (reduce
       (fn [space k]
-        (if space (add-output! ", "))
+        (if space (add! ", "))
         (if (uuid? k)
-          (add-output! (pretty-uuid ark-record k) (clickable-styles k) uuid-click (str k))
+          (add! (pretty-uuid ark-record k) (clickable-styles k) uuid-click (str k))
           (if (and space rel)
             (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
-              (add-output! (pretty-uuid ark-record je-uuid) (clickable-styles je-uuid) uuid-click (str je-uuid)))
-            (add-output! (pr-str k))))
+              (add! (pretty-uuid ark-record je-uuid) (clickable-styles je-uuid) uuid-click (str je-uuid)))
+            (add! (pr-str k))))
         true)
       false path)
-    (add-output! "]")))
+    (add! "]")))
 
-(defn path-str [ark-record path]
-  (str "["
-       (string/join ", " (map
-                           #(if (uuid? %)
-                              (pretty-uuid ark-record %)
-                              %)
-                           path))
-       "]"))
+(defn output-path!
+  [ark-record path]
+  (display-path ark-record path add-output!))
+
+(defn history-path!
+  [ark-record path]
+  (display-path ark-record path add-history!))
 
 (defn selected-path-space
   [v]

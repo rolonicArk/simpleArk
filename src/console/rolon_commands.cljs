@@ -13,7 +13,12 @@
   (if (< 1 @client/display-mode)
     (reset! client/display-mode 1))
   (reset! client/selected-microp arg)
-  )
+  (client/add-prompt)
+  (client/add-history! " ")
+  (client/add-history! "selected micro-property:" client/selection-style)
+  (client/add-history! " ")
+  (client/history-path! ark-record arg)
+  (client/add-history! "\n"))
 
 (defn list-current-micro-properties
   [ark-record]
@@ -30,7 +35,7 @@
       (fn [_ [path value]]
         (client/add-output! "=" micro-property-style micro-property-click path)
         (client/add-output! " ")
-        (client/output-path ark-record path)
+        (client/output-path! ark-record path)
         (client/add-output! " ")
         (client/add-output! (pr-str value))
         (client/add-output! "\n\n"))
@@ -52,7 +57,7 @@
       (fn [_ [path _]]
         (client/add-output! "=" micro-property-style micro-property-click path)
         (client/add-output! " ")
-        (client/output-path ark-record path)
+        (client/output-path! ark-record path)
         (client/add-output! "\n\n"))
       nil properties)
     ))
@@ -76,7 +81,7 @@
           (when (= k st)
             (client/add-output! "=" micro-property-style micro-property-click path)
             (client/add-output! " ")
-            (client/output-path ark-record path)
+            (client/output-path! ark-record path)
             (client/add-output! " ")
             (client/add-output! (pr-str v))
             (client/add-output! "\n\n"))))

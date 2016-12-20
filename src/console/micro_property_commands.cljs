@@ -20,5 +20,12 @@
                (reset! client/display-mode 0)
                (client/add-prompt)
                (client/add-history! ">")
+               (client/add-history! "clear micro-property selection\n" client/command-prefix-style)
                (reset! client/selected-microp []))
+      "clear micro-property selection")
+
+    (h/button
+      :css {:display "none" :background-color "MistyRose"}
+      :toggle (j/cell= (not= "" client/selected-rolon))
+      "list changes over time")
     ))

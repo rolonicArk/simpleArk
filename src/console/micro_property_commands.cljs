@@ -30,9 +30,18 @@
       (client/pretty-uuid ark-record uuid)
       (client/clickable-styles uuid)
       client/uuid-click
-      @client/selected-rolon))
-  (client/add-output! "\n\n")
-  )
+      @client/selected-rolon)
+    (client/add-output! "\n\n")
+    (reduce
+      (fn [_ [[ts] v]]
+        (client/add-output! (client/pretty-uuid
+                              ark-record
+                              (arkRecord/get-journal-entry-uuid ark-record ts)))
+        (client/add-output! " ")
+        (client/add-output! (pr-str v))
+        (client/add-output! "\n"))
+      nil changes)
+  ))
 
 (defn do-micro-property-commands
   []

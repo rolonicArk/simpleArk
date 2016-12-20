@@ -34,14 +34,17 @@
     (client/add-output! "\n\n")
     (reduce
       (fn [_ [[ts] v]]
-        (client/add-output! (client/pretty-uuid
-                              ark-record
-                              (arkRecord/get-journal-entry-uuid ark-record ts)))
-        (client/add-output! " ")
-        (client/add-output! (pr-str v))
-        (client/add-output! "\n"))
-      nil changes)
-  ))
+        (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record ts)]
+          (client/add-output! (client/pretty-uuid
+                                ark-record
+                                je-uuid)
+                              (client/clickable-styles uuid)
+                              client/uuid-click
+                              (str je-uuid))
+          (client/add-output! " ")
+          (client/add-output! (pr-str v))
+          (client/add-output! "\n")))
+      nil changes)))
 
 (defn do-micro-property-commands
   []

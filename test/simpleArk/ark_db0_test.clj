@@ -4,7 +4,7 @@
             [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.log :as log]
             [simpleArk.logt :as logt]
-            [simpleArk.uuid :as uuid]
+            [simpleArk.uuid :as suuid]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.ark-db0 :as ark-db0]
@@ -29,7 +29,7 @@
   [ark-db]
 
   #_(let [ark-value (ark-db/get-ark-record ark-db)]
-    (println :index.index-name (uuid/index-uuid ark-db :index/index.name))
+    (println :index.index-name (suuid/index-uuid ark-db :index/index.name))
     (println :empty-ark ark-value)
     (println :round-trp (reader/read-string ark-db (pr-str ark-value))))
   (println)
@@ -73,7 +73,7 @@
     (println)
     (println ">>>>>>>>>>>> make-bob")
     (println)
-    (def bob-uuid (uuid/random-uuid ark-db))
+    (def bob-uuid (suuid/random-uuid ark-db))
     (def make-bob-je-uuid
       (ark-db/process-transaction!
         ark-db
@@ -84,8 +84,8 @@
            {[:content/age]             8
             [:index/name]              "Bob"
             [:content/brothers "John"] true
-            [:content/brothers "Jeff"] true}])
-        ))
+            [:content/brothers "Jeff"] true}]))
+      )
     (is (= :transaction ((log/get-msg ark-db) 1)))
     (let [ark-value (ark-db/get-ark-record ark-db)]
       (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
@@ -136,7 +136,7 @@
     (println)
     (println ">>>>>>>>>>>> make-sam")
     (println)
-    (def sam-uuid (uuid/random-uuid ark-db))
+    (def sam-uuid (suuid/random-uuid ark-db))
     (def make-sam-je-uuid
       (ark-db/process-transaction!
         ark-db

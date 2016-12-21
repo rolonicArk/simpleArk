@@ -3,7 +3,7 @@
 #?(:clj
    (set! *warn-on-reflection* true))
 
-#?(:clj (defn debug [a] (println a))
+#?(:clj  (defn debug [a] (println a))
    :cljs (defn debug [a] (.log js/console (pr-str a))))
 
 (defn index?
@@ -34,13 +34,13 @@
 (defn validate-property-path
   [property-path]
   (let [kw (first property-path)]
-    (if (or (index? kw) (bi-rel? kw) (rel? kw) (inv-rel? kw))
-      (if (< 1 (count  property-path))
-        #?(:clj (throw (Exception. (str property-path " has too many elements for a classifier")))
-           :cljs (throw (str property-path " has too many elements for a classifier"))))
-      (if (not (content? kw))
-        #?(:clj (throw (Exception. (str property-path " is neither a classifier nor a descriptor")))
-           :cljs (throw (str property-path " is neither a classifier nor a descriptor")))))))
+    (if (index? kw)
+      (if (< 1 (count property-path))
+        #?(:clj  (throw (Exception. (str property-path " has too many elements for a classifier")))
+           :cljs (throw (str property-path " has too many elements for a classifier")))))
+    (if (not (or (index? kw) (bi-rel? kw) (rel? kw) (inv-rel? kw) (content? kw)))
+      #?(:clj  (throw (Exception. (str property-path " is neither a classifier nor a descriptor")))
+         :cljs (throw (str property-path " is neither a classifier nor a descriptor"))))))
 
 (defn validate-properties
   [properties]
@@ -50,8 +50,8 @@
                   v (val e)]
               (validate-property-path path)
               (if (and (or (bi-rel? kw) (rel? kw) (inv-rel? kw))
-                       (not (uuid? v)))
-                #?(:clj (throw (Exception. (str path " is not assigned a UUID")))
+                       (not (uuid? (nth path 1))))
+                #?(:clj  (throw (Exception. (str path " does not contain a UUID")))
                    :cljs (throw (str path " is not assigned a UUID"))))))
           nil
           (seq properties)))
@@ -75,7 +75,7 @@
               (if (nil? bi)
                 -1
                 r))
-            (recur (+  i 1))))))))
+            (recur (+ i 1))))))))
 
 (defn in-range [path stest spath etest epath]
   (let [sc (vec-comp path spath)

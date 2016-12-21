@@ -41,5 +41,35 @@
         [:index/name] "welcome-capability"
         [:index/capability.name] "welcome"}]))
 
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [profile-uuid
+       {[:index/headline] "create profile capability"}
+       {[:index/headline] "Profile Capability"
+        [:index/name] "profile-capability"
+        [:index/capability.name] "profile"}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [contacts-uuid
+       {[:index/headline] "create contacts capability"}
+       {[:index/headline] "Contacts Capability"
+        [:index/name] "contacts-capability"
+        [:index/capability.name] "contacts"}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [console-uuid
+       {[:index/headline] "create console capability"}
+       {[:index/headline] "Console Capability"
+        [:index/name] "console-capability"
+        [:index/capability.name] "console"}]))
+
   (console/update-ark-record! (ark-db/get-ark-record ark-db))
   )

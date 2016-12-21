@@ -31,6 +31,10 @@
 (def welcome-sam-uuid (suuid/random-uuid ark-db))
 (def welcome-kris-uuid (suuid/random-uuid ark-db))
 
+(def profile-fred-uuid (suuid/random-uuid ark-db))
+(def profile-sam-uuid (suuid/random-uuid ark-db))
+(def profile-kris-uuid (suuid/random-uuid ark-db))
+
 (defn initializer
   []
   (console/initializer)
@@ -57,7 +61,10 @@
        {[:index/headline] "create profile capability"}
        {[:index/headline] "Profile Capability"
         [:index/name] "profile-capability"
-        [:index/capability.name] "profile"}]))
+        [:index/capability.name] "profile"
+        [:rel/capability.use profile-fred-uuid] true
+        [:rel/capability.use profile-sam-uuid] true
+        [:rel/capability.use profile-kris-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -88,7 +95,8 @@
        {[:index/name] "user-Fred"
         [:index/user.name] "Fred"
         [:content/password] "fred"
-        [:rel/user.capability welcome-fred-uuid] true}]))
+        [:rel/user.capability welcome-fred-uuid] true
+        [:rel/user.capability profile-fred-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -105,12 +113,23 @@
     ark-db
     :ark/update-rolon-transaction!
     (prn-str
+      [profile-fred-uuid
+       {[:index/headline] "create profile-Fred"}
+       {[:index/name] "profile-Fred"
+        [:inv-rel/capability.use profile-uuid] true
+        [:inv-rel/user.capability fred-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
       [sam-uuid
        {[:index/headline] "create user Sam"}
        {[:index/name] "user-Sam"
         [:index/user.name] "Sam"
         [:content/password] "sam"
-        [:rel/user.capability welcome-sam-uuid] true}]))
+        [:rel/user.capability welcome-sam-uuid] true
+        [:rel/user.capability profile-sam-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -127,12 +146,23 @@
     ark-db
     :ark/update-rolon-transaction!
     (prn-str
+      [profile-sam-uuid
+       {[:index/headline] "create profile-Sam"}
+       {[:index/name] "profile-Sam"
+        [:inv-rel/capability.use profile-uuid] true
+        [:inv-rel/user.capability sam-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
       [kris-uuid
        {[:index/headline] "create user Kris"}
        {[:index/name] "user-Kris"
         [:index/user.name] "Kris"
         [:content/password] "kris"
-        [:rel/user.capability welcome-kris-uuid] true}]))
+        [:rel/user.capability welcome-kris-uuid] true
+        [:rel/user.capability profile-kris-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -144,6 +174,16 @@
         [:inv-rel/capability.use welcome-uuid] true
         [:inv-rel/user.capability kris-uuid] true
         [:content/full-name] "Kris Kringle"}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [profile-kris-uuid
+       {[:index/headline] "create profile-Kris"}
+       {[:index/name] "profile-Kris"
+        [:inv-rel/capability.use profile-uuid] true
+        [:inv-rel/user.capability kris-uuid] true}]))
 
   (console/update-ark-record! (ark-db/get-ark-record ark-db))
   )

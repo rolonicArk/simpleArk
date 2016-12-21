@@ -28,6 +28,8 @@
 (def kris-uuid (suuid/random-uuid ark-db))
 
 (def welcome-fred-uuid (suuid/random-uuid ark-db))
+(def welcome-sam-uuid (suuid/random-uuid ark-db))
+(def welcome-kris-uuid (suuid/random-uuid ark-db))
 
 (defn initializer
   []
@@ -43,7 +45,9 @@
        {[:index/headline] "Welcome Capability"
         [:index/name] "welcome-capability"
         [:index/capability.name] "welcome"
-        [:rel/capability.use welcome-fred-uuid] true}]))
+        [:rel/capability.use welcome-fred-uuid] true
+        [:rel/capability.use welcome-sam-uuid] true
+        [:rel/capability.use welcome-kris-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -96,6 +100,50 @@
         [:inv-rel/capability.use welcome-uuid] true
         [:inv-rel/user.capability fred-uuid] true
         [:content/full-name] "Freddy Krueger"}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [sam-uuid
+       {[:index/headline] "create user Sam"}
+       {[:index/name] "user-Sam"
+        [:index/user.name] "Sam"
+        [:content/password] "sam"
+        [:rel/user.capability welcome-sam-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [welcome-sam-uuid
+       {[:index/headline] "create welcome-Sam"}
+       {[:index/name] "welcome-Sam"
+        [:inv-rel/capability.use welcome-uuid] true
+        [:inv-rel/user.capability sam-uuid] true
+        [:content/full-name] "Sam I Am"}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [kris-uuid
+       {[:index/headline] "create user Kris"}
+       {[:index/name] "user-Kris"
+        [:index/user.name] "Kris"
+        [:content/password] "kris"
+        [:rel/user.capability welcome-kris-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [welcome-kris-uuid
+       {[:index/headline] "create welcome-Kris"}
+       {[:index/name] "welcome-Kris"
+        [:inv-rel/capability.use welcome-uuid] true
+        [:inv-rel/user.capability kris-uuid] true
+        [:content/full-name] "Kris Kringle"}]))
 
   (console/update-ark-record! (ark-db/get-ark-record ark-db))
   )

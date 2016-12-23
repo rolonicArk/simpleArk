@@ -21,16 +21,13 @@
 
 (defn hello-transaction
   [ark-db name]
-  (ark-db/process-transaction!
-    ark-db
-    :actions-transaction!
-    (pr-str
-      [
-       {}
-       (-> []
-           (builder/build-println (str "Hello " name "!"))
-           (builder/build-je-property [:index/headline] "Just for fun!"))])
-    ))
+  (builder/transaction!
+    ark-db {}
+    (-> []
+        (builder/build-println
+          (str "Hello " name "!"))
+        (builder/build-je-property
+          [:index/headline] "Just for fun!"))))
 
 (defn test0
   [ark-db]

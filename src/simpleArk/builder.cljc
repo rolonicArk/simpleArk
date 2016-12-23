@@ -1,4 +1,8 @@
-(ns simpleArk.builder)
+(ns simpleArk.builder
+  (:require #?(:clj
+                [simpleArk.ark-db :as ark-db]
+               :cljs
+               [tiples.client :as tiples])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -14,3 +18,18 @@
 (defn build-println
   [actions s]
   (conj actions [:println s]))
+
+#?(:clj
+   (defn transaction!
+     [ark-db local actions]
+     (ark-db/process-transaction!
+       ark-db
+       :actions-transaction!
+       (pr-str [local actions])))
+   :cljs
+   (defn transaction!
+     [local actions]
+     (tiples/chsk-send!
+       [:console/process-transaction
+        {:tran-keyword :actions-transaction!
+         :tran-data (pr-str [local actions])}])))

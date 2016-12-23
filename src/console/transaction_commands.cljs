@@ -6,21 +6,14 @@
     [console.client :as client]
     [simpleArk.builder :as builder]))
 
-(defn fred []
-  (tiples/chsk-send!
-    (let [name "Fred"]
-      [:console/process-transaction
-       {:tran-keyword
-        :actions-transaction!
-        :tran-data
-        (pr-str
-          [
-           {}
-           (-> []
-               (builder/build-println
-                 (str "Hello " name "!"))
-               (builder/build-je-property
-                 [:index/headline] "Just for fun!"))])}])))
+(defn hello [name]
+  (builder/transaction!
+    {}
+    (-> []
+        (builder/build-println
+          (str "Hello " name "!"))
+        (builder/build-je-property
+          [:index/headline] "Just for fun!"))))
 
 (defn make-bob []
   (tiples/chsk-send!
@@ -55,7 +48,7 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "Hello Fred transaction\n" client/command-prefix-style)
-               (fred))
+               (hello "Fred"))
       :href ""
       "Hello Fred")
 
@@ -90,9 +83,9 @@
                (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
       "Trouble!")
 
-  (h/div
-    :style "color:red"
-    (h/p (h/text (if client/transaction-error
-                   (str "Error: " client/transaction-error-msg)
-                   "")))))
+    (h/div
+      :style "color:red"
+      (h/p (h/text (if client/transaction-error
+                     (str "Error: " client/transaction-error-msg)
+                     "")))))
   )

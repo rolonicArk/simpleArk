@@ -19,6 +19,10 @@
   [actions s]
   (conj actions [:println s]))
 
+(defn build-gen-uuid
+  [actions s]
+  (conj actions [:gen-uuid s]))
+
 (defn build-invalid
   [actions]
   (conj actions [:invalid]))

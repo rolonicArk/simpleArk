@@ -29,6 +29,25 @@
         (builder/build-je-property
           [:index/headline] "Just for fun!"))))
 
+(defn make-bob-transaction
+  [ark-db]
+  (builder/transaction!
+    ark-db {}
+    (-> []
+        (builder/build-je-property
+          [:index/headline] "make bob")
+        (builder/build-gen-uuid
+          :local/bob-uuid)
+        (builder/build-property
+          :local/bob-uuid [:content/age] 8)
+        (builder/build-property
+          :local/bob-uuid [:index/name] "Bob")
+        (builder/build-property
+          :local/bob-uuid [:content/brothers "John"] true)
+        (builder/build-property
+          :local/bob-uuid [:content/brothers "Jeff"] true)
+        )))
+
 (defn test0
   [ark-db]
 
@@ -59,6 +78,25 @@
                         ark-record
                         headline-index-uuid)]
     (doall (map #(println (first %)) content-index)))
+
+  (println)
+  (println ">>>>>>>>>>>> make-bob")
+  (println)
+
+  (def make-bob-je-uuid
+    (make-bob-transaction ark-db))
+
+  (is (= :transaction ((log/get-msg ark-db) 1)))
+  (let [ark-value (ark-db/get-ark-record ark-db)]
+    (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
+    (println :inv-rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
+    #_(println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
+    (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
+    #_(println :brothers
+             (mapish/mi-sub
+               (arkRecord/get-property-values ark-value bob-uuid)
+               [:content/brothers])))
+
   )
 
 (deftest arks

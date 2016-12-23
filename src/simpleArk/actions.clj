@@ -3,7 +3,8 @@
             [simpleArk.ark-value :as ark-value]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
-            [simpleArk.ark-db :as ark-db]))
+            [simpleArk.ark-db :as ark-db]
+            [simpleArk.uuid :as suuid]))
 
 (set! *warn-on-reflection* true)
 
@@ -37,12 +38,20 @@
   (let [s (pr-str [local actions])]
     (ark-db/process-transaction! ark-db :actions-transaction! s)))
 
+(defn fetch
+  [local s]
+  (if (and (keyword? s) (= "local" (namespace s)))
+    (s local)
+    s))
+
 (defmethod action :property
   [[local ark-record] ark-db [kw rolon-uuid path value]]
   (let [rolon-uuid
         (if (= :je rolon-uuid)
           (arkRecord/get-latest-journal-entry-uuid ark-record)
-          rolon-uuid)
+          (fetch local rolon-uuid))
+        path (fetch local path)
+        value (fetch local value)
         ark-record
         (if (arkRecord/get-rolon ark-record rolon-uuid)
           ark-record
@@ -53,12 +62,17 @@
         ark-record (ark-value/update-property ark-record ark-db rolon-uuid path value)]
     [local ark-record]))
 
+(defmethod action :gen-uuid
+  [[local ark-record] ark-db [kw s]]
+  (let [local (assoc local s (suuid/random-uuid ark-db))]
+    [local ark-record]))
+
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]
-  (println s)
+  (println (fetch local s))
   [local ark-record])
 
 (defmethod action :exception
   [[local ark-record] ark-db [kw s]]
   (println "throwing exception")
-  (throw (Exception. s)))
+  (throw (new Exception (fetch local s))))

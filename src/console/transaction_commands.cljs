@@ -15,21 +15,26 @@
         (builder/build-je-property
           [:index/headline] "Just for fun!"))))
 
-(defn make-bob []
-  (tiples/chsk-send!
-    [:console/process-transaction
-     {:tran-keyword
-      :ark/update-rolon-transaction!
-      :tran-data
-      (prn-str
-        [nil
-         {[:index/headline] "make bob"}
-         {[:content/age]             8
-          [:index/name]              "Bob"
-          [:index/headline]          "First application Rolon"
-          [:content/brothers "John"] true
-          [:content/brothers "Jeff"] true}])
-      }]))
+(defn make-bob-transaction
+  []
+  (builder/transaction!
+    {}
+    (-> []
+        (builder/build-je-property
+          [:index/headline] "make bob")
+        (builder/build-gen-uuid
+          :local/bob-uuid)
+        (builder/build-property
+          :local/bob-uuid [:index/headline] "First application Rolon")
+        (builder/build-property
+          :local/bob-uuid [:content/age] 8)
+        (builder/build-property
+          :local/bob-uuid [:index/name] "Bob")
+        (builder/build-property
+          :local/bob-uuid [:content/brothers "John"] true)
+        (builder/build-property
+          :local/bob-uuid [:content/brothers "Jeff"] true)
+        )))
 
 (defn invalid []
   (builder/transaction!
@@ -69,7 +74,7 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "Make Bob transaction\n" client/command-prefix-style)
-               (make-bob))
+               (make-bob-transaction))
       :href ""
       "Make Bob")
 

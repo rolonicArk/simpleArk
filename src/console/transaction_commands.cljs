@@ -3,10 +3,24 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [tiples.client :as tiples]
-    [console.client :as client]))
+    [console.client :as client]
+    [simpleArk.builder :as builder]))
 
 (defn fred []
-  (tiples/chsk-send! [:console/process-transaction {:tran-keyword :hello-world! :tran-data "Fred"}]))
+  (tiples/chsk-send!
+    (let [name "Fred"]
+      [:console/process-transaction
+       {:tran-keyword
+        :actions-transaction!
+        :tran-data
+        (pr-str
+          [
+           {}
+           (-> []
+               (builder/build-println
+                 (str "Hello " name "!"))
+               (builder/build-je-property
+                 [:index/headline] "Just for fun!"))])}])))
 
 (defn make-bob []
   (tiples/chsk-send!

@@ -53,14 +53,14 @@
   (validate-properties (new-MI-map
                          [:index/x] 1
                          [:content/y] "fred"
-                         [:bi-rel/fun] uuid0
-                         [:rel/larger] uuid0
-                         [:inv-rel/larger] uuid0))
+                         [:bi-rel/fun uuid0] true
+                         [:rel/larger uuid0] true
+                         [:inv-rel/larger uuid0] true))
   (is (thrown? Exception (validate-properties (new-MI-map :index/x 2))))
   (is (thrown? Exception (validate-properties (new-MI-map [1] 2))))
-  (is (thrown? Exception (validate-properties (new-MI-map [:bi-rel/fun] 2))))
-  (is (thrown? Exception (validate-properties (new-MI-map [:rel/larger] 2))))
-  (is (thrown? Exception (validate-properties (new-MI-map [:inv-rel/larger] 2))))
+  (is (thrown? Exception (validate-properties (new-MI-map [:bi-rel/fun 2] true))))
+  (is (thrown? Exception (validate-properties (new-MI-map [:rel/larger 2] true))))
+  (is (thrown? Exception (validate-properties (new-MI-map [:inv-rel/larger 2] true))))
 
   (println (sorted-set-by vec-comp a b c d e f))
   (println sm0)

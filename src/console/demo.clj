@@ -35,6 +35,12 @@
 (def profile-sam-uuid (suuid/random-uuid ark-db))
 (def profile-kris-uuid (suuid/random-uuid ark-db))
 
+(def contacts-fred-uuid (suuid/random-uuid ark-db))
+(def contacts-sam-uuid (suuid/random-uuid ark-db))
+
+(def console-fred-uuid (suuid/random-uuid ark-db))
+(def console-sam-uuid (suuid/random-uuid ark-db))
+
 (defn initializer
   []
   (console/initializer)
@@ -74,7 +80,9 @@
        {[:index/headline] "create contacts capability"}
        {[:index/headline] "Contacts Capability"
         [:index/name] "contacts-capability"
-        [:index/capability.name] "contacts"}]))
+        [:index/capability.name] "contacts"
+        [:rel/capability.use contacts-fred-uuid] true
+        [:rel/capability.use contacts-sam-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -84,7 +92,9 @@
        {[:index/headline] "create console capability"}
        {[:index/headline] "Console Capability"
         [:index/name] "console-capability"
-        [:index/capability.name] "console"}]))
+        [:index/capability.name] "console"
+        [:rel/capability.use console-fred-uuid] true
+        [:rel/capability.use console-sam-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -96,7 +106,9 @@
         [:index/user.name] "Fred"
         [:content/password] "fred"
         [:rel/user.capability welcome-fred-uuid] true
-        [:rel/user.capability profile-fred-uuid] true}]))
+        [:rel/user.capability profile-fred-uuid] true
+        [:rel/user.capability contacts-fred-uuid] true
+        [:rel/user.capability console-fred-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -123,13 +135,35 @@
     ark-db
     :ark/update-rolon-transaction!
     (prn-str
+      [contacts-fred-uuid
+       {[:index/headline] "create contacts-Fred"}
+       {[:index/name] "contacts-Fred"
+        [:inv-rel/capability.use contacts-uuid] true
+        [:inv-rel/user.capability fred-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [console-fred-uuid
+       {[:index/headline] "create console-Fred"}
+       {[:index/name] "console-Fred"
+        [:inv-rel/capability.use console-uuid] true
+        [:inv-rel/user.capability fred-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
       [sam-uuid
        {[:index/headline] "create user Sam"}
        {[:index/name] "user-Sam"
         [:index/user.name] "Sam"
         [:content/password] "sam"
         [:rel/user.capability welcome-sam-uuid] true
-        [:rel/user.capability profile-sam-uuid] true}]))
+        [:rel/user.capability profile-sam-uuid] true
+        [:rel/user.capability contacts-sam-uuid] true
+        [:rel/user.capability console-sam-uuid] true}]))
 
   (ark-db/process-transaction!
     ark-db
@@ -150,6 +184,26 @@
        {[:index/headline] "create profile-Sam"}
        {[:index/name] "profile-Sam"
         [:inv-rel/capability.use profile-uuid] true
+        [:inv-rel/user.capability sam-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [contacts-sam-uuid
+       {[:index/headline] "create contacts-Sam"}
+       {[:index/name] "contacts-Sam"
+        [:inv-rel/capability.use contacts-uuid] true
+        [:inv-rel/user.capability sam-uuid] true}]))
+
+  (ark-db/process-transaction!
+    ark-db
+    :ark/update-rolon-transaction!
+    (prn-str
+      [console-sam-uuid
+       {[:index/headline] "create console-Sam"}
+       {[:index/name] "console-Sam"
+        [:inv-rel/capability.use console-uuid] true
         [:inv-rel/user.capability sam-uuid] true}]))
 
   (ark-db/process-transaction!

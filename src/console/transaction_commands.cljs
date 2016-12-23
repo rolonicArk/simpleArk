@@ -31,6 +31,11 @@
           [:content/brothers "Jeff"] true}])
       }]))
 
+(defn invalid []
+  (builder/transaction!
+    {}
+    (builder/build-invalid [])))
+
 (defn do-transaction-commands
   []
   (h/div
@@ -70,7 +75,7 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "Invalid!\n" client/command-prefix-style)
-               (tiples/chsk-send! [:console/process-transaction {:tran-keyword :invalid :tran-data ""}]))
+               (invalid))
       "Invalid!")
 
     (h/button

@@ -19,6 +19,10 @@
   [actions s]
   (conj actions [:println s]))
 
+(defn build-invalid
+  [actions]
+  (conj actions [:invalid]))
+
 #?(:clj
    (defn transaction!
      [ark-db local actions]

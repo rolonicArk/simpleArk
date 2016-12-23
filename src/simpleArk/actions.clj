@@ -20,11 +20,15 @@
   [local ark-record ark-db actions]
   (if (nil? actions)
     [local ark-record]
-    (let [[local ark-record] (action local ark-record ark-db (first v))]
-      (recur local ark-record (next actions)))))
+    (let [[local ark-record] (action local ark-record ark-db (first actions))]
+      (recur local ark-record ark-db (next actions)))))
 
-(defmethod update-property-action
-  :property
+(defmethod ark-value/eval-transaction :actions-transaction!
+  [ark-record ark-db n s]
+  (let [[local actions] (read-string s)]
+    (second (eval-actions local ark-record ark-db actions))))
+
+(defmethod action :property
   [local ark-record ark-db [kw rolon-uuid path value]]
   (let [ark-record
         (if (arkRecord/get-rolon ark-record rolon-uuid)
@@ -39,5 +43,3 @@
 (defn build-property
   [actions rolon-uuid path value]
   (conj actions [(first path) rolon-uuid path value]))
-
-

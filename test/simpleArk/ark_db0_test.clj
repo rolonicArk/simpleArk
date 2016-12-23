@@ -14,7 +14,7 @@
             [simpleArk.miMap :as miMap]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
-            ))
+            [simpleArk.actions]))
 
 (set! *warn-on-reflection* true)
 

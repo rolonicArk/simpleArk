@@ -14,7 +14,8 @@
             [simpleArk.miMap :as miMap]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
-            [simpleArk.actions :as actions]))
+            [simpleArk.actions]
+            [simpleArk.builder :as builder]))
 
 (set! *warn-on-reflection* true)
 
@@ -27,8 +28,9 @@
       [
        {}
        (-> []
-           (actions/build-println (str "Hello " name "!"))
-           (actions/build-je-property [:index/headline] "Just for fun!"))])))
+           (builder/build-println (str "Hello " name "!"))
+           (builder/build-je-property [:index/headline] "Just for fun!"))])
+    ))
 
 (defn test0
   [ark-db]

@@ -53,19 +53,7 @@
         ark-record (ark-value/update-property ark-record ark-db rolon-uuid path value)]
     [local ark-record]))
 
-(defn build-property
-  [actions rolon-uuid path value]
-  (conj actions [(first path) rolon-uuid path value]))
-
-(defn build-je-property
-  [actions path value]
-  (conj actions [(first path) :je path value]))
-
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]
   (println s)
   [local ark-record])
-
-(defn build-println
-  [actions s]
-  (conj actions [:println s]))

@@ -2,7 +2,8 @@
   (:require [simpleArk.mapish :as mapish]
             [simpleArk.ark-value :as ark-value]
             [simpleArk.arkRecord :as arkRecord]
-            [simpleArk.rolonRecord :as rolonRecord]))
+            [simpleArk.rolonRecord :as rolonRecord]
+            [simpleArk.ark-db :as ark-db]))
 
 (defmulti
   action
@@ -27,6 +28,10 @@
   [ark-record ark-db n s]
   (let [[local actions] (read-string s)]
     (second (eval-actions local ark-record ark-db actions))))
+
+  [ark-db local actions]
+  (let [s (pr-str [local actions])]
+    (ark-db/process-transaction! ark-db :actions-transaction! s)))
 
 (defmethod action :property
   [local ark-record ark-db [kw rolon-uuid path value]]

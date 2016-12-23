@@ -16,11 +16,11 @@
         (mapish/bi-rel? kw) :relation
         :else kw))))
 
-(defn action-eval
+(defn eval-actions
   [local ark-record ark-db actions]
   (if (nil? actions)
     [local ark-record]
-    (let [[local ark-record] (action ark-record (first v))]
+    (let [[local ark-record] (action local ark-record ark-db (first v))]
       (recur local ark-record (next actions)))))
 
 (defmethod update-property-action
@@ -36,8 +36,8 @@
         ark-record (ark-value/update-property ark-record ark-db rolon-uuid path value)]
     [local ark-record]))
 
-(defn update-property
-  [local ark-record ark-db rolon-uuid path value]
-  (action-eval local ark-record ark-db [(first path) rolon-uuid path value]))
+(defn build-property
+  [actions rolon-uuid path value]
+  (conj actions [(first path) rolon-uuid path value]))
 
 

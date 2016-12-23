@@ -5,9 +5,11 @@
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.ark-db :as ark-db]))
 
+(set! *warn-on-reflection* true)
+
 (defmulti
   action
-  (fn [local ark-record ark-db v]
+  (fn [state ark-db v]
     (let [kw (first v)]
       (cond
         (mapish/index? kw) :property
@@ -18,16 +20,17 @@
         :else kw))))
 
 (defn eval-actions
-  [local ark-record ark-db actions]
-  (if (nil? actions)
-    [local ark-record]
-    (let [[local ark-record] (action local ark-record ark-db (first actions))]
-      (recur local ark-record ark-db (next actions)))))
+  [state ark-db actions]
+  (reduce
+    (fn [state v]
+      (action state ark-db v))
+    state
+    actions))
 
 (defmethod ark-value/eval-transaction :actions-transaction!
   [ark-record ark-db n s]
   (let [[local actions] (read-string s)]
-    (second (eval-actions local ark-record ark-db actions))))
+    (second (eval-actions [local ark-record] ark-db actions))))
 
 (defn process-actions!
   [ark-db local actions]
@@ -35,7 +38,7 @@
     (ark-db/process-transaction! ark-db :actions-transaction! s)))
 
 (defmethod action :property
-  [local ark-record ark-db [kw rolon-uuid path value]]
+  [[local ark-record] ark-db [kw rolon-uuid path value]]
   (let [rolon-uuid
         (if (= :je rolon-uuid)
           (arkRecord/get-latest-journal-entry-uuid ark-record)
@@ -57,3 +60,12 @@
 (defn build-je-property
   [actions path value]
   (conj actions [(first path) :je path value]))
+
+(defmethod action :println
+  [[local ark-record] ark-db [kw s]]
+  (println s)
+  [local ark-record])
+
+(defn build-println
+  [actions s]
+  (conj actions [:println s]))

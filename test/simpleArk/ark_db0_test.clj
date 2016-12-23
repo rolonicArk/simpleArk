@@ -56,7 +56,7 @@
         content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (mapish/debug [:content content-index])
+    ;(mapish/debug [:content content-index])
     (doall (map #(println (first %)) content-index)))
 
   (println)

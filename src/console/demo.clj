@@ -5,11 +5,6 @@
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.uuid :as suuid]))
 
-(defmethod ark-value/eval-transaction :trouble!
-  [ark-value ark-db n s]
-  (println "throwing exception")
-  (throw (new IllegalArgumentException "A troublesome transaction")))
-
 (def ark-db console/ark-db)
 
 (def welcome-uuid (suuid/random-uuid ark-db))

@@ -57,3 +57,8 @@
   [[local ark-record] ark-db [kw s]]
   (println s)
   [local ark-record])
+
+(defmethod action :exception
+  [[local ark-record] ark-db [kw s]]
+  (println "throwing exception")
+  (throw (Exception. s)))

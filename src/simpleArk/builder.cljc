@@ -23,6 +23,10 @@
   [actions]
   (conj actions [:invalid]))
 
+(defn build-exception
+  [actions msg]
+  (conj actions [:exception msg]))
+
 #?(:clj
    (defn transaction!
      [ark-db local actions]

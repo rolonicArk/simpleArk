@@ -36,6 +36,11 @@
     {}
     (builder/build-invalid [])))
 
+(defn trouble [msg]
+  (builder/transaction!
+    {}
+    (builder/build-exception [] msg)))
+
 (defn do-transaction-commands
   []
   (h/div
@@ -85,7 +90,7 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "Trouble!\n" client/command-prefix-style)
-               (tiples/chsk-send! [:console/process-transaction {:tran-keyword :trouble! :tran-data ""}]))
+               (trouble "A troublesome transaction"))
       "Trouble!")
 
     (h/div

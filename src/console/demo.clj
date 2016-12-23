@@ -10,12 +10,6 @@
   (println "throwing exception")
   (throw (new IllegalArgumentException "A troublesome transaction")))
 
-(defmethod ark-value/eval-transaction :hello-world!
-  [ark-value ark-db n s]
-  (println "Hello," s)
-  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)]
-    (ark-value/update-property ark-value ark-db je-uuid [:index/headline] "Just for fun!")))
-
 (def ark-db console/ark-db)
 
 (def welcome-uuid (suuid/random-uuid ark-db))

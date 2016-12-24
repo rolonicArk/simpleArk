@@ -81,6 +81,13 @@
         ]
     [local ark-record]))
 
+(defmethod action :read-index-uuid
+  [[local ark-record] ark-db [kw local-kw index-kw]]
+  (let [index-kw (fetch local index-kw)
+        index-uuid (arkRecord/get-index-uuid ark-record (name index-kw))
+        local (assoc local local-kw index-uuid)]
+    [local ark-record]))
+
 (defmethod action :gen-uuid
   [[local ark-record] ark-db [kw s]]
   (let [local (assoc local s (suuid/random-uuid ark-db))]

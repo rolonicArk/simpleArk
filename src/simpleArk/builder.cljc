@@ -19,13 +19,17 @@
   [actions kw uuid-a uuid-b]
   (conj actions [kw uuid-a uuid-b]))
 
-(defn build-println
-  [actions s]
-  (conj actions [:println s]))
+(defn build-read-index-uuid
+  [actions local-kw index-kw]
+  (conj actions [:read-index-uuid local-kw index-kw]))
 
 (defn build-gen-uuid
   [actions s]
   (conj actions [:gen-uuid s]))
+
+(defn build-println
+  [actions s]
+  (conj actions [:println s]))
 
 (defn build-invalid
   [actions]

@@ -44,6 +44,15 @@
     (s local)
     s))
 
+(defn make-rolon
+  [ark-record rolon-uuid]
+  (if (arkRecord/get-rolon ark-record rolon-uuid)
+    ark-record
+    (ark-value/assoc-rolon
+      ark-record
+      rolon-uuid
+      (rolonRecord/->Rolon-record rolon-uuid))))
+
 (defmethod action :property
   [[local ark-record] ark-db [kw rolon-uuid path value]]
   (let [rolon-uuid
@@ -52,14 +61,24 @@
           (fetch local rolon-uuid))
         path (fetch local path)
         value (fetch local value)
-        ark-record
-        (if (arkRecord/get-rolon ark-record rolon-uuid)
-          ark-record
-          (ark-value/assoc-rolon
-            ark-record
-            rolon-uuid
-            (rolonRecord/->Rolon-record rolon-uuid)))
+        ark-record (make-rolon ark-record rolon-uuid)
         ark-record (ark-value/update-property ark-record ark-db rolon-uuid path value)]
+    [local ark-record]))
+
+(defmethod action :relation
+  [[local ark-record] ark-db [kw uuid-a uuid-b]]
+  (let [uuid-a (fetch local uuid-a)
+        uuid-b (fetch local uuid-b)
+        kw-name (name kw)
+        inv-kw (cond
+                 (mapish/rel? kw) (keyword "inv-rel" kw-name)
+                 (mapish/inv-rel? kw) (keyword "rel" kw-name)
+                 :else kw)
+        ark-record (make-rolon ark-record uuid-a)
+        ark-record (make-rolon ark-record uuid-b)
+        ark-record (ark-value/update-property ark-record ark-db uuid-a [kw uuid-b] true)
+        ark-record (ark-value/update-property ark-record ark-db uuid-b [inv-kw uuid-a] true)
+        ]
     [local ark-record]))
 
 (defmethod action :gen-uuid

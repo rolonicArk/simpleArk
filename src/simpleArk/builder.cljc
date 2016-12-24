@@ -15,6 +15,10 @@
   [actions path value]
   (conj actions [(first path) :je path value]))
 
+(defn build-relation
+  [actions kw uuid-a uuid-b]
+  (conj actions [kw uuid-a uuid-b]))
+
 (defn build-println
   [actions s]
   (conj actions [:println s]))

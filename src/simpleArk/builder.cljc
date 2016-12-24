@@ -19,9 +19,9 @@
   [actions kw uuid-a uuid-b]
   (conj actions [kw uuid-a uuid-b]))
 
-(defn build-read-index-uuid
-  [actions local-kw index-kw]
-  (conj actions [:read-index-uuid local-kw index-kw]))
+(defn build-locate-first-uuid
+  [actions local-kw index-kw value]
+  (conj actions [:read-index-uuid local-kw index-kw value]))
 
 (defn build-gen-uuid
   [actions s]

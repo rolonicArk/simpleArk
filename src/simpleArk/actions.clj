@@ -81,11 +81,15 @@
         ]
     [local ark-record]))
 
-(defmethod action :read-index-uuid
-  [[local ark-record] ark-db [kw local-kw index-kw]]
+(defmethod action :locate-first-uuid
+  [[local ark-record] ark-db [kw local-kw index-kw value]]
   (let [index-kw (fetch local index-kw)
+        value (fetch local value)
         index-uuid (arkRecord/get-index-uuid ark-record (name index-kw))
-        local (assoc local local-kw index-uuid)]
+        rolon-uuid (if (nil? index-uuid)
+                            nil
+                            (first (arkRecord/index-lookup ark-record index-uuid value)))
+        local (assoc local local-kw rolon-uuid)]
     [local ark-record]))
 
 (defmethod action :gen-uuid

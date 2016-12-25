@@ -103,7 +103,7 @@
     (builder/transaction!
       ark-db {}
       (-> []
-          (demo-builds/build-capabilities)
+          (demo-builds/build-demo)
           (builder/build-println :local)
           ))))
 

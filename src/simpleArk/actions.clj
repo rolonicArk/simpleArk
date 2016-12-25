@@ -99,10 +99,12 @@
 
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]
-  (println (fetch local s))
+  (if (= :local s)
+    (println (pr-str local))
+    (println (fetch local s)))
   [local ark-record])
 
 (defmethod action :exception
   [[local ark-record] ark-db [kw s]]
   (println "throwing exception")
-  (throw (new Exception (fetch local s))))
+  (throw (Exception. (str (fetch local s)))))

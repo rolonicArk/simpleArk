@@ -15,7 +15,9 @@
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.actions]
-            [simpleArk.builder :as builder]))
+            [simpleArk.builder :as builder]
+            [console.demo-builds :as demo-builds]
+            ))
 
 (set! *warn-on-reflection* true)
 
@@ -46,7 +48,8 @@
           :local/bob-uuid [:content/brothers "John"] true)
         (builder/build-property
           :local/bob-uuid [:content/brothers "Jeff"] true)
-        )))
+        ))
+  )
 
 (defn test0
   [ark-db]
@@ -56,7 +59,7 @@
   (println)
 
   (def hello-je-uuid
-      (hello-transaction ark-db "Fred"))
+    (hello-transaction ark-db "Fred"))
 
   (println)
   (println ">>>>>>>>>>>> transaction names")
@@ -90,14 +93,19 @@
   (let [ark-value (ark-db/get-ark-record ark-db)]
     (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
     (println :inv-rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
-    #_(println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
-    (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
-    #_(println :brothers
-             (mapish/mi-sub
-               (arkRecord/get-property-values ark-value bob-uuid)
-               [:content/brothers])))
+    (println :lookup-bob (arkRecord/name-lookup ark-value "Bob")))
 
-  )
+  (println)
+  (println ">>>>>>>>>>>> make demo")
+  (println)
+
+  (def make-demo-uuid
+    (builder/transaction!
+      ark-db {}
+      (-> []
+          (demo-builds/build-capabilities)
+          (builder/build-println :local)
+          ))))
 
 (deftest arks
   (println "action tests")

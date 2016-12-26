@@ -15,6 +15,13 @@
         (builder/build-property capability-kw [:index/capability-name] capability)
         (builder/build-property capability-kw [:index/headline] (str  "capability " capability)))))
 
+(defn add-contact
+  [actions contact]
+  (builder/build-property actions
+                          :local/contacts-capability
+                          (into [:content/contact] contact)
+                          true))
+
 (defn build-user
   [actions user password]
   (let [user-kw (keyword "local" (str user "-user"))]
@@ -44,6 +51,12 @@
       (build-capability "welcome")
       (build-capability "profile")
       (build-capability "contacts")
+      (add-contact [:first "Ben" :last "Bitdiddle" :email "benb@mit.edu"])
+      (add-contact [:first "Alyssa" :middle-initial "P" :last "Hacker" :email "aphacker@mit.edu"])
+      (add-contact [:first "Eva" :middle "Lu" :last "Ator" :email "eval@mit.edu"])
+      (add-contact [:first "Louis" :last "Reasoner" :email "prolog@mit.edu"])
+      (add-contact [:first "Cy" :middle-initial "D" :last "Effect" :email "bugs@mit.edu"])
+      (add-contact [:first "Lem" :middle-initial "E" :last "Tweakit" :email "morebugs@mit.edu"])
       (build-capability "console")
       (build-user "Fred" "fred")
       (build-user-capability "Fred" "welcome")

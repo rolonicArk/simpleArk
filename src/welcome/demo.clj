@@ -9,17 +9,17 @@
             [welcome.demo-builds :as demo-builds]
             [simpleArk.actions]))
 
-(users/add-user! "Fred" "fred" {:welcome {:full-name "Freddy Krueger"}
+(users/add-user! "Fred" {:welcome {:full-name "Freddy Krueger"}
                                 :profile {}
                                 :contacts {}
                                 :console {}
                                 })
-(users/add-user! "Sam" "sam" {:welcome {:full-name "Sam I Am"}
+(users/add-user! "Sam" {:welcome {:full-name "Sam I Am"}
                               :profile {}
                               :contacts {}
                               :console {}
                               })
-(users/add-user! "Kris" "kris" {:welcome {:full-name "Kris Kringle"}
+(users/add-user! "Kris" {:welcome {:full-name "Kris Kringle"}
                                 :profile {}})
 
 (users/add-capability :welcome)
@@ -27,10 +27,10 @@
 (users/add-capability :contacts)
 (users/add-capability :console)
 
-(ark-db/open-ark! console/ark-db)
+(ark-db/open-ark! users/ark-db)
 
 (builder/transaction!
-  console/ark-db
+  users/ark-db
   {}
   (-> []
       (builder/build-je-property [:index/headline] "Build demo data")
@@ -39,6 +39,6 @@
 
 (console/initializer)
 
-(console/update-ark-record! (ark-db/get-ark-record console/ark-db))
+(console/update-ark-record! (ark-db/get-ark-record users/ark-db))
 
 (def handler tiples/routes)

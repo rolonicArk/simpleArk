@@ -1,6 +1,24 @@
 (ns tiples.users
   (:require [tiples.server :as tiples]
-            [com.rpl.specter :as s]))
+            [com.rpl.specter :as s]
+            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkRecord :as arkRecord]
+            [simpleArk.reader :as reader]
+            [simpleArk.logt :as logt]
+            [simpleArk.ark-db0 :as ark-db0]
+            [simpleArk.ark-value0 :as ark-value0]
+            [simpleArk.uuidi :as uuidi]
+            [simpleArk.closer :as closer]))
+
+(def ark-db ((comp
+               (ark-db/builder)
+               (ark-db0/builder)
+               (ark-value0/builder)
+               (uuidi/builder)
+               (closer/builder)
+               (logt/builder)
+               (reader/builder))
+              {}))
 
 (def capabilities (atom []))
 
@@ -11,24 +29,17 @@
   (if (= -1 (.indexOf @capabilities capability))
     (swap! capabilities conj capability)))
 
-(defrecord user [name password user-data])
+(defrecord user [name user-data])
 
 (def users (atom (sorted-map)))
 
 (defn add-user!
-  [name password user-data]
-  (swap! users assoc name (->user name password user-data)))
+  [name user-data]
+  (swap! users assoc name (->user name user-data)))
 
 (defn get-user
   [name]
   (@users name))
-
-(defn validate-user
-  [name password]
-  (let [user (get-user name)]
-    (if user
-      (= password (:password user))
-      false)))
 
 (defrecord session [client-id name user-capabilities])
 
@@ -157,8 +168,14 @@
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (let [client-id (:client-id ev-msg)
         name (:name ?data)
+        ark-record (ark-db/get-ark-record ark-db)
+        index-uuid (arkRecord/get-index-uuid ark-record "user-name")
+        user-uuid (first (arkRecord/index-lookup ark-record index-uuid name))
+        real-password (if user-uuid
+            (arkRecord/get-property-value ark-record user-uuid [:content/password])
+            nil)
         password (:password ?data)]
-    (if (validate-user name password)
+    (if (and user-uuid (= password real-password))
       (add-session client-id name)
       (do
         (tiples/chsk-send! client-id [:users/login-error nil])

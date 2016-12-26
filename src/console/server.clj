@@ -18,21 +18,11 @@
          (fn [common]
            (assoc common :console ark-record))))
 
-(def ark-db ((comp
-               (ark-db/builder)
-               (ark-db0/builder)
-               (ark-value0/builder)
-               (uuidi/builder)
-               (closer/builder)
-               (logt/builder)
-               (reader/builder))
-              {}))
-
 (defn initializer
   []
-  (miMap/register ark-db)
-  (arkRecord/register ark-db)
-  (rolonRecord/register ark-db)
+  (miMap/register users/ark-db)
+  (arkRecord/register users/ark-db)
+  (rolonRecord/register users/ark-db)
   )
 
 (defmethod tiples/event-msg-handler :console/process-transaction
@@ -41,11 +31,12 @@
         tran-keyword (:tran-keyword ?data)
         tran-data (:tran-data ?data)]
     (when (users/get-client-data :console client-id)
+      (println :client-id client-id)
       (try
         (println :transaction tran-keyword tran-data)
-        (let [je-uuid (ark-db/process-transaction! ark-db tran-keyword tran-data)]
-          (update-ark-record! (ark-db/get-ark-record ark-db))
-          (users/broadcast! :console/update (ark-db/get-ark-record ark-db))
+        (let [je-uuid (ark-db/process-transaction! users/ark-db tran-keyword tran-data)]
+          (update-ark-record! (ark-db/get-ark-record users/ark-db))
+          (users/broadcast! :console/update (ark-db/get-ark-record users/ark-db))
           (tiples/chsk-send! client-id [:console/transaction-response (str je-uuid)]))
         (catch Exception e
           (tiples/chsk-send! client-id [:console/error (.getMessage e)]))))))

@@ -16,8 +16,8 @@
     returning the new journal-entry uuid"
   ([ark-db transaction-name s]
    ((:ark-db/process-transaction! ark-db) ark-db transaction-name s))
-  ([ark-db je-uuid transaction-name s]
-   ((:ark-db/process-transaction-at! ark-db) ark-db je-uuid transaction-name s)))
+  ([ark-db user-uuid je-uuid transaction-name s]
+   ((:ark-db/process-transaction-at! ark-db) ark-db user-uuid je-uuid transaction-name s)))
 
 (defn update-ark-db
   "applies a transaction to the ark-atom"

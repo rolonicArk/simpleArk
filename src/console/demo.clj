@@ -18,8 +18,9 @@
   (builder/transaction!
     ark-db {}
     (-> []
+        (builder/build-je-property [:index/headline] "Build demo data")
         (demo-builds/build-demo)
-        (builder/build-println :local)
+        ;(builder/build-println :local)
         ))
 
   (console/update-ark-record! (ark-db/get-ark-record ark-db))

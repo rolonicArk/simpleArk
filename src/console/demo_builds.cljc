@@ -32,6 +32,8 @@
         capability-kw (keyword "local" (str capability "-capability"))]
     (-> actions
         (builder/build-gen-uuid user-capability-kw)
+        (builder/build-property user-capability-kw [:index/name] (str user "-" capability))
+        (builder/build-property user-capability-kw [:index/headline] (str user " " capability))
         (builder/build-relation :rel/capability user-capability-kw capability-kw)
         (builder/build-relation :rel/user user-capability-kw user-kw)
         )))

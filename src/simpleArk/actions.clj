@@ -68,12 +68,19 @@
 (defmethod action :relation
   [[local ark-record] ark-db [kw uuid-a uuid-b]]
   (let [uuid-a (fetch local uuid-a)
+        _ (println)
+        _ (println :uuid-a uuid-a)
         uuid-b (fetch local uuid-b)
+        _ (println :uuid-b uuid-b)
+        _ (println :kw kw)
         kw-name (name kw)
+        _ (println :kw-name kw-name)
         inv-kw (cond
                  (mapish/rel? kw) (keyword "inv-rel" kw-name)
                  (mapish/inv-rel? kw) (keyword "rel" kw-name)
                  :else kw)
+        _ (println :inv-kw inv-kw)
+        _ (println)
         ark-record (make-rolon ark-record uuid-a)
         ark-record (make-rolon ark-record uuid-b)
         ark-record (ark-value/update-property ark-record ark-db uuid-a [kw uuid-b] true)

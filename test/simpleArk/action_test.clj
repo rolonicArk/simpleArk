@@ -29,7 +29,8 @@
         (builder/build-println
           (str "Hello " name "!"))
         (builder/build-je-property
-          [:index/headline] "Just for fun!"))))
+          [:index/headline] "Just for fun!")
+        )))
 
 (defn make-bob-transaction
   [ark-db]

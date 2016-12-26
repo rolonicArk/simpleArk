@@ -105,7 +105,8 @@
       (-> []
           (demo-builds/build-demo)
           (builder/build-println :local)
-          ))))
+          ))
+    ))
 
 (deftest arks
   (println "action tests")

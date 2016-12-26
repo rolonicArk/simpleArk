@@ -1,4 +1,4 @@
-(ns console.demo-builds
+(ns welcome.demo-builds
   (:require
     [simpleArk.builder :as builder]
     ))

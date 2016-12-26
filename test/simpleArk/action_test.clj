@@ -16,7 +16,7 @@
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.actions]
             [simpleArk.builder :as builder]
-            [console.demo-builds :as demo-builds]
+            [welcome.demo-builds :as demo-builds]
             ))
 
 (set! *warn-on-reflection* true)

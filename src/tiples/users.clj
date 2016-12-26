@@ -41,7 +41,7 @@
   [name]
   (@users name))
 
-(defrecord session [client-id name user-capabilities])
+(defrecord session [client-id name user-capabilities user-uuid])
 
 (def by-client-id (atom {}))
 (def by-name (atom {}))
@@ -135,7 +135,7 @@
   )
 
 (defn add-session
-  [client-id name]
+  [client-id name user-uuid]
   (let [session (@by-client-id client-id)]
     (if session
       (logout session)))
@@ -152,7 +152,7 @@
                                   r))
                               []
                               @capabilities)
-        session (->session client-id name user-capabilities)
+        session (->session client-id name user-capabilities user-uuid)
         select-common-data (select-keys @common-data user-capabilities)]
     (swap! by-client-id assoc client-id session)
     (swap! by-name assoc name session)
@@ -176,7 +176,7 @@
             nil)
         password (:password ?data)]
     (if (and user-uuid (= password real-password))
-      (add-session client-id name)
+      (add-session client-id name user-uuid)
       (do
         (tiples/chsk-send! client-id [:users/login-error nil])
         ))))

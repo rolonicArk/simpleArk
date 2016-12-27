@@ -19,10 +19,10 @@
   [ark-db]
   (let [tran (async/<!! (::tran-chan ark-db))]
     (when tran
-      (let [[transaction-name s rsp-chan] tran
+      (let [[user-uuid transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
-          (ark-db/update-ark-db ark-db je-uuid transaction-name s)
+          (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
           (log/info! ark-db :transaction transaction-name s)
           (async/>!! rsp-chan je-uuid)
           (catch Exception e
@@ -39,19 +39,19 @@
   )
 
 (defn async-process-transaction!
-  [ark-db transaction-name s rsp-chan]
-  (async/>!! (::tran-chan ark-db) [transaction-name s rsp-chan]))
+  [ark-db user-uuid transaction-name s rsp-chan]
+  (async/>!! (::tran-chan ark-db) [user-uuid transaction-name s rsp-chan]))
 
 (defn process-transaction!
-  ([ark-db transaction-name s]
+  ([ark-db user-uuid transaction-name s]
    (let [rsp-chan (async/chan)
-         _ (async-process-transaction! ark-db transaction-name s rsp-chan)
+         _ (async-process-transaction! ark-db user-uuid transaction-name s rsp-chan)
          rsp (async/<!! rsp-chan)]
      (if (instance? Exception rsp)
        (throw rsp)
        rsp)))
-  ([ark-db je-uuid transaction-name s]
-   (ark-db/update-ark-db ark-db je-uuid transaction-name s)
+  ([ark-db user-uuid je-uuid transaction-name s]
+   (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 

@@ -12,13 +12,13 @@
   (ark-db/init-ark-db! ark-db (ark-value/create-ark ark-db)))
 
 (defn process-transaction!
-  ([ark-db transaction-name s]
+  ([ark-db user-uuid transaction-name s]
    (let [je-uuid (uuid/journal-entry-uuid ark-db)]
-     (ark-db/update-ark-db ark-db je-uuid transaction-name s)
+     (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
      (log/info! ark-db :transaction transaction-name s)
      je-uuid))
-  ([ark-db je-uuid transaction-name s]
-   (ark-db/update-ark-db ark-db je-uuid transaction-name s)
+  ([ark-db user-uuid je-uuid transaction-name s]
+   (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))
 

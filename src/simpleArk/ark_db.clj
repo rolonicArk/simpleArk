@@ -8,23 +8,25 @@
   ((:ark-db/open-ark! ark-db) ark-db))
 
 (defn async-process-transaction!
-  [ark-db transaction-name s rsp-chan]
-  ((:ark-db/async-process-transaction! ark-db) ark-db transaction-name s rsp-chan))
+  [ark-db user-uuid transaction-name s rsp-chan]
+  ((:ark-db/async-process-transaction! ark-db) ark-db user-uuid transaction-name s rsp-chan))
 
 (defn process-transaction!
   "process a transaction with an (edn) string,
     returning the new journal-entry uuid"
   ([ark-db transaction-name s]
-   ((:ark-db/process-transaction! ark-db) ark-db transaction-name s))
+   ((:ark-db/process-transaction! ark-db) ark-db nil transaction-name s))
+  ([ark-db user-uuid transaction-name s]
+   ((:ark-db/process-transaction! ark-db) ark-db user-uuid transaction-name s))
   ([ark-db user-uuid je-uuid transaction-name s]
-   ((:ark-db/process-transaction-at! ark-db) ark-db user-uuid je-uuid transaction-name s)))
+   ((:ark-db/process-transaction! ark-db) ark-db user-uuid je-uuid transaction-name s)))
 
 (defn update-ark-db
   "applies a transaction to the ark-atom"
-  [ark-db je-uuid transaction-name s]
+  [ark-db user-uuid je-uuid transaction-name s]
   (swap! (::ark-atom ark-db)
          (fn [ark-value]
-           ((:ark-value/update-ark ark-db) ark-value ark-db nil je-uuid transaction-name s))))
+           ((:ark-value/update-ark ark-db) ark-value ark-db user-uuid je-uuid transaction-name s))))
 
 (defn init-ark-db!
   "initializes the ark-atom with the value of the ark."

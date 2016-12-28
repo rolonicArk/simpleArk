@@ -19,34 +19,19 @@
 (set! *warn-on-reflection* true)
 
 (defmethod ark-value/eval-transaction ::hello-world!
-  [ark-value ark-db n s]
+  [ark-record ark-db n s]
   (println "Hello," s)
-  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-value)]
-    (ark-value/update-property ark-value ark-db je-uuid [:index/headline] "Just for fun!")))
+  (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)]
+    (ark-value/update-property ark-record ark-db je-uuid [:index/headline] "Just for fun!")))
 
 (defn test0
   "tests that even work with impl0"
   [ark-db]
 
-  #_(let [ark-value (ark-db/get-ark-record ark-db)]
-    (println :index.index-name (suuid/index-uuid ark-db :index/index.name))
-    (println :empty-ark ark-value)
-    (println :round-trp (reader/read-string ark-db (pr-str ark-value))))
   (println)
   (println ">>>>>>>>>>>> hello-world")
   (println)
   (def hello-je-uuid (ark-db/process-transaction! ark-db ::hello-world! "Fred"))
-  #_(do
-    (is (= :transaction ((log/get-msg ark-db) 1)))
-    (let [ark-value (ark-db/get-ark-record ark-db)
-          r (arkRecord/get-rolon ark-value hello-je-uuid)]
-      (println "-----------")
-      (println :hello-je (pr-str r))
-      (println "-----------")
-      (println :roundish (pr-str (reader/read-string ark-db "#simpleArk.rolonRecord.Rolon-record{:rolon-uuid #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\", :changes-by-property #miMap/MI-map { [:content/transaction-argument] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] \"Fred\"}[:index/headline] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] \"Just for fun!\"}[:index/transaction-name] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] :simpleArk.ark-db0-test/hello-world!}[:inv-rel/modified #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"8cacc5db-70b3-5a83-85cf-c29541e14114\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"2a101331-82a5-5ab0-aa72-d0f9a01170ee\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}[:rel/modified #uuid \"43a62bef-0682-54ae-a190-88fcca210532\"] #miMap/MI-map { [#uuid \"3d5bed20-a855-11e6-9e3f-7e3698d3ae53\"] true}}}")))
-      (println "-----------")
-      )
-    )
 
   (println)
   (println ">>>>>>>>>>>> transaction names")
@@ -87,14 +72,14 @@
             [:content/brothers "Jeff"] true}]))
       )
     (is (= :transaction ((log/get-msg ark-db) 1)))
-    (let [ark-value (ark-db/get-ark-record ark-db)]
-      (println :rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :rel/modified))
-      (println :inv-rel/modified (arkRecord/get-related-uuids ark-value make-bob-je-uuid :inv-rel/modified))
-      (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
-      (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
+    (let [ark-record (ark-db/get-ark-record ark-db)]
+      (println :rel/modified (arkRecord/get-related-uuids ark-record make-bob-je-uuid :rel/modified))
+      (println :inv-rel/modified (arkRecord/get-related-uuids ark-record make-bob-je-uuid :inv-rel/modified))
+      (println :bob-properties (arkRecord/get-property-values ark-record bob-uuid))
+      (println :lookup-bob (arkRecord/name-lookup ark-record "Bob"))
       (println :brothers
                (mapish/mi-sub
-                 (arkRecord/get-property-values ark-value bob-uuid)
+                 (arkRecord/get-property-values ark-record bob-uuid)
                  [:content/brothers])))
 
     (println)
@@ -160,29 +145,29 @@
           [bob-uuid
            {[:index/headline] "destroy bob"}])))
     (is (= :transaction ((log/get-msg ark-db) 1)))
-    (let [ark-value (ark-db/get-ark-record ark-db)]
-      (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
-      (println :lookup-bob (arkRecord/name-lookup ark-value "Bob")))
+    (let [ark-record (ark-db/get-ark-record ark-db)]
+      (println :bob-properties (arkRecord/get-property-values ark-record bob-uuid))
+      (println :lookup-bob (arkRecord/name-lookup ark-record "Bob")))
 
     (println)
     (println ">>>>>>>>>> select time: make-bob-je-uuid")
     (println)
-    (let [ark-value (ark-db/get-ark-record ark-db)
-          _ (println "total je count:" (count (arkRecord/get-journal-entries ark-value)))
-          ark-value (arkRecord/select-time ark-value make-bob-je-uuid)]
-      (println "selected je count:" (count (arkRecord/get-journal-entries ark-value)))
-      (println :lookup-bob (arkRecord/name-lookup ark-value "Bob"))
-      (println :bob-properties (arkRecord/get-property-values ark-value bob-uuid))
+    (let [ark-record (ark-db/get-ark-record ark-db)
+          _ (println "total je count:" (count (arkRecord/get-journal-entries ark-record)))
+          ark-record (arkRecord/select-time ark-record make-bob-je-uuid)]
+      (println "selected je count:" (count (arkRecord/get-journal-entries ark-record)))
+      (println :lookup-bob (arkRecord/name-lookup ark-record "Bob"))
+      (println :bob-properties (arkRecord/get-property-values ark-record bob-uuid))
       )
 
     (println)
     (println ">>>>>>>>>>>> journal entry headlines")
     (println)
-    (let [ark-value (ark-db/get-ark-record ark-db)]
+    (let [ark-record (ark-db/get-ark-record ark-db)]
       (first (keep (fn
                      [x]
-                     (println (arkRecord/get-property-value ark-value (rolonRecord/get-rolon-uuid (val x)) [:index/headline])))
-                   (seq (arkRecord/get-journal-entries ark-value)))))
+                     (println (arkRecord/get-property-value ark-record (rolonRecord/get-rolon-uuid (val x)) [:index/headline])))
+                   (seq (arkRecord/get-journal-entries ark-record)))))
 
     (println)
     (println ">>>>>>>>>>>> all the latest headlines")
@@ -197,14 +182,14 @@
     (println)
     (println ">>>>>>>>>>>> bob's headlines over time")
     (println)
-    (let [ark-value (ark-db/get-ark-record ark-db)]
+    (let [ark-record (ark-db/get-ark-record ark-db)]
       (first (keep (fn [x]
                      (println (val x)
                               "-"
-                              (arkRecord/get-property-value ark-value
-                                                            (arkRecord/get-journal-entry-uuid ark-value (first (key x)))
+                              (arkRecord/get-property-value ark-record
+                                                            (arkRecord/get-journal-entry-uuid ark-record (first (key x)))
                                                             [:index/headline])))
-                   (rseq (arkRecord/get-changes-by-property ark-value
+                   (rseq (arkRecord/get-changes-by-property ark-record
                                                             bob-uuid
                                                             [:index/headline])))))
   ))

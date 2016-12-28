@@ -84,9 +84,8 @@
      (if (nil? pc)
        nil
        (mapish/mi-sub pc nil nil <= (get-selected-time ark-record)))))
-  ([ark-value rolon-uuid]
-   ;(mapish/debug [:changes (:changes-by-property (get-rolon ark-value rolon-uuid))])
-   (:changes-by-property (get-rolon ark-value rolon-uuid))))
+  ([ark-record rolon-uuid]
+   (:changes-by-property (get-rolon ark-record rolon-uuid))))
 
 (defn get-property-value
   [ark-record rolon-uuid property-path]

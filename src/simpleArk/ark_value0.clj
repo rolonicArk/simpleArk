@@ -21,19 +21,21 @@
                       [:content/transaction-argument] s))
         ark-value (if (nil? user-uuid)
                     ark-value
-                    (do
-                      (ark-value/update-property
-                        ark-value
-                        ark-db
-                        je-uuid
-                        [:rel/user user-uuid]
-                        true)
-                      (ark-value/update-property
-                        ark-value
-                        ark-db
-                        user-uuid
-                        [:inv-rel/user je-uuid]
-                        true)))
+                    (let [ark-value
+                          (ark-value/update-property
+                            ark-value
+                            ark-db
+                            je-uuid
+                            [:inv-rel/transaction user-uuid]
+                            true)
+                          ark-value
+                          (ark-value/update-property
+                            ark-value
+                            ark-db
+                            user-uuid
+                            [:rel/transaction je-uuid]
+                            true)]
+                      ark-value))
         ark-value (ark-value/eval-transaction ark-value ark-db transaction-name s)]
     (if (:selected-time ark-value)
       (throw (Exception. "Transaction can not update ark with a selected time")))

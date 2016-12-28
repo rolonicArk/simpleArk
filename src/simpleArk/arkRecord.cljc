@@ -99,7 +99,6 @@
   ([ark-record rolon-uuid]
    (get-property-values ark-record rolon-uuid (get-changes-by-property ark-record rolon-uuid)))
   ([ark-record rolon-uuid all-changes]
-    ;(mapish/debug [:get-selected-time (get-selected-time ark-record)])
    (miView/->MI-view ark-record rolon-uuid all-changes (get-selected-time ark-record))))
 
 (defn index-lookup

@@ -11,22 +11,22 @@
   [ark-db & keyvals]
   (apply (:ark-value/create-mi ark-db) ark-db keyvals))
 
-(defn ark-value-assoc-mapish
+(defn ark-record-assoc-mapish
   [ark-record ark-db key]
   (let [mi (create-mi ark-db)]
     (assoc ark-record key mi)))
 
-(defn init-ark-value
+(defn init-ark-record
   [ark-record ark-db]
   (-> ark-record
-      (ark-value-assoc-mapish ark-db :journal-entries)
-      (ark-value-assoc-mapish ark-db :indexes)
-      (ark-value-assoc-mapish ark-db :random-rolons)))
+      (ark-record-assoc-mapish ark-db :journal-entries)
+      (ark-record-assoc-mapish ark-db :indexes)
+      (ark-record-assoc-mapish ark-db :random-rolons)))
 
 (defn create-ark
   [ark-db]
   (-> (arkRecord/->Ark-record)
-      (init-ark-value ark-db)))
+      (init-ark-record ark-db)))
 
 (defn assoc-rolon
   "update the ark with the revised/new rolon"
@@ -114,7 +114,7 @@
                      [:content/index value uuid]
                      adding)))
 
-(defn make-index-rolon
+(defn make-index-rolons
   "create/update an index rolon"
   [ark-record ark-db uuid properties old-properties]
   (reduce #(let [ark-record %1
@@ -134,11 +134,11 @@
 (defn update-properties-
   [ark-record ark-db journal-entry-uuid rolon-uuid properties]
   (let [property-values (arkRecord/get-property-values ark-record rolon-uuid)
-        ark-record (make-index-rolon ark-record
-                                    ark-db
-                                    rolon-uuid
-                                    properties
-                                    property-values)
+        ark-record (make-index-rolons ark-record
+                                      ark-db
+                                      rolon-uuid
+                                      properties
+                                      property-values)
         rolon (arkRecord/get-rolon ark-record rolon-uuid)
         rolon (update-rolon-properties rolon ark-record ark-db journal-entry-uuid properties)]
     (assoc-rolon ark-record rolon-uuid rolon)))
@@ -185,11 +185,11 @@
         property-values (reduce #(assoc %1 (key %2) nil)
                                 (create-mi ark-db)
                                 (seq old-property-values))
-        ark-record (make-index-rolon ark-record
-                                    ark-db
-                                    rolon-uuid
-                                    property-values
-                                    old-property-values)
+        ark-record (make-index-rolons ark-record
+                                      ark-db
+                                      rolon-uuid
+                                      property-values
+                                      old-property-values)
         je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
         rolon (arkRecord/get-rolon ark-record rolon-uuid)
         rolon (update-rolon-properties rolon ark-record ark-db je-uuid property-values)

@@ -47,8 +47,16 @@
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
 (defn update-ptree
-  [ptree path add]
-  ptree)
+  [ptree ark-db timestamp-path path add]
+  (if (= 1 (count path))
+    (if (nil? ptree)
+      [nil (create-mi ark-db timestamp-path 1)]
+      (let [count (val (first (rseq (second ptree))))
+            count (if add
+                    (+ count 1)
+                    (- count 1))]
+        [(first ptree) (assoc (second ptree) timestamp-path count)]))
+    ptree))
 
 (defn update-changes-for-property
   [changes-by-property property-tree ark-db je-uuid path new-value]
@@ -63,14 +71,15 @@
         old-value (if (nil? first-entry)
                     nil
                     (val first-entry))
+        timestamp-path [(suuid/rolon-key je-uuid)]
         changes-by-property (assoc changes-by-property
                               path
                               (if (= new-value old-value)
                                 property-changes
-                                (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)))
+                                (assoc property-changes timestamp-path new-value)))
         property-tree (if (= (nil? old-value) (nil? new-value))
                         property-tree
-                        (update-ptree property-tree path (nil? old-value)))]
+                        (update-ptree property-tree ark-db timestamp-path path (nil? old-value)))]
     [changes-by-property property-tree]))
 
 (defn update-rolon-properties

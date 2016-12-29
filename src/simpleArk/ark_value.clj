@@ -55,13 +55,16 @@
         property-changes (if (some? property-changes)
                            property-changes
                            (create-mi ark-db))
-        first-entry (first (seq property-changes))]
-    [(assoc changes-by-property
-      property-name
-      (if (or (nil? first-entry) (not= new-value (val first-entry)))
-        (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)
-        property-changes))
-     property-tree]))
+        first-entry (first (seq property-changes))
+        old-value (if (nil? first-entry)
+                    nil
+                    (val first-entry))
+        changes-by-property (assoc changes-by-property
+                              property-name
+                              (if (= new-value old-value)
+                                property-changes
+                                (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)))]
+    [changes-by-property property-tree]))
 
 (defn update-rolon-properties
   [rolon-record ark-record ark-db je-uuid properties]

@@ -46,12 +46,16 @@
       (assoc ark-record :random-rolons rolons))
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
+(defn update-ptree
+  [ptree path add]
+  ptree)
+
 (defn update-changes-for-property
-  [changes-by-property property-tree ark-db je-uuid property-name new-value]
+  [changes-by-property property-tree ark-db je-uuid path new-value]
   (let [changes-by-property (if (some? changes-by-property)
                               changes-by-property
                               (create-mi ark-db))
-        property-changes (get changes-by-property property-name)
+        property-changes (get changes-by-property path)
         property-changes (if (some? property-changes)
                            property-changes
                            (create-mi ark-db))
@@ -60,10 +64,13 @@
                     nil
                     (val first-entry))
         changes-by-property (assoc changes-by-property
-                              property-name
+                              path
                               (if (= new-value old-value)
                                 property-changes
-                                (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)))]
+                                (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)))
+        property-tree (if (= (nil? old-value) (nil? new-value))
+                        property-tree
+                        (update-ptree property-tree path (nil? old-value)))]
     [changes-by-property property-tree]))
 
 (defn update-rolon-properties

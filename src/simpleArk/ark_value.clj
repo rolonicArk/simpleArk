@@ -47,11 +47,11 @@
     :else (throw (Exception. (str rolon-uuid " is unrecognized")))))
 
 (defn update-changes-for-property
-  [changes-by-property ark-db je-uuid property-name new-value]
+  [changes-by-property property-tree ark-db je-uuid property-name new-value]
   (let [changes-by-property (if (some? changes-by-property)
                               changes-by-property
                               (create-mi ark-db))]
-    (assoc changes-by-property
+    [(assoc changes-by-property
       property-name
       (let [property-changes (get changes-by-property property-name)
             property-changes (if (some? property-changes)
@@ -60,18 +60,21 @@
             first-entry (first (seq property-changes))]
         (if (or (nil? first-entry) (not= new-value (val first-entry)))
           (assoc property-changes [(suuid/rolon-key je-uuid)] new-value)
-          property-changes)))))
+          property-changes))) property-tree]))
 
 (defn update-rolon-properties
   [rolon-record ark-record ark-db je-uuid properties]
   (let [rolon-uuid (rolonRecord/get-rolon-uuid rolon-record)
         changes (arkRecord/get-changes-by-property ark-record rolon-uuid)
-        changes (reduce
-                  (fn [ch pe]
-                    (update-changes-for-property ch ark-db je-uuid (key pe) (val pe)))
-                  changes
-                  (seq properties))]
-    (assoc rolon-record :changes-by-property changes)))
+        ptree (arkRecord/get-property-tree ark-record rolon-uuid [])
+        [changes ptree] (reduce
+                  (fn [[ch pt] pe]
+                    (update-changes-for-property ch pt ark-db je-uuid (key pe) (val pe)))
+                  [changes ptree]
+                  (seq properties))
+        rolon-record (assoc rolon-record :changes-by-property changes)
+        rolon-record (assoc rolon-record :property-tree ptree)]
+    rolon-record))
 
 (declare update-properties- je-modified)
 

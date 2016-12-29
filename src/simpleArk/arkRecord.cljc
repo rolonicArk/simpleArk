@@ -87,6 +87,21 @@
   ([ark-record rolon-uuid]
    (:changes-by-property (get-rolon ark-record rolon-uuid))))
 
+(defn get-property-tree
+  ([ark-record rolon-uuid path]
+   (loop [ptree (get-property-tree ark-record rolon-uuid)
+          pth path]
+     (if (empty? pth)
+       ptree
+       (let [[m _] pth
+             k (first pth)
+             subtree (get m k)]
+         (if (nil? subtree)
+           nil
+           (recur subtree (next pth)))))))
+  ([ark-record rolon-uuid]
+   (:property-tree (get-rolon ark-record rolon-uuid))))
+
 (defn get-property-value
   [ark-record rolon-uuid property-path]
   (mapish/validate-property-path property-path)

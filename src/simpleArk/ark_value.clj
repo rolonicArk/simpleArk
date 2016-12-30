@@ -60,7 +60,13 @@
       (let [rem-path (rest path)
             sub-tree (update-ptree nil ark-db timestamp-path rem-path add)]
         [(create-mi ark-db [(first path)] sub-tree) (create-mi ark-db timestamp-path 1)])
-      ptree)))
+      (let [rem-path (rest path)
+            sub-tree (update-ptree (get ptree [(first path)]) ark-db timestamp-path rem-path add)
+            count (val (first (rseq (second ptree))))
+            count (if add
+                    (+ count 1)
+                    (- count 1))]
+        [(assoc (first ptree) [(first path)] sub-tree) (assoc (second ptree) timestamp-path count)]))))
 
 (defn update-changes-for-property
   [changes-by-property property-tree ark-db je-uuid path new-value]

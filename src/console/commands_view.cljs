@@ -5,7 +5,7 @@
     [console.index-commands :as index-commands]
     [console.rolon-commands :as rolon-commands]
     [console.alternate-commands :as alternate-commands]
-    [console.micro-property-commands :as micro-property-commands]
+    [console.path-commands :as path-commands]
     [console.count-commands :as count-commands]
     [console.transaction-commands :as transaction-commands]))
 
@@ -20,7 +20,7 @@
     (h/hr)
     (alternate-commands/do-alternate-commands)
     (h/hr)
-    (micro-property-commands/do-micro-property-commands)
+    (path-commands/do-path-commands)
     (h/hr)
     (count-commands/do-count-commands)
     (h/hr)

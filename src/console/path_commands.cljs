@@ -1,4 +1,4 @@
-(ns console.micro-property-commands
+(ns console.path-commands
   (:require
     [hoplon.core :as h]
     [javelin.core :as j]
@@ -46,7 +46,7 @@
           (client/add-output! "\n")))
       nil changes)))
 
-(defn do-micro-property-commands
+(defn do-path-commands
   []
   (h/div
 
@@ -61,9 +61,20 @@
                (reset! client/display-mode 0)
                (client/add-prompt)
                (client/add-history! ">")
-               (client/add-history! "clear micro-property selection\n" client/command-prefix-style)
+               (client/add-history! "clear path selection\n" client/command-prefix-style)
                (reset! client/selected-path []))
       "clear path selection")
+
+    (h/button
+      :css {:display "none" :background-color "MistyRose"}
+      :toggle (j/cell= (< 0 (count client/selected-path)))
+      :click (fn []
+               (reset! client/display-mode 0)
+               (client/add-prompt)
+               (client/add-history! ">")
+               (client/add-history! "up\n" client/command-prefix-style)
+               (swap! client/selected-path pop))
+      "up")
 
     (h/button
       :css {:display "none" :background-color "MistyRose"}

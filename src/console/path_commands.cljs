@@ -69,6 +69,7 @@
     client/uuid-click
     @client/selected-rolon)
   (client/add-output! "\n\n")
+  (client/add-output! (str "total: " (arkRecord/tree-count ark-record uuid path)))
   )
 
 (defn do-path-commands

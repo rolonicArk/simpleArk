@@ -46,6 +46,31 @@
           (client/add-output! "\n")))
       nil changes)))
 
+(defn explore
+  [ark-record uuid path]
+  (client/add-prompt)
+  (client/add-history! ">")
+  (client/add-history! "explore " client/command-prefix-style)
+  (client/history-path! ark-record path)
+  (client/add-history! " in ")
+  (client/add-history!
+    (client/pretty-uuid ark-record uuid)
+    (client/clickable-styles uuid)
+    client/uuid-click
+    @client/selected-rolon)
+  (client/add-history! "\n")
+  (client/clear-output!)
+  (client/add-output! "explore ")
+  (client/output-path! ark-record path)
+  (client/add-output! " in ")
+  (client/add-output!
+    (client/pretty-uuid ark-record uuid)
+    (client/clickable-styles uuid)
+    client/uuid-click
+    @client/selected-rolon)
+  (client/add-output! "\n\n")
+  )
+
 (defn do-path-commands
   []
   (h/div
@@ -53,6 +78,14 @@
     (h/div
       (h/strong "Selected path: ")
       (client/display-selected-path))
+
+    (h/button
+      :css {:display "none" :background-color "MistyRose"}
+      :toggle (j/cell= (not= "" client/selected-rolon))
+      :click (fn []
+               (reset! client/display-mode 0)
+               (explore @client/my-ark-record (suuid/create-uuid @client/selected-rolon) @client/selected-path))
+      "explore properties")
 
     (h/button
       :css {:display "none" :background-color "MistyRose"}

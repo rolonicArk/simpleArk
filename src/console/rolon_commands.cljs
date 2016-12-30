@@ -12,7 +12,7 @@
 (defn micro-property-click [ark-record arg]
   (if (< 1 @client/display-mode)
     (reset! client/display-mode 1))
-  (reset! client/selected-microp arg)
+  (reset! client/selected-path arg)
   (client/add-prompt)
   (client/add-history! " ")
   (client/add-history! "selected micro-property:" client/selection-style)

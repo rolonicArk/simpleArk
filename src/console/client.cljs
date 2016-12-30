@@ -63,7 +63,7 @@
 
 (def selected-rolon (j/cell ""))
 (def alternate-rolon (j/cell ""))
-(def selected-microp (j/cell []))
+(def selected-path (j/cell []))
 
 (defmethod tiples/chsk-recv :console/update
   [id ark-record]
@@ -325,14 +325,14 @@
     (h/for-tpl
       [v
        (j/cell=
-         (if (= 0 (count selected-microp))
+         (if (= 0 (count selected-path))
            []
            (map
-             (fn [i] [i (nth selected-microp i)])
-             (range (count selected-microp)))))]
+             (fn [i] [i (nth selected-path i)])
+             (range (count selected-path)))))]
       (h/span
         (h/text
           (selected-path-space v))
         (h/text
-          (selected-path-pretty my-ark-record selected-microp v))))
+          (selected-path-pretty my-ark-record selected-path v))))
     "]"))

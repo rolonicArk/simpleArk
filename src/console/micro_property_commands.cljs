@@ -11,7 +11,7 @@
   (client/add-prompt)
   (client/add-history! ">")
   (client/add-history! "list changes over time for " client/command-prefix-style)
-  (let [path @client/selected-microp
+  (let [path @client/selected-path
         uuid (suuid/create-uuid @client/selected-rolon)
         changes (arkRecord/get-changes-by-property ark-record uuid path)]
     (client/history-path! ark-record path)
@@ -49,26 +49,32 @@
 (defn do-micro-property-commands
   []
   (h/div
-    :css {:display "none"}
-    :toggle (j/cell= (< 0 (count client/selected-microp)))
 
     (h/div
-      (h/strong "Selected micro-property: ")
+      (h/strong "Selected path: ")
       (client/display-selected-path))
 
     (h/button
-      :style "background-color:MistyRose"
+      :css {:display "none" :background-color "MistyRose"}
+      :toggle (j/cell= (< 0 (count client/selected-path)))
       :click (fn []
                (reset! client/display-mode 0)
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "clear micro-property selection\n" client/command-prefix-style)
-               (reset! client/selected-microp []))
-      "clear micro-property selection")
+               (reset! client/selected-path []))
+      "clear path selection")
 
     (h/button
       :css {:display "none" :background-color "MistyRose"}
-      :toggle (j/cell= (not= "" client/selected-rolon))
+      :toggle (j/cell= (and
+                         (< 0 (count client/selected-path))
+                         (not= "" client/selected-rolon)
+                         (some?
+                           (arkRecord/get-changes-by-property
+                             client/my-ark-record
+                             (suuid/create-uuid client/selected-rolon)
+                             client/selected-path))))
       :click (fn []
                (reset! client/display-mode 0)
                (list-changes @client/my-ark-record))

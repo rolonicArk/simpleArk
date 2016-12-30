@@ -10,7 +10,7 @@
   [ark-record]
   (client/add-prompt)
   (client/add-history! ">")
-  (client/add-history! "list changes over time for " client/command-prefix-style)
+  (client/add-history! "list property changes over time for " client/command-prefix-style)
   (let [path @client/selected-path
         uuid (suuid/create-uuid @client/selected-rolon)
         changes (arkRecord/get-changes-by-property ark-record uuid path)]
@@ -122,5 +122,5 @@
       :click (fn []
                (reset! client/display-mode 0)
                (list-changes @client/my-ark-record))
-      "list changes over time")
+      "list property changes over time")
     ))

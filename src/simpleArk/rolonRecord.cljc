@@ -9,7 +9,9 @@
 (defrecord Rolon-record [rolon-uuid])
 
 (defn load-rolon [m]
-  (assoc (->Rolon-record (:rolon-uuid m)) :changes-by-property (:changes-by-property m)))
+  (-> (->Rolon-record (:rolon-uuid m))
+      (assoc :changes-by-property (:changes-by-property m))
+      (assoc :property-tree (:property-tree m))))
 
 #?(:clj
    (defn register

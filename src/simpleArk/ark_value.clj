@@ -50,18 +50,19 @@
   [ptree ark-db timestamp-path path add]
   (if (= 1 (count path))
     (if (nil? ptree)
-      [nil (create-mi ark-db timestamp-path 1)]
+      (do
+        [(create-mi ark-db [(first path)] true) (create-mi ark-db timestamp-path 1)])
       (let [count (val (first (rseq (second ptree))))
             count (if add
                     (+ count 1)
                     (- count 1))]
-        [(first ptree) (assoc (second ptree) timestamp-path count)]))
+        [(assoc (first ptree) [(first path)] true) (assoc (second ptree) timestamp-path count)]))
     (if (nil? ptree)
       (let [rem-path (rest path)
             sub-tree (update-ptree nil ark-db timestamp-path rem-path add)]
         [(create-mi ark-db [(first path)] sub-tree) (create-mi ark-db timestamp-path 1)])
       (let [rem-path (rest path)
-            sub-tree (update-ptree (get ptree [(first path)]) ark-db timestamp-path rem-path add)
+            sub-tree (update-ptree (get (first ptree) [(first path)]) ark-db timestamp-path rem-path add)
             count (val (first (rseq (second ptree))))
             count (if add
                     (+ count 1)
@@ -89,7 +90,8 @@
                                 (assoc property-changes timestamp-path new-value)))
         property-tree (if (= (nil? old-value) (nil? new-value))
                         property-tree
-                        (update-ptree property-tree ark-db timestamp-path path (nil? old-value)))]
+                        (let [upt (update-ptree property-tree ark-db timestamp-path path (nil? old-value))]
+                          upt))]
     [changes-by-property property-tree]))
 
 (defn update-rolon-properties

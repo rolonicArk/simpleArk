@@ -96,7 +96,7 @@
        (let [[m _] ptree
              k [(first pth)]
              subtree (get m k)]
-         (if (nil? subtree)
+         (if (= true subtree)
            nil
            (recur subtree (next pth)))))))
   ([ark-record rolon-uuid]
@@ -106,10 +106,10 @@
   ([ark-record rolon-uuid path]
    (tree-count (get-property-tree ark-record rolon-uuid path) ark-record))
   ([[m tsm] ark-record]
-   (let [tsm (mapish/mi-sub tsm nil nil <= (get-selected-time ark-record))]
-     (mapish/debug [:m m])
-     (mapish/debug [:tsm tsm])
-     (second (first (rseq tsm))))))
+   (if (nil? tsm)
+     1
+     (let [tsm (mapish/mi-sub tsm nil nil <= (get-selected-time ark-record))]
+       (second (first (rseq tsm)))))))
 
 (defn get-property-value
   [ark-record rolon-uuid property-path]

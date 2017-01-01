@@ -80,17 +80,15 @@
       (client/output-path! ark-record path)
       (client/add-output! (str " = " (pr-str pval))))
     (when (some? pm)
-      (mapish/debug [:pc-pm pm])
       (reduce
         (fn [_ e]
-          (let [pt (val e)
-                m (first pt)
-                ct (second pt)]
+          (let [k (key e)
+                e-path (into path k)
+                pt (val e)]
             (client/add-output! "\n")
-            (mapish/debug [:pc-pt pt])
-            (mapish/debug [:pc-m m])
-            (mapish/debug [:pc-ct ct])
-            (client/add-output! (str " : " (arkRecord/tree-count ark-record pt))))
+            (if (vector? pt)
+              (client/add-output! (str " : " (arkRecord/tree-count ark-record pt)))
+              (client/add-output! (str " : " (arkRecord/tree-count ark-record e)))))
           nil)
         nil
         pm))

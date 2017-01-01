@@ -91,7 +91,6 @@
   ([ark-record rolon-uuid path]
    (loop [ptree (get-property-tree ark-record rolon-uuid)
           pth path]
-     ;(mapish/debug [:gpt ptree])
      (if (empty? pth)
        ptree
        (let [m ( first ptree)
@@ -108,8 +107,6 @@
    (tree-count ark-record (get-property-tree ark-record rolon-uuid path)))
   ([ark-record pt]
    (let [tsm (second pt)]
-     (mapish/debug [:tc-pt pt])
-     (mapish/debug [:tc-tsm tsm])
      (if (or (nil? tsm) (= true tsm))
        1
        (let [tsm (mapish/mi-sub tsm nil nil <= (get-selected-time ark-record))]
@@ -132,10 +129,7 @@
 (defn index-lookup
   "returns the uuids for a given index-uuid and value"
   [ark-record index-uuid value]
-  ;(mapish/debug [:ark-record ark-record])
-  ;(mapish/debug [:index-uuid index-uuid :value value])
   (let [property-values (get-property-values ark-record index-uuid)]
-    ;(mapish/debug [:property-values property-values])
     (map
       (fn [e]
         ((key e) 2))

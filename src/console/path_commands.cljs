@@ -5,7 +5,8 @@
     [console.client :as client]
     [simpleArk.uuid :as suuid]
     [simpleArk.arkRecord :as arkRecord]
-    [simpleArk.mapish :as mapish]))
+    [simpleArk.mapish :as mapish]
+    [console.rolon-commands :as rolon-commands]))
 
 (defn list-changes
   [ark-record]
@@ -91,6 +92,8 @@
             (if (< 0 count)
               (do
                 (client/add-output! "\n")
+                (client/add-output! "=" rolon-commands/micro-property-style rolon-commands/micro-property-click e-path)
+                (client/add-output! " ")
                 (client/output-path! ark-record e-path)
                 (client/add-output! (str " : " count))))
             )

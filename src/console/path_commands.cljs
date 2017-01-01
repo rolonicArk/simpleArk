@@ -4,7 +4,8 @@
     [javelin.core :as j]
     [console.client :as client]
     [simpleArk.uuid :as suuid]
-    [simpleArk.arkRecord :as arkRecord]))
+    [simpleArk.arkRecord :as arkRecord]
+    [simpleArk.mapish :as mapish]))
 
 (defn list-changes
   [ark-record]
@@ -68,8 +69,32 @@
     (client/clickable-styles uuid)
     client/uuid-click
     @client/selected-rolon)
-  (client/add-output! "\n\n")
-  (client/add-output! (str "total: " (arkRecord/tree-count ark-record uuid path)))
+  (client/add-output! "\n")
+  (let [ptree (arkRecord/get-property-tree ark-record uuid path)
+        pm (first ptree)
+        pval (if (= 0 (count path))
+               nil
+               (arkRecord/get-property-value ark-record uuid path))]
+    (when (some? pval)
+      (client/add-output! "\n   ")
+      (client/output-path! ark-record path)
+      (client/add-output! (str " = " (pr-str pval))))
+    (when (some? pm)
+      (mapish/debug [:pc-pm pm])
+      (reduce
+        (fn [_ e]
+          (let [pt (val e)
+                m (first pt)
+                ct (second pt)]
+            (client/add-output! "\n")
+            (mapish/debug [:pc-pt pt])
+            (mapish/debug [:pc-m m])
+            (mapish/debug [:pc-ct ct])
+            (client/add-output! (str " : " (arkRecord/tree-count ark-record pt))))
+          nil)
+        nil
+        pm))
+    (client/add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record ptree))))
   )
 
 (defn do-path-commands

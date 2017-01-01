@@ -84,12 +84,16 @@
         (fn [_ e]
           (let [k (key e)
                 e-path (into path k)
-                pt (val e)]
-            (client/add-output! "\n")
-            (client/output-path! ark-record e-path)
-            (if (vector? pt)
-              (client/add-output! (str " : " (arkRecord/tree-count ark-record pt)))
-              (client/add-output! (str " : " (arkRecord/tree-count ark-record e)))))
+                pt (val e)
+                count (if (vector? pt)
+                        (arkRecord/tree-count ark-record pt)
+                        (arkRecord/tree-count ark-record e))]
+            (if (< 0 count)
+              (do
+                (client/add-output! "\n")
+                (client/output-path! ark-record e-path)
+                (client/add-output! (str " : " count))))
+            )
           nil)
         nil
         pm))

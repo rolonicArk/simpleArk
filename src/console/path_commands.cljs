@@ -86,6 +86,7 @@
                 e-path (into path k)
                 pt (val e)]
             (client/add-output! "\n")
+            (client/output-path! ark-record e-path)
             (if (vector? pt)
               (client/add-output! (str " : " (arkRecord/tree-count ark-record pt)))
               (client/add-output! (str " : " (arkRecord/tree-count ark-record e)))))

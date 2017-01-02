@@ -214,6 +214,7 @@
 
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
+    (reset! display-mode 0)
     (reset! selected-rolon arg)
     (add-prompt)
     (add-history! " ")
@@ -224,7 +225,8 @@
         (add-history! "selected rolon:" selection-style)
         (add-history! " ")
         (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))
-    (reset! selected-path [])))
+    (reset! selected-path [])
+    ))
 
 (defn alternate-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]

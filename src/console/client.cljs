@@ -212,6 +212,93 @@
     (if t
       (add-history! t clickable-je-style uuid-click (str (ark-time))))))
 
+(defn alternate-click [ark-record arg]
+  (let [uuid (suuid/create-uuid arg)]
+    (reset! alternate-rolon arg)
+    (add-prompt)
+    (add-history! " ")
+    (if (= "" arg)
+      (add-history! "cleared alternate rolon\n" selection-style)
+      (do
+        (add-history! "alternate rolon:" selection-style)
+        (add-history! " ")
+        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
+
+(defn micro-property-style [] "color:chocolate;cursor:pointer")
+
+(declare history-path! output-path!)
+
+(defn micro-property-click [ark-record arg]
+  (if (< 1 @display-mode)
+    (reset! display-mode 1))
+  (reset! selected-path arg)
+  (add-prompt)
+  (add-history! " ")
+  (add-history! "selected micro-property:" selection-style)
+  (add-history! " ")
+  (history-path! ark-record arg)
+  (add-history! "\n"))
+
+(defn explore
+  [ark-record uuid path]
+  (add-prompt)
+  (add-history! ">")
+  (add-history! "explore " command-prefix-style)
+  (history-path! ark-record path)
+  (add-history! " in ")
+  (add-history!
+    (pretty-uuid ark-record uuid)
+    (clickable-styles uuid)
+    uuid-click
+    @selected-rolon)
+  (add-history! "\n")
+  (clear-output!)
+  (add-output! "explore ")
+  (output-path! ark-record path)
+  (add-output! " in ")
+  (add-output!
+    (pretty-uuid ark-record uuid)
+    (clickable-styles uuid)
+    uuid-click
+    @selected-rolon)
+  (add-output! "\n")
+  (let [ptree (arkRecord/get-property-tree ark-record uuid path)
+        pm (first ptree)
+        pval (if (= 0 (count path))
+               nil
+               (arkRecord/get-property-value ark-record uuid path))]
+    (when (some? pval)
+      (add-output! "\n   ")
+      (output-path! ark-record path)
+      (add-output! (str " = " (pr-str pval))))
+    (when (some? pm)
+      (reduce
+        (fn [_ e]
+          (let [k (key e)
+                e-path (into path k)
+                pt (val e)
+                count (if (vector? pt)
+                        (arkRecord/tree-count ark-record pt)
+                        (arkRecord/tree-count ark-record e))
+                value (if (not= count 1)
+                        nil
+                        (arkRecord/get-property-value ark-record uuid e-path))]
+            (if (< 0 count)
+              (do
+                (add-output! "\n")
+                (add-output! "=" micro-property-style micro-property-click e-path)
+                (add-output! " ")
+                (output-path! ark-record e-path)
+                (if (nil? value)
+                  (add-output! (str " : " count))
+                  (add-output! (str " = " value)))))
+            )
+          nil)
+        nil
+        pm))
+    (add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record ptree))))
+  )
+
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
     (reset! display-mode 0)
@@ -226,19 +313,7 @@
         (add-history! " ")
         (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))
     (reset! selected-path [])
-    ))
-
-(defn alternate-click [ark-record arg]
-  (let [uuid (suuid/create-uuid arg)]
-    (reset! alternate-rolon arg)
-    (add-prompt)
-    (add-history! " ")
-    (if (= "" arg)
-      (add-history! "cleared alternate rolon\n" selection-style)
-      (do
-        (add-history! "alternate rolon:" selection-style)
-        (add-history! " ")
-        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
+    (explore ark-record uuid [])))
 
 (defn uuid-click [ark-record arg]
   (if (< 1 @display-mode)

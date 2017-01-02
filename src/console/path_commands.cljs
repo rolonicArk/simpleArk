@@ -48,66 +48,6 @@
           (client/add-output! "\n")))
       nil changes)))
 
-(defn explore
-  [ark-record uuid path]
-  (client/add-prompt)
-  (client/add-history! ">")
-  (client/add-history! "explore " client/command-prefix-style)
-  (client/history-path! ark-record path)
-  (client/add-history! " in ")
-  (client/add-history!
-    (client/pretty-uuid ark-record uuid)
-    (client/clickable-styles uuid)
-    client/uuid-click
-    @client/selected-rolon)
-  (client/add-history! "\n")
-  (client/clear-output!)
-  (client/add-output! "explore ")
-  (client/output-path! ark-record path)
-  (client/add-output! " in ")
-  (client/add-output!
-    (client/pretty-uuid ark-record uuid)
-    (client/clickable-styles uuid)
-    client/uuid-click
-    @client/selected-rolon)
-  (client/add-output! "\n")
-  (let [ptree (arkRecord/get-property-tree ark-record uuid path)
-        pm (first ptree)
-        pval (if (= 0 (count path))
-               nil
-               (arkRecord/get-property-value ark-record uuid path))]
-    (when (some? pval)
-      (client/add-output! "\n   ")
-      (client/output-path! ark-record path)
-      (client/add-output! (str " = " (pr-str pval))))
-    (when (some? pm)
-      (reduce
-        (fn [_ e]
-          (let [k (key e)
-                e-path (into path k)
-                pt (val e)
-                count (if (vector? pt)
-                        (arkRecord/tree-count ark-record pt)
-                        (arkRecord/tree-count ark-record e))
-                value (if (not= count 1)
-                        nil
-                        (arkRecord/get-property-value ark-record uuid e-path))]
-            (if (< 0 count)
-              (do
-                (client/add-output! "\n")
-                (client/add-output! "=" rolon-commands/micro-property-style rolon-commands/micro-property-click e-path)
-                (client/add-output! " ")
-                (client/output-path! ark-record e-path)
-                (if (nil? value)
-                  (client/add-output! (str " : " count))
-                  (client/add-output! (str " = " value)))))
-            )
-          nil)
-        nil
-        pm))
-    (client/add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record ptree))))
-  )
-
 (defn do-path-commands
   []
   (h/div
@@ -121,7 +61,7 @@
       :toggle (j/cell= (not= "" client/selected-rolon))
       :click (fn []
                (reset! client/display-mode 0)
-               (explore @client/my-ark-record (suuid/create-uuid @client/selected-rolon) @client/selected-path))
+               (client/explore @client/my-ark-record (suuid/create-uuid @client/selected-rolon) @client/selected-path))
       "explore properties")
 
     (h/button

@@ -7,7 +7,7 @@
     [simpleArk.arkRecord :as arkRecord]
     [console.client :as client]))
 
-(defn list-current-micro-properties
+#_(defn list-current-micro-properties
   [ark-record]
   (client/add-prompt)
   (client/add-history! ">")
@@ -165,7 +165,7 @@
                  (list-modifying-transactions @client/my-ark-record))
         "list modifying transactions")
 
-      (h/button
+      #_(h/button
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)

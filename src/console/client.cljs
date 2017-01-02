@@ -226,7 +226,7 @@
 
 (defn micro-property-style [] "color:chocolate;cursor:pointer")
 
-(declare history-path! output-path!)
+(declare history-path! output-path! explore)
 
 (defn micro-property-click [ark-record arg]
   (if (< 1 @display-mode)
@@ -237,7 +237,8 @@
   (add-history! "selected micro-property:" selection-style)
   (add-history! " ")
   (history-path! ark-record arg)
-  (add-history! "\n"))
+  (add-history! "\n")
+  (explore ark-record (suuid/create-uuid @selected-rolon) arg))
 
 (defn explore
   [ark-record uuid path]

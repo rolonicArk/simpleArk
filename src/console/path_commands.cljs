@@ -72,7 +72,8 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "up\n" client/command-prefix-style)
-               (swap! client/selected-path pop))
+               (swap! client/selected-path pop)
+               (client/explore @client/my-ark-record (suuid/create-uuid @client/selected-rolon) @client/selected-path))
       "up")
 
     (h/button
@@ -83,7 +84,8 @@
                (client/add-prompt)
                (client/add-history! ">")
                (client/add-history! "clear path selection\n" client/command-prefix-style)
-               (reset! client/selected-path []))
+               (reset! client/selected-path [])
+               (client/explore @client/my-ark-record (suuid/create-uuid @client/selected-rolon) @client/selected-path))
       "clear path selection")
 
     (h/button

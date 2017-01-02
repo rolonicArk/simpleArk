@@ -88,14 +88,19 @@
                 pt (val e)
                 count (if (vector? pt)
                         (arkRecord/tree-count ark-record pt)
-                        (arkRecord/tree-count ark-record e))]
+                        (arkRecord/tree-count ark-record e))
+                value (if (not= count 1)
+                        nil
+                        (arkRecord/get-property-value ark-record uuid e-path))]
             (if (< 0 count)
               (do
                 (client/add-output! "\n")
                 (client/add-output! "=" rolon-commands/micro-property-style rolon-commands/micro-property-click e-path)
                 (client/add-output! " ")
                 (client/output-path! ark-record e-path)
-                (client/add-output! (str " : " count))))
+                (if (nil? value)
+                  (client/add-output! (str " : " count))
+                  (client/add-output! (str " = " value)))))
             )
           nil)
         nil

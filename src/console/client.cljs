@@ -316,6 +316,43 @@
     (reset! selected-path [])
     (explore ark-record uuid [])))
 
+(defn display-index
+  [ark-record content-index index-uuid]
+  (let [name (arkRecord/get-property-value ark-record index-uuid [:index/index.name])]
+    (doall (map (fn [kv]
+                  (let [k (str (key kv) " ")
+                        v (val kv)]
+                    (case name
+                      "index.name" ()
+                      "name" ()
+                      (add-output! k bold-style))
+                    (add-output! (pretty-uuid ark-record v)
+                                        (clickable-styles v) uuid-click (str v))
+                    (if (not= name "headline")
+                      (let [headline (arkRecord/get-property-value
+                                       ark-record
+                                       (suuid/create-uuid v)
+                                       [:index/headline])]
+                        (if (some? headline)
+                          (add-output! (str " - " headline)))))
+                    (add-output! "\n")))
+                content-index))))
+
+(defn list-index-content [ark-record index-uuid]
+  (add-prompt)
+  (add-history! ">")
+  (add-history! "list index content\n" command-prefix-style)
+  (clear-output!)
+  (add-output! "index: ")
+  (add-output! (str (pretty-uuid ark-record index-uuid) "\n")
+                      (clickable-styles index-uuid)
+                      uuid-click
+                      (str index-uuid))
+  (let [content-index (arkRecord/get-content-index
+                        ark-record
+                        index-uuid)]
+    (display-index ark-record content-index index-uuid)))
+
 (defn uuid-click [ark-record arg]
   (if (< 1 @display-mode)
     (reset! display-mode 1))
@@ -328,7 +365,8 @@
         (add-history! " ")
         (add-history! "selected index:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg))
+        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+        (list-index-content ark-record uuid))
       (suuid/journal-entry-uuid? uuid)
       (do
         (add-prompt)

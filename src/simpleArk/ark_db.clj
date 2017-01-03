@@ -28,6 +28,10 @@
          (fn [ark-value]
            ((:ark-value/update-ark ark-db) ark-value ark-db user-uuid je-uuid transaction-name s))))
 
+(defn process-notifications
+  [ark-db je-uuid]
+  (println :notifications je-uuid))
+
 (defn init-ark-db!
   "initializes the ark-atom with the value of the ark."
   [ark-db ark-value]

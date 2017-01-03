@@ -16,6 +16,7 @@
    (let [je-uuid (uuid/journal-entry-uuid ark-db)]
      (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
      (log/info! ark-db :transaction transaction-name s)
+     (ark-db/process-notifications ark-db je-uuid)
      je-uuid))
   ([ark-db user-uuid je-uuid transaction-name s]
    (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)

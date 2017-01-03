@@ -74,10 +74,17 @@
 
 (defn get-client-capability-data
   [capability client-id]
-  (let [client (get-client-user-record client-id)]
-    (if client
-      (let [user-data (:user-data client)]
+  (let [user-record (get-client-user-record client-id)]
+    (if user-record
+      (let [user-data (:user-data user-record)]
         (get user-data capability))
+      nil)))
+
+#_(defn get-client-capability-uuid
+  [capability client-id]
+  (let [user-uuid (get-client-user-uuid client-id)]
+    (if (some? user-uuid)
+      ()
       nil)))
 
 (defn valid-user-data?

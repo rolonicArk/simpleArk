@@ -50,7 +50,7 @@
                   v (val e)]
               (validate-property-path path)
               (if (and (or (bi-rel? kw) (rel? kw) (inv-rel? kw))
-                       (not (uuid? (nth path 1))))
+                       (not (uuid? (last path))))
                 #?(:clj  (throw (Exception. (str path " does not contain a UUID")))
                    :cljs (throw (str path " is not assigned a UUID"))))))
           nil

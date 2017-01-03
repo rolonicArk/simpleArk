@@ -13,7 +13,8 @@
         (builder/build-gen-uuid capability-kw)
         (builder/build-property capability-kw [:index/name] (str capability "-capability"))
         (builder/build-property capability-kw [:index/capability-name] capability)
-        (builder/build-property capability-kw [:index/headline] (str  "capability " capability)))))
+        (builder/build-property capability-kw [:index/headline] (str  "capability " capability))
+        (builder/build-property capability-kw [:content/on-change] capability))))
 
 (defn add-contact
   [actions contact]

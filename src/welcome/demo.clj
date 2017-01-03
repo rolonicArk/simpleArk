@@ -10,22 +10,22 @@
             [simpleArk.actions]))
 
 (users/add-user! "Fred" {:welcome {:full-name "Freddy Krueger"}
-                                :profile {}
+                                :profile {:phone "999-555-1212" :email "fk@blood.org"}
                                 :contacts {}
                                 :console {}
                                 })
 (users/add-user! "Sam" {:welcome {:full-name "Sam I Am"}
-                              :profile {}
+                              :profile {:phone "123-555-6789"}
                               :contacts {}
                               :console {}
                               })
 (users/add-user! "Kris" {:welcome {:full-name "Kris Kringle"}
                                 :profile {}})
 
-(users/add-capability :welcome)
-(users/add-capability :profile)
-(users/add-capability :contacts)
-(users/add-capability :console)
+(users/add-capability! :welcome)
+(users/add-capability! :profile)
+(users/add-capability! :contacts)
+(users/add-capability! :console)
 
 (ark-db/open-ark! users/ark-db)
 

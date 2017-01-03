@@ -24,33 +24,40 @@
 
 (def common-data (atom {}))
 
-(defn add-capability
+(defn add-capability!
   [capability]
   (if (= -1 (.indexOf @capabilities capability))
     (swap! capabilities conj capability)))
 
-(defrecord user [name user-data])
+(defrecord UserRecord [name user-data])
 
-(def users (atom (sorted-map)))
+(def user-records (atom (sorted-map)))
 
 (defn add-user!
   [name user-data]
-  (swap! users assoc name (->user name user-data)))
+  (swap! user-records assoc name (->UserRecord name user-data)))
 
-(defn get-user
+(defn get-user-record
   [name]
-  (@users name))
+  (@user-records name))
 
-(defrecord session [client-id name user-capabilities user-uuid])
+(defrecord SessionRecord [client-id name user-capabilities user-uuid])
 
-(def by-client-id (atom {}))
-(def by-name (atom {}))
+(def session-record-by-client-id (atom {}))
+(def session-record-by-name (atom {}))
 
-(defn get-client-user
+(defn get-client-user-record
   [client-id]
-  (let [session (@by-client-id client-id)]
+  (let [session (@session-record-by-client-id client-id)]
     (if session
-      (get-user (:name session))
+      (get-user-record (:name session))
+      nil)))
+
+(defn get-client-user-uuid
+  [client-id]
+  (let [session (@session-record-by-client-id client-id)]
+    (if session
+      (:user-uuid session)
       nil)))
 
 (defn get-common-data
@@ -65,9 +72,9 @@
                  capability-data (f capability-data)]
              (assoc cd capability capability-data)))))
 
-(defn get-client-data
+(defn get-client-capability-data
   [capability client-id]
-  (let [client (get-client-user client-id)]
+  (let [client (get-client-user-record client-id)]
     (if client
       (let [user-data (:user-data client)]
         (get user-data capability))
@@ -75,7 +82,7 @@
 
 (defn valid-user-data?
   [capability name]
-  (let [user (@users name)
+  (let [user (@user-records name)
         user-data (if user
                     (get user :user-data)
                     nil)]
@@ -89,27 +96,27 @@
   [capability name f]
   (if (valid-user-data? capability name)
     (do
-      (swap! users (fn [us] (s/transform [(s/keypath name) :user-data capability] f us)))
+      (swap! user-records (fn [us] (s/transform [(s/keypath name) :user-data capability] f us)))
       true)
     false))
 
 (defn swap-client-data!
   [capability client-id f]
-    (let [session (@by-client-id client-id)]
+    (let [session (@session-record-by-client-id client-id)]
       (if session
         (swap-user-data! capability (:name session) f)
         false)))
 
 (defn broadcast! [msg-id data]
-  (let [uids (keys @by-client-id)
+  (let [uids (keys @session-record-by-client-id)
         msg [msg-id data]]
     (doseq [uid uids]
       (tiples/chsk-send! uid msg))))
 
 (defn close-session
   [session]
-  (swap! by-client-id dissoc (:client-id session))
-  (swap! by-name dissoc (:name session))
+  (swap! session-record-by-client-id dissoc (:client-id session))
+  (swap! session-record-by-name dissoc (:name session))
   (broadcast! :users/logged-in-notice [(:name session) nil])
   )
 
@@ -121,7 +128,7 @@
 (defmethod tiples/event-msg-handler :users/logout
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (let [client-id (:client-id ev-msg)
-        session (@by-client-id client-id)]
+        session (@session-record-by-client-id client-id)]
     (if session
       (logout session)))
   )
@@ -129,20 +136,20 @@
 (defmethod tiples/event-msg-handler :chsk/uidport-close
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (let [client-id (:client-id ev-msg)
-        session (@by-client-id client-id)]
+        session (@session-record-by-client-id client-id)]
     (if session
       (close-session session)))
   )
 
 (defn add-session
   [client-id name user-uuid]
-  (let [session (@by-client-id client-id)]
+  (let [session (@session-record-by-client-id client-id)]
     (if session
       (logout session)))
-  (let [session (@by-name name)]
+  (let [session (@session-record-by-name name)]
     (if session
       (logout session)))
-  (let [user (get-user name)
+  (let [user (get-user-record name)
         user-data (:user-data user)
         user-capabilities (keys user-data)
         select-capabilities (reduce
@@ -152,10 +159,10 @@
                                   r))
                               []
                               @capabilities)
-        session (->session client-id name user-capabilities user-uuid)
+        session (->SessionRecord client-id name user-capabilities user-uuid)
         select-common-data (select-keys @common-data user-capabilities)]
-    (swap! by-client-id assoc client-id session)
-    (swap! by-name assoc name session)
+    (swap! session-record-by-client-id assoc client-id session)
+    (swap! session-record-by-name assoc name session)
     (tiples/chsk-send! client-id
                        [:users/logged-in
                         [select-capabilities select-common-data user-data]

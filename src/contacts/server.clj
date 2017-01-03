@@ -14,7 +14,7 @@
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (let [client-id (:client-id ev-msg)
         contact (:contact ?data)]
-    (when (users/get-client-data :contacts client-id)
+    (when (users/get-client-capability-data :contacts client-id)
       (when (users/swap-common-data! :contacts
                                    (fn [contacts]
                                      (disj contacts contact))
@@ -25,7 +25,7 @@
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (let [client-id (:client-id ev-msg)
         contact (:contact ?data)]
-    (when (users/get-client-data :contacts client-id)
+    (when (users/get-client-capability-data :contacts client-id)
       (when (users/swap-common-data! :contacts
                                    (fn [contacts] (conj contacts contact))
                                    #{})

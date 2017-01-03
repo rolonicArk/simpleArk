@@ -70,6 +70,7 @@
       (build-user-capability "Sam" "welcome")
       (builder/build-property :local/Sam-welcome [:content/full-name] "Sam I Am")
       (build-user-capability "Sam" "profile")
+      (builder/build-property :local/Sam-profile [:content/data :phone] "333-555-9876")
       (builder/build-relation :rel/watched :local/profile-capability :local/Sam-profile)
       (build-user-capability "Sam" "contacts")
       (build-user-capability "Sam" "console")

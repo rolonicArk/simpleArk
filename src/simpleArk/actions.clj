@@ -66,8 +66,10 @@
     [local ark-record]))
 
 (defmethod action :relation
-  [[local ark-record] ark-db [kw uuid-a uuid-b]]
-  (let [uuid-a (fetch local uuid-a)
+  [[local ark-record] ark-db [kw vec-a vec-b]]
+  (let [uuid-a (first vec-a)
+        uuid-b (first vec-b)
+        uuid-a (fetch local uuid-a)
         uuid-b (fetch local uuid-b)
         kw-name (name kw)
         inv-kw (cond

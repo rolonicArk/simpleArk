@@ -61,23 +61,33 @@
       nil)))
 
 (defn get-common-data
-  [capability]
-  (capability @common-data))
+  [capability-kw]
+  (capability-kw @common-data))
+
+(defn get-capability-index-uuid
+  [ark-record]
+  (arkRecord/get-index-uuid ark-record :index/capability-name))
+
+(defn get-capability-uuid
+  [ark-record capability-kw]
+  (let [capabiity-name (name capability-kw)
+        capability-index-uuid (get-capability-index-uuid ark-record)]
+    (first (index-lookup ark-record capability-index-uuid capabiity-name))))
 
 (defn swap-common-data!
-  [capability f default]
+  [capability-kw f default]
   (swap! common-data
          (fn [cd]
-           (let [capability-data (get cd capability default)
+           (let [capability-data (get cd capability-kw default)
                  capability-data (f capability-data)]
-             (assoc cd capability capability-data)))))
+             (assoc cd capability-kw capability-data)))))
 
 (defn get-client-capability-data
-  [capability client-id]
+  [capability-kw client-id]
   (let [user-record (get-client-user-record client-id)]
     (if user-record
       (let [user-data (:user-data user-record)]
-        (get user-data capability))
+        (get user-data capability-kw))
       nil)))
 
 #_(defn get-client-capability-uuid

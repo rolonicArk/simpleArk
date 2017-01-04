@@ -16,8 +16,8 @@
   (conj actions [(first path) :je path value]))
 
 (defn build-relation
-  [actions kw vec-a vec-b]
-  (conj actions [kw vec-a vec-b]))
+  [actions kw uuid-a uuid-b value]
+  (conj actions [kw uuid-a uuid-b value]))
 
 (defn build-locate-first
   [actions local-kw index-kw value]

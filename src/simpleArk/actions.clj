@@ -44,14 +44,6 @@
     (s local)
     s))
 
-(defn fetch-vec
-  [local v]
-  (reduce
-    (fn [v e]
-      (conj v (fetch local e)))
-    []
-    v))
-
 (defn make-rolon
   [ark-record rolon-uuid]
   (if (arkRecord/get-rolon ark-record rolon-uuid)
@@ -74,20 +66,19 @@
     [local ark-record]))
 
 (defmethod action :relation
-  [[local ark-record] ark-db [kw vec-a vec-b]]
-  (let [vec-a (fetch-vec local vec-a)
-        vec-b (fetch-vec local vec-b)
-        uuid-a (last vec-a)
-        uuid-b (last vec-b)
-        kw-name (name kw)
+  [[local ark-record] ark-db [kw uuid-a uuid-b value]]
+  (let [kw-name (name kw)
+        uuid-a (fetch local uuid-a)
+        uuid-b (fetch local uuid-b)
+        value (fetch local value)
         inv-kw (cond
                  (mapish/rel? kw) (keyword "inv-rel" kw-name)
                  (mapish/inv-rel? kw) (keyword "rel" kw-name)
                  :else kw)
         ark-record (make-rolon ark-record uuid-a)
         ark-record (make-rolon ark-record uuid-b)
-        ark-record (ark-value/update-property ark-record ark-db uuid-a (into [kw] vec-b) true)
-        ark-record (ark-value/update-property ark-record ark-db uuid-b (into [inv-kw] vec-a) true)
+        ark-record (ark-value/update-property ark-record ark-db uuid-a [kw uuid-b] value)
+        ark-record (ark-value/update-property ark-record ark-db uuid-b [inv-kw uuid-a] value)
         ]
     [local ark-record]))
 

@@ -42,7 +42,7 @@
   [name]
   (@user-records name))
 
-(defrecord SessionRecord [client-id name user-capabilities user-uuid])
+(defrecord SessionRecord [client-id user-name user-capabilities user-uuid])
 
 (def session-record-by-client-id (atom {}))
 (def session-record-by-user-name (atom {}))
@@ -58,6 +58,13 @@
 (defn get-client-user-uuid
   [client-id]
   (let [session-record (@session-record-by-client-id client-id)]
+    (if session-record
+      (:user-uuid session-record)
+      nil)))
+
+(defn get-user-name-user-uuid
+  [user-name]
+  (let [session-record (@session-record-by-user-name user-name)]
     (if session-record
       (:user-uuid session-record)
       nil)))
@@ -92,14 +99,13 @@
         (get user-data capability-kw))
       nil)))
 
-(defn get-client-capability-uuid
-  ([capability-kw client-id]
-   (get-client-capability-uuid (ark-db/get-ark-record ark-db)
-                               capability-kw
-                               client-id))
-  ([ark-record capability-kw client-id]
+(defn get-user-capability-uuid
+  ([capability-kw user-uuid]
+   (get-user-capability-uuid (ark-db/get-ark-record ark-db)
+                             capability-kw
+                             user-uuid))
+  ([ark-record capability-kw user-uuid]
   (let [capability-uuid (get-capability-uuid ark-record capability-kw)
-        user-uuid (get-client-user-uuid client-id)
         links (if (some? user-uuid)
                           (mapish/mi-sub
                             (arkRecord/get-property-values ark-record user-uuid)
@@ -116,31 +122,25 @@
           links))
       nil))))
 
-(defn valid-user-data?
-  [capability name]
-  (let [user (@user-records name)
-        user-data (if user
-                    (get user :user-data)
-                    nil)]
-    (if user-data
-      (if (get user-data capability)
-        true
-        false)
-      false)))
+(defn get-client-capability-uuid
+  [capability-kw client-id]
+  (get-user-capability-uuid (ark-db/get-ark-record ark-db)
+                            capability-kw
+                            (get-client-user-uuid client-id)))
 
 (defn swap-user-data!
-  [capability name f]
-  (if (valid-user-data? capability name)
+  [capability-kw user-name f]
+  (if (get-user-capability-uuid capability-kw (get-user-name-user-uuid user-name))
     (do
-      (swap! user-records (fn [us] (s/transform [(s/keypath name) :user-data capability] f us)))
+      (swap! user-records (fn [us] (s/transform [(s/keypath user-name) :user-data capability-kw] f us)))
       true)
     false))
 
 (defn swap-client-data!
-  [capability client-id f]
+  [capability-kw client-id f]
     (let [session-record (@session-record-by-client-id client-id)]
       (if session-record
-        (swap-user-data! capability (:user-name session-record) f)
+        (swap-user-data! capability-kw (:user-name session-record) f)
         false)))
 
 (defn broadcast! [msg-id data]

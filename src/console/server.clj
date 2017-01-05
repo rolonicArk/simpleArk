@@ -31,8 +31,9 @@
         tran-keyword (:tran-keyword ?data)
         tran-data (:tran-data ?data)
         session (@users/session-record-by-client-id client-id)
-        user-uuid (if session (:user-uuid session)
-                              nil)]
+        user-uuid (if session
+                    (:user-uuid session)
+                    nil)]
     (when (users/get-client-capability-data :console client-id)
       (try
         (println :transaction tran-keyword tran-data)

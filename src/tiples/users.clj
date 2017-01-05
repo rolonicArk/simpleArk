@@ -29,7 +29,7 @@
   (if (= -1 (.indexOf @capabilities capability))
     (swap! capabilities conj capability)))
 
-(defrecord UserRecord [name user-data])
+(defrecord UserRecord [user-name user-data])
 
 (def user-records (atom (sorted-map)))
 
@@ -44,20 +44,21 @@
 (defrecord SessionRecord [client-id name user-capabilities user-uuid])
 
 (def session-record-by-client-id (atom {}))
-(def session-record-by-name (atom {}))
+(def session-record-by-user-name (atom {}))
+(def session-record-by-user-uuid (atom {}))
 
 (defn get-client-user-record
   [client-id]
-  (let [session (@session-record-by-client-id client-id)]
-    (if session
-      (get-user-record (:name session))
+  (let [session-record (@session-record-by-client-id client-id)]
+    (if session-record
+      (get-user-record (:user-name session-record))
       nil)))
 
 (defn get-client-user-uuid
   [client-id]
-  (let [session (@session-record-by-client-id client-id)]
-    (if session
-      (:user-uuid session)
+  (let [session-record (@session-record-by-client-id client-id)]
+    (if session-record
+      (:user-uuid session-record)
       nil)))
 
 (defn get-common-data
@@ -72,7 +73,7 @@
   [ark-record capability-kw]
   (let [capabiity-name (name capability-kw)
         capability-index-uuid (get-capability-index-uuid ark-record)]
-    (first (index-lookup ark-record capability-index-uuid capabiity-name))))
+    (first (arkRecord/index-lookup ark-record capability-index-uuid capabiity-name))))
 
 (defn swap-common-data!
   [capability-kw f default]
@@ -91,7 +92,7 @@
       nil)))
 
 #_(defn get-client-capability-uuid
-  [capability client-id]
+  [ark-record capability-kw client-id]
   (let [user-uuid (get-client-user-uuid client-id)]
     (if (some? user-uuid)
       ()
@@ -119,9 +120,9 @@
 
 (defn swap-client-data!
   [capability client-id f]
-    (let [session (@session-record-by-client-id client-id)]
-      (if session
-        (swap-user-data! capability (:name session) f)
+    (let [session-record (@session-record-by-client-id client-id)]
+      (if session-record
+        (swap-user-data! capability (:user-name session-record) f)
         false)))
 
 (defn broadcast! [msg-id data]
@@ -131,10 +132,11 @@
       (tiples/chsk-send! uid msg))))
 
 (defn close-session
-  [session]
-  (swap! session-record-by-client-id dissoc (:client-id session))
-  (swap! session-record-by-name dissoc (:name session))
-  (broadcast! :users/logged-in-notice [(:name session) nil])
+  [session-record]
+  (swap! session-record-by-client-id dissoc (:client-id session-record))
+  (swap! session-record-by-user-name dissoc (:user-name session-record))
+  (swap! session-record-by-user-uuid dissoc (:user-uuid session-record))
+  (broadcast! :users/logged-in-notice [(:user-name session-record) nil])
   )
 
 (defn logout
@@ -159,14 +161,14 @@
   )
 
 (defn add-session
-  [client-id name user-uuid]
-  (let [session (@session-record-by-client-id client-id)]
+  [client-id user-name user-uuid]
+  (let [session-record (@session-record-by-client-id client-id)]
+    (if session-record
+      (logout session-record)))
+  (let [session (@session-record-by-user-name user-name)]
     (if session
       (logout session)))
-  (let [session (@session-record-by-name name)]
-    (if session
-      (logout session)))
-  (let [user (get-user-record name)
+  (let [user (get-user-record user-name)
         user-data (:user-data user)
         user-capabilities (keys user-data)
         select-capabilities (reduce
@@ -176,16 +178,17 @@
                                   r))
                               []
                               @capabilities)
-        session (->SessionRecord client-id name user-capabilities user-uuid)
+        session (->SessionRecord client-id user-name user-capabilities user-uuid)
         select-common-data (select-keys @common-data user-capabilities)]
     (swap! session-record-by-client-id assoc client-id session)
-    (swap! session-record-by-name assoc name session)
+    (swap! session-record-by-user-name assoc user-name session)
+    (swap! session-record-by-user-uuid assoc (:user-uuid session) session)
     (tiples/chsk-send! client-id
                        [:users/logged-in
                         [select-capabilities select-common-data user-data]
                         ]
                        )
-    (broadcast! :users/logged-in-notice [name user-capabilities])
+    (broadcast! :users/logged-in-notice [user-name user-capabilities])
     ))
 
 (defmethod tiples/event-msg-handler :users/login

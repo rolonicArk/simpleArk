@@ -34,7 +34,7 @@
         user-uuid (if session
                     (:user-uuid session)
                     nil)]
-    (when (users/get-client-capability-data :console client-id)
+    (when (users/get-client-capability-uuid :console client-id)
       (try
         (println :transaction tran-keyword tran-data)
         (let [je-uuid (ark-db/process-transaction! users/ark-db user-uuid tran-keyword tran-data)]

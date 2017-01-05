@@ -8,7 +8,8 @@
             [simpleArk.ark-db0 :as ark-db0]
             [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.uuidi :as uuidi]
-            [simpleArk.closer :as closer]))
+            [simpleArk.closer :as closer]
+            [simpleArk.mapish :as mapish]))
 
 (def ark-db ((comp
                (ark-db/builder)
@@ -67,7 +68,7 @@
 
 (defn get-capability-index-uuid
   [ark-record]
-  (arkRecord/get-index-uuid ark-record :index/capability-name))
+  (arkRecord/get-index-uuid ark-record "capability-name"))
 
 (defn get-capability-uuid
   [ark-record capability-kw]
@@ -91,12 +92,29 @@
         (get user-data capability-kw))
       nil)))
 
-#_(defn get-client-capability-uuid
-  [ark-record capability-kw client-id]
-  (let [user-uuid (get-client-user-uuid client-id)]
-    (if (some? user-uuid)
-      ()
-      nil)))
+(defn get-client-capability-uuid
+  ([capability-kw client-id]
+   (get-client-capability-uuid (ark-db/get-ark-record ark-db)
+                               capability-kw
+                               client-id))
+  ([ark-record capability-kw client-id]
+  (let [capability-uuid (get-capability-uuid ark-record capability-kw)
+        user-uuid (get-client-user-uuid client-id)
+        links (if (some? user-uuid)
+                          (mapish/mi-sub
+                            (arkRecord/get-property-values ark-record user-uuid)
+                            [:inv-rel/user])
+                          nil)]
+    (if (some? links)
+      (first
+        (keep
+          (fn [l]
+            (let [v (val l)]
+              (if (= v capability-uuid)
+                (second (key l))
+                nil)))
+          links))
+      nil))))
 
 (defn valid-user-data?
   [capability name]

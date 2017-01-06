@@ -105,22 +105,22 @@
                              capability-kw
                              user-uuid))
   ([ark-record capability-kw user-uuid]
-  (let [capability-uuid (get-capability-uuid ark-record capability-kw)
-        links (if (some? user-uuid)
-                          (mapish/mi-sub
-                            (arkRecord/get-property-values ark-record user-uuid)
-                            [:inv-rel/user])
-                          nil)]
-    (if (some? links)
-      (first
-        (keep
-          (fn [l]
-            (let [v (val l)]
-              (if (= v capability-uuid)
-                (second (key l))
-                nil)))
-          links))
-      nil))))
+   (let [capability-uuid (get-capability-uuid ark-record capability-kw)
+         links (if (some? user-uuid)
+                 (mapish/mi-sub
+                   (arkRecord/get-property-values ark-record user-uuid)
+                   [:inv-rel/user])
+                 nil)]
+     (if (some? links)
+       (first
+         (keep
+           (fn [l]
+             (let [v (val l)]
+               (if (= v capability-uuid)
+                 (second (key l))
+                 nil)))
+           links))
+       nil))))
 
 (defn get-user-capability-data
   [ark-record user-capability-uuid]
@@ -133,25 +133,27 @@
       [:content/data])))
 
 (defn get-user-data
-  [ark-record user-uuid]
-  (let [inv-user-properties
-        (mapish/mi-sub
-          (arkRecord/get-property-values ark-record user-uuid)
-          [:inv-rel/user])]
-    (reduce
-      (fn [m e]
-        (let [user-capability-uuid (second (key e))
-              capability-data (get-user-capability-data ark-record user-capability-uuid)
-              capability-uuid (val e)
-              capability-name
-              (arkRecord/get-property-value
-                ark-record
-                capability-uuid
-                [:index/capability-name])
-              capability-kw (keyword capability-name)]
-          (assoc m capability-kw capability-data)))
-      {}
-      inv-user-properties)))
+  ([user-uuid]
+   (get-user-data (ark-db/get-ark-record ark-db) user-uuid))
+  ([ark-record user-uuid]
+   (let [inv-user-properties
+         (mapish/mi-sub
+           (arkRecord/get-property-values ark-record user-uuid)
+           [:inv-rel/user])]
+     (reduce
+       (fn [m e]
+         (let [user-capability-uuid (second (key e))
+               capability-data (get-user-capability-data ark-record user-capability-uuid)
+               capability-uuid (val e)
+               capability-name
+               (arkRecord/get-property-value
+                 ark-record
+                 capability-uuid
+                 [:index/capability-name])
+               capability-kw (keyword capability-name)]
+           (assoc m capability-kw capability-data)))
+       {}
+       inv-user-properties))))
 
 (defn get-client-capability-uuid
   [capability-kw client-id]
@@ -169,10 +171,10 @@
 
 (defn swap-client-data!
   [capability-kw client-id f]
-    (let [session-record (@session-record-by-client-id client-id)]
-      (if session-record
-        (swap-user-data! capability-kw (:user-name session-record) f)
-        false)))
+  (let [session-record (@session-record-by-client-id client-id)]
+    (if session-record
+      (swap-user-data! capability-kw (:user-name session-record) f)
+      false)))
 
 (defn broadcast! [msg-id data]
   (let [uids (keys @session-record-by-client-id)
@@ -248,8 +250,8 @@
         index-uuid (arkRecord/get-index-uuid ark-record "user-name")
         user-uuid (first (arkRecord/index-lookup ark-record index-uuid name))
         real-password (if user-uuid
-            (arkRecord/get-property-value ark-record user-uuid [:content/password])
-            nil)
+                        (arkRecord/get-property-value ark-record user-uuid [:content/password])
+                        nil)
         password (:password ?data)]
     (if (and user-uuid (= password real-password))
       (add-session client-id name user-uuid)

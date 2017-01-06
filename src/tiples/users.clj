@@ -124,7 +124,9 @@
 
 (defn get-user-capability-data
   [ark-record user-capability-uuid]
-  (into
+  (reduce
+    (fn [m e]
+      (assoc m (second (key e)) (val e)))
     {}
     (mapish/mi-sub
       (arkRecord/get-property-values ark-record user-capability-uuid)

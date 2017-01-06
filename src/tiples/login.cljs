@@ -8,10 +8,10 @@
 (defmulti add-body-element identity)
 
 (def started (j/cell false))
-(j/defc capabilities nil)
+(def capabilities (j/cell nil))
 (def common-data (j/cell nil))
-(j/defc user-data nil)
-(j/defc user-name "")
+(def user-data (j/cell nil))
+(def user-name (j/cell ""))
 (def error (j/cell false))
 (def route (h/route-cell "#/home/"))
 

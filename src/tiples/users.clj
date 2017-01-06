@@ -122,6 +122,18 @@
           links))
       nil))))
 
+(defn get-user-capability-data
+  [ark-record capability-kw user-uuid]
+  (let [user-capability-uuid (get-user-capability-uuid ark-record capability-kw user-uuid)
+        data-properties (if (nil? user-capability-uuid)
+                          nil
+                          (into
+                            {}
+                            (mapish/mi-sub
+                              (arkRecord/get-property-values ark-record user-capability-uuid)
+                              [:content/data])))]
+    data-properties))
+
 (defn get-client-capability-uuid
   [capability-kw client-id]
   (get-user-capability-uuid (ark-db/get-ark-record ark-db)

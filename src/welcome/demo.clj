@@ -9,18 +9,9 @@
             [welcome.demo-builds :as demo-builds]
             [simpleArk.actions]))
 
-(users/add-user! "Fred" {:welcome {:full-name "Freddy Krueger"}
-                         :profile {:phone "999-555-1212" :email "fk@blood.org"}
-                         :contacts {}
-                         :console {}
-                         })
-(users/add-user! "Sam" {:welcome {:full-name "Sam I Am"}
-                        :profile {:phone "123-555-6789"}
-                        :contacts {}
-                        :console {}
-                        })
-(users/add-user! "Kris" {:welcome {:full-name "Kris Kringle"}
-                         :profile {}})
+(users/add-user! "Fred" {:profile {:phone "999-555-1212" :email "fk@blood.org"}})
+(users/add-user! "Sam" {:profile {:phone "123-555-6789"}})
+(users/add-user! "Kris" {:profile {}})
 
 (users/add-capability! :welcome)
 (users/add-capability! :profile)

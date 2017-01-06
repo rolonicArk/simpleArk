@@ -220,7 +220,7 @@
     (if session
       (logout session)))
   (let [user (get-user-record user-name)
-        user-data (:user-data user)
+        user-data (get-user-data user-uuid)
         user-capabilities (keys user-data)
         select-capabilities (reduce
                               (fn [r a]

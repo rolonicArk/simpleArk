@@ -130,6 +130,27 @@
       (arkRecord/get-property-values ark-record user-capability-uuid)
       [:content/data])))
 
+(defn get-user-data
+  [ark-record user-uuid]
+  (let [inv-user-properties
+        (mapish/mi-sub
+          (arkRecord/get-property-values ark-record user-uuid)
+          [:inv-rel/user])]
+    (reduce
+      (fn [m e]
+        (let [user-capability-uuid (second (key e))
+              capability-data (get-user-capability-data ark-record user-capability-uuid)
+              capability-uuid (val e)
+              capability-name
+              (arkRecord/get-property-value
+                ark-record
+                capability-uuid
+                [:index/capability-name])
+              capability-kw (keyword capability-name)]
+          (assoc m capability-kw capability-data)))
+      {}
+      inv-user-properties)))
+
 (defn get-client-capability-uuid
   [capability-kw client-id]
   (get-user-capability-uuid (ark-db/get-ark-record ark-db)

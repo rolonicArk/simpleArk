@@ -10,17 +10,17 @@
             [simpleArk.actions]))
 
 (users/add-user! "Fred" {:welcome {:full-name "Freddy Krueger"}
-                                :profile {:phone "999-555-1212" :email "fk@blood.org"}
-                                :contacts {}
-                                :console {}
-                                })
+                         :profile {:phone "999-555-1212" :email "fk@blood.org"}
+                         :contacts {}
+                         :console {}
+                         })
 (users/add-user! "Sam" {:welcome {:full-name "Sam I Am"}
-                              :profile {:phone "123-555-6789"}
-                              :contacts {}
-                              :console {}
-                              })
+                        :profile {:phone "123-555-6789"}
+                        :contacts {}
+                        :console {}
+                        })
 (users/add-user! "Kris" {:welcome {:full-name "Kris Kringle"}
-                                :profile {}})
+                         :profile {}})
 
 (users/add-capability! :welcome)
 (users/add-capability! :profile)

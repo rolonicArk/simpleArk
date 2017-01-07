@@ -111,7 +111,7 @@
   (throw (Exception. (str (fetch local s)))))
 
 (defmethod action :replace-map
-  [[local ark-record] ark-db m prefix rolon-uuid]
+  [[local ark-record] ark-db [kw m prefix rolon-uuid]]
   (let [m (fetch local m)
         prefix (fetch local prefix)
         rolon-uuid (fetch local rolon-uuid)

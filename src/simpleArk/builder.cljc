@@ -39,6 +39,10 @@
   [actions msg]
   (conj actions [:exception msg]))
 
+(defn build-replace-map
+  [actions m prefix rolon-uuid]
+  (conj actions [:replace-map m prefix rolon-uuid]))
+
 #?(:clj
    (defn transaction!
      [ark-db local actions]

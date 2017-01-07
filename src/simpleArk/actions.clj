@@ -112,7 +112,10 @@
 
 (defmethod action :replace-map
   [[local ark-record] ark-db m prefix rolon-uuid]
-  (let [mi (reduce
+  (let [m (fetch local m)
+        prefix (fetch local prefix)
+        rolon-uuid (fetch local rolon-uuid)
+        mi (reduce
             (fn [m e]
               (assoc m (into prefix (key e)) (val e)))
             (ark-value/create-mi ark-db)

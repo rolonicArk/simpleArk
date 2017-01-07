@@ -88,8 +88,8 @@
         value (fetch local value)
         index-uuid (arkRecord/get-index-uuid ark-record (name index-kw))
         rolon-uuid (if (nil? index-uuid)
-                            nil
-                            (first (arkRecord/index-lookup ark-record index-uuid value)))
+                     nil
+                     (first (arkRecord/index-lookup ark-record index-uuid value)))
         local (assoc local local-kw rolon-uuid)]
     [local ark-record]))
 
@@ -109,3 +109,23 @@
   [[local ark-record] ark-db [kw s]]
   (println "throwing exception")
   (throw (Exception. (str (fetch local s)))))
+
+(defmethod action :replace-map
+  [[local ark-record] ark-db m prefix rolon-uuid]
+  (let [mi (reduce
+            (fn [m e]
+              (assoc m (into prefix (key e)) (val e)))
+            (ark-value/create-mi ark-db)
+            m)
+        mi (reduce
+            (fn [m e]
+              (let [k (key e)]
+                (if (contains? m k)
+                  m
+                  (assoc m k nil))))
+            mi
+            (mapish/mi-sub
+              (arkRecord/get-property-values ark-record rolon-uuid)
+              prefix))
+        ark-record (ark-value/make-rolon ark-record ark-db rolon-uuid mi)]
+    [local ark-record]))

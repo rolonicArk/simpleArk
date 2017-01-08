@@ -1,5 +1,9 @@
 (ns simpleArk.uuid
-  (:require #?(:clj [clj-uuid :refer [get-version get-instant]]))
+  #?(:clj (:require
+       [clj-uuid :refer [get-version get-instant]]
+       [simpleArk.reader :as reader])
+     :cljs (:require
+               [cljs.reader :as reader]))
   #?(:clj
      (:import (java.util UUID)
               (java.lang Comparable))))
@@ -22,6 +26,17 @@
      IComparable
      (-compare [x y]
        (compare value (.value y)))))
+
+(defn load-timestamp
+  [m]
+  (->Timestamp (:value m)))
+
+#?(:clj
+   (defn register
+     [component-map]
+     (reader/register-tag-parser! component-map 'uuid/Timestamp load-timestamp))
+   :cljs
+   (reader/register-tag-parser! "uuid/Timestamp" load-timestamp))
 
 (defn timestamp [uuid]
   (let [s (prn-str uuid)]

@@ -14,7 +14,8 @@
             [simpleArk.miMap :as miMap]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
-            [simpleArk.actions]))
+            [simpleArk.actions]
+            [simpleArk.uuid :as uuid]))
 
 (set! *warn-on-reflection* true)
 
@@ -206,6 +207,7 @@
                  (logt/builder)
                  (reader/builder))
                 {}))
+  (uuid/register ark-db)
   (miMap/register ark-db)
   (arkRecord/register ark-db)
   (rolonRecord/register ark-db)

@@ -17,7 +17,7 @@
             [simpleArk.actions]
             [simpleArk.builder :as builder]
             [welcome.demo-builds :as demo-builds]
-            ))
+            [simpleArk.uuid :as uuid]))
 
 (set! *warn-on-reflection* true)
 
@@ -120,6 +120,7 @@
                  (logt/builder)
                  (reader/builder))
                 {}))
+  (uuid/register ark-db)
   (miMap/register ark-db)
   (arkRecord/register ark-db)
   (rolonRecord/register ark-db)

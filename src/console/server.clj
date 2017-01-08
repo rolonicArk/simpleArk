@@ -10,7 +10,8 @@
             [simpleArk.reader :as reader]
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.arkRecord :as arkRecord]
-            [simpleArk.miMap :as miMap]))
+            [simpleArk.miMap :as miMap]
+            [simpleArk.uuid :as uuid]))
 
 (defn update-ark-record!
   [ark-record]
@@ -20,6 +21,7 @@
 
 (defn initializer
   []
+  (uuid/register users/ark-db)
   (miMap/register users/ark-db)
   (arkRecord/register users/ark-db)
   (rolonRecord/register users/ark-db)

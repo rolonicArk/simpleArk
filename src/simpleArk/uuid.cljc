@@ -1,13 +1,29 @@
 (ns simpleArk.uuid
   (:require #?(:clj [clj-uuid :refer [get-version get-instant]]))
-  #?(:clj (:import (java.util UUID))))
+  #?(:clj
+     (:import (java.util UUID)
+              (java.lang Comparable))))
 
 #?(:clj
    (set! *warn-on-reflection* true))
 
 #?(:cljs
    (defn get-version [uuid]
-     (js/parseInt (subs (prn-str uuid)  21 22))))
+     (js/parseInt (subs (prn-str uuid) 21 22))))
+
+#?(:clj
+   (deftype Timestamp [value]
+     Comparable
+     (compareTo [this o]
+       (let [^Timestamp o o]
+         (compare value (.value o)))))
+   :cljs
+   (deftype Timestamp [value]
+     IComparable
+     (-compare [x y]
+       (compare value (.value y)))))
+
+(def x (compare 1 2))
 
 (defn timestamp [uuid]
   (let [s (prn-str uuid)]
@@ -19,7 +35,7 @@
        (js/parseInt
          (str (subs s 22 25) (subs s 16 20) (subs s 7 15))
          16)
-    )))
+       )))
 
 (defn posix-time [ts]
   (- (quot ts 10000) 12219292800000))
@@ -47,7 +63,7 @@
     (timestamp uuid)
     uuid))
 
-#?(:clj (defn create-uuid [s] (UUID/fromString s))
+#?(:clj  (defn create-uuid [s] (UUID/fromString s))
    :cljs (defn create-uuid [s] (uuid s)))
 
 #?(:clj

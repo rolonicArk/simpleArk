@@ -14,10 +14,11 @@
     [cljs-time.coerce :as cotime]
     [cljs-time.format :as ftime]))
 
+(defn ldt [tm]
+  (time/to-default-time-zone (cotime/to-date-time tm)))
+
 (defn local-date-time [uuid]
-  (let [tm (suuid/get-time uuid)
-        dt (cotime/to-date-time tm)]
-    (time/to-default-time-zone dt)))
+  (ldt (suuid/get-time uuid)))
 
 (def format-date-time (ftime/formatters :mysql))
 (def format-time (ftime/formatters :hour-minute-second))
@@ -191,19 +192,27 @@
                          ))
                      nw)))))
 
-(defn pretty-uuid
-  [ark-record uuid]
-  (cond
-    (suuid/journal-entry-uuid? uuid)
-    (ftime/unparse format-date-time (local-date-time uuid))
-    (suuid/random-uuid? uuid)
-    (let [name (arkRecord/get-property-value ark-record uuid [:index/name])]
-      (if name name ""))
-    (suuid/index-uuid? uuid)
-    (let [index-name (arkRecord/get-property-value ark-record uuid [:index/index.name])]
-      (if index-name (str ":index/" index-name) ""))
-    :else
-    (str uuid)))
+(defn pretty-value
+  [ark-record value]
+  (if (uuid? value)
+    (cond
+      (suuid/journal-entry-uuid? value)
+      (ftime/unparse format-date-time (local-date-time value))
+      (suuid/random-uuid? value)
+      (let [name (arkRecord/get-property-value ark-record value [:index/name])]
+        (if name name ""))
+      (suuid/index-uuid? value)
+      (let [index-name (arkRecord/get-property-value ark-record value [:index/index.name])]
+        (if index-name (str ":index/" index-name) ""))
+      :else
+      (pr-str value))
+    (if (instance? suuid/Timestamp value)
+      (let [^suuid/Timestamp timestamp value
+            ts (.-value timestamp)
+            tm (suuid/posix-time ts)
+            ldt (ldt tm)]
+        (ftime/unparse format-date-time ldt))
+      (pr-str value))))
 
 (declare uuid-click)
 
@@ -222,7 +231,7 @@
       (do
         (add-history! "alternate rolon:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
+        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn micro-property-style [] "color:chocolate;cursor:pointer")
 
@@ -253,7 +262,7 @@
       (history-path! ark-record path)
       (add-history! " in ")
       (add-history!
-        (pretty-uuid ark-record uuid)
+        (pretty-value ark-record uuid)
         (clickable-styles uuid)
         uuid-click
         @selected-rolon)
@@ -263,7 +272,7 @@
       (output-path! ark-record path)
       (add-output! " in ")
       (add-output!
-        (pretty-uuid ark-record uuid)
+        (pretty-value ark-record uuid)
         (clickable-styles uuid)
         uuid-click
         @selected-rolon)
@@ -280,7 +289,7 @@
             (do
               (add-output! " = ")
               (add-output!
-                (pretty-uuid ark-record pval)
+                (pretty-value ark-record pval)
                 (clickable-styles pval)
                 uuid-click
                 (str pval)))
@@ -309,7 +318,7 @@
                         (do
                           (add-output! " = ")
                           (add-output!
-                            (pretty-uuid ark-record value)
+                            (pretty-value ark-record value)
                             (clickable-styles value)
                             uuid-click
                             (str value)))
@@ -331,7 +340,7 @@
       (do
         (add-history! "selected rolon:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))
+        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))
     (reset! selected-path [])
     (explore ark-record uuid [])))
 
@@ -345,7 +354,7 @@
                       "index.name" ()
                       "name" ()
                       (add-output! k bold-style))
-                    (add-output! (pretty-uuid ark-record v)
+                    (add-output! (pretty-value ark-record v)
                                  (clickable-styles v) uuid-click (str v))
                     (if (not= name "headline")
                       (let [headline (arkRecord/get-property-value
@@ -363,7 +372,7 @@
   (add-history! "list index content\n" command-prefix-style)
   (clear-output!)
   (add-output! "index: ")
-  (add-output! (str (pretty-uuid ark-record index-uuid) "\n")
+  (add-output! (str (pretty-value ark-record index-uuid) "\n")
                (clickable-styles index-uuid)
                uuid-click
                (str index-uuid))
@@ -384,7 +393,7 @@
         (add-history! " ")
         (add-history! "selected index:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
         (list-index-content ark-record uuid))
       (suuid/journal-entry-uuid? uuid)
       (do
@@ -392,7 +401,7 @@
         (add-history! " ")
         (add-history! "selected time:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-uuid ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
         (reset! old-ark-record (:console @login/common-data))
         (reset! selected-time arg))
       (suuid/random-uuid? uuid)
@@ -416,10 +425,10 @@
       (fn [space k]
         (if space (add! ", "))
         (if (uuid? k)
-          (add! (pretty-uuid ark-record k) (clickable-styles k) uuid-click (str k))
+          (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k))
           (if (and space rel)
             (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
-              (add! (pretty-uuid ark-record je-uuid) (clickable-styles je-uuid) uuid-click (str je-uuid)))
+              (add! (pretty-value ark-record je-uuid) (clickable-styles je-uuid) uuid-click (str je-uuid)))
             (add! (pr-str k))))
         true)
       false path)
@@ -449,10 +458,10 @@
               (mapish/rel? fk)
               (mapish/inv-rel? fk))]
     (if (uuid? k)
-      (pretty-uuid @my-ark-record k)
+      (pretty-value @my-ark-record k)
       (if (and s rel)
         (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
-          (pretty-uuid ark-record je-uuid))
+          (pretty-value ark-record je-uuid))
         (pr-str k)))))
 
 (defn display-selected-path []

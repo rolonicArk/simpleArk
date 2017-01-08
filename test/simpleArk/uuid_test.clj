@@ -1,7 +1,8 @@
 (ns simpleArk.uuid-test
   (:require [clojure.test :refer :all]
             [simpleArk.uuid :refer [get-time]]
-            [clj-uuid :as uuid]))
+            [clj-uuid :as uuid])
+  (:import (simpleArk.uuid Timestamp)))
 
 (set! *warn-on-reflection* true)
 
@@ -25,5 +26,6 @@
   (is (uuid/uuid? uuid0))
 
   (println (pr-str (simpleArk.uuid/timestamp uuid1)))
+  (println (instance? Timestamp (simpleArk.uuid/timestamp uuid1)))
   (println (pr-str (simpleArk.uuid/get-time uuid1)))
   )

@@ -128,13 +128,15 @@
   "color:YellowGreen;cursor:pointer")
 
 (defn clickable-styles
-  [uuid]
+  [value]
   (cond
-    (suuid/journal-entry-uuid? uuid)
+    (instance? suuid/Timestamp value)
     clickable-je-style
-    (suuid/index-uuid? uuid)
+    (suuid/journal-entry-uuid? value)
+    clickable-je-style
+    (suuid/index-uuid? value)
     clickable-index-style
-    (suuid/random-uuid? uuid)
+    (suuid/random-uuid? value)
     clickable-application-style
     ))
 
@@ -191,6 +193,11 @@
                            (.scrollIntoView b true))
                          ))
                      nw)))))
+
+(defn clickable? [value]
+  (or
+    (uuid? value)
+    (instance? suuid/Timestamp value)))
 
 (defn pretty-value
   [ark-record value]
@@ -285,7 +292,7 @@
         (when (some? pval)
           (add-output! "\n   ")
           (output-path! ark-record path)
-          (if (uuid? pval)
+          (if (clickable? pval)
             (do
               (add-output! " = ")
               (add-output!
@@ -314,7 +321,7 @@
                     (output-path! ark-record e-path)
                     (if (nil? value)
                       (add-output! (str " : " count))
-                      (if (uuid? value)
+                      (if (clickable? value)
                         (do
                           (add-output! " = ")
                           (add-output!
@@ -424,12 +431,9 @@
     (reduce
       (fn [space k]
         (if space (add! ", "))
-        (if (uuid? k)
+        (if (clickable? k)
           (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k))
-          (if (and space rel)
-            (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
-              (add! (pretty-value ark-record je-uuid) (clickable-styles je-uuid) uuid-click (str je-uuid)))
-            (add! (pr-str k))))
+          (add! (pr-str k)))
         true)
       false path)
     (add! "]")))
@@ -457,12 +461,9 @@
               (mapish/bi-rel? fk)
               (mapish/rel? fk)
               (mapish/inv-rel? fk))]
-    (if (uuid? k)
+    (if (clickable? k)
       (pretty-value @my-ark-record k)
-      (if (and s rel)
-        (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record k)]
-          (pretty-value ark-record je-uuid))
-        (pr-str k)))))
+      (pr-str k))))
 
 (defn display-selected-path []
   (h/span

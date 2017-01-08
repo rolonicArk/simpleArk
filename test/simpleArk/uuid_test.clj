@@ -24,5 +24,6 @@
   (is (uuid? uuid1))
   (is (uuid/uuid? uuid0))
 
-  (println (simpleArk.uuid/get-time uuid1))
+  (println (pr-str (simpleArk.uuid/timestamp uuid1)))
+  (println (pr-str (simpleArk.uuid/get-time uuid1)))
   )

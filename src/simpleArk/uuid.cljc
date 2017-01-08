@@ -1,9 +1,10 @@
 (ns simpleArk.uuid
-  #?(:clj (:require
-       [clj-uuid :refer [get-version get-instant]]
-       [simpleArk.reader :as reader])
+  #?(:clj
+           (:require
+             [clj-uuid :refer [get-version get-instant]]
+             [simpleArk.reader :as reader])
      :cljs (:require
-               [cljs.reader :as reader]))
+             [cljs.reader :as reader]))
   #?(:clj
      (:import (java.util UUID)
               (java.lang Comparable))))
@@ -28,8 +29,8 @@
        (compare value (.value y)))))
 
 (defn load-timestamp
-  [m]
-  (->Timestamp (:value m)))
+  [v]
+  (->Timestamp v))
 
 #?(:clj
    (defn register
@@ -38,23 +39,29 @@
    :cljs
    (reader/register-tag-parser! "uuid/Timestamp" load-timestamp))
 
+#?(:clj
+   (defmethod print-method Timestamp [^Timestamp this ^java.io.Writer w]
+     (.write w "#uuid/Timestamp ")
+     (.write w (str (.value this)))))
+
 (defn timestamp [uuid]
-  (let [s (prn-str uuid)]
-    #?(:clj
-       (java.lang.Long/parseLong
-         (str (subs s 22 25) (subs s 16 20) (subs s 7 15))
-         16)
-       :cljs
-       (js/parseInt
-         (str (subs s 22 25) (subs s 16 20) (subs s 7 15))
-         16)
-       )))
+  (let [s (prn-str uuid)
+        l #?(:clj
+             (java.lang.Long/parseLong
+               (str (subs s 22 25) (subs s 16 20) (subs s 7 15))
+               16)
+             :cljs
+             (js/parseInt
+               (str (subs s 22 25) (subs s 16 20) (subs s 7 15))
+               16)
+             )]
+    (->Timestamp l)))
 
 (defn posix-time [ts]
   (- (quot ts 10000) 12219292800000))
 
 (defn get-time [uuid]
-  (posix-time (timestamp uuid)))
+  (posix-time (.value (timestamp uuid))))
 
 (defn journal-entry-uuid?
   [uuid]

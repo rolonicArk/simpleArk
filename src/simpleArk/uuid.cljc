@@ -21,12 +21,13 @@
      Comparable
      (compareTo [this o]
        (let [^Timestamp o o]
-         (compare value (.value o)))))
+         (compare value (.-value o)))))
    :cljs
    (deftype Timestamp [value]
      IComparable
      (-compare [x y]
-       (compare value (.value y)))))
+       (let [^y Timestamp y]
+         (compare value (.-value y))))))
 
 (defn load-timestamp
   [v]
@@ -42,7 +43,7 @@
 #?(:clj
    (defmethod print-method Timestamp [^Timestamp this ^java.io.Writer w]
      (.write w "#uuid/Timestamp ")
-     (.write w (str (.value this)))))
+     (.write w (str (.-value this)))))
 
 (defn timestamp [uuid]
   (let [s (prn-str uuid)
@@ -61,7 +62,7 @@
   (- (quot ts 10000) 12219292800000))
 
 (defn get-time [uuid]
-  (posix-time (.value (timestamp uuid))))
+  (posix-time (.-value (timestamp uuid))))
 
 (defn journal-entry-uuid?
   [uuid]

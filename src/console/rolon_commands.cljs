@@ -17,7 +17,7 @@
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         properties (arkRecord/get-property-values ark-record uuid)]
     (client/add-output!
-      (client/pretty-uuid ark-record uuid)
+      (client/pretty-value ark-record uuid)
       (client/clickable-styles uuid)
       client/uuid-click
       @client/selected-rolon)
@@ -42,7 +42,7 @@
   (client/add-output! "all micro-property paths of ")
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         properties (arkRecord/get-changes-by-property ark-record uuid)]
-    (client/add-output! (client/pretty-uuid ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
+    (client/add-output! (client/pretty-value ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
     (client/add-output! ":\n\n")
     (reduce
       (fn [_ [path _]]
@@ -62,7 +62,7 @@
   (client/add-output! "modified micro-properties of ")
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         properties (arkRecord/get-changes-by-property ark-record uuid)]
-    (client/add-output! (client/pretty-uuid ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
+    (client/add-output! (client/pretty-value ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
     (client/add-output! ":\n\n")
     ;(mapish/debug [:properties properties])
     (reduce
@@ -89,7 +89,7 @@
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         all-properties (arkRecord/get-property-values ark-record uuid)
         properties (mapish/mi-sub all-properties [:inv-rel/modified])]
-    (client/add-output! (client/pretty-uuid ark-record uuid)
+    (client/add-output! (client/pretty-value ark-record uuid)
                         (client/clickable-styles uuid)
                         client/uuid-click
                         @client/selected-rolon)
@@ -98,7 +98,7 @@
       (fn [_ [path value]]
         (let [k (nth path 1)
               u (arkRecord/get-journal-entry-uuid ark-record k)]
-          (client/add-output! (client/pretty-uuid ark-record u) (client/clickable-styles u) client/uuid-click (str u))
+          (client/add-output! (client/pretty-value ark-record u) (client/clickable-styles u) client/uuid-click (str u))
           (let [headline (arkRecord/get-property-value
                            ark-record
                            u
@@ -123,7 +123,7 @@
         (h/text
           (if (= "" client/selected-rolon)
             "none"
-            (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/selected-rolon)))))
+            (client/pretty-value client/my-ark-record (suuid/create-uuid client/selected-rolon)))))
       )
 
     (h/div

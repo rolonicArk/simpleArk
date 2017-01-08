@@ -22,7 +22,7 @@
         (h/text
           (if (= "" client/selected-time)
             "now"
-            (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/selected-time))))))
+            (client/pretty-value client/my-ark-record (suuid/create-uuid client/selected-time))))))
 
     (h/div
       :css {:display "none"}
@@ -64,7 +64,7 @@
       (h/span
         :style "color:orange;cursor:pointer"
         :click #(client/uuid-click @client/my-ark-record @client/transaction-je-uuid-string)
-        (h/text (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/transaction-je-uuid-string)))))
+        (h/text (client/pretty-value client/my-ark-record (suuid/create-uuid client/transaction-je-uuid-string)))))
 
     (h/div
       :css {:display "none"}
@@ -75,6 +75,6 @@
         :style "color:orange;cursor:pointer"
         :click #(client/uuid-click @client/my-ark-record (str @client/latest-journal-entry-uuid))
         (h/text
-          (client/pretty-uuid client/my-ark-record client/latest-journal-entry-uuid)))
+          (client/pretty-value client/my-ark-record client/latest-journal-entry-uuid)))
       )
     ))

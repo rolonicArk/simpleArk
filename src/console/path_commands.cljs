@@ -19,7 +19,7 @@
     (client/history-path! ark-record path)
     (client/add-history! " in ")
     (client/add-history!
-      (client/pretty-uuid ark-record uuid)
+      (client/pretty-value ark-record uuid)
       (client/clickable-styles uuid)
       client/uuid-click
       @client/selected-rolon)
@@ -29,7 +29,7 @@
     (client/output-path! ark-record path)
     (client/add-output! " in ")
     (client/add-output!
-      (client/pretty-uuid ark-record uuid)
+      (client/pretty-value ark-record uuid)
       (client/clickable-styles uuid)
       client/uuid-click
       @client/selected-rolon)
@@ -37,7 +37,7 @@
     (reduce
       (fn [_ [[ts] v]]
         (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record ts)]
-          (client/add-output! (client/pretty-uuid
+          (client/add-output! (client/pretty-value
                                 ark-record
                                 je-uuid)
                               (client/clickable-styles uuid)

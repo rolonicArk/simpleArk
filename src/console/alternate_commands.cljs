@@ -21,7 +21,7 @@
         (h/text
           (if (= "" client/alternate-rolon)
             "none"
-            (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/alternate-rolon))))))
+            (client/pretty-value client/my-ark-record (suuid/create-uuid client/alternate-rolon))))))
 
     (h/div
       :css {:display "none"}

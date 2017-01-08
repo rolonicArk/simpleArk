@@ -21,7 +21,7 @@
         (h/text
           (if (= "" client/selected-index)
             "none"
-            (client/pretty-uuid client/my-ark-record (suuid/create-uuid client/selected-index))))))
+            (client/pretty-value client/my-ark-record (suuid/create-uuid client/selected-index))))))
 
     (h/div
       :css {:display "none"}

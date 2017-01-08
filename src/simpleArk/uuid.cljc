@@ -23,8 +23,6 @@
      (-compare [x y]
        (compare value (.value y)))))
 
-(def x (compare 1 2))
-
 (defn timestamp [uuid]
   (let [s (prn-str uuid)]
     #?(:clj

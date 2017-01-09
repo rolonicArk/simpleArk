@@ -18,10 +18,16 @@
 
 #?(:clj
    (deftype Timestamp [value]
+
      Comparable
      (compareTo [this o]
        (let [^Timestamp o o]
-         (compare value (.-value o)))))
+         (compare value (.-value o))))
+
+     Object
+     (equals [a b]
+       (let [b ^Timestamp b]
+         (= value (.-value b)))))
    :cljs
    (deftype Timestamp [value]
 

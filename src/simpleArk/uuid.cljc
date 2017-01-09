@@ -27,9 +27,21 @@
      Object
      (equals [a b]
        (let [b ^Timestamp b]
-         (= value (.-value b)))))
+         (= value (.-value b))))
+     (hashCode [this] (.hashCode value))
+     (toString [this] (str value)))
+   
    :cljs
    (deftype Timestamp [value]
+
+     Object
+     (toString [_] (str value))
+     (equiv [this other]
+       (-equiv this other))
+
+     IHash
+     (-hash [this]
+       (hash value))
 
      IPrintWithWriter
      (-pr-writer [_ writer _]

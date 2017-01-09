@@ -24,6 +24,15 @@
          (compare value (.-value o)))))
    :cljs
    (deftype Timestamp [value]
+
+     IPrintWithWriter
+     (-pr-writer [_ writer _]
+       (-write writer (str "#uuid/Timestamp " value)))
+
+     IEquiv
+     (-equiv [_ other]
+       (and (instance? Timestamp other) (identical? value (.-value other))))
+
      IComparable
      (-compare [x y]
        (let [^y Timestamp y]

@@ -69,6 +69,7 @@
       (fn [_ [path value]]
         (let [[[k] v] (first value)
               st (suuid/rolon-key (suuid/create-uuid @client/selected-time))]
+          ;(mapish/debug [:compare k st (= k st)])
           (when (= k st)
             (client/add-output! "=" client/micro-property-style client/micro-property-click path)
             (client/add-output! " ")

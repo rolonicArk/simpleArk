@@ -433,7 +433,6 @@
     (reduce
       (fn [space k]
         (if space (add! ", "))
-        (mapish/debug [:dp (clickable? k) k])
         (if (clickable? k)
           (if (instance? suuid/Timestamp k)
             (add! (pretty-value ark-record k)

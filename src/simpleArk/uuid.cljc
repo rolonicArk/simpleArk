@@ -30,7 +30,7 @@
          (= value (.-value b))))
      (hashCode [this] (.hashCode value))
      (toString [this] (str value)))
-   
+
    :cljs
    (deftype Timestamp [value]
 

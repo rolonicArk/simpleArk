@@ -27,14 +27,14 @@
                             ark-db
                             je-uuid
                             [:inv-rel/transaction user-uuid]
-                            true)
+                            user-uuid)
                           ark-value
                           (ark-value/update-property
                             ark-value
                             ark-db
                             user-uuid
                             [:rel/transaction je-uuid]
-                            true)]
+                            je-uuid)]
                       ark-value))
         ark-value (ark-value/eval-transaction ark-value ark-db transaction-name s)]
     (if (:selected-time ark-value)

@@ -138,6 +138,8 @@
     clickable-index-style
     (suuid/random-uuid? value)
     clickable-application-style
+    :else
+    default-style
     ))
 
 (defn no-click [arg])

@@ -75,7 +75,11 @@
             (client/add-output! " ")
             (client/output-path! ark-record path)
             (client/add-output! " ")
-            (client/add-output! (pr-str v))
+            (client/add-output!
+              (client/pretty-value ark-record v)
+              (client/clickable-styles v)
+              client/uuid-click
+              (str v))
             (client/add-output! "\n\n"))))
       nil properties)
     ))

@@ -187,24 +187,25 @@
                       (create-mi ark-db property-path property-value)))
 
 (defn update-relation
-  [ark-record ark-db relaton-name from-uuid to-uuid symmetrical add]
+  [ark-record ark-db relaton-name from-uuid from-label to-uuid to-label symmetrical add]
   (let [[rel irel] (if symmetrical
                      [(keyword "bi-rel" relaton-name) (keyword "bi-rel" relaton-name)]
                      [(keyword "rel" relaton-name) (keyword "inv-rel" relaton-name)])
-        add (if add true nil)
+        from-value (if add to-uuid nil)
+        to-value (if add from-uuid nil)
         journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
         ark-record (update-property- ark-record
                                     ark-db
                                     journal-entry-uuid
                                     from-uuid
-                                    [rel (suuid/rolon-key to-uuid)]
-                                    add)]
+                                    [rel (suuid/rolon-key from-label)]
+                                    from-value)]
     (update-property- ark-record
                       ark-db
                       journal-entry-uuid
                       to-uuid
-                      [irel (suuid/rolon-key from-uuid)]
-                      add)))
+                      [irel (suuid/rolon-key to-label)]
+                      to-value)))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
@@ -212,7 +213,7 @@
   (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)]
     (if (= je-uuid rolon-uuid)
       ark-record
-      (update-relation ark-record ark-db "modified" je-uuid rolon-uuid false true))))
+      (update-relation ark-record ark-db "modified" je-uuid rolon-uuid rolon-uuid je-uuid false true))))
 
 (defn destroy-rolon
   [ark-record ark-db rolon-uuid]

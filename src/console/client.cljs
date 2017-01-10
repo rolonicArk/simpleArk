@@ -433,8 +433,14 @@
     (reduce
       (fn [space k]
         (if space (add! ", "))
+        (mapish/debug [:dp (clickable? k) k])
         (if (clickable? k)
-          (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k))
+          (if (instance? suuid/Timestamp k)
+            (add! (pretty-value ark-record k)
+                  (clickable-styles k)
+                  uuid-click
+                  (str (arkRecord/get-journal-entry-uuid ark-record k)))
+            (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k)))
           (add! (pr-str k)))
         true)
       false path)

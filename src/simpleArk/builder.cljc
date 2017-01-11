@@ -45,11 +45,14 @@
 
 #?(:clj
    (defn transaction!
-     [ark-db local actions]
+     ([ark-db local actions]
+      (transaction! ark-db nil local actions))
+     ([ark-db user-uuid local actions]
      (ark-db/process-transaction!
        ark-db
+       user-uuid
        :actions-transaction!
-       (pr-str [local actions])))
+       (pr-str [local actions]))))
    :cljs
    (defn transaction!
      [local actions]

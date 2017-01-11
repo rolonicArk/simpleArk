@@ -105,22 +105,8 @@
                              capability-kw
                              user-uuid))
   ([ark-record capability-kw user-uuid]
-   (let [capability-uuid (get-capability-uuid ark-record capability-kw)
-         links (if (some? user-uuid)
-                 (mapish/mi-sub
-                   (arkRecord/get-property-values ark-record user-uuid)
-                   [:inv-rel/user])
-                 nil)]
-     (if (some? links)
-       (first
-         (keep
-           (fn [l]
-             (let [v (val l)]
-               (if (= v capability-uuid)
-                 (second (key l))
-                 nil)))
-           links))
-       nil))))
+   (let [capability-uuid (get-capability-uuid ark-record capability-kw)]
+     (arkRecord/get-property-value ark-record user-uuid [:inv-rel/user capability-uuid]))))
 
 (defn get-user-capability-data
   [ark-record user-capability-uuid]
@@ -142,9 +128,9 @@
            [:inv-rel/user])]
      (reduce
        (fn [m e]
-         (let [user-capability-uuid (second (key e))
+         (let [user-capability-uuid (val e)
                capability-data (get-user-capability-data ark-record user-capability-uuid)
-               capability-uuid (val e)
+               capability-uuid (second (key e))
                capability-name
                (arkRecord/get-property-value
                  ark-record
@@ -219,7 +205,7 @@
   (let [session (@session-record-by-user-name user-name)]
     (if session
       (logout session)))
-  (let [user (get-user-record user-name)
+  (let [;user (get-user-record user-name)
         user-data (get-user-data user-uuid)
         user-capabilities (keys user-data)
         select-capabilities (reduce

@@ -187,8 +187,8 @@
                       (create-mi ark-db property-path property-value)))
 
 (defn update-relation
-  [ark-record ark-db relaton-name from-uuid from-label to-uuid to-label symmetrical add]
-  (let [[rel irel] (if symmetrical
+  [ark-record ark-db relaton-name from-uuid from-label to-uuid to-label symetrical add]
+  (let [[rel irel] (if symetrical
                      [(keyword "bi-rel" relaton-name) (keyword "bi-rel" relaton-name)]
                      [(keyword "rel" relaton-name) (keyword "inv-rel" relaton-name)])
         from-value (if add to-uuid nil)

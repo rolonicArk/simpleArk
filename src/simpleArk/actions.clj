@@ -67,40 +67,24 @@
 
 (defmethod action :relation
   [[local ark-record] ark-db v]
-  (if (= 4 (count v))
-    (let [[kw uuid-a uuid-b value] v
-          kw-name (name kw)
-          uuid-a (fetch local uuid-a)
-          uuid-b (fetch local uuid-b)
-          value (fetch local value)
-          inv-kw (cond
-                   (mapish/rel? kw) (keyword "inv-rel" kw-name)
-                   (mapish/inv-rel? kw) (keyword "rel" kw-name)
-                   :else kw)
-          ark-record (make-rolon ark-record uuid-a)
-          ark-record (make-rolon ark-record uuid-b)
-          ark-record (ark-value/update-property ark-record ark-db uuid-a [kw uuid-b] value)
-          ark-record (ark-value/update-property ark-record ark-db uuid-b [inv-kw uuid-a] value)
-          ]
-      [local ark-record])
-    (let [[kw uuid-a label-a uuid-b label-b] v
-          relaton-name (name kw)
-          uuid-a (fetch local uuid-a)
-          label-a (fetch local label-a)
-          uuid-b (fetch local uuid-b)
-          label-b (fetch local label-b)
-          namespace (namespace kw)
-          inv (= namespace "inv-rel")
-          from-uuid (if inv uuid-b uuid-a)
-          from-label (if inv label-b label-a)
-          to-uuid (if inv uuid-a uuid-b)
-          to-label (if inv label-a label-b)
-          symetrical (= "bi-rel" namespace)
-          ark-record (ark-value/update-relation
-                       ark-record
-                       ark-db
-                       relaton-name from-uuid from-label to-uuid to-label symetrical true)]
-      [local ark-record])))
+  (let [[kw uuid-a label-a uuid-b label-b] v
+        relaton-name (name kw)
+        uuid-a (fetch local uuid-a)
+        label-a (fetch local label-a)
+        uuid-b (fetch local uuid-b)
+        label-b (fetch local label-b)
+        namespace (namespace kw)
+        inv (= namespace "inv-rel")
+        from-uuid (if inv uuid-b uuid-a)
+        from-label (if inv label-b label-a)
+        to-uuid (if inv uuid-a uuid-b)
+        to-label (if inv label-a label-b)
+        symetrical (= "bi-rel" namespace)
+        ark-record (ark-value/update-relation
+                     ark-record
+                     ark-db
+                     relaton-name from-uuid from-label to-uuid to-label symetrical true)]
+    [local ark-record]))
 
 (defmethod action :locate-first-uuid
   [[local ark-record] ark-db [kw local-kw index-kw value]]

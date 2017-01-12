@@ -62,6 +62,8 @@
       (build-user-capability "Fred" "welcome")
       (builder/build-property :local/Fred-welcome [:content/data :full-name] "Freddy Krueger")
       (build-user-capability "Fred" "profile")
+      (builder/build-property :local/Fred-profile [:content/data :phone] "999-555-1212")
+      (builder/build-property :local/Fred-profile [:content/data :email] "fk@blood.org")
       (builder/build-relation :rel/watches :local/profile-capability :profile :local/Fred-profile :profile)
       (build-user-capability "Fred" "contacts")
       (build-user-capability "Fred" "console")

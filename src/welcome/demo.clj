@@ -9,9 +9,9 @@
             [welcome.demo-builds :as demo-builds]
             [simpleArk.actions]))
 
-(users/add-user! "Fred" {:profile {:phone "999-555-1212" :email "fk@blood.org"}})
-(users/add-user! "Sam" {:profile {:phone "123-555-6789"}})
-(users/add-user! "Kris" {:profile {}})
+(users/add-user! "Fred" {})
+(users/add-user! "Sam" {})
+(users/add-user! "Kris" {})
 
 (users/add-capability! :welcome)
 (users/add-capability! :profile)

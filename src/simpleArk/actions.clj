@@ -121,7 +121,7 @@
         rolon-uuid (fetch local rolon-uuid)
         mi (reduce
              (fn [m e]
-               (assoc m (into prefix (key e)) (val e)))
+               (assoc m (conj prefix (key e)) (val e)))
              (ark-value/create-mi ark-db)
              m)
         mi (reduce

@@ -27,6 +27,10 @@
   (rolonRecord/register users/ark-db)
   )
 
+(defn notify-colsole
+  []
+  (users/broadcast! :console/update (ark-db/get-ark-record users/ark-db)))
+
 (defmethod tiples/event-msg-handler :console/process-transaction
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (let [client-id (:client-id ev-msg)
@@ -41,7 +45,7 @@
         (println :transaction tran-keyword tran-data)
         (let [je-uuid (ark-db/process-transaction! users/ark-db user-uuid tran-keyword tran-data)]
           (update-ark-record! (ark-db/get-ark-record users/ark-db))
-          (users/broadcast! :console/update (ark-db/get-ark-record users/ark-db))
+          (notify-colsole)
           (tiples/chsk-send! client-id [:console/transaction-response (str je-uuid)]))
         (catch Exception e
           (tiples/chsk-send! client-id [:console/error (.getMessage e)]))))))

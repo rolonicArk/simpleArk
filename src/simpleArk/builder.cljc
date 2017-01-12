@@ -1,8 +1,18 @@
 (ns simpleArk.builder
-  (:require #?(:clj
+  #?(:clj
+     (:require
+       [simpleArk.ark-db :as ark-db]
+       [console.server :as console])
+     :cljs
+     (:require
+       [tiples.client :as tiples]))
+  #_(:require #?(:clj
                 [simpleArk.ark-db :as ark-db]
+               :clj
+               [console.server :as console]
                :cljs
-               [tiples.client :as tiples])))
+               [tiples.client :as tiples]))
+  )
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -52,7 +62,8 @@
        ark-db
        user-uuid
        :actions-transaction!
-       (pr-str [local actions]))))
+       (pr-str [local actions]))
+      (console/notify-colsole)))
    :cljs
    (defn transaction!
      [local actions]

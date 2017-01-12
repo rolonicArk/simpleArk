@@ -30,3 +30,5 @@
                                    (fn [contacts] (conj contacts contact))
                                    #{})
         (users/broadcast! :contacts/added contact)))))
+
+(defmethod users/get-common :welcome [capability-kw] {})

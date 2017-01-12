@@ -69,6 +69,8 @@
       (:user-uuid session-record)
       nil)))
 
+(defmulti get-common identity)
+
 (defn get-common-data
   [capability-kw]
   (capability-kw @common-data))
@@ -205,8 +207,7 @@
   (let [session (@session-record-by-user-name user-name)]
     (if session
       (logout session)))
-  (let [;user (get-user-record user-name)
-        user-data (get-user-data user-uuid)
+  (let [user-data (get-user-data user-uuid)
         user-capabilities (keys user-data)
         select-capabilities (reduce
                               (fn [r a]

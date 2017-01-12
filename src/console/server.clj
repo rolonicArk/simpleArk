@@ -49,3 +49,5 @@
           (tiples/chsk-send! client-id [:console/transaction-response (str je-uuid)]))
         (catch Exception e
           (tiples/chsk-send! client-id [:console/error (.getMessage e)]))))))
+
+(defmethod users/get-common :console [capability-kw] {})

@@ -12,3 +12,5 @@
         user-profile-uuid (users/get-user-capability-uuid :profile user-uuid)
         actions (builder/build-replace-map [] ?data [:content/data] user-profile-uuid)]
     (builder/transaction! users/ark-db user-uuid local actions)))
+
+(defmethod users/get-common :profile [capability-kw] {})

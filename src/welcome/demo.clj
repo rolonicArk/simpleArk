@@ -30,8 +30,6 @@
 
 (console/initializer)
 
-(console/update-ark-record! (ark-db/get-ark-record users/ark-db))
-
 (def handler tiples/routes)
 
 (defmethod users/get-common :welcome [capability-kw] {})

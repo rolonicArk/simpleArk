@@ -199,6 +199,14 @@
       (close-session session)))
   )
 
+(defn select-common
+  [user-capabilities]
+  (reduce
+    (fn [m c]
+      (assoc m c (get-common c)))
+    {}
+    user-capabilities))
+
 (defn add-session
   [client-id user-name user-uuid]
   (let [session-record (@session-record-by-client-id client-id)]
@@ -217,7 +225,7 @@
                               []
                               @capabilities)
         session (->SessionRecord client-id user-name user-capabilities user-uuid)
-        select-common-data (select-keys @common-data user-capabilities)]
+        select-common-data (select-common user-capabilities)]
     (swap! session-record-by-client-id assoc client-id session)
     (swap! session-record-by-user-name assoc user-name session)
     (swap! session-record-by-user-uuid assoc (:user-uuid session) session)

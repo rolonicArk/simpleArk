@@ -13,12 +13,6 @@
             [simpleArk.miMap :as miMap]
             [simpleArk.uuid :as uuid]))
 
-(defn update-ark-record!
-  [ark-record]
-  (swap! users/common-data
-         (fn [common]
-           (assoc common :console ark-record))))
-
 (defn initializer
   []
   (uuid/register users/ark-db)
@@ -44,10 +38,11 @@
       (try
         (println :transaction tran-keyword tran-data)
         (let [je-uuid (ark-db/process-transaction! users/ark-db user-uuid tran-keyword tran-data)]
-          (update-ark-record! (ark-db/get-ark-record users/ark-db))
+          ;(update-ark-record! (ark-db/get-ark-record users/ark-db))
           (notify-colsole)
           (tiples/chsk-send! client-id [:console/transaction-response (str je-uuid)]))
         (catch Exception e
           (tiples/chsk-send! client-id [:console/error (.getMessage e)]))))))
 
-(defmethod users/get-common :console [capability-kw] {})
+(defmethod users/get-common :console [capability-kw]
+  (ark-db/get-ark-record users/ark-db))

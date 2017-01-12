@@ -1,6 +1,9 @@
 (ns contacts.server
   (:require [tiples.users :as users]
-            [tiples.server :as tiples]))
+            [tiples.server :as tiples]
+            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkRecord :as arkRecord]
+            [simpleArk.mapish :as mapish]))
 
 (defn add-contact!
   [contact]
@@ -31,4 +34,15 @@
                                    #{})
         (users/broadcast! :contacts/added contact)))))
 
-(defmethod users/get-common :welcome [capability-kw] {})
+(defmethod users/get-common :contacts [capability-kw]
+  (let [ark-record (ark-db/get-ark-record users/ark-db)
+        capability-uuid (users/get-capability-uuid ark-record :contacts)
+        properties (arkRecord/get-property-values ark-record capability-uuid)
+        properties (mapish/mi-sub properties [:content/contact])]
+    (reduce
+      (fn [s e]
+        (let [path (key e)
+              m (into {} (next path))]
+          (conj s m)))
+      #{}
+      properties)))

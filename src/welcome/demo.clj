@@ -1,17 +1,12 @@
 (ns welcome.demo
   (:require [tiples.server :as tiples]
             [profile.server]
-            [contacts.demo]
             [console.server :as console]
             [tiples.users :as users]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.builder :as builder]
             [welcome.demo-builds :as demo-builds]
             [simpleArk.actions]))
-
-(users/add-user! "Fred" {})
-(users/add-user! "Sam" {})
-(users/add-user! "Kris" {})
 
 (users/add-capability! :welcome)
 (users/add-capability! :profile)

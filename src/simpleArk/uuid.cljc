@@ -89,7 +89,8 @@
   (- (quot ts 10000) 12219292800000))
 
 (defn get-time [uuid]
-  (posix-time (.-value (timestamp uuid))))
+  (let [^Timestamp ts (timestamp uuid)]
+  (posix-time (.-value ts))))
 
 (defn journal-entry-uuid?
   [uuid]

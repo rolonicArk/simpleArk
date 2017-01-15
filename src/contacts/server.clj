@@ -3,7 +3,9 @@
             [tiples.server :as tiples]
             [simpleArk.ark-db :as ark-db]
             [simpleArk.arkRecord :as arkRecord]
-            [simpleArk.mapish :as mapish]))
+            [simpleArk.mapish :as mapish]
+            [simpleArk.builder :as builder]
+            [welcome.demo-builds :as demo-builds]))
 
 (defn add-contact!
   [contact]
@@ -18,11 +20,16 @@
   (let [client-id (:client-id ev-msg)
         contact (:contact ?data)]
     (when (users/get-client-capability-uuid :contacts client-id)
-      (when (users/swap-common-data! :contacts
-                                   (fn [contacts]
-                                     (disj contacts contact))
-                                   #{})
-        (users/broadcast! :contacts/deleted contact)))))
+      (let [user-uuid (users/get-client-user-uuid client-id)
+            contacts-capability (users/get-capability-uuid (ark-db/get-ark-record users/ark-db) :contacts)]
+        (builder/transaction!
+          users/ark-db
+          user-uuid
+          {:local/contacts-capability contacts-capability}
+          (-> []
+              (builder/build-je-property [:index/headline] "Delete contact")
+              (demo-builds/update-contact contact nil))))
+        (users/broadcast! :contacts/deleted contact))))
 
 (defmethod tiples/event-msg-handler :contacts/add
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]

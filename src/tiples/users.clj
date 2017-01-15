@@ -23,37 +23,16 @@
 
 (def capabilities (atom []))
 
-(def common-data (atom {}))
-
 (defn add-capability!
   [capability]
   (if (= -1 (.indexOf @capabilities capability))
     (swap! capabilities conj capability)))
-
-(defrecord UserRecord [user-name user-data])
-
-(def user-records (atom (sorted-map)))
-
-(defn add-user!
-  [name user-data]
-  (swap! user-records assoc name (->UserRecord name user-data)))
-
-(defn get-user-record
-  [name]
-  (@user-records name))
 
 (defrecord SessionRecord [client-id user-name user-capabilities user-uuid])
 
 (def session-record-by-client-id (atom {}))
 (def session-record-by-user-name (atom {}))
 (def session-record-by-user-uuid (atom {}))
-
-(defn get-client-user-record
-  [client-id]
-  (let [session-record (@session-record-by-client-id client-id)]
-    (if session-record
-      (get-user-record (:user-name session-record))
-      nil)))
 
 (defn get-client-user-uuid
   [client-id]
@@ -62,18 +41,7 @@
       (:user-uuid session-record)
       nil)))
 
-(defn get-user-name-user-uuid
-  [user-name]
-  (let [session-record (@session-record-by-user-name user-name)]
-    (if session-record
-      (:user-uuid session-record)
-      nil)))
-
 (defmulti get-common identity)
-
-(defn get-common-data
-  [capability-kw]
-  (capability-kw @common-data))
 
 (defn get-capability-index-uuid
   [ark-record]
@@ -84,22 +52,6 @@
   (let [capabiity-name (name capability-kw)
         capability-index-uuid (get-capability-index-uuid ark-record)]
     (first (arkRecord/index-lookup ark-record capability-index-uuid capabiity-name))))
-
-(defn swap-common-data!
-  [capability-kw f default]
-  (swap! common-data
-         (fn [cd]
-           (let [capability-data (get cd capability-kw default)
-                 capability-data (f capability-data)]
-             (assoc cd capability-kw capability-data)))))
-
-(defn get-client-capability-data
-  [capability-kw client-id]
-  (let [user-record (get-client-user-record client-id)]
-    (if user-record
-      (let [user-data (:user-data user-record)]
-        (get user-data capability-kw))
-      nil)))
 
 (defn get-user-capability-uuid
   ([capability-kw user-uuid]
@@ -148,21 +100,6 @@
   (get-user-capability-uuid (ark-db/get-ark-record ark-db)
                             capability-kw
                             (get-client-user-uuid client-id)))
-
-(defn swap-user-data!
-  [capability-kw user-name f]
-  (if (get-user-capability-uuid capability-kw (get-user-name-user-uuid user-name))
-    (do
-      (swap! user-records (fn [us] (s/transform [(s/keypath user-name) :user-data capability-kw] f us)))
-      true)
-    false))
-
-(defn swap-client-data!
-  [capability-kw client-id f]
-  (let [session-record (@session-record-by-client-id client-id)]
-    (if session-record
-      (swap-user-data! capability-kw (:user-name session-record) f)
-      false)))
 
 (defn broadcast! [msg-id data]
   (let [uids (keys @session-record-by-client-id)

@@ -44,10 +44,14 @@
         capability-uuid (users/get-capability-uuid ark-record :contacts)
         properties (arkRecord/get-property-values ark-record capability-uuid)
         properties (mapish/mi-sub properties [:content/contact])]
+    (println :properties properties)
     (reduce
       (fn [s e]
         (let [path (key e)
-              m (into {} (next path))]
-          (conj s m)))
+              m (into {} (next path))
+              v (val e)]
+          (if (some? v)
+            (conj s m)
+            s)))
       #{}
       properties)))

@@ -5,14 +5,7 @@
        [console.server :as console])
      :cljs
      (:require
-       [tiples.client :as tiples]))
-  #_(:require #?(:clj
-                [simpleArk.ark-db :as ark-db]
-               :clj
-               [console.server :as console]
-               :cljs
-               [tiples.client :as tiples]))
-  )
+       [tiples.client :as tiples])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -27,7 +20,7 @@
 
 (defn build-relation
   [actions kw uuid-a label-a uuid-b label-b]
-   (conj actions [kw uuid-a label-a uuid-b label-b]))
+  (conj actions [kw uuid-a label-a uuid-b label-b]))
 
 (defn build-locate-first
   [actions local-kw index-kw value]
@@ -58,12 +51,14 @@
      ([ark-db local actions]
       (transaction! ark-db nil local actions))
      ([ark-db user-uuid local actions]
-     (ark-db/process-transaction!
-       ark-db
-       user-uuid
-       :actions-transaction!
-       (pr-str [local actions]))
-      (console/notify-colsole)))
+      (let [je-uuid
+            (ark-db/process-transaction!
+              ark-db
+              user-uuid
+              :actions-transaction!
+              (pr-str [local actions]))]
+        (console/notify-colsole)
+        je-uuid)))
    :cljs
    (defn transaction!
      [local actions]

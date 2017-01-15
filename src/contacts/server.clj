@@ -36,10 +36,16 @@
   (let [client-id (:client-id ev-msg)
         contact (:contact ?data)]
     (when (users/get-client-capability-uuid :contacts client-id)
-      (when (users/swap-common-data! :contacts
-                                   (fn [contacts] (conj contacts contact))
-                                   #{})
-        (users/broadcast! :contacts/added contact)))))
+      (let [user-uuid (users/get-client-user-uuid client-id)
+            contacts-capability (users/get-capability-uuid (ark-db/get-ark-record users/ark-db) :contacts)]
+        (builder/transaction!
+          users/ark-db
+          user-uuid
+          {:local/contacts-capability contacts-capability}
+          (-> []
+              (builder/build-je-property [:index/headline] "Delete contact")
+              (demo-builds/update-contact contact true))))
+      (users/broadcast! :contacts/added contact))))
 
 (defmethod users/get-common :contacts [capability-kw]
   (let [ark-record (ark-db/get-ark-record users/ark-db)

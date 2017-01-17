@@ -193,6 +193,18 @@
                      [(keyword "rel" relaton-name) (keyword "inv-rel" relaton-name)])
         from-value (if add to-uuid nil)
         to-value (if add from-uuid nil)
+        old-from-value (arkRecord/get-property-value
+                 ark-record
+                 from-uuid
+                 [rel (suuid/rolon-key from-label)])
+        old-to-value (arkRecord/get-property-value
+                       ark-record
+                       to-uuid
+                       [rel (suuid/rolon-key to-label)])
+        _ (if (and add (some? old-from-value) (not= old-from-value from-value))
+            (throw (Exception. (str from-label " is not unique for " rel " was " old-from-value " not " from-value))))
+        _ (if (and add (some? old-to-value) (not= old-from-value from-value))
+            (throw (Exception. (str to-label " is not unique for " irel " was " old-to-value " not " to-value))))
         journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
         ark-record (update-property- ark-record
                                     ark-db

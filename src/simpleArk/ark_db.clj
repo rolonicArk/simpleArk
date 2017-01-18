@@ -1,4 +1,6 @@
-(ns simpleArk.ark-db)
+(ns simpleArk.ark-db
+  (:require [simpleArk.arkRecord :as arkRecord]
+            [simpleArk.mapish :as mapish]))
 
 (set! *warn-on-reflection* true)
 
@@ -28,9 +30,35 @@
          (fn [ark-value]
            ((:ark-value/update-ark ark-db) ark-value ark-db user-uuid je-uuid transaction-name s))))
 
+(defmulti notification
+          (fn [label je-uuid watcher modified]
+            label))
+
+(defmethod notification :default
+  [label je-uuid watcher modified]
+  (println :default-notification label je-uuid watcher modified))
+
+(declare get-ark-record)
 (defn process-notifications
   [ark-db je-uuid]
-  (println :notifications je-uuid))
+  (let [ark-record (get-ark-record ark-db)
+        properties (arkRecord/get-property-values ark-record je-uuid)
+        notices (reduce
+                  (fn [_ e]
+                    (let [modified (val e)
+                          p (arkRecord/get-property-values ark-record modified)
+                          ir (mapish/mi-sub p [:inv-rel/watches])]
+                      (reduce
+                        (fn [_ e]
+                          (let [k (key e)
+                                label (second k)
+                                watcher (val e)]
+                            (notification label je-uuid watcher modified)
+                            nil))
+                        nil
+                        ir)))
+                  nil
+                  (mapish/mi-sub properties [:rel/modified]))]))
 
 (defn init-ark-db!
   "initializes the ark-atom with the value of the ark."

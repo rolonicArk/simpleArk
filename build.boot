@@ -49,7 +49,7 @@
                                 ;simpleArk.log0-test
                                 ;simpleArk.logt-test
                                 ;simpleArk.closer-test
-                                simpleArk.uuid-test
+                                ;simpleArk.uuid-test
                                 ;simpleArk.uuid0-test
                                 ;simpleArk.uuidi-test
                                 simpleArk.ark-db0-test

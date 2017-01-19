@@ -82,9 +82,9 @@
            [:inv-rel/user])]
      (reduce
        (fn [m e]
-         (let [user-capability-uuid (val e)
+         (let [user-capability-uuid (second (key e))
                capability-data (get-user-capability-data ark-record user-capability-uuid)
-               capability-uuid (second (key e))
+               capability-uuid (first (key e))
                capability-name
                (arkRecord/get-property-value
                  ark-record

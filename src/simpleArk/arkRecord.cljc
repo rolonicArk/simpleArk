@@ -126,6 +126,23 @@
   ([ark-record rolon-uuid all-changes]
    (miView/->MI-view ark-record rolon-uuid all-changes (get-selected-time ark-record))))
 
+(defn get-link-value
+  ([ark-record rolon-uuid link-kw]
+   (get-link-value ark-record rolon-uuid link-kw nil))
+  ([ark-record rolon-uuid link-kw label]
+   (let [prefix (if (nil? label)
+                  [link-kw]
+                  [link-kw label])
+         property-values (get-property-values ark-record rolon-uuid)
+         link-properties (mapish/mi-sub property-values prefix)
+         link-property (first link-properties)]
+     (if (nil? (next link-properties))
+               (if (nil? label)
+                 (nth link-property 1)
+                 (nth link-property 2))
+               #?(:clj (throw (Exception. (str "multiple values for prefix " prefix)))
+                  :cljs (throw (str "multiple values for prefix " prefix)))))))
+
 (defn index-lookup
   "returns the uuids for a given index-uuid and value"
   [ark-record index-uuid value]

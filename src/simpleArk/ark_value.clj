@@ -197,8 +197,16 @@
         to-path (if (some? to-label)
                   [irel (suuid/rolon-key to-label)]
                   [irel])
-        from-value (if add to-uuid nil)
-        to-value (if add from-uuid nil)
+        from-value (if add
+                     (if (= from-label to-uuid)
+                       true
+                       to-uuid)
+                     nil)
+        to-value (if add
+                   (if (= to-label from-uuid)
+                     true
+                     from-uuid)
+                   nil)
         old-from-value (arkRecord/get-property-value
                          ark-record
                          from-uuid

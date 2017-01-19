@@ -59,8 +59,7 @@
                              capability-kw
                              user-uuid))
   ([ark-record capability-kw user-uuid]
-   (let [capability-uuid (get-capability-uuid ark-record capability-kw)]
-     (arkRecord/get-property-value ark-record user-uuid [:inv-rel/user capability-uuid]))))
+   (arkRecord/get-link-value ark-record user-uuid :inv-rel/user capability-kw)))
 
 (defn get-user-capability-data
   [ark-record user-capability-uuid]
@@ -82,9 +81,9 @@
            [:inv-rel/user])]
      (reduce
        (fn [m e]
-         (let [user-capability-uuid (second (key e))
+         (let [user-capability-uuid (nth (key e) 2)
                capability-data (get-user-capability-data ark-record user-capability-uuid)
-               capability-uuid (first (key e))
+               capability-uuid (nth (key e) 1)
                capability-name
                (arkRecord/get-property-value
                  ark-record

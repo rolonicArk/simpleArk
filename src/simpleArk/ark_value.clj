@@ -100,10 +100,10 @@
         changes (arkRecord/get-changes-by-property ark-record rolon-uuid)
         ptree (arkRecord/get-property-tree ark-record rolon-uuid [])
         [changes ptree] (reduce
-                  (fn [[ch pt] pe]
-                    (update-changes-for-property ch pt ark-db je-uuid (key pe) (val pe)))
-                  [changes ptree]
-                  (seq properties))
+                          (fn [[ch pt] pe]
+                            (update-changes-for-property ch pt ark-db je-uuid (key pe) (val pe)))
+                          [changes ptree]
+                          (seq properties))
         rolon-record (assoc rolon-record :changes-by-property changes)
         rolon-record (assoc rolon-record :property-tree ptree)]
     rolon-record))
@@ -138,11 +138,11 @@
   [ark-record ark-db index-keyword value uuid adding]
   (let [iuuid (suuid/index-uuid ark-db index-keyword)
         ark-record (if (arkRecord/get-rolon ark-record iuuid)
-                    ark-record
-                    (make-rolon ark-record ark-db iuuid
-                                (create-mi
-                                  ark-db
-                                  [:index/index.name] (name index-keyword))))]
+                     ark-record
+                     (make-rolon ark-record ark-db iuuid
+                                 (create-mi
+                                   ark-db
+                                   [:index/index.name] (name index-keyword))))]
     (update-property ark-record
                      ark-db
                      iuuid
@@ -158,12 +158,12 @@
                  nv (val %2)
                  ov (get old-properties path)
                  ark-record (if (and ov (mapish/index? k))
-                             (make-index-rolon- ark-record ark-db k ov uuid nil)
-                             ark-record)
+                              (make-index-rolon- ark-record ark-db k ov uuid nil)
+                              ark-record)
                  ark-record (if (and nv (mapish/index? k))
-                             (make-index-rolon- ark-record ark-db k nv uuid true)
-                             ark-record)]
-            ark-record)
+                              (make-index-rolon- ark-record ark-db k nv uuid true)
+                              ark-record)]
+             ark-record)
           ark-record (seq properties)))
 
 (defn update-properties-
@@ -191,32 +191,38 @@
   (let [[rel irel] (if symetrical
                      [(keyword "bi-rel" relaton-name) (keyword "bi-rel" relaton-name)]
                      [(keyword "rel" relaton-name) (keyword "inv-rel" relaton-name)])
+        from-path (if (some? from-label)
+                    [rel (suuid/rolon-key from-label)]
+                    [rel])
+        to-path (if (some? to-label)
+                  [irel (suuid/rolon-key to-label)]
+                  [irel])
         from-value (if add to-uuid nil)
         to-value (if add from-uuid nil)
         old-from-value (arkRecord/get-property-value
-                 ark-record
-                 from-uuid
-                 [rel (suuid/rolon-key from-label)])
+                         ark-record
+                         from-uuid
+                         from-path)
         old-to-value (arkRecord/get-property-value
                        ark-record
                        to-uuid
-                       [rel (suuid/rolon-key to-label)])
+                       to-path)
         _ (if (and add (some? old-from-value) (not= old-from-value from-value))
             (throw (Exception. (str from-label " is not unique for " rel " was " old-from-value " not " from-value))))
         _ (if (and add (some? old-to-value) (not= old-from-value from-value))
             (throw (Exception. (str to-label " is not unique for " irel " was " old-to-value " not " to-value))))
         journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
         ark-record (update-property- ark-record
-                                    ark-db
-                                    journal-entry-uuid
-                                    from-uuid
-                                    [rel (suuid/rolon-key from-label)]
-                                    from-value)]
+                                     ark-db
+                                     journal-entry-uuid
+                                     from-uuid
+                                     from-path
+                                     from-value)]
     (update-property- ark-record
                       ark-db
                       journal-entry-uuid
                       to-uuid
-                      [irel (suuid/rolon-key to-label)]
+                      to-path
                       to-value)))
 
 (defn je-modified

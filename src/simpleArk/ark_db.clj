@@ -47,7 +47,7 @@
         properties (arkRecord/get-property-values ark-record je-uuid)]
     (reduce
       (fn [_ e]
-        (let [modified (val e)
+        (let [modified (second (key e))
               p (arkRecord/get-property-values ark-record modified)
               ir (mapish/mi-sub p [:inv-rel/watches])]
           (reduce

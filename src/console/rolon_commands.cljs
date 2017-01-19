@@ -101,7 +101,7 @@
     (client/add-output! "\n\n")
     (reduce
       (fn [_ [path value]]
-        (let [k (nth path 1)
+        (let [k (second path)
               u (arkRecord/get-journal-entry-uuid ark-record k)]
           (client/add-output! (client/pretty-value ark-record u) (client/clickable-styles u) client/uuid-click (str u))
           (let [headline (arkRecord/get-property-value

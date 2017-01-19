@@ -187,51 +187,34 @@
                       (create-mi ark-db property-path property-value)))
 
 (defn update-relation
-  [ark-record ark-db relaton-name from-uuid from-label to-uuid to-label symetrical add]
+  ([ark-record ark-db relaton-name from-uuid to-uuid symetrical add]
+   (update-relation ark-record ark-db relaton-name nil from-uuid to-uuid symetrical add))
+  ([ark-record ark-db relaton-name label from-uuid to-uuid symetrical add]
   (let [[rel irel] (if symetrical
                      [(keyword "bi-rel" relaton-name) (keyword "bi-rel" relaton-name)]
                      [(keyword "rel" relaton-name) (keyword "inv-rel" relaton-name)])
-        from-path (if (some? from-label)
-                    [rel (suuid/rolon-key from-label)]
-                    [rel])
-        to-path (if (some? to-label)
-                  [irel (suuid/rolon-key to-label)]
-                  [irel])
-        from-value (if add
-                     (if (= from-label to-uuid)
-                       true
-                       to-uuid)
-                     nil)
-        to-value (if add
-                   (if (= to-label from-uuid)
-                     true
-                     from-uuid)
-                   nil)
-        old-from-value (arkRecord/get-property-value
-                         ark-record
-                         from-uuid
-                         from-path)
-        old-to-value (arkRecord/get-property-value
-                       ark-record
-                       to-uuid
-                       to-path)
-        _ (if (and add (some? old-from-value) (not= old-from-value from-value))
-            (throw (Exception. (str from-label " is not unique for " rel " was " old-from-value " not " from-value))))
-        _ (if (and add (some? old-to-value) (not= old-from-value from-value))
-            (throw (Exception. (str to-label " is not unique for " irel " was " old-to-value " not " to-value))))
+        from-path (if (some? label)
+                    [rel (suuid/rolon-key label) to-uuid]
+                    [rel to-uuid])
+        to-path (if (some? label)
+                  [irel (suuid/rolon-key label) from-uuid]
+                  [irel from-uuid])
+        value (if add
+                true
+                nil)
         journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
         ark-record (update-property- ark-record
                                      ark-db
                                      journal-entry-uuid
                                      from-uuid
                                      from-path
-                                     from-value)]
+                                     value)]
     (update-property- ark-record
                       ark-db
                       journal-entry-uuid
                       to-uuid
                       to-path
-                      to-value)))
+                      value))))
 
 (defn je-modified
   "track the rolons modified by the journal entry"
@@ -239,7 +222,7 @@
   (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)]
     (if (= je-uuid rolon-uuid)
       ark-record
-      (update-relation ark-record ark-db "modified" je-uuid rolon-uuid rolon-uuid je-uuid false true))))
+      (update-relation ark-record ark-db "modified" je-uuid rolon-uuid false true))))
 
 (defn destroy-rolon
   [ark-record ark-db rolon-uuid]

@@ -27,8 +27,6 @@
                       "transaction"
                       user-uuid
                       je-uuid
-                      je-uuid
-                      user-uuid
                       false
                       true))
         ark-record (ark-value/eval-transaction ark-record ark-db transaction-name s)]

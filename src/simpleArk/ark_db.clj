@@ -47,14 +47,14 @@
         properties (arkRecord/get-property-values ark-record je-uuid)]
     (reduce
       (fn [_ e]
-        (let [modified (second (key e))
+        (let [modified (nth (key e) 1)
               p (arkRecord/get-property-values ark-record modified)
               ir (mapish/mi-sub p [:inv-rel/watches])]
           (reduce
             (fn [_ e]
-              (let [k (key e)
-                    label (second k)
-                    watcher (val e)]
+              (let [path (key e)
+                    label (nth path 1)
+                    watcher (nth path 2)]
                 (try
                   (notification label je-uuid watcher modified)
                   (catch Exception e

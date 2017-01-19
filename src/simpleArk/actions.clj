@@ -67,23 +67,22 @@
 
 (defmethod action :relation
   [[local ark-record] ark-db v]
-  (let [[kw uuid-a label-a uuid-b label-b] v
+  (let [[kw label uuid-a uuid-b] v
         relaton-name (name kw)
+        label (fetch local label)
         uuid-a (fetch local uuid-a)
-        label-a (fetch local label-a)
         uuid-b (fetch local uuid-b)
-        label-b (fetch local label-b)
         namespace (namespace kw)
         inv (= namespace "inv-rel")
         from-uuid (if inv uuid-b uuid-a)
-        from-label (if inv label-b label-a)
         to-uuid (if inv uuid-a uuid-b)
-        to-label (if inv label-a label-b)
         symetrical (= "bi-rel" namespace)
         ark-record (ark-value/update-relation
                      ark-record
                      ark-db
-                     relaton-name from-uuid from-label to-uuid to-label symetrical true)]
+                     relaton-name label
+                     from-uuid to-uuid
+                     symetrical true)]
     [local ark-record]))
 
 (defmethod action :locate-first-uuid

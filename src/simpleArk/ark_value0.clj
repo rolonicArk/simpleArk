@@ -9,37 +9,32 @@
   (apply miMap/new-MI-map keyvals))
 
 (defn update-ark
-  [ark-value ark-db user-uuid je-uuid transaction-name s]
-  (let [ark-value (assoc ark-value :latest-journal-entry-uuid je-uuid)
-        ark-value (ark-value/make-rolon
-                    ark-value
+  [ark-record ark-db user-uuid je-uuid transaction-name s]
+  (let [ark-record (assoc ark-record :latest-journal-entry-uuid je-uuid)
+        ark-record (ark-value/make-rolon
+                    ark-record
                     ark-db
                     je-uuid
                     (create-mi
                       ark-db
                       [:index/transaction-name] transaction-name
                       [:content/transaction-argument] s))
-        ark-value (if (nil? user-uuid)
-                    ark-value
-                    (let [ark-value
-                          (ark-value/update-property
-                            ark-value
-                            ark-db
-                            je-uuid
-                            [:inv-rel/transaction user-uuid]
-                            user-uuid)
-                          ark-value
-                          (ark-value/update-property
-                            ark-value
-                            ark-db
-                            user-uuid
-                            [:rel/transaction je-uuid]
-                            je-uuid)]
-                      ark-value))
-        ark-value (ark-value/eval-transaction ark-value ark-db transaction-name s)]
-    (if (:selected-time ark-value)
+        ark-record (if (nil? user-uuid)
+                    ark-record
+                    (ark-value/update-relation
+                      ark-record
+                      ark-db
+                      "transaction"
+                      user-uuid
+                      je-uuid
+                      je-uuid
+                      user-uuid
+                      false
+                      true))
+        ark-record (ark-value/eval-transaction ark-record ark-db transaction-name s)]
+    (if (:selected-time ark-record)
       (throw (Exception. "Transaction can not update ark with a selected time")))
-    ark-value))
+    ark-record))
 
 (defn builder
   []

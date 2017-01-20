@@ -189,10 +189,10 @@
 (defn update-relation
   ([ark-record ark-db relaton-name from-uuid to-uuid symetrical add]
    (update-relation ark-record ark-db relaton-name nil from-uuid to-uuid symetrical add))
-  ([ark-record ark-db relaton-name label from-uuid to-uuid symetrical add]
+  ([ark-record ark-db relation-name label from-uuid to-uuid symetrical add]
   (let [[rel irel] (if symetrical
-                     [(keyword "bi-rel" relaton-name) (keyword "bi-rel" relaton-name)]
-                     [(keyword "rel" relaton-name) (keyword "inv-rel" relaton-name)])
+                     [(keyword "bi-rel" relation-name) (keyword "bi-rel" relation-name)]
+                     [(keyword "rel" relation-name) (keyword "inv-rel" relation-name)])
         from-path (if (some? label)
                     [rel (suuid/rolon-key label) to-uuid]
                     [rel to-uuid])

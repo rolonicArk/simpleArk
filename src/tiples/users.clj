@@ -83,13 +83,7 @@
        (fn [m e]
          (let [user-capability-uuid (nth (key e) 2)
                capability-data (get-user-capability-data ark-record user-capability-uuid)
-               capability-uuid (nth (key e) 1)
-               capability-name
-               (arkRecord/get-property-value
-                 ark-record
-                 capability-uuid
-                 [:index/capability-name])
-               capability-kw (keyword capability-name)]
+               capability-kw (nth (key e) 1)]
            (assoc m capability-kw capability-data)))
        {}
        inv-user-properties))))

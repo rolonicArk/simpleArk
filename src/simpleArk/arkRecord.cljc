@@ -135,11 +135,13 @@
                   [link-kw label])
          property-values (get-property-values ark-record rolon-uuid)
          link-properties (mapish/mi-sub property-values prefix)
-         link-property (first link-properties)]
-     (if (nil? (next link-properties))
+         lps (seq link-properties)
+         link-property (first lps)
+         path (key link-property)]
+     (if (nil? (next lps))
                (if (nil? label)
-                 (nth link-property 1)
-                 (nth link-property 2))
+                 (nth path 1)
+                 (nth path 2))
                #?(:clj (throw (Exception. (str "multiple values for prefix " prefix)))
                   :cljs (throw (str "multiple values for prefix " prefix)))))))
 

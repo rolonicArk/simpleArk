@@ -4,6 +4,7 @@
     [javelin.core :as j]
     [tiples.login :as login]
     [console.commands-view :as commands-view]
+    [console.forms-view :as forms-view]
     [console.history-view :as history-view]
     [console.output-view :as output-view]
     [console.client :as client]))
@@ -26,8 +27,11 @@
       (h/td
         :style (j/cell= (td2-style login/windowInnerWidth))
         (h/div
-          :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
-          (commands-view/do-commands)))
+          :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+          (commands-view/do-commands))
+        (h/div
+          :style (j/cell= (tx2-style login/windowInnerHeight login/header-height))
+          (forms-view/do-forms)))
       (h/td
         :style (j/cell= (td2-style login/windowInnerWidth))
         (h/div
@@ -49,6 +53,12 @@
       (h/div
         :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
         (commands-view/do-commands)))
+    (h/div
+      :css {:display "none" :width "100%"}
+      :toggle (j/cell= (= 2 client/display-mode))
+      (h/div
+        :style (j/cell= (tx-style login/windowInnerHeight login/header-height))
+        (forms-view/do-forms)))
     (h/div
       :css {:display "none" :width "100%"}
       :toggle (j/cell= (= 3 client/display-mode))
@@ -97,6 +107,12 @@
                             "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
           :click #(reset! client/display-mode 1)
           (h/span "commands"))
+        (h/td
+          :style (j/cell= (if (= 2 client/display-mode)
+                            "font-weight:bold; text-align:center"
+                            "width:16%; color:purple; cursor:pointer; text-decoration:underline; text-align:center"))
+          :click #(reset! client/display-mode 2)
+          (h/span "form"))
         (h/td
           :style (j/cell= (if (= 3 client/display-mode)
                             "font-weight:bold; text-align:center"

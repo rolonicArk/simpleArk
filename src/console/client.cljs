@@ -30,6 +30,8 @@
 (def selected-time (j/cell ""))
 (def old-ark-record (j/cell nil))
 
+(def form-name (j/cell "none"))
+
 (def my-ark-record
   (j/cell=
     (if login/common-data

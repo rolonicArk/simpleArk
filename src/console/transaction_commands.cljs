@@ -14,27 +14,6 @@
         (builder/build-je-property
           [:index/headline] "Just for fun!"))))
 
-(defn make-bob-transaction
-  []
-  (builder/transaction!
-    {}
-    (-> []
-        (builder/build-je-property
-          [:index/headline] "make bob")
-        (builder/build-gen-uuid
-          :local/bob-uuid)
-        (builder/build-property
-          :local/bob-uuid [:index/headline] "First application Rolon")
-        (builder/build-property
-          :local/bob-uuid [:content/age] 8)
-        (builder/build-property
-          :local/bob-uuid [:index/name] "Bob")
-        (builder/build-property
-          :local/bob-uuid [:content/brothers "John"] true)
-        (builder/build-property
-          :local/bob-uuid [:content/brothers "Jeff"] true)
-        )))
-
 (defn do-transaction-commands
   []
   (h/div
@@ -57,13 +36,9 @@
       "Hello Fred")
 
     (h/button
-      :style "background-color:MistyRose"
       :click (fn []
-               (reset! client/display-mode 0)
-               (client/add-prompt)
-               (client/add-history! ">")
-               (client/add-history! "Make Bob transaction\n" client/command-prefix-style)
-               (make-bob-transaction))
+               (reset! client/form-name "Make")
+               (reset! client/display-mode 0))
       :href ""
       "Make Bob")
 

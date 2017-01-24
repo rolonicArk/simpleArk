@@ -1,4 +1,5 @@
-(ns simpleArk.mapish)
+(ns simpleArk.mapish
+  (:require [clojure.string :as s]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -28,8 +29,16 @@
 
 (defn content?
   [kw]
-  (and (keyword? kw)
-       (= 0 (compare "content" (namespace kw)))))
+  (if (nil? kw)
+    false
+    (if (keyword? kw)
+      (let [kwns (namespace kw)]
+        (if (nil? kwns)
+          false
+          (if (= kwns "content")
+            true
+            (s/starts-with? kwns "edn"))))
+      false)))
 
 (defn validate-property-path
   [property-path]

@@ -41,11 +41,6 @@
     {}
     (builder/build-invalid [])))
 
-(defn trouble [msg]
-  (builder/transaction!
-    {}
-    (builder/build-exception [] msg)))
-
 (defn do-transaction-commands
   []
   (h/div
@@ -89,18 +84,8 @@
       "Invalid!")
 
     (h/button
-      :style "background-color:MistyRose"
       :click (fn []
-               (reset! client/display-mode 0)
-               (client/add-prompt)
-               (client/add-history! ">")
-               (client/add-history! "Trouble!\n" client/command-prefix-style)
-               (trouble "A troublesome transaction"))
+               (reset! client/form-name "Trouble!")
+               (reset! client/display-mode 0))
       "Trouble!")
-
-    (h/div
-      :style "color:red"
-      (h/p (h/text (if client/transaction-error
-                     (str "Error: " client/transaction-error-msg)
-                     "")))))
-  )
+    ))

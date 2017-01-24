@@ -18,7 +18,7 @@
                     (create-mi
                       ark-db
                       [:index/transaction-name] transaction-name
-                      [:content/transaction-argument] s))
+                      [:edn-transaction/transaction-argument] s))
         ark-record (if (nil? user-uuid)
                     ark-record
                     (ark-value/update-relation

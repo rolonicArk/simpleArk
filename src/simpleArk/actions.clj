@@ -103,8 +103,18 @@
 
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]
-  (if (= :local s)
+  (cond
+    (vector? s)
+    (println
+      (apply
+        str
+        (map
+          (fn [a]
+            (fetch local a))
+          s)))
+    (= :local s)
     (println (pr-str local))
+    :else
     (println (fetch local s)))
   [local ark-record])
 

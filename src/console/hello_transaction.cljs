@@ -7,10 +7,10 @@
 
 (defn hello-transaction [name]
   (builder/transaction!
-    {}
+    {:local/name name}
     (-> []
         (builder/build-println
-          (str "Hello " name "!"))
+          ["Hello " :local/name "!"])
         (builder/build-je-property
           [:index/headline] "Just for fun!"))))
 

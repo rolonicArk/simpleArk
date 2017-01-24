@@ -2,7 +2,6 @@
   (:require
     [hoplon.core :as h]
     [javelin.core :as j]
-    [tiples.client :as tiples]
     [console.client :as client]
     [simpleArk.builder :as builder]))
 
@@ -35,11 +34,6 @@
         (builder/build-property
           :local/bob-uuid [:content/brothers "Jeff"] true)
         )))
-
-(defn invalid []
-  (builder/transaction!
-    {}
-    (builder/build-invalid [])))
 
 (defn do-transaction-commands
   []
@@ -74,13 +68,9 @@
       "Make Bob")
 
     (h/button
-      :style "background-color:MistyRose"
       :click (fn []
-               (reset! client/display-mode 0)
-               (client/add-prompt)
-               (client/add-history! ">")
-               (client/add-history! "Invalid!\n" client/command-prefix-style)
-               (invalid))
+               (reset! client/form-name "Invalid!")
+               (reset! client/display-mode 0))
       "Invalid!")
 
     (h/button

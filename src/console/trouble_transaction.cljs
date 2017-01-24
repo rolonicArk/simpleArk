@@ -1,4 +1,4 @@
-(ns console.trouble
+(ns console.trouble-transaction
   (:require
     [hoplon.core :as h]
     [javelin.core :as j]
@@ -24,5 +24,4 @@
                (client/add-history! ">")
                (client/add-history! "Trouble!\n" client/command-prefix-style)
                (trouble "A troublesome transaction"))
-      "Submit")
-    ))
+      "Submit")))

@@ -5,15 +5,6 @@
     [console.client :as client]
     [simpleArk.builder :as builder]))
 
-(defn hello [name]
-  (builder/transaction!
-    {}
-    (-> []
-        (builder/build-println
-          (str "Hello " name "!"))
-        (builder/build-je-property
-          [:index/headline] "Just for fun!"))))
-
 (defn do-transaction-commands
   []
   (h/div
@@ -25,22 +16,18 @@
     (h/output (h/strong "Transactions: "))
 
     (h/button
-      :style "background-color:MistyRose"
       :click (fn []
-               (reset! client/display-mode 0)
-               (client/add-prompt)
-               (client/add-history! ">")
-               (client/add-history! "Hello Fred transaction\n" client/command-prefix-style)
-               (hello "Fred"))
+               (reset! client/form-name "Hello world!")
+               (reset! client/display-mode 0))
       :href ""
-      "Hello Fred")
+      "Hello world!")
 
     (h/button
       :click (fn []
-               (reset! client/form-name "Make")
+               (reset! client/form-name "Make!")
                (reset! client/display-mode 0))
       :href ""
-      "Make Bob")
+      "Make!")
 
     (h/button
       :click (fn []

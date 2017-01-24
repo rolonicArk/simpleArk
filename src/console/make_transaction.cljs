@@ -30,7 +30,7 @@
   []
   (h/div
     :css {:display "none"}
-    :toggle (j/cell= (= "Make" client/form-name))
+    :toggle (j/cell= (= "Make!" client/form-name))
 
     (h/button
       :style "background-color:MistyRose"

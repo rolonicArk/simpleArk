@@ -2,6 +2,7 @@
   (:require
     [hoplon.core :as h]
     [javelin.core :as j]
+    [console.hello-transaction :as hello]
     [console.make-transaction :as make]
     [console.trouble-transaction :as trouble]
     [console.invalid-transaction :as invalid]
@@ -24,6 +25,7 @@
       (h/text
         (str "Form: " client/form-name)))
 
+    (hello/do-hello)
     (make/do-make)
     (trouble/do-trouble)
     (invalid/do-invalid)

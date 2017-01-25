@@ -296,15 +296,12 @@
         (when (some? pval)
           (add-output! "\n   ")
           (output-path! ark-record path)
-          (if (clickable? pval)
-            (do
-              (add-output! " = ")
-              (add-output!
-                (pretty-value ark-record pval)
-                (clickable-styles pval)
-                uuid-click
-                (str pval)))
-            (add-output! (str " = " (pr-str pval)))))
+          (add-output! " = ")
+          (add-output!
+            (pretty-value ark-record pval)
+            (clickable-styles pval)
+            uuid-click
+            (str pval)))
         (when (some? pm)
           (reduce
             (fn [_ e]
@@ -325,15 +322,13 @@
                     (output-path! ark-record e-path)
                     (if (nil? value)
                       (add-output! (str " : " count))
-                      (if (clickable? value)
-                        (do
-                          (add-output! " = ")
-                          (add-output!
-                            (pretty-value ark-record value)
-                            (clickable-styles value)
-                            uuid-click
-                            (str value)))
-                        (add-output! (str " = " (pr-str value))))))))
+                      (do
+                        (add-output! " = ")
+                        (add-output!
+                          (pretty-value ark-record value)
+                          (clickable-styles value)
+                          uuid-click
+                          (str value)))))))
               nil)
             nil
             pm))

@@ -7,32 +7,6 @@
     [simpleArk.arkRecord :as arkRecord]
     [console.client :as client]))
 
-#_(defn list-current-micro-properties
-  [ark-record]
-  (client/add-prompt)
-  (client/add-history! ">")
-  (client/add-history! "list values of current micro-properties\n" client/command-prefix-style)
-  (client/clear-output!)
-  (client/add-output! "current micro-property values of ")
-  (let [uuid (suuid/create-uuid @client/selected-rolon)
-        properties (arkRecord/get-property-values ark-record uuid)]
-    (client/add-output!
-      (client/pretty-value ark-record uuid)
-      (client/clickable-styles uuid)
-      client/uuid-click
-      @client/selected-rolon)
-    (client/add-output! ":\n\n")
-    (reduce
-      (fn [_ [path value]]
-        (client/add-output! "=" client/micro-property-style client/micro-property-click path)
-        (client/add-output! " ")
-        (client/output-path! ark-record path)
-        (client/add-output! " ")
-        (client/add-output! (pr-str value))
-        (client/add-output! "\n\n"))
-      nil properties)
-    ))
-
 (defn list-all-micro-properties
   [ark-record]
   (client/add-prompt)

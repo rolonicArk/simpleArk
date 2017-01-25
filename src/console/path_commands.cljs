@@ -44,7 +44,7 @@
                               client/uuid-click
                               (str je-uuid))
           (client/add-output! " ")
-          (client/add-output! (pr-str v))
+          (client/add-output! (client/pretty-value ark-record v))
           (client/add-output! "\n")))
       nil changes)))
 

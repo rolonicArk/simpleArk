@@ -74,7 +74,7 @@
             (client/add-output! "=" client/micro-property-style client/micro-property-click path)
             (client/add-output! " ")
             (client/output-path! ark-record path)
-            (client/add-output! " ")
+            (client/add-output! " = ")
             (client/add-output!
               (client/pretty-value ark-record v)
               (client/clickable-styles v)
@@ -169,13 +169,6 @@
                  (reset! client/display-mode 0)
                  (list-modifying-transactions @client/my-ark-record))
         "list modifying transactions")
-
-      #_(h/button
-        :style "background-color:MistyRose"
-        :click (fn []
-                 (reset! client/display-mode 0)
-                 (list-current-micro-properties @client/my-ark-record))
-        "list values of current micro-properties")
 
       (h/button
         :style "background-color:MistyRose"

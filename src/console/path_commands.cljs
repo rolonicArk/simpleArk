@@ -18,21 +18,13 @@
         changes (arkRecord/get-changes-by-property ark-record uuid path)]
     (client/history-path! ark-record path)
     (client/add-history! " in ")
-    (client/add-history!
-      (client/pretty-value ark-record uuid)
-      (client/clickable-styles uuid)
-      client/uuid-click
-      @client/selected-rolon)
+    (client/history-value! ark-record uuid)
     (client/add-history! "\n")
     (client/clear-output!)
     (client/add-output! "changes over time for ")
     (client/output-path! ark-record path)
     (client/add-output! " in ")
-    (client/add-output!
-      (client/pretty-value ark-record uuid)
-      (client/clickable-styles uuid)
-      client/uuid-click
-      @client/selected-rolon)
+    (client/output-value! ark-record uuid)
     (client/add-output! "\n\n")
     (reduce
       (fn [_ [[ts] v]]

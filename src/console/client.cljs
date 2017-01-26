@@ -262,6 +262,15 @@
 
 (defn red [] "color:red")
 
+(defn history-value!
+  [ark-record pval]
+  (add-history!
+    (pretty-value ark-record pval)
+    (clickable-styles pval)
+    uuid-click
+    (str pval))
+  )
+
 (defn output-value!
   [ark-record pval]
   (add-output!

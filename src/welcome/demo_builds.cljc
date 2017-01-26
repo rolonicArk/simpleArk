@@ -23,16 +23,7 @@
 
 (defn build-user-capability
   [actions user capability]
-  (let [user-capability-kw (keyword "local" (str user "-" capability))
-        user-kw (keyword "local" (str user "-user"))
-        capability-kw (keyword "local" (str capability "-capability"))]
-    (-> actions
-        (builder/build-gen-uuid user-capability-kw)
-        (builder/build-property user-capability-kw [:index/name] (str user "-" capability))
-        (builder/build-property user-capability-kw [:index/headline] (str user " " capability))
-        (builder/build-relation :rel/capability user user-capability-kw capability-kw)
-        (builder/build-relation :rel/user (keyword capability) user-capability-kw user-kw)
-        )))
+  (conj actions [:user-capability user capability]))
 
 (defn build-demo
   [actions]

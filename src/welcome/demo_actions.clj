@@ -19,3 +19,15 @@
         (actions/action ark-db [:index/user-name user-kw [:index/user-name] user])
         (actions/action ark-db [:index/headline user-kw [:index/headline] (str  "user " user)])
         (actions/action ark-db [:index/headline user-kw [:content/password] password]))))
+
+(defmethod actions/action :user-capability
+  [v ark-db [kw user capability]]
+  (let [user-capability-kw (keyword "local" (str user "-" capability))
+        user-kw (keyword "local" (str user "-user"))
+        capability-kw (keyword "local" (str capability "-capability"))]
+    (-> v
+        (actions/action ark-db [:gen-uuid user-capability-kw])
+        (actions/action ark-db [:index/name user-capability-kw [:index/name] (str user "-" capability)])
+        (actions/action ark-db [:index/headline user-kw [:index/headline] (str user " " capability)])
+        (actions/action ark-db [:rel/capability user user-capability-kw capability-kw])
+        (actions/action ark-db [:rel/user (keyword capability) user-capability-kw user-kw]))))

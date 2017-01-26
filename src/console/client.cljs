@@ -262,6 +262,17 @@
 
 (defn red [] "color:red")
 
+(defn output-property
+  [ark-record path pval]
+  (output-path! ark-record path)
+  (add-output! " = ")
+  (add-output!
+    (pretty-value ark-record pval)
+    (clickable-styles pval)
+    uuid-click
+    (str pval))
+  )
+
 (defn explore
   [ark-record uuid path]
   (if (= "" @selected-rolon)
@@ -295,13 +306,7 @@
                    (arkRecord/get-property-value ark-record uuid path))]
         (when (some? pval)
           (add-output! "\n   ")
-          (output-path! ark-record path)
-          (add-output! " = ")
-          (add-output!
-            (pretty-value ark-record pval)
-            (clickable-styles pval)
-            uuid-click
-            (str pval)))
+          (output-property ark-record path pval))
         (when (some? pm)
           (reduce
             (fn [_ e]

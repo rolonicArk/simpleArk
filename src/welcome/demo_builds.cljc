@@ -6,7 +6,7 @@
 #?(:clj
    (set! *warn-on-reflection* true))
 
-(defn build-capability
+#_(defn build-capability
   [actions capability]
   (let [capability-kw (keyword "local" (str capability "-capability"))]
     (-> actions
@@ -14,6 +14,10 @@
         (builder/build-property capability-kw [:index/name] (str capability "-capability"))
         (builder/build-property capability-kw [:index/capability-name] capability)
         (builder/build-property capability-kw [:index/headline] (str  "capability " capability)))))
+
+(defn build-capability
+  [actions capability]
+  (conj actions [:capability capability]))
 
 (defn update-contact
   [actions contact value]

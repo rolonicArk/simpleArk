@@ -6,7 +6,7 @@
             [simpleArk.ark-db :as ark-db]
             [simpleArk.builder :as builder]
             [welcome.demo-builds :as demo-builds]
-            [simpleArk.actions]))
+            [welcome.demo-actions]))
 
 (users/add-capability! :welcome)
 (users/add-capability! :profile)

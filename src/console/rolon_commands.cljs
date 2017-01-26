@@ -16,7 +16,7 @@
   (client/add-output! "all micro-property paths of ")
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         properties (arkRecord/get-changes-by-property ark-record uuid)]
-    (client/add-output! (client/pretty-value ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
+    (client/output-value! ark-record uuid)
     (client/add-output! ":\n\n")
     (reduce
       (fn [_ [path _]]

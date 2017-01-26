@@ -37,14 +37,9 @@
     (reduce
       (fn [_ [[ts] v]]
         (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record ts)]
-          (client/add-output! (client/pretty-value
-                                ark-record
-                                je-uuid)
-                              (client/clickable-styles uuid)
-                              client/uuid-click
-                              (str je-uuid))
+          (client/output-value! ark-record je-uuid)
           (client/add-output! " ")
-          (client/add-output! (client/pretty-value ark-record v))
+          (client/output-value! ark-record v)
           (client/add-output! "\n")))
       nil changes)))
 

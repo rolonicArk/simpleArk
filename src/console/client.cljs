@@ -262,15 +262,20 @@
 
 (defn red [] "color:red")
 
-(defn output-property
-  [ark-record path pval]
-  (output-path! ark-record path)
-  (add-output! " = ")
+(defn output-value!
+  [ark-record pval]
   (add-output!
     (pretty-value ark-record pval)
     (clickable-styles pval)
     uuid-click
     (str pval))
+  )
+
+(defn output-property!
+  [ark-record path pval]
+  (output-path! ark-record path)
+  (add-output! " = ")
+  (output-value! ark-record pval)
   )
 
 (defn explore
@@ -306,7 +311,7 @@
                    (arkRecord/get-property-value ark-record uuid path))]
         (when (some? pval)
           (add-output! "\n   ")
-          (output-property ark-record path pval))
+          (output-property! ark-record path pval))
         (when (some? pm)
           (reduce
             (fn [_ e]
@@ -328,7 +333,7 @@
                       (do
                         (output-path! ark-record e-path)
                         (add-output! (str " : " count)))
-                      (output-property ark-record e-path value)))))
+                      (output-property! ark-record e-path value)))))
               nil)
             nil
             pm))

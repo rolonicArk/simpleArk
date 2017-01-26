@@ -36,24 +36,17 @@
   (client/add-output! "modified micro-properties of ")
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         properties (arkRecord/get-changes-by-property ark-record uuid)]
-    (client/add-output! (client/pretty-value ark-record uuid) (client/clickable-styles uuid) client/uuid-click @client/selected-rolon)
+    (client/output-value! ark-record uuid)
     (client/add-output! ":\n\n")
     ;(mapish/debug [:properties properties])
     (reduce
       (fn [_ [path value]]
         (let [[[k] v] (first value)
               st (suuid/rolon-key (suuid/create-uuid @client/selected-time))]
-          ;(mapish/debug [:compare k st (= k st)])
           (when (= k st)
             (client/add-output! "=" client/micro-property-style client/micro-property-click path)
             (client/add-output! " ")
-            (client/output-path! ark-record path)
-            (client/add-output! " = ")
-            (client/add-output!
-              (client/pretty-value ark-record v)
-              (client/clickable-styles v)
-              client/uuid-click
-              (str v))
+            (client/output-property! ark-record path v)
             (client/add-output! "\n\n"))))
       nil properties)
     ))
@@ -68,16 +61,13 @@
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         all-properties (arkRecord/get-property-values ark-record uuid)
         properties (mapish/mi-sub all-properties [:inv-rel/modified])]
-    (client/add-output! (client/pretty-value ark-record uuid)
-                        (client/clickable-styles uuid)
-                        client/uuid-click
-                        @client/selected-rolon)
+    (client/output-value! ark-record uuid)
     (client/add-output! "\n\n")
     (reduce
       (fn [_ [path value]]
         (let [k (second path)
               u (arkRecord/get-journal-entry-uuid ark-record k)]
-          (client/add-output! (client/pretty-value ark-record u) (client/clickable-styles u) client/uuid-click (str u))
+          (client/output-value! ark-record u)
           (let [headline (arkRecord/get-property-value
                            ark-record
                            u

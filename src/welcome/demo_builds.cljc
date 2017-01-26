@@ -19,13 +19,7 @@
 
 (defn build-user
   [actions user password]
-  (let [user-kw (keyword "local" (str user "-user"))]
-    (-> actions
-        (builder/build-gen-uuid user-kw)
-        (builder/build-property user-kw [:index/name] (str user "-user"))
-        (builder/build-property user-kw [:index/user-name] user)
-        (builder/build-property user-kw [:index/headline] (str  "user " user))
-        (builder/build-property user-kw [:content/password] password))))
+  (conj actions [:user user password]))
 
 (defn build-user-capability
   [actions user capability]

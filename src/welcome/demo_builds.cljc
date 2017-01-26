@@ -6,15 +6,6 @@
 #?(:clj
    (set! *warn-on-reflection* true))
 
-#_(defn build-capability
-  [actions capability]
-  (let [capability-kw (keyword "local" (str capability "-capability"))]
-    (-> actions
-        (builder/build-gen-uuid capability-kw)
-        (builder/build-property capability-kw [:index/name] (str capability "-capability"))
-        (builder/build-property capability-kw [:index/capability-name] capability)
-        (builder/build-property capability-kw [:index/headline] (str  "capability " capability)))))
-
 (defn build-capability
   [actions capability]
   (conj actions [:capability capability]))

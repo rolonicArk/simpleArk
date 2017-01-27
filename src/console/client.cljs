@@ -284,10 +284,12 @@
 (defn output-actions
   [ark-record actions]
   (reduce
-    (fn [_ a]
-      (add-output! (prn-str a))
-      (add-output! "\n"))
-    nil
+    (fn [line-nbr a]
+      (add-output! (str line-nbr ": "))
+      (add-output! (pr-str a))
+      (add-output! "\n\n")
+      (+ 1 line-nbr))
+    1
     actions)
   )
 

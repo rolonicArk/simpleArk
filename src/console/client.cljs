@@ -329,18 +329,14 @@
                     pt (val e)
                     count (if (vector? pt)
                             (arkRecord/tree-count ark-record pt)
-                            (arkRecord/tree-count ark-record e))
-                    value (if (not= count 1)
-                            nil
-                            (arkRecord/get-property-value ark-record uuid e-path))]
+                            (arkRecord/tree-count ark-record e))]
                 (if (< 0 count)
                   (do
                     (add-output! "\n")
                     (add-output! "=" micro-property-style micro-property-click e-path)
                     (add-output! " ")
                     (output-path! ark-record e-path)
-                    (if (nil? value)
-                      (add-output! (str " : " count))))))
+                    (add-output! (str " : " count)))))
               nil)
             nil
             pm))

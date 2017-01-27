@@ -12,7 +12,8 @@
     [simpleArk.mapish :as mapish]
     [cljs-time.core :as time]
     [cljs-time.coerce :as cotime]
-    [cljs-time.format :as ftime]))
+    [cljs-time.format :as ftime]
+    [cljs.reader :as reader]))
 
 (defn ldt [tm]
   (time/to-default-time-zone (cotime/to-date-time tm)))
@@ -280,12 +281,32 @@
     (str pval))
   )
 
+(defn output-actions
+  [ark-record actions]
+  (reduce
+    (fn [_ a]
+      (add-output! (prn-str a))
+      (add-output! "\n"))
+    nil
+    actions)
+  )
+
+(defn output-tran
+  [ark-record pval]
+  (let [[local actions] (reader/read-string pval)]
+  (add-output! "\n\nlocal: ")
+  (add-output! (pr-str local))
+  (add-output! "\n\nactions:\n\n")
+  (output-actions ark-record actions)))
+
 (defn output-property!
   [ark-record path pval]
   (output-path! ark-record path)
   (add-output! " = ")
-  (output-value! ark-record pval)
-  )
+  (let [kw (first path)]
+    (if (= kw :edn-transaction/transaction-argument)
+      (output-tran ark-record pval)
+      (output-value! ark-record pval))))
 
 (defn explore
   [ark-record uuid path]
@@ -339,8 +360,8 @@
                     (add-output! (str " : " count)))))
               nil)
             nil
-            pm))
-        (add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record ptree)))))))
+            pm)
+          (add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record ptree))))))))
 
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]

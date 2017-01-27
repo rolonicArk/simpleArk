@@ -338,11 +338,9 @@
                     (add-output! "\n")
                     (add-output! "=" micro-property-style micro-property-click e-path)
                     (add-output! " ")
+                    (output-path! ark-record e-path)
                     (if (nil? value)
-                      (do
-                        (output-path! ark-record e-path)
-                        (add-output! (str " : " count)))
-                      (output-property! ark-record e-path value)))))
+                      (add-output! (str " : " count))))))
               nil)
             nil
             pm))

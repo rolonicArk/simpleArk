@@ -11,14 +11,7 @@
 (defmulti
   action
   (fn [state ark-db v]
-    (let [kw (first v)]
-      (cond
-        (mapish/index? kw) :property
-        (mapish/content? kw) :property
-        (mapish/rel? kw) :relation
-        (mapish/inv-rel? kw) :relation
-        (mapish/bi-rel? kw) :relation
-        :else kw))))
+    (mapish/action-type v)))
 
 (defn eval-actions
   [state ark-db actions]

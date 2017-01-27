@@ -40,6 +40,17 @@
             (s/starts-with? kwns "edn"))))
       false)))
 
+(defn action-type
+  [v]
+  (let [kw (first v)]
+    (cond
+      (index? kw) :property
+      (content? kw) :property
+      (rel? kw) :relation
+      (inv-rel? kw) :relation
+      (bi-rel? kw) :relation
+      :else kw)))
+
 (defn validate-property-path
   [property-path]
   (let [kw (first property-path)]

@@ -2,13 +2,24 @@
   #?(:clj
      (:require
        [simpleArk.ark-db :as ark-db]
-       [console.server :as console])
+       [console.server :as console]
+       [simpleArk.mapish :as mapish])
      :cljs
      (:require
-       [tiples.client :as tiples])))
+       [tiples.client :as tiples]
+       [simpleArk.mapish :as mapish])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
+
+(defmulti
+  pretty-action
+  (fn [v]
+    (mapish/action-type v)))
+
+(defmethod pretty-action :default
+  [v]
+  (pr-str v))
 
 (defn build-property
   [actions rolon-uuid path value]
@@ -18,9 +29,21 @@
   [actions path value]
   (conj actions [(first path) :je path value]))
 
+(defmethod pretty-action :property
+  [[kw rolon-uuid path value]]
+  (str "property (uuid " rolon-uuid ")." (pr-str path) " <= " (pr-str value)))
+
 (defn build-relation
   [actions kw label uuid-a uuid-b]
   (conj actions [kw label uuid-a uuid-b]))
+
+(defmethod pretty-action :relation
+  [[kw label uuid-a uuid-b]]
+  (let [rt (cond
+             (mapish/bi-rel? kw) "<->"
+             (mapish/rel? kw) "->"
+             (mapish/inv-rel? kw) "<-")]
+    (str "relation (" kw ")." label " (uuid " uuid-a ") " rt " (uuid " uuid-b ")")))
 
 (defn build-locate-first
   [actions local-kw index-kw value]

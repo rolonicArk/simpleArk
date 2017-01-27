@@ -1,6 +1,5 @@
 (ns console.client
   (:require
-    [clojure.string :as string]
     [hoplon.core :as h]
     [javelin.core :as j]
     [simpleArk.uuid :as suuid]
@@ -10,6 +9,7 @@
     [tiples.login :as login]
     [tiples.client :as tiples]
     [simpleArk.mapish :as mapish]
+    [simpleArk.builder :as builder]
     [cljs-time.core :as time]
     [cljs-time.coerce :as cotime]
     [cljs-time.format :as ftime]
@@ -286,7 +286,7 @@
   (reduce
     (fn [line-nbr a]
       (add-output! (str line-nbr ": "))
-      (add-output! (pr-str a))
+      (add-output! (builder/pretty-action a))
       (add-output! "\n\n")
       (+ 1 line-nbr))
     1

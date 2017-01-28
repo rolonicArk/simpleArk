@@ -6,6 +6,7 @@
     [console.make-transaction :as make]
     [console.trouble-transaction :as trouble]
     [console.invalid-transaction :as invalid]
+    [console.composition-transaction :as composition]
     [console.client :as client]))
 
 (defn do-forms []
@@ -29,4 +30,5 @@
     (make/do-make)
     (trouble/do-trouble)
     (invalid/do-invalid)
+    (composition/do-composition)
     ))

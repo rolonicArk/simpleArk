@@ -40,4 +40,10 @@
                (reset! client/form-name "Trouble!")
                (reset! client/display-mode 0))
       "Trouble!")
+
+    (h/button
+      :click (fn []
+               (reset! client/form-name "Composition!")
+               (reset! client/display-mode 0))
+      "Composition!")
     ))

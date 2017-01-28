@@ -24,7 +24,9 @@
                  (fn [old-composition]
                    [(first old-composition) new-actions])))))
 
-(def parameter-name (j/cell ""))
+(def selected-rolon-name (j/cell ""))
+
+(def alternate-rolon-name (j/cell ""))
 
 (defn display-composition
   []
@@ -59,17 +61,17 @@
                   (swap! local
                          (fn [old]
                            (assoc old
-                             (keyword "local" @parameter-name)
+                             (keyword "local" @selected-rolon-name)
                              (suuid/create-uuid @client/selected-rolon))))
                   (display-composition))
-        (h/label "Add Selected Rolon as parameter ")
+        (h/label "Add Selected Rolon as parameter :local/")
         (h/input :type "text"
-                 :value parameter-name
-                 :keyup #(reset! parameter-name @%))
+                 :value selected-rolon-name
+                 :keyup #(reset! selected-rolon-name @%))
         (h/label " ")
         (h/button
           :css {:display "none" :background-color "MistyRose"}
-          :toggle (j/cell= (not= "" parameter-name))
+          :toggle (j/cell= (not= "" selected-rolon-name))
           :type "submit"
           "OK")))
     (h/div
@@ -80,17 +82,17 @@
                   (swap! local
                          (fn [old]
                            (assoc old
-                             (keyword "local" @parameter-name)
+                             (keyword "local" @alternate-rolon-name)
                              (suuid/create-uuid @client/alternate-rolon))))
                   (display-composition))
-        (h/label "Add Alternate Rolon as parameter ")
+        (h/label "Add Alternate Rolon as parameter :local/")
         (h/input :type "text"
-                 :value parameter-name
-                 :keyup #(reset! parameter-name @%))
+                 :value alternate-rolon-name
+                 :keyup #(reset! alternate-rolon-name @%))
         (h/label " ")
         (h/button
           :css {:display "none" :background-color "MistyRose"}
-          :toggle (j/cell= (not= "" parameter-name))
+          :toggle (j/cell= (not= "" alternate-rolon-name))
           :type "submit"
           "OK")))
     (h/hr)

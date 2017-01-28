@@ -72,5 +72,26 @@
           :toggle (j/cell= (not= "" parameter-name))
           :type "submit"
           "OK")))
+    (h/div
+      :css {:display "none"}
+      :toggle (j/cell= (not= "" client/alternate-rolon))
+      (h/form
+        :submit (fn []
+                  (swap! local
+                         (fn [old]
+                           (assoc old
+                             (keyword "local" @parameter-name)
+                             (suuid/create-uuid @client/alternate-rolon))))
+                  (display-composition))
+        (h/label "Add Alternate Rolon as parameter ")
+        (h/input :type "text"
+                 :value parameter-name
+                 :keyup #(reset! parameter-name @%))
+        (h/label " ")
+        (h/button
+          :css {:display "none" :background-color "MistyRose"}
+          :toggle (j/cell= (not= "" parameter-name))
+          :type "submit"
+          "OK")))
     (h/hr)
     ))

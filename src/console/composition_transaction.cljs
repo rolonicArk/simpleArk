@@ -43,6 +43,12 @@
         :css {:background-color "MistyRose"}
         :click display-composition
         "display")
+      (h/button
+        :css {:background-color "MistyRose"}
+        :click (fn []
+                 (reset! composition [{} []])
+                 (display-composition))
+        "reset")
       )
     (h/hr)
     (h/div

@@ -309,8 +309,9 @@
 (defn output-tran!
   [ark-record tran]
   (let [[local actions] tran]
-    (add-output! "\n\nlocal: ")
+    (add-output! "\n\nparameters: ")
     (add-output! "\n")
+    #_(mapish/debug [:local local])
     (output-local! ark-record (into (sorted-map) local))
     (add-output! "\nactions:\n")
     (output-actions! ark-record actions)))

@@ -4,7 +4,8 @@
     [javelin.core :as j]
     [console.client :as client]
     [simpleArk.builder :as builder]
-    [simpleArk.uuid :as suuid]))
+    [simpleArk.uuid :as suuid]
+    [cljs.reader :as reader]))
 
 (def composition (j/cell [{}[]]))
 
@@ -27,6 +28,8 @@
 (def selected-rolon-name (j/cell ""))
 
 (def alternate-rolon-name (j/cell ""))
+
+(def println-edn-string (j/cell ""))
 
 (defn display-composition
   []
@@ -96,4 +99,20 @@
           :type "submit"
           "OK")))
     (h/hr)
+    (h/form
+      :submit (fn []
+                (swap! actions
+                       (fn [old]
+                         (builder/build-println old (reader/read-string @println-edn-string))))
+                (display-composition))
+      (h/label "Add println of edn string ")
+      (h/input :type "text"
+               :value println-edn-string
+               :keyup #(reset! println-edn-string @%))
+      (h/label " ")
+      (h/button
+        :css {:display "none" :background-color "MistyRose"}
+        :toggle (j/cell= (not= "" println-edn-string))
+        :type "submit"
+        "OK"))
     ))

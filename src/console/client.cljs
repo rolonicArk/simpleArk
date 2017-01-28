@@ -307,8 +307,8 @@
   )
 
 (defn output-tran!
-  [ark-record pval]
-  (let [[local actions] (reader/read-string pval)]
+  [ark-record tran]
+  (let [[local actions] tran]
     (add-output! "\n\nlocal: ")
     (add-output! "\n")
     (output-local! ark-record (into (sorted-map) local))
@@ -321,7 +321,7 @@
   (add-output! " = ")
   (let [kw (first path)]
     (if (= kw :edn-transaction/transaction-argument)
-      (output-tran! ark-record pval)
+      (output-tran! ark-record (reader/read-string pval))
       (output-value! ark-record pval))))
 
 (defn explore

@@ -281,25 +281,39 @@
     (str pval))
   )
 
-(defn output-actions
+(defn output-local!
+  [ark-record local]
+  (reduce
+    (fn [_ e]
+      (let [k (key e)
+            v (val e)]
+        (add-output! (str k " "))
+        (output-value! ark-record v)
+        (add-output! "\n")
+        ))
+    nil
+    local))
+
+(defn output-actions!
   [ark-record actions]
   (reduce
     (fn [line-nbr a]
       (add-output! (str line-nbr ": "))
       (add-output! (builder/pretty-action a))
-      (add-output! "\n\n")
+      (add-output! "\n")
       (+ 1 line-nbr))
     1
     actions)
   )
 
-(defn output-tran
+(defn output-tran!
   [ark-record pval]
   (let [[local actions] (reader/read-string pval)]
-  (add-output! "\n\nlocal: ")
-  (add-output! (pr-str local))
-  (add-output! "\n\nactions:\n\n")
-  (output-actions ark-record actions)))
+    (add-output! "\n\nlocal: ")
+    (add-output! "\n")
+    (output-local! ark-record (into (sorted-map) local))
+    (add-output! "\nactions:\n")
+    (output-actions! ark-record actions)))
 
 (defn output-property!
   [ark-record path pval]
@@ -307,7 +321,7 @@
   (add-output! " = ")
   (let [kw (first path)]
     (if (= kw :edn-transaction/transaction-argument)
-      (output-tran ark-record pval)
+      (output-tran! ark-record pval)
       (output-value! ark-record pval))))
 
 (defn explore

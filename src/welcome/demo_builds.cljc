@@ -12,10 +12,7 @@
 
 (defn update-contact
   [actions contact value]
-  (builder/build-property actions
-                          :local/contacts-capability
-                          (into [:content/contact] (into (sorted-map) contact))
-                          value))
+  (conj actions [:contact contact value]))
 
 (defn build-user
   [actions user password]

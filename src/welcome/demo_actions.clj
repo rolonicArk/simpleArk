@@ -31,3 +31,10 @@
         (actions/action ark-db [:index/headline user-kw [:index/headline] (str user " " capability)])
         (actions/action ark-db [:rel/capability user user-capability-kw capability-kw])
         (actions/action ark-db [:rel/user (keyword capability) user-capability-kw user-kw]))))
+
+(defmethod actions/action :contact
+  [v ark-db [kw contact value]]
+  (actions/action v ark-db [:content/contact
+                          :local/contacts-capability
+                          (into [:content/contact] (into (sorted-map) contact))
+                          value]))

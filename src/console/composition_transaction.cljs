@@ -29,7 +29,15 @@
 
 (def alternate-rolon-name (j/cell ""))
 
+(def gen-uuid-name (j/cell ""))
+
 (def println-edn-string (j/cell ""))
+
+(def property-uuid (j/cell ""))
+
+(def property-path (j/cell ""))
+
+(def property-value (j/cell ""))
 
 (defn display-composition
   []
@@ -110,6 +118,21 @@
     (h/hr)
     (h/form
       :submit (fn []
+                (swap! actions builder/build-gen-uuid @gen-uuid-name)
+                (display-composition))
+      (h/label "Add gen-uuid to :local/")
+      (h/input :type "text"
+               :css {:background-color "LightYellow"}
+               :value gen-uuid-name
+               :keyup #(reset! gen-uuid-name @%))
+      (h/label " ")
+      (h/button
+        :css {:display "none" :background-color "MistyRose"}
+        :toggle (j/cell= (not= "" gen-uuid-name))
+        :type "submit"
+        "OK"))
+    (h/form
+      :submit (fn []
                 (swap! actions builder/build-println (reader/read-string @println-edn-string))
                 (display-composition))
       (h/label "Add println of edn string ")
@@ -123,4 +146,42 @@
         :toggle (j/cell= (not= "" println-edn-string))
         :type "submit"
         "OK"))
+    (h/hr)
+    (h/form
+      :submit (fn []
+                (swap! actions builder/build-property
+                       (reader/read-string @property-uuid)
+                       (reader/read-string @property-path)
+                       (reader/read-string @property-value))
+                (display-composition))
+      (h/label "Add a property")
+      (h/div
+        (h/label "Rolon: ")
+        (h/input :type "text"
+                 :css {:background-color "PowderBlue"}
+                 :value property-uuid
+                 :keyup #(reset! property-uuid @%)))
+      (h/div
+        (h/label "Path: ")
+        (h/input :type "text"
+                 :css {:background-color "PowderBlue"}
+                 :value property-path
+                 :keyup #(reset! property-path @%)))
+      (h/div
+        (h/label "Value: ")
+        (h/input :type "text"
+                 :css {:background-color "PowderBlue"}
+                 :value property-value
+                 :keyup #(reset! property-value @%)))
+      (h/div
+        (h/button
+          :css {:display "none" :background-color "MistyRose"}
+          :toggle (j/cell= (and
+                             (not= "" property-uuid)
+                             (not= "" property-path)
+                             (not= "" property-value)
+                             ))
+          :type "submit"
+          "OK")))
+    (h/hr)
     ))

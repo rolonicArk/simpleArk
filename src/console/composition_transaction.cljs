@@ -3,7 +3,6 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [console.client :as client]
-    [simpleArk.builder :as builder]
     [console.composition-basics :as composition-basics]
     [console.composition-selected :as composition-selected]
     [console.composition-alternate :as composition-alternate]

@@ -46,6 +46,14 @@
   (client/add-output! "Composed Transaction")
   (client/output-tran! @client/my-ark-record @composition))
 
+(defn read-cell
+  [cell]
+  (try
+    (reader/read-string @cell)
+    (catch :default e
+      (reset! client/transaction-error true)
+      (reset! client/transaction-error-msg (str "Unable to read " @cell)))))
+
 (defn do-composition
   []
   (h/div
@@ -133,7 +141,7 @@
         "OK"))
     (h/form
       :submit (fn []
-                (swap! actions builder/build-println (reader/read-string @println-edn-string))
+                (swap! actions builder/build-println (read-cell println-edn-string))
                 (display-composition))
       (h/label "Add println of edn string ")
       (h/input :type "text"
@@ -150,9 +158,9 @@
     (h/form
       :submit (fn []
                 (swap! actions builder/build-property
-                       (reader/read-string @property-uuid)
-                       (reader/read-string @property-path)
-                       (reader/read-string @property-value))
+                       (read-cell property-uuid)
+                       (read-cell property-path)
+                       (read-cell property-value))
                 (display-composition))
       (h/label "Add a property")
       (h/div

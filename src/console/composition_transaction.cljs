@@ -78,6 +78,7 @@
                   (display-composition))
         (h/label "Add Selected Rolon as parameter :local/")
         (h/input :type "text"
+                 :css {:background-color "LightYellow"}
                  :value selected-rolon-name
                  :keyup #(reset! selected-rolon-name @%))
         (h/label " ")
@@ -99,6 +100,7 @@
                   (display-composition))
         (h/label "Add Alternate Rolon as parameter :local/")
         (h/input :type "text"
+                 :css {:background-color "LightYellow"}
                  :value alternate-rolon-name
                  :keyup #(reset! alternate-rolon-name @%))
         (h/label " ")
@@ -116,6 +118,7 @@
                 (display-composition))
       (h/label "Add println of edn string ")
       (h/input :type "text"
+               :css {:background-color "PowderBlue"}
                :value println-edn-string
                :keyup #(reset! println-edn-string @%))
       (h/label " ")

@@ -49,6 +49,24 @@
   (j/cell=
     (arkRecord/get-latest-journal-entry-uuid my-ark-record)))
 
+(def composition (j/cell [{}[]]))
+
+(def local (j/cell=
+             (first composition)
+             (fn [new-local]
+               (swap!
+                 composition
+                 (fn [old-composition]
+                   [new-local (second old-composition)])))))
+
+(def actions (j/cell=
+               (second composition)
+               (fn [new-actions]
+                 (swap!
+                   composition
+                   (fn [old-composition]
+                     [(first old-composition) new-actions])))))
+
 (defn ark-time []
   (if (= "" @selected-time)
     @latest-journal-entry-uuid
@@ -532,3 +550,18 @@
         (h/text
           (selected-path-pretty my-ark-record selected-path v))))
     "]"))
+
+(defn display-composition
+  []
+  (reset! display-mode 0)
+  (clear-output!)
+  (add-output! "Composed Transaction")
+  (output-tran! @my-ark-record @composition))
+
+(defn read-cell
+  [cell]
+  (try
+    (reader/read-string @cell)
+    (catch :default e
+      (reset! transaction-error true)
+      (reset! transaction-error-msg (str "Unable to read " @cell)))))

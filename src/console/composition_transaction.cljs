@@ -71,10 +71,9 @@
       (h/form
         :submit (fn []
                   (swap! local
-                         (fn [old]
-                           (assoc old
-                             (keyword "local" @selected-rolon-name)
-                             (suuid/create-uuid @client/selected-rolon))))
+                         assoc
+                         (keyword "local" @selected-rolon-name)
+                         (suuid/create-uuid @client/selected-rolon))
                   (display-composition))
         (h/label "Add Selected Rolon as parameter :local/")
         (h/input :type "text"
@@ -93,10 +92,9 @@
       (h/form
         :submit (fn []
                   (swap! local
-                         (fn [old]
-                           (assoc old
-                             (keyword "local" @alternate-rolon-name)
-                             (suuid/create-uuid @client/alternate-rolon))))
+                         assoc
+                         (keyword "local" @alternate-rolon-name)
+                         (suuid/create-uuid @client/alternate-rolon))
                   (display-composition))
         (h/label "Add Alternate Rolon as parameter :local/")
         (h/input :type "text"
@@ -112,9 +110,7 @@
     (h/hr)
     (h/form
       :submit (fn []
-                (swap! actions
-                       (fn [old]
-                         (builder/build-println old (reader/read-string @println-edn-string))))
+                (swap! actions builder/build-println (reader/read-string @println-edn-string))
                 (display-composition))
       (h/label "Add println of edn string ")
       (h/input :type "text"

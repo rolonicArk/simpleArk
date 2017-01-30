@@ -6,6 +6,7 @@
     [console.composition-basics :as composition-basics]
     [console.composition-selected :as composition-selected]
     [console.composition-alternate :as composition-alternate]
+    [console.composition-drop-parameter :as composition-drop-parameter]
     [console.composition-gen-uuid :as composition-gen-uuid]
     [console.composition-println :as composition-println]
     [console.composition-property :as composition-property]))
@@ -15,6 +16,7 @@
   (reset! client/composition [{} []])
   (reset! composition-selected/selected-rolon-name "")
   (reset! composition-alternate/alternate-rolon-name "")
+  (reset! composition-drop-parameter/parameter-name "")
   (reset! composition-gen-uuid/gen-uuid-name "")
   (reset! composition-println/println-edn-string "")
   (reset! composition-property/property-uuid "")
@@ -31,6 +33,7 @@
     (h/hr)
     (composition-selected/do-selected)
     (composition-alternate/do-alternate)
+    (console.composition-drop-parameter/do-drop-parameter)
     (h/hr)
     (composition-gen-uuid/do-gen-uuid)
     (composition-println/do-println)

@@ -15,11 +15,13 @@
   []
   (h/form
     :submit (fn []
-              (swap! client/actions builder/build-property
-                     (client/read-cell property-uuid)
-                     (client/read-cell property-path)
-                     (client/read-cell property-value))
-              (client/display-composition))
+              (try
+                (swap! client/actions builder/build-property
+                       (client/read-cell property-uuid)
+                       (client/read-cell property-path)
+                       (client/read-cell property-value))
+                (client/display-composition)
+                (catch :default e)))
     (h/label "Add a property")
     (h/div
       (h/label "Rolon: ")

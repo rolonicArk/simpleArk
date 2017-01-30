@@ -564,4 +564,5 @@
     (reader/read-string @cell)
     (catch :default e
       (reset! transaction-error true)
-      (reset! transaction-error-msg (str "Unable to read " @cell)))))
+      (reset! transaction-error-msg (str "Unable to read " @cell))
+      (throw e))))

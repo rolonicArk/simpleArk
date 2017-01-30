@@ -69,7 +69,8 @@
                                   [uuid])
     (suuid/random-uuid? uuid) (get (get-application-rolons ark-record)
                                    [uuid])
-    :else (get (get-journal-entries ark-record) [uuid])))
+    :else
+    (get (get-journal-entries ark-record) [uuid])))
 
 (defn get-journal-entry [ark-record timestamp]
   (get (get-journal-entries ark-record) [timestamp]))

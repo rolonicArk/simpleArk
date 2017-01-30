@@ -11,8 +11,10 @@
   []
   (h/form
     :submit (fn []
-              (swap! client/actions builder/build-println (client/read-cell println-edn-string))
-              (client/display-composition))
+              (try
+                (swap! client/actions builder/build-println (client/read-cell println-edn-string))
+                (client/display-composition)
+                (catch :default e)))
     (h/label "Add println of edn string ")
     (h/input :type "text"
              :css {:background-color "PowderBlue"}

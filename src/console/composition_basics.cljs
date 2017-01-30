@@ -5,7 +5,7 @@
     [simpleArk.builder :as builder]))
 
 (defn do-basics
-  []
+  [resets]
   (h/div
     (h/button
       :css {:background-color "MistyRose"}
@@ -14,7 +14,7 @@
     (h/button
       :css {:background-color "MistyRose"}
       :click (fn []
-               (reset! client/composition [{} []])
+               (resets)
                (client/display-composition))
       "reset")
     (h/button

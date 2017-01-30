@@ -18,7 +18,7 @@
                 (client/display-composition))
       (h/label "Drop parameter :local/")
       (h/input :type "text"
-               :css {:background-color "LightYellow"}
+               :css {:background-color "PowderBlue"}
                :value parameter-name
                :keyup #(reset! parameter-name @%))
       (h/label " ")

@@ -16,7 +16,7 @@
   []
   (reset! client/composition [{} []])
   (reset! composition-selected/parameter-name "")
-  (reset! composition-alternate/alternate-rolon-name "")
+  (reset! composition-alternate/parameter-name "")
   (reset! composition-drop-parameter/parameter-name "")
   (reset! composition-gen-uuid/gen-uuid-name "")
   (reset! composition-println/println-edn-string "")

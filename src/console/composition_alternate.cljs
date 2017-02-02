@@ -5,7 +5,11 @@
     [console.client :as client]
     [simpleArk.uuid :as suuid]))
 
-(def alternate-rolon-name (j/cell ""))
+(def parameter-name (j/cell ""))
+
+(defn valid
+  [name]
+  (not= "" name))
 
 (defn do-alternate
   []
@@ -14,19 +18,20 @@
     :toggle (j/cell= (not= "" client/alternate-rolon))
     (h/form
       :submit (fn []
-                (swap! client/local
-                       assoc
-                       (keyword "local" @alternate-rolon-name)
-                       (suuid/create-uuid @client/alternate-rolon))
+                (if (valid @parameter-name)
+                  (swap! client/local
+                         assoc
+                         (keyword "local" @parameter-name)
+                         (suuid/create-uuid @client/alternate-rolon)))
                 (client/display-composition))
       (h/label "Add Alternate Rolon as parameter :local/")
       (h/input :type "text"
                :css {:background-color "LightYellow"}
-               :value alternate-rolon-name
-               :keyup #(reset! alternate-rolon-name @%))
+               :value parameter-name
+               :keyup #(reset! parameter-name @%))
       (h/label " ")
       (h/button
         :css {:display "none" :background-color "MistyRose"}
-        :toggle (j/cell= (not= "" alternate-rolon-name))
+        :toggle (j/cell= (valid parameter-name))
         :type "submit"
         "OK"))))

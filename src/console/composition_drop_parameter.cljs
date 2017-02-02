@@ -2,9 +2,18 @@
   (:require
     [hoplon.core :as h]
     [javelin.core :as j]
-    [console.client :as client]))
+    [console.client :as client]
+    [simpleArk.mapish :as mapish]))
 
 (def parameter-name (j/cell ""))
+
+(defn valid
+  [name]
+  (and
+    (not= "" name)
+    (some?
+      (get @client/local
+           (keyword "local" name)))))
 
 (defn do-drop-parameter
   []
@@ -13,8 +22,9 @@
     :toggle (j/cell= (not (empty? client/local)))
     (h/form
       :submit (fn []
-                (swap! client/local
-                       dissoc (keyword "local" @parameter-name))
+                (if (valid @parameter-name)
+                  (swap! client/local
+                         dissoc (keyword "local" @parameter-name)))
                 (client/display-composition))
       (h/label "Drop parameter :local/")
       (h/input :type "text"
@@ -24,9 +34,6 @@
       (h/label " ")
       (h/button
         :css {:display "none" :background-color "MistyRose"}
-        :toggle (j/cell= (if (not= "" parameter-name)
-                           (some?
-                             (get client/local
-                                  (keyword "local" parameter-name)))))
+        :toggle (j/cell= (valid parameter-name))
         :type "submit"
         "OK"))))

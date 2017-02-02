@@ -5,7 +5,11 @@
     [console.client :as client]
     [simpleArk.uuid :as suuid]))
 
-(def selected-rolon-name (j/cell ""))
+(def parameter-name (j/cell ""))
+
+(defn valid
+  [name]
+  (not= "" name))
 
 (defn do-selected
   []
@@ -14,19 +18,20 @@
     :toggle (j/cell= (not= "" client/selected-rolon))
     (h/form
       :submit (fn []
-                (swap! client/local
-                       assoc
-                       (keyword "local" @selected-rolon-name)
-                       (suuid/create-uuid @client/selected-rolon))
+                (if (valid @parameter-name)
+                  (swap! client/local
+                         assoc
+                         (keyword "local" @parameter-name)
+                         (suuid/create-uuid @client/selected-rolon)))
                 (client/display-composition))
       (h/label "Add Selected Rolon as parameter :local/")
       (h/input :type "text"
                :css {:background-color "LightYellow"}
-               :value selected-rolon-name
-               :keyup #(reset! selected-rolon-name @%))
+               :value parameter-name
+               :keyup #(reset! parameter-name @%))
       (h/label " ")
       (h/button
         :css {:display "none" :background-color "MistyRose"}
-        :toggle (j/cell= (not= "" selected-rolon-name))
+        :toggle (j/cell= (valid parameter-name))
         :type "submit"
         "OK"))))

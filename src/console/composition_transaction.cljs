@@ -15,7 +15,7 @@
 (defn resets
   []
   (reset! client/composition [{} []])
-  (reset! composition-selected/selected-rolon-name "")
+  (reset! composition-selected/parameter-name "")
   (reset! composition-alternate/alternate-rolon-name "")
   (reset! composition-drop-parameter/parameter-name "")
   (reset! composition-gen-uuid/gen-uuid-name "")

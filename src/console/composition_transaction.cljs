@@ -18,7 +18,7 @@
   (reset! composition-selected/parameter-name "")
   (reset! composition-alternate/parameter-name "")
   (reset! composition-drop-parameter/parameter-name "")
-  (reset! composition-gen-uuid/gen-uuid-name "")
+  (reset! composition-gen-uuid/action-name "")
   (reset! composition-println/println-edn-string "")
   (reset! composition-property/property-uuid "")
   (reset! composition-property/property-path "")

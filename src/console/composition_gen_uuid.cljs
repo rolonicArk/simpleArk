@@ -5,22 +5,27 @@
     [console.client :as client]
     [simpleArk.builder :as builder]))
 
-(def gen-uuid-name (j/cell ""))
+(def action-name (j/cell ""))
+
+(defn valid
+  [name]
+  (not= "" name))
 
 (defn do-gen-uuid
   []
   (h/form
     :submit (fn []
-              (swap! client/actions builder/build-gen-uuid @gen-uuid-name)
+              (if (valid @action-name)
+                (swap! client/actions builder/build-gen-uuid @action-name))
               (client/display-composition))
     (h/label "Add gen-uuid to :local/")
     (h/input :type "text"
              :css {:background-color "LightYellow"}
-             :value gen-uuid-name
-             :keyup #(reset! gen-uuid-name @%))
+             :value action-name
+             :keyup #(reset! action-name @%))
     (h/label " ")
     (h/button
       :css {:display "none" :background-color "MistyRose"}
-      :toggle (j/cell= (not= "" gen-uuid-name))
+      :toggle (j/cell= (valid action-name))
       :type "submit"
       "OK")))

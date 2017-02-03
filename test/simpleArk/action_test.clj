@@ -15,6 +15,7 @@
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.actions]
+            [welcome.demo-actions]
             [simpleArk.builder :as builder]
             [welcome.demo-builds :as demo-builds]
             [simpleArk.uuid :as uuid]))

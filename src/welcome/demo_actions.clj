@@ -29,8 +29,8 @@
         (actions/action ark-db [:gen-uuid user-capability-kw])
         (actions/action ark-db [:index/name user-capability-kw [:index/name] (str user "-" capability)])
         (actions/action ark-db [:index/headline user-kw [:index/headline] (str user " " capability)])
-        (actions/action ark-db [:rel/capability user user-capability-kw capability-kw])
-        (actions/action ark-db [:rel/user (keyword capability) user-capability-kw user-kw]))))
+        (actions/action ark-db [:rel/capability user user-capability-kw capability-kw true])
+        (actions/action ark-db [:rel/user (keyword capability) user-capability-kw user-kw true]))))
 
 (defmethod actions/action :contact
   [v ark-db [kw contact value]]

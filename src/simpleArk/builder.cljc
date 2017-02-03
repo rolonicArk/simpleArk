@@ -34,16 +34,16 @@
   (str "property (uuid " rolon-uuid ")." (pr-str path) " <= " (pr-str value)))
 
 (defn build-relation
-  [actions kw label uuid-a uuid-b]
-  (conj actions [kw label uuid-a uuid-b]))
+  [actions kw label uuid-a uuid-b value]
+  (conj actions [kw label uuid-a uuid-b value]))
 
 (defmethod pretty-action :relation
-  [[kw label uuid-a uuid-b]]
+  [[kw label uuid-a uuid-b value]]
   (let [rt (cond
              (mapish/bi-rel? kw) "<->"
              (mapish/rel? kw) "->"
              (mapish/inv-rel? kw) "<-")]
-    (str "relation (" kw ")." label " (uuid " uuid-a ") " rt " (uuid " uuid-b ")")))
+    (str "relation (" kw ")." label " (uuid " uuid-a ") " rt " (uuid " uuid-b ")" value)))
 
 (defn build-locate-first
   [actions local-kw index-kw value]

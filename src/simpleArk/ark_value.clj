@@ -187,9 +187,9 @@
                       (create-mi ark-db property-path property-value)))
 
 (defn update-relation
-  ([ark-record ark-db relaton-name from-uuid to-uuid symetrical add]
-   (update-relation ark-record ark-db relaton-name nil from-uuid to-uuid symetrical add))
-  ([ark-record ark-db relation-name label from-uuid to-uuid symetrical add]
+  ([ark-record ark-db relaton-name from-uuid to-uuid symetrical value]
+   (update-relation ark-record ark-db relaton-name nil from-uuid to-uuid symetrical value))
+  ([ark-record ark-db relation-name label from-uuid to-uuid symetrical value]
   (let [[rel irel] (if symetrical
                      [(keyword "bi-rel" relation-name) (keyword "bi-rel" relation-name)]
                      [(keyword "rel" relation-name) (keyword "inv-rel" relation-name)])
@@ -199,9 +199,6 @@
         to-path (if (some? label)
                   [irel (suuid/rolon-key label) from-uuid]
                   [irel from-uuid])
-        value (if add
-                true
-                nil)
         journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
         ark-record (update-property- ark-record
                                      ark-db

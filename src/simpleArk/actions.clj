@@ -60,7 +60,7 @@
 
 (defmethod action :relation
   [[local ark-record] ark-db v]
-  (let [[kw label uuid-a uuid-b] v
+  (let [[kw label uuid-a uuid-b value] v
         relaton-name (name kw)
         label (fetch local label)
         uuid-a (fetch local uuid-a)
@@ -75,7 +75,7 @@
                      ark-db
                      relaton-name label
                      from-uuid to-uuid
-                     symetrical true)]
+                     symetrical value)]
     [local ark-record]))
 
 (defmethod action :locate-first-uuid

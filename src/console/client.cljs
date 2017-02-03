@@ -565,7 +565,8 @@
   [f m]
   (if f
     (set-error m)
-    (clear-error)))
+    (clear-error))
+  (not f))
 
 (defn display-composition
   []

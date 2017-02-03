@@ -94,7 +94,7 @@
           pth path]
      (if (empty? pth)
        ptree
-       (let [m ( first ptree)
+       (let [m (first ptree)
              k [(first pth)]
              subtree (get m k)]
          (if (= true subtree)

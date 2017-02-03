@@ -3,7 +3,8 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [console.client :as client]
-    [simpleArk.builder :as builder]))
+    [simpleArk.builder :as builder]
+    [simpleArk.mapish :as mapish]))
 
 (def property-uuid (j/cell ""))
 (def property-path (j/cell ""))
@@ -25,7 +26,14 @@
   (and
     (valid1 uuid)
     (valid1 path)
-    (vector? (client/reader path))
+    (client/error (not (vector? (client/reader path))) "path is not a vector")
+    (try
+      (mapish/validate-property-path (client/reader path))
+      (client/clear-error)
+      true
+      (catch :default e
+        (client/set-error (str e))
+        false))
     (valid1 value)))
 
 (defn do-property

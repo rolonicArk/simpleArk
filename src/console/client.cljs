@@ -551,6 +551,22 @@
           (selected-path-pretty my-ark-record selected-path v))))
     "]"))
 
+(defn clear-error
+  []
+  (reset! transaction-error false)
+  (reset! transaction-error-msg ""))
+
+(defn set-error
+  [m]
+  (reset! transaction-error true)
+  (reset! transaction-error-msg m))
+
+(defn error
+  [f m]
+  (if f
+    (set-error m)
+    (clear-error)))
+
 (defn display-composition
   []
   (reset! display-mode 0)
@@ -562,12 +578,10 @@
   [edn-string]
   (try
     (let [v (reader/read-string edn-string)]
-      (reset! transaction-error false)
-      (reset! transaction-error-msg "")
+      (clear-error)
       v)
     (catch :default e
-      (reset! transaction-error true)
-      (reset! transaction-error-msg (str "Unable to read " edn-string))
+      (set-error (str "Unable to read " edn-string))
       (throw e))))
 
 (defn read-cell

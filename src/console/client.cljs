@@ -49,7 +49,7 @@
   (j/cell=
     (arkRecord/get-latest-journal-entry-uuid my-ark-record)))
 
-(def composition (j/cell [{}[]]))
+(def composition (j/cell [{} []]))
 
 (def local (j/cell=
              (first composition)
@@ -558,11 +558,18 @@
   (add-output! "Composed Transaction")
   (output-tran! @my-ark-record @composition))
 
-(defn read-cell
-  [cell]
+(defn reader
+  [edn-string]
   (try
-    (reader/read-string @cell)
+    (let [v (reader/read-string edn-string)]
+      (reset! transaction-error false)
+      (reset! transaction-error-msg "")
+      v)
     (catch :default e
       (reset! transaction-error true)
-      (reset! transaction-error-msg (str "Unable to read " @cell))
+      (reset! transaction-error-msg (str "Unable to read " edn-string))
       (throw e))))
+
+(defn read-cell
+  [cell]
+  (reader @cell))

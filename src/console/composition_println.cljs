@@ -5,24 +5,34 @@
     [console.client :as client]
     [simpleArk.builder :as builder]))
 
-(def println-edn-string (j/cell ""))
+(def edn-cell (j/cell ""))
+
+(defn valid
+  [edn-string]
+  (try
+    (and
+      (not= edn-string "")
+      (do
+        (client/reader edn-string)
+        true))
+    (catch :default e
+      false)))
 
 (defn do-println
   []
   (h/form
     :submit (fn []
-              (try
-                (swap! client/actions builder/build-println (client/read-cell println-edn-string))
-                (client/display-composition)
-                (catch :default e)))
+              (if (valid @edn-cell)
+                  (swap! client/actions builder/build-println (client/read-cell edn-cell)))
+              (client/display-composition))
     (h/label "Add println of edn string ")
     (h/input :type "text"
              :css {:background-color "PowderBlue"}
-             :value println-edn-string
-             :keyup #(reset! println-edn-string @%))
+             :value edn-cell
+             :keyup #(reset! edn-cell @%))
     (h/label " ")
     (h/button
       :css {:display "none" :background-color "MistyRose"}
-      :toggle (j/cell= (not= "" println-edn-string))
+      :toggle (j/cell= (valid edn-cell))
       :type "submit"
       "OK")))

@@ -3,8 +3,7 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [console.client :as client]
-    [cljs.reader :as reader]
-    [simpleArk.mapish :as mapish]))
+    [cljs.reader :as reader]))
 
 (def action-nbr (j/cell ""))
 

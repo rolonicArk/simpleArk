@@ -10,7 +10,8 @@
     [console.composition-gen-uuid :as composition-gen-uuid]
     [console.composition-println :as composition-println]
     [console.composition-property :as composition-property]
-    [console.composition-drop-action :as composition-drop-action]))
+    [console.composition-drop-action :as composition-drop-action]
+    [console.composition-move-action :as composition-move-action]))
 
 (defn resets
   []
@@ -24,6 +25,8 @@
   (reset! composition-property/property-path "")
   (reset! composition-property/property-value "")
   (reset! composition-drop-action/action-nbr "")
+  (reset! composition-move-action/action-from "")
+  (reset! composition-move-action/action-to "")
   )
 
 (defn do-composition
@@ -43,4 +46,5 @@
     (composition-property/do-property)
     (h/hr)
     (composition-drop-action/do-drop-action)
+    (composition-move-action/do-move-action)
     ))

@@ -6,22 +6,38 @@
     [simpleArk.builder :as builder]))
 
 (def property-uuid (j/cell ""))
-
 (def property-path (j/cell ""))
-
 (def property-value (j/cell ""))
+
+(defn valid1
+  [edn-string]
+  (try
+    (and
+      (not= edn-string "")
+      (do
+        (client/reader edn-string)
+        true))
+    (catch :default e
+      false)))
+
+(defn valid
+  [uuid path value]
+  (and
+    (valid1 uuid)
+    (valid1 path)
+    (vector? (client/reader path))
+    (valid1 value)))
 
 (defn do-property
   []
   (h/form
     :submit (fn []
-              (try
+              (if (valid @property-uuid @property-path @property-value)
                 (swap! client/actions builder/build-property
                        (client/read-cell property-uuid)
                        (client/read-cell property-path)
-                       (client/read-cell property-value))
-                (client/display-composition)
-                (catch :default e)))
+                       (client/read-cell property-value)))
+                (client/display-composition))
     (h/label "Add a property")
     (h/div
       (h/label "Rolon: ")
@@ -40,14 +56,10 @@
       (h/input :type "text"
                :css {:background-color "PowderBlue"}
                :value property-value
-               :keyup #(reset! property-value @%)))
-    (h/div
+               :keyup #(reset! property-value @%))
+      (h/label " ")
       (h/button
         :css {:display "none" :background-color "MistyRose"}
-        :toggle (j/cell= (and
-                           (not= "" property-uuid)
-                           (not= "" property-path)
-                           (not= "" property-value)
-                           ))
+        :toggle (j/cell= (valid property-uuid property-path property-value))
         :type "submit"
         "OK"))))

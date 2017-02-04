@@ -36,6 +36,7 @@
     (valid1 kw)
     (client/error (not (validate-kw (client/reader kw)))
                   "Not a valid relation keyword")
+    (valid1 label)
     (valid1 f)
     (valid1 t)
     (valid1 value)))
@@ -64,8 +65,7 @@
       (h/input :type "text"
                :css {:background-color "PowderBlue"}
                :value relation-label
-               :keyup #(reset! relation-label @%))
-      (h/label " (optional)"))
+               :keyup #(reset! relation-label @%)))
     (h/div
       (h/label "From: ")
       (h/input :type "text"

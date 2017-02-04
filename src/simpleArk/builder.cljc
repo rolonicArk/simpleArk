@@ -43,7 +43,9 @@
              (mapish/bi-rel? kw) "<->"
              (mapish/rel? kw) "->"
              (mapish/inv-rel? kw) "<-")]
-    (str "relation (" kw ")." label " (uuid " uuid-a ") " rt " (uuid " uuid-b ")" value)))
+    (if (some? label)
+      (str "relation (" kw ")." label " (uuid " uuid-a ") " rt " (uuid " uuid-b ") " value)
+      (str "relation (" kw ") (uuid " uuid-a ") " rt " (uuid " uuid-b ") " value))))
 
 (defn build-locate-first
   [actions local-kw index-kw value]

@@ -10,6 +10,7 @@
     [console.composition-gen-uuid :as composition-gen-uuid]
     [console.composition-println :as composition-println]
     [console.composition-property :as composition-property]
+    [console.composition-relation :as composition-relation]
     [console.composition-drop-action :as composition-drop-action]
     [console.composition-move-action :as composition-move-action]))
 
@@ -27,7 +28,11 @@
   (reset! composition-drop-action/action-nbr "")
   (reset! composition-move-action/action-from "")
   (reset! composition-move-action/action-to "")
-  )
+  (reset! composition-relation/relation-kw "")
+  (reset! composition-relation/relation-label "")
+  (reset! composition-relation/relation-from "")
+  (reset! composition-relation/relation-to "")
+  (reset! composition-relation/relation-value ""))
 
 (defn do-composition
   []
@@ -44,6 +49,8 @@
     (composition-println/do-println)
     (h/hr)
     (composition-property/do-property)
+    (h/hr)
+    (composition-relation/do-relation)
     (h/hr)
     (composition-drop-action/do-drop-action)
     (composition-move-action/do-move-action)

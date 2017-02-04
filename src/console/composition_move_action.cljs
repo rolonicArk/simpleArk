@@ -62,6 +62,7 @@
                :css {:background-color "LightYellow"}
                :value action-to
                :keyup #(reset! action-to @%))
+      (h/label " ")
       (h/button
         :css {:display "none" :background-color "MistyRose"}
         :toggle (j/cell= (validate-move action-from action-to))

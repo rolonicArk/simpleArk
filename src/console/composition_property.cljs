@@ -73,7 +73,7 @@
                  :css {:background-color "PowderBlue"}
                  :value property-value
                  :keyup #(reset! property-value @%))
-        (h/label " ")
+        (h/label " (nil -> remove) ")
         (h/button
           :css {:display "none" :background-color "MistyRose"}
           :toggle (j/cell= (valid property-uuid property-path property-value))

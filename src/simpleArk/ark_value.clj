@@ -217,14 +217,10 @@
   ([ark-record ark-db relaton-name from-uuid to-uuid symetrical value]
    (update-relation ark-record ark-db relaton-name nil from-uuid to-uuid symetrical value))
   ([ark-record ark-db relation-name label from-uuid to-uuid symetrical value]
-   (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
-         ark-record (update-relation- ark-record ark-db relation-name label from-uuid to-uuid symetrical value)]
-     (if (or (= from-uuid je-uuid)
-             (= to-uuid je-uuid))
-       ark-record
-       (-> ark-record
-           (je-modified  ark-db from-uuid)
-           (je-modified ark-db to-uuid))))))
+   (-> ark-record
+       (update-relation- ark-db relation-name label from-uuid to-uuid symetrical value)
+       (je-modified  ark-db from-uuid)
+       (je-modified ark-db to-uuid))))
 
 (defn je-modified
   "track the rolons modified by the journal entry"

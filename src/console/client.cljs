@@ -385,12 +385,7 @@
                     pt (val e)
                     count (if (vector? pt)
                             (arkRecord/tree-count ark-record pt)
-                            (arkRecord/tree-count ark-record e))
-                    count (if (< 1 count)
-                            count
-                            (if (nil? (arkRecord/get-property-value ark-record uuid e-path))
-                              0
-                              1))]
+                            (arkRecord/tree-count ark-record e))]
                 (if (< 0 count)
                   (do
                     (add-output! "\n")

@@ -90,7 +90,7 @@
                                 (assoc property-changes timestamp-path new-value)))
         property-tree (if (= (nil? old-value) (nil? new-value))
                         property-tree
-                        (let [upt (update-ptree property-tree ark-db timestamp-path path (nil? old-value))]
+                        (let [upt (update-ptree property-tree ark-db timestamp-path path (some? new-value))]
                           upt))]
     [changes-by-property property-tree]))
 
@@ -190,28 +190,28 @@
   ([ark-record ark-db relaton-name from-uuid to-uuid symetrical value]
    (update-relation ark-record ark-db relaton-name nil from-uuid to-uuid symetrical value))
   ([ark-record ark-db relation-name label from-uuid to-uuid symetrical value]
-  (let [[rel irel] (if symetrical
-                     [(keyword "bi-rel" relation-name) (keyword "bi-rel" relation-name)]
-                     [(keyword "rel" relation-name) (keyword "inv-rel" relation-name)])
-        from-path (if (some? label)
-                    [rel (suuid/rolon-key label) to-uuid]
-                    [rel to-uuid])
-        to-path (if (some? label)
-                  [irel (suuid/rolon-key label) from-uuid]
-                  [irel from-uuid])
-        journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
-        ark-record (update-property- ark-record
-                                     ark-db
-                                     journal-entry-uuid
-                                     from-uuid
-                                     from-path
-                                     value)]
-    (update-property- ark-record
-                      ark-db
-                      journal-entry-uuid
-                      to-uuid
-                      to-path
-                      value))))
+   (let [[rel irel] (if symetrical
+                      [(keyword "bi-rel" relation-name) (keyword "bi-rel" relation-name)]
+                      [(keyword "rel" relation-name) (keyword "inv-rel" relation-name)])
+         from-path (if (some? label)
+                     [rel (suuid/rolon-key label) to-uuid]
+                     [rel to-uuid])
+         to-path (if (some? label)
+                   [irel (suuid/rolon-key label) from-uuid]
+                   [irel from-uuid])
+         journal-entry-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
+         ark-record (update-property- ark-record
+                                      ark-db
+                                      journal-entry-uuid
+                                      from-uuid
+                                      from-path
+                                      value)]
+     (update-property- ark-record
+                       ark-db
+                       journal-entry-uuid
+                       to-uuid
+                       to-path
+                       value))))
 
 (defn je-modified
   "track the rolons modified by the journal entry"

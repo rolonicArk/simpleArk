@@ -21,7 +21,7 @@
                       [:edn-transaction/transaction-argument] s))
         ark-record (if (nil? user-uuid)
                     ark-record
-                    (ark-value/update-relation
+                    (ark-value/update-relation-
                       ark-record
                       ark-db
                       "transaction"

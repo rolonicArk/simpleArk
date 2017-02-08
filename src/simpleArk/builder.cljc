@@ -27,7 +27,7 @@
 
 (defn build-je-property
   [actions path value]
-  (conj actions [(first path) :je path value]))
+  (conj actions [(first path) :local/je path value]))
 
 (defmethod pretty-action :property
   [[kw rolon-uuid path value]]

@@ -7,16 +7,12 @@
 
 (def action-name (j/cell ""))
 
-(defn valid
-  [name]
-  (not= "" name))
-
 (defn do-gen-uuid
   []
   (h/form
     :submit (fn []
-              (if (valid @action-name)
-                (swap! client/actions builder/build-gen-uuid @action-name))
+              (if (client/valid-parameter @action-name)
+                (swap! client/actions builder/build-gen-uuid (keyword "local" @action-name)))
               (client/display-composition))
     (h/label "Add gen-uuid to :local/")
     (h/input :type "text"
@@ -26,6 +22,6 @@
     (h/label " ")
     (h/button
       :css {:display "none" :background-color "MistyRose"}
-      :toggle (j/cell= (valid action-name))
+      :toggle (j/cell= (client/valid-parameter action-name))
       :type "submit"
       "OK")))

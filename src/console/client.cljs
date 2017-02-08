@@ -575,3 +575,14 @@
 (defn read-cell
   [cell]
   (reader @cell))
+
+(defn valid-parameter
+  [name]
+  (and
+    (not= "" name)
+    (not= "je" name)
+    (try
+      (keyword "local" name)
+      true
+      (catch :default e
+        false))))

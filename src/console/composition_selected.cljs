@@ -7,10 +7,6 @@
 
 (def parameter-name (j/cell ""))
 
-(defn valid
-  [name]
-  (not= "" name))
-
 (defn do-selected
   []
   (h/div
@@ -18,7 +14,7 @@
     :toggle (j/cell= (not= "" client/selected-rolon))
     (h/form
       :submit (fn []
-                (if (valid @parameter-name)
+                (if (client/valid-parameter @parameter-name)
                   (swap! client/local
                          assoc
                          (keyword "local" @parameter-name)
@@ -32,6 +28,6 @@
       (h/label " ")
       (h/button
         :css {:display "none" :background-color "MistyRose"}
-        :toggle (j/cell= (valid parameter-name))
+        :toggle (j/cell= (client/valid-parameter parameter-name))
         :type "submit"
         "OK"))))

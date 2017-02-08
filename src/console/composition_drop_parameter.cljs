@@ -10,7 +10,7 @@
 (defn valid
   [name]
   (and
-    (not= "" name)
+    (client/valid-parameter name)
     (some?
       (get @client/local
            (keyword "local" name)))))

@@ -84,11 +84,6 @@
       (h/span
         (h/strong "Selected Rolon: "))
       (h/span
-        :style (j/cell= (if (= "" client/selected-rolon)
-                          ""
-                          "color:YellowGreen;cursor:pointer"
-                          ))
-        :click #(client/alternate-click @client/my-ark-record @client/selected-rolon)
         (h/text
           (if (= "" client/selected-rolon)
             "none"

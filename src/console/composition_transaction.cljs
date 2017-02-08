@@ -5,7 +5,6 @@
     [console.client :as client]
     [console.composition-basics :as composition-basics]
     [console.composition-selected :as composition-selected]
-    [console.composition-alternate :as composition-alternate]
     [console.composition-drop-parameter :as composition-drop-parameter]
     [console.composition-gen-uuid :as composition-gen-uuid]
     [console.composition-println :as composition-println]
@@ -18,7 +17,6 @@
   []
   (reset! client/composition [{} []])
   (reset! composition-selected/parameter-name "")
-  (reset! composition-alternate/parameter-name "")
   (reset! composition-drop-parameter/parameter-name "")
   (reset! composition-gen-uuid/action-name "")
   (reset! composition-println/edn-cell "")
@@ -42,7 +40,6 @@
     (composition-basics/do-basics resets)
     (h/hr)
     (composition-selected/do-selected)
-    (composition-alternate/do-alternate)
     (console.composition-drop-parameter/do-drop-parameter)
     (h/hr)
     (composition-gen-uuid/do-gen-uuid)

@@ -4,7 +4,6 @@
     [console.time-commands :as time-commands]
     [console.index-commands :as index-commands]
     [console.rolon-commands :as rolon-commands]
-    [console.alternate-commands :as alternate-commands]
     [console.path-commands :as path-commands]
     [console.count-commands :as count-commands]
     [console.transaction-commands :as transaction-commands]))
@@ -17,8 +16,6 @@
     (index-commands/do-index-commands)
     (h/hr)
     (rolon-commands/do-rolon-commands)
-    (h/hr)
-    (alternate-commands/do-alternate-commands)
     (h/hr)
     (path-commands/do-path-commands)
     (h/hr)

@@ -84,7 +84,6 @@
 (def selected-index (j/cell ""))
 
 (def selected-rolon (j/cell ""))
-(def alternate-rolon (j/cell ""))
 (def selected-path (j/cell []))
 
 (defmethod tiples/chsk-recv :console/update
@@ -250,18 +249,6 @@
   (let [t (prompt-time)]
     (if t
       (add-history! t clickable-je-style uuid-click (str (ark-time))))))
-
-(defn alternate-click [ark-record arg]
-  (let [uuid (suuid/create-uuid arg)]
-    (reset! alternate-rolon arg)
-    (add-prompt)
-    (add-history! " ")
-    (if (= "" arg)
-      (add-history! "cleared alternate rolon\n" selection-style)
-      (do
-        (add-history! "alternate rolon:" selection-style)
-        (add-history! " ")
-        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))))
 
 (defn micro-property-style [] "color:chocolate;cursor:pointer")
 

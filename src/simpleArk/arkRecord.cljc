@@ -103,16 +103,6 @@
   ([ark-record rolon-uuid]
    (:property-tree (get-rolon ark-record rolon-uuid))))
 
-(defn tree-count
-  ([ark-record rolon-uuid path]
-   (tree-count ark-record (get-property-tree ark-record rolon-uuid path)))
-  ([ark-record pt]
-   (let [tsm (second pt)]
-     (if (or (nil? tsm) (= true tsm))
-       1
-       (let [tsm (mapish/mi-sub tsm nil nil <= (get-selected-time ark-record))]
-         (second (first (rseq tsm))))))))
-
 (defn get-property-value
   [ark-record rolon-uuid property-path]
   (mapish/validate-property-path property-path)
@@ -120,6 +110,18 @@
     (if changes
       (val (first (rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-record)))))
       nil)))
+
+(defn tree-count
+  #_([ark-record rolon-uuid path]
+   (tree-count ark-record (get-property-tree ark-record rolon-uuid path)))
+  ([ark-record uuid path pt]
+   (let [tsm (second pt)]
+     (if (or (nil? tsm) (= true tsm))
+       (if (some? (get-property-value ark-record uuid path))
+         1
+         0)
+       (let [tsm (mapish/mi-sub tsm nil nil <= (get-selected-time ark-record))]
+         (second (first (rseq tsm))))))))
 
 (defn get-property-values
   ([ark-record rolon-uuid]

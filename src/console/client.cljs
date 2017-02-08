@@ -384,8 +384,8 @@
                     e-path (into path k)
                     pt (val e)
                     count (if (vector? pt)
-                            (arkRecord/tree-count ark-record pt)
-                            (arkRecord/tree-count ark-record e))]
+                            (arkRecord/tree-count ark-record uuid e-path pt)
+                            (arkRecord/tree-count ark-record uuid e-path e))]
                 (if (< 0 count)
                   (do
                     (add-output! "\n")
@@ -396,7 +396,7 @@
               nil)
             nil
             pm)
-          (add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record ptree))))))))
+          (add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record uuid path ptree))))))))
 
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]

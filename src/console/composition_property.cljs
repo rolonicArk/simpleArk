@@ -39,7 +39,7 @@
   (defn valid
     [uuid path value]
     (and
-      (valid1 uuid)
+      (or (client/valid-parameter uuid)(= uuid "je"))
       (valid1 path)
       (validate-path (client/reader path))
       (valid1 value)))
@@ -50,25 +50,26 @@
       :submit (fn []
                 (if (valid @property-uuid @property-path @property-value)
                   (swap! client/actions builder/build-property
-                         (client/read-cell property-uuid)
+                         (keyword "local" @property-uuid)
                          (client/read-cell property-path)
                          (client/read-cell property-value)))
                 (client/display-composition))
       (h/label "Add a property")
       (h/div
-        (h/label "Rolon: ")
+        (h/label "Rolon :local/")
         (h/input :type "text"
-                 :css {:background-color "PowderBlue"}
+                 :css {:background-color "LightYellow"}
                  :value property-uuid
-                 :keyup #(reset! property-uuid @%)))
+                 :keyup #(reset! property-uuid @%))
+        (h/label " (je -> transaction journal entry)"))
       (h/div
-        (h/label "Path: ")
+        (h/label "Path ")
         (h/input :type "text"
                  :css {:background-color "PowderBlue"}
                  :value property-path
                  :keyup #(reset! property-path @%)))
       (h/div
-        (h/label "Value: ")
+        (h/label "Value ")
         (h/input :type "text"
                  :css {:background-color "PowderBlue"}
                  :value property-value

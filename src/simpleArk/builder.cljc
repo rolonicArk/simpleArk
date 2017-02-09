@@ -55,6 +55,10 @@
   [actions s]
   (conj actions [:gen-uuid s]))
 
+(defn build-delete-rolon
+  [actions uuid]
+  (conj actions [:delete-rolon uuid]))
+
 (defn build-println
   [actions s]
   (conj actions [:println s]))

@@ -37,8 +37,8 @@
     (client/error (not (validate-kw (client/reader kw)))
                   "Not a valid relation keyword")
     (valid1 label)
-    (valid1 f)
-    (valid1 t)
+    (or (client/valid-parameter f)(= f "je"))
+    (or (client/valid-parameter t)(= t "je"))
     (valid1 value)))
 
 (defn do-relation
@@ -49,8 +49,8 @@
                 (swap! client/actions builder/build-relation
                        (client/read-cell relation-kw)
                        (client/read-cell relation-label)
-                       (client/read-cell relation-from)
-                       (client/read-cell relation-to)
+                       (keyword "local" @relation-from)
+                       (keyword "local" @relation-to)
                        (client/read-cell relation-value)))
               (client/display-composition))
     (h/label "Add a relation")
@@ -65,19 +65,22 @@
       (h/input :type "text"
                :css {:background-color "PowderBlue"}
                :value relation-label
-               :keyup #(reset! relation-label @%)))
+               :keyup #(reset! relation-label @%))
+      (h/label " (nil -> no label)"))
     (h/div
-      (h/label "From: ")
+      (h/label "From: :local/")
       (h/input :type "text"
-               :css {:background-color "PowderBlue"}
+               :css {:background-color "LightYellow"}
                :value relation-from
-               :keyup #(reset! relation-from @%)))
+               :keyup #(reset! relation-from @%))
+      (h/label " (je -> transaction journal entry)"))
     (h/div
-      (h/label "To: ")
+      (h/label "To: :local/")
       (h/input :type "text"
-               :css {:background-color "PowderBlue"}
+               :css {:background-color "LightYellow"}
                :value relation-to
-               :keyup #(reset! relation-to @%)))
+               :keyup #(reset! relation-to @%))
+      (h/label " (je -> transaction journal entry)"))
     (h/div
       (h/label "Value: ")
       (h/input :type "text"

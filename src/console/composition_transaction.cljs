@@ -7,6 +7,7 @@
     [console.composition-selected :as composition-selected]
     [console.composition-drop-parameter :as composition-drop-parameter]
     [console.composition-gen-uuid :as composition-gen-uuid]
+    [console.composition-delete-rolon :as composition-delete-rolon]
     [console.composition-println :as composition-println]
     [console.composition-property :as composition-property]
     [console.composition-relation :as composition-relation]
@@ -19,6 +20,7 @@
   (reset! composition-selected/parameter-name "")
   (reset! composition-drop-parameter/parameter-name "")
   (reset! composition-gen-uuid/action-name "")
+  (reset! composition-delete-rolon/delete-uuid "")
   (reset! composition-println/edn-cell "")
   (reset! composition-property/property-uuid "")
   (reset! composition-property/property-path "")
@@ -43,6 +45,7 @@
     (console.composition-drop-parameter/do-drop-parameter)
     (h/hr)
     (composition-gen-uuid/do-gen-uuid)
+    (composition-delete-rolon/do-delete-rolon)
     (composition-println/do-println)
     (h/hr)
     (composition-property/do-property)

@@ -36,7 +36,9 @@
   (if (and (keyword? s) (= "local" (namespace s)))
     (if (= "je" (name s))
       (arkRecord/get-latest-journal-entry-uuid ark-record)
-      (s local))
+      (if (not (contains? local s))
+        (throw (Exception. (str "Not defined: " s)))
+        (s local)))
     s))
 
 (defn make-rolon
@@ -50,8 +52,7 @@
 
 (defmethod action :property
   [[local ark-record] ark-db [kw rolon-uuid path value]]
-  (let [rolon-uuid
-        (fetch ark-record local rolon-uuid)
+  (let [rolon-uuid (fetch ark-record local rolon-uuid)
         path (fetch ark-record local path)
         value (fetch ark-record local value)
         ark-record (make-rolon ark-record rolon-uuid)

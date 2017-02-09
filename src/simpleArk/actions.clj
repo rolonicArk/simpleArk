@@ -94,6 +94,11 @@
   (let [local (assoc local s (suuid/random-uuid ark-db))]
     [local ark-record]))
 
+(defmethod action :delete-rolon
+  [[local ark-record] ark-db [kw uuid]]
+  (println :delete-rolon uuid)
+  [local ark-record])
+
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]
   (cond

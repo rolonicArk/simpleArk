@@ -96,9 +96,19 @@
     [local ark-record]))
 
 (defmethod action :delete-rolon
-  [[local ark-record] ark-db [kw uuid]]
-  (println :delete-rolon uuid)
-  [local ark-record])
+  [[local ark-record] ark-db [kw rolon-uuid]]
+  (let [rolon-uuid (fetch ark-record local rolon-uuid)]
+    (cond
+      (suuid/journal-entry-uuid? rolon-uuid)
+      (throw (Exception. "Journal entry rolons can not be deleted."))
+      (suuid/index-uuid? rolon-uuid)
+      (throw (Exception. "Index rolons can not be deleted."))
+      (suuid/random-uuid? rolon-uuid)
+      ()
+      :else
+      (throw (Exception. (str "Unrecognized UUID: " rolon-uuid))))
+    (println :delete-rolon rolon-uuid)
+    [local ark-record]))
 
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]

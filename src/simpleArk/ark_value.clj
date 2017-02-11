@@ -245,7 +245,8 @@
         rolon (arkRecord/get-rolon ark-record rolon-uuid)
         rolon (update-rolon-properties rolon ark-record ark-db je-uuid property-values)
         ark-record (assoc-rolon ark-record rolon-uuid rolon)]
-    (je-modified ark-record ark-db rolon-uuid)))
+    (je-modified ark-record ark-db rolon-uuid))
+  )
 
 (defmulti eval-transaction (fn [ark-record ark-db n s] n))
 

@@ -107,8 +107,32 @@
       ()
       :else
       (throw (Exception. (str "Unrecognized UUID: " rolon-uuid))))
-    (println :delete-rolon rolon-uuid)
-    [local ark-record]))
+    (if (some? (arkRecord/get-property-value ark-record rolon-uuid [:content/deleted]))
+      (throw (Exception. "Already deleted"))
+      (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
+            old-property-values (arkRecord/get-property-values ark-record rolon-uuid)
+            ark-record (reduce
+                         (fn [ark-record e]
+                           (let [path (key e)
+                                 kw (first path)
+                                 relation-name (name kw)
+                                 label (if (= (count path) 3) (second path) nil)
+                                 uuid (last path)]
+                             (cond
+                               (or (mapish/index? kw) (mapish/content? kw))
+                               (ark-value/update-property- ark-record ark-db je-uuid rolon-uuid path nil)
+                               (mapish/bi-rel? kw)
+                               (ark-value/update-relation ark-record ark-db relation-name label rolon-uuid uuid true nil)
+                               (or (mapish/rel? kw) (mapish/inv-rel? kw))
+                               (if (= kw :inv-rel/modified)
+                                 ark-record
+                                 (ark-value/update-relation ark-record ark-db relation-name label rolon-uuid uuid false nil))
+                               :else
+                               ark-record)))
+                         ark-record
+                         (seq old-property-values))
+            ark-record (ark-value/update-property ark-record ark-db rolon-uuid [:content/deleted] true)]
+        [local ark-record]))))
 
 (defmethod action :println
   [[local ark-record] ark-db [kw s]]

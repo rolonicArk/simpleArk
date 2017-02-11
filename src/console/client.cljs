@@ -229,7 +229,7 @@
       (ftime/unparse format-date-time (local-date-time value))
       (suuid/random-uuid? value)
       (let [name (arkRecord/get-property-value ark-record value [:index/name])]
-        (if name name ""))
+        (if name name "_"))
       (suuid/index-uuid? value)
       (let [index-name (arkRecord/get-property-value ark-record value [:index/index.name])]
         (if index-name (str ":index/" index-name) ""))

@@ -53,6 +53,8 @@
 (defmethod action :property
   [[local ark-record] ark-db [kw rolon-uuid path value]]
   (let [rolon-uuid (fetch ark-record local rolon-uuid)
+        _ (if (arkRecord/deleted? ark-record rolon-uuid)
+            (throw (Exception. "Already deleted")))
         path (fetch ark-record local path)
         value (fetch ark-record local value)
         ark-record (make-rolon ark-record rolon-uuid)
@@ -71,12 +73,16 @@
         from-uuid (if inv uuid-b uuid-a)
         to-uuid (if inv uuid-a uuid-b)
         symetrical (= "bi-rel" namespace)
-        ark-record (ark-value/update-relation
-                     ark-record
-                     ark-db
-                     relaton-name label
-                     from-uuid to-uuid
-                     symetrical value)]
+        ark-record (if (or
+                         (arkRecord/deleted? ark-record uuid-a)
+                         (arkRecord/deleted? ark-record uuid-b))
+                     (throw (Exception. "Already deleted"))
+                     (ark-value/update-relation
+                       ark-record
+                       ark-db
+                       relaton-name label
+                       from-uuid to-uuid
+                       symetrical value))]
     [local ark-record]))
 
 (defmethod action :locate-first-uuid
@@ -107,7 +113,7 @@
       ()
       :else
       (throw (Exception. (str "Unrecognized UUID: " rolon-uuid))))
-    (if (some? (arkRecord/get-property-value ark-record rolon-uuid [:content/deleted]))
+    (if (arkRecord/deleted? ark-record rolon-uuid)
       (throw (Exception. "Already deleted"))
       (let [je-uuid (arkRecord/get-latest-journal-entry-uuid ark-record)
             old-property-values (arkRecord/get-property-values ark-record rolon-uuid)

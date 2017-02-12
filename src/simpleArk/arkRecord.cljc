@@ -111,6 +111,10 @@
       (val (first (rseq (mapish/mi-sub changes nil nil <= (get-selected-time ark-record)))))
       nil)))
 
+(defn deleted?
+      [ark-record rolon-uuid]
+      (some? (get-property-value ark-record rolon-uuid [:content/deleted])))
+
 (defn tree-count
   #_([ark-record rolon-uuid path]
    (tree-count ark-record (get-property-tree ark-record rolon-uuid path)))

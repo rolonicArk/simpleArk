@@ -29,7 +29,7 @@
     (h/form
       :submit (fn []
                 (reset! client/display-mode 0)
-                (client/add-prompt)
+                (client/add-prompt!)
                 (client/add-history! ">")
                 (client/add-history! (str "Hello " (get-aname) "! transaction\n") client/command-prefix-style)
                 (hello-transaction (get-aname)))

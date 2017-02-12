@@ -49,7 +49,7 @@
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/add-prompt)
+                 (client/add-prompt!)
                  (client/add-history! ">")
                  (client/add-history! "clear time selection\n" client/command-prefix-style)
                  (reset! client/selected-time ""))

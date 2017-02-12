@@ -21,7 +21,7 @@
       :css {:background-color "MistyRose"}
       :click (fn []
                (reset! client/display-mode 0)
-               (client/add-prompt)
+               (client/add-prompt!)
                (client/add-history! ">")
                (client/add-history! "Composition! transaction\n" client/command-prefix-style)
                (builder/transaction! @client/local @client/actions))

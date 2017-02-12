@@ -10,7 +10,7 @@
 
 (defn list-changes
   [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "list property changes over time for " client/command-prefix-style)
   (let [path @client/selected-path
@@ -56,7 +56,7 @@
       :toggle (j/cell= (< 0 (count client/selected-path)))
       :click (fn []
                (reset! client/display-mode 0)
-               (client/add-prompt)
+               (client/add-prompt!)
                (client/add-history! ">")
                (client/add-history! "up\n" client/command-prefix-style)
                (swap! client/selected-path pop)
@@ -68,7 +68,7 @@
       :toggle (j/cell= (< 0 (count client/selected-path)))
       :click (fn []
                (reset! client/display-mode 0)
-               (client/add-prompt)
+               (client/add-prompt!)
                (client/add-history! ">")
                (client/add-history! "clear path selection\n" client/command-prefix-style)
                (reset! client/selected-path [])

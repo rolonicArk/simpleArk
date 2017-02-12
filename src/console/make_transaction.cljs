@@ -36,7 +36,7 @@
       :style "background-color:MistyRose"
       :click (fn []
                (reset! client/display-mode 0)
-               (client/add-prompt)
+               (client/add-prompt!)
                (client/add-history! ">")
                (client/add-history! "Make Bob transaction\n" client/command-prefix-style)
                (make-transaction))

@@ -264,10 +264,16 @@
 
 (declare uuid-click)
 
-(defn add-prompt []
+(defn add-prompt
+  [display]
   (let [t (prompt-time)]
     (if t
-      (add-history! t clickable-je-style uuid-click (str (ark-time))))))
+      (add-display display t clickable-je-style uuid-click (str (ark-time)))
+      display)))
+
+(defn add-prompt!
+  []
+  (display-history! (add-prompt [])))
 
 (defn micro-property-style [] "color:chocolate;cursor:pointer")
 
@@ -277,7 +283,7 @@
   (if (< 1 @display-mode)
     (reset! display-mode 1))
   (reset! selected-path arg)
-  (add-prompt)
+  (add-prompt!)
   (add-history! " ")
   (add-history! "selected micro-property:" selection-style)
   (add-history! " ")
@@ -354,7 +360,7 @@
   (if (= "" @selected-rolon)
     (add-history! "No Rolon selected." red)
     (do
-      (add-prompt)
+      (add-prompt!)
       (add-history! ">")
       (add-history! "explore " command-prefix-style)
       (history-path! ark-record path)
@@ -408,7 +414,7 @@
   (let [uuid (suuid/create-uuid arg)]
     (reset! display-mode 0)
     (reset! selected-rolon arg)
-    (add-prompt)
+    (add-prompt!)
     (add-history! " ")
     (if (= "" arg)
       (do
@@ -443,7 +449,7 @@
                 content-index))))
 
 (defn list-index-content [ark-record index-uuid]
-  (add-prompt)
+  (add-prompt!)
   (add-history! ">")
   (add-history! "list index content\n" command-prefix-style)
   (clear-output!)
@@ -465,7 +471,7 @@
       (suuid/index-uuid? uuid)
       (do
         (reset! selected-index arg)
-        (add-prompt)
+        (add-prompt!)
         (add-history! " ")
         (add-history! "selected index:" selection-style)
         (add-history! " ")
@@ -473,7 +479,7 @@
         (list-index-content ark-record uuid))
       (suuid/journal-entry-uuid? uuid)
       (do
-        (add-prompt)
+        (add-prompt!)
         (add-history! " ")
         (add-history! "selected time:" selection-style)
         (add-history! " ")

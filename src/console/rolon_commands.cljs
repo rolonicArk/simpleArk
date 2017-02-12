@@ -9,7 +9,7 @@
 
 (defn list-all-micro-properties
   [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "list paths of all micro-properties\n" client/command-prefix-style)
   (client/clear-output!)
@@ -29,7 +29,7 @@
 
 (defn list-modified-micro-properties
   [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "list modified micro-properties\n" client/command-prefix-style)
   (client/clear-output!)
@@ -53,7 +53,7 @@
 
 (defn list-modifying-transactions
   [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "list modifying transactions\n" client/command-prefix-style)
   (client/clear-output!)
@@ -115,7 +115,7 @@
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/add-prompt)
+                 (client/add-prompt!)
                  (client/add-history! ">")
                  (client/add-history! "clear rolon selection\n" client/command-prefix-style)
                  (reset! client/selected-rolon ""))

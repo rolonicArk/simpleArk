@@ -7,21 +7,21 @@
     [console.client :as client]))
 
 (defn application-rolons-count [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "application rolons count:" client/command-prefix-style)
   (client/add-history! " ")
   (client/add-history! (str (count (arkRecord/get-application-rolons ark-record)) "\n")))
 
 (defn indexes-count [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "index rolons count:" client/command-prefix-style)
   (client/add-history! " ")
   (client/add-history! (str (count (arkRecord/get-indexes ark-record)) "\n")))
 
 (defn je-count [ark-record]
-  (client/add-prompt)
+  (client/add-prompt!)
   (client/add-history! ">")
   (client/add-history! "transactions count:" client/command-prefix-style)
   (client/add-history! " ")

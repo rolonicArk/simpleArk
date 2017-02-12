@@ -54,7 +54,7 @@
         :toggle (j/cell= (not= "" client/selected-index))
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/add-prompt)
+                 (client/add-prompt!)
                  (client/add-history! ">")
                  (client/add-history! "clear index selection\n" client/command-prefix-style)
                  (reset! client/selected-index ""))

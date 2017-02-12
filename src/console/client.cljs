@@ -230,6 +230,11 @@
                   (into old display)))
   (scroll-output))
 
+(defn replace-output!
+  [display]
+  (reset! output display)
+  (scroll-output))
+
 (defn clickable? [value]
   (or
     (uuid? value)

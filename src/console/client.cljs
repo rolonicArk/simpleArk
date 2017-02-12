@@ -166,13 +166,15 @@
 
 (defn scroll-history
   [nw]
-  (let [a (.getElementById js/document (str "ahis" (- (count nw) 1)))
-        b (.getElementById js/document (str "bhis" (- (count nw) 1)))]
-    (if (some? a)
-      (.scrollIntoView a true))
-    (if (some? b)
-      (.scrollIntoView b true)))
-  )
+  (h/with-timeout
+    0
+    (let [a (.getElementById js/document (str "ahis" (- (count nw) 1)))
+          b (.getElementById js/document (str "bhis" (- (count nw) 1)))]
+      (if (some? a)
+        (.scrollIntoView a true))
+      (if (some? b)
+        (.scrollIntoView b true))))
+  nw)
 
 (defn add-display
   ([display txt] (add-display display txt default-style))
@@ -185,17 +187,16 @@
   ([txt style] (add-history! txt style no-click nil))
   ([txt style on-click arg]
    (swap! history (fn [old]
-                    (let [nw (add-display old txt style on-click arg)]
-                      (h/with-timeout
-                        0
-                        (scroll-history nw))
-                      nw)))))
+                    (scroll-history (add-display old txt style on-click arg))))))
+
+(defn display-history!
+  [display]
+  (swap! history (fn [old]
+                   (scroll-history (into old display)))))
 
 (defn display-mode-change
   [_ _ _ _]
-  (h/with-timeout
-    0
-    (scroll-history @history)))
+  (scroll-history @history))
 
 (add-watch display-mode :display-mode display-mode-change)
 

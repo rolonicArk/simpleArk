@@ -204,22 +204,25 @@
   []
   (reset! output []))
 
+(defn scroll-output
+  []
+  (h/with-timeout
+    0
+    (let [a (.getElementById js/document (str "aout" 0))
+          b (.getElementById js/document (str "bout" 0))]
+      (if (some? a)
+        (.scrollIntoView a true))
+      (if (some? b)
+        (.scrollIntoView b true))
+      )))
+
 (defn add-output!
   ([txt] (add-output! txt default-style))
   ([txt style] (add-output! txt style no-click nil))
   ([txt style on-click arg]
    (swap! output (fn [old]
-                   (let [nw (add-display old txt style on-click arg)]
-                     (h/with-timeout
-                       0
-                       (let [a (.getElementById js/document (str "aout" 0))
-                             b (.getElementById js/document (str "bout" 0))]
-                         (if (some? a)
-                           (.scrollIntoView a true))
-                         (if (some? b)
-                           (.scrollIntoView b true))
-                         ))
-                     nw)))))
+                   (add-display old txt style on-click arg)))
+   (scroll-output)))
 
 (defn clickable? [value]
   (or

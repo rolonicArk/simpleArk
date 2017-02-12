@@ -208,8 +208,7 @@
   ([txt style] (add-output! txt style no-click nil))
   ([txt style on-click arg]
    (swap! output (fn [old]
-                   (let [v [(str "out" (count old)) txt (style) on-click arg]
-                         nw (conj old v)]
+                   (let [nw (add-display old txt style on-click arg)]
                      (h/with-timeout
                        0
                        (let [a (.getElementById js/document (str "aout" 0))

@@ -174,6 +174,23 @@
       (.scrollIntoView b true)))
   )
 
+(defn add-display
+  ([display txt] (add-display display txt default-style))
+  ([display txt style] (add-display display txt style no-click nil))
+  ([display txt style on-click arg]
+   (conj display [(str "his" (count display)) txt (style) on-click arg])))
+
+(defn add-history!
+  ([txt] (add-history! txt default-style))
+  ([txt style] (add-history! txt style no-click nil))
+  ([txt style on-click arg]
+   (swap! history (fn [old]
+                    (let [nw (add-display old txt style on-click arg)]
+                      (h/with-timeout
+                        0
+                        (scroll-history nw))
+                      nw)))))
+
 (defn display-mode-change
   [_ _ _ _]
   (h/with-timeout
@@ -181,18 +198,6 @@
     (scroll-history @history)))
 
 (add-watch display-mode :display-mode display-mode-change)
-
-(defn add-history!
-  ([txt] (add-history! txt default-style))
-  ([txt style] (add-history! txt style no-click nil))
-  ([txt style on-click arg]
-   (swap! history (fn [old]
-                    (let [v [(str "his" (count old)) txt (style) on-click arg]
-                          nw (conj old v)]
-                      (h/with-timeout
-                        0
-                        (scroll-history nw))
-                      nw)))))
 
 (defn clear-output!
   []

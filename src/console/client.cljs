@@ -224,6 +224,12 @@
                    (add-display old txt style on-click arg)))
    (scroll-output)))
 
+(defn display-output!
+  [display]
+  (swap! output (fn [old]
+                  (into old display)))
+  (scroll-output))
+
 (defn clickable? [value]
   (or
     (uuid? value)

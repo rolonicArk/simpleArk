@@ -283,18 +283,20 @@
 
 (defn micro-property-style [] "color:chocolate;cursor:pointer")
 
-(declare history-path! output-path! explore)
+(declare history-path! display-path output-path! explore)
 
 (defn micro-property-click [ark-record arg]
   (if (< 1 @display-mode)
     (reset! display-mode 1))
   (reset! selected-path arg)
-  (add-prompt!)
-  (add-history! " ")
-  (add-history! "selected micro-property:" selection-style)
-  (add-history! " ")
-  (history-path! ark-record arg)
-  (add-history! "\n")
+  (display-history!
+    (-> []
+        (add-prompt)
+        (add-display " ")
+        (add-display "selected micro-property:" selection-style)
+        (add-display " ")
+        (display-path ark-record arg)
+        (add-display "\n")))
   (explore ark-record (suuid/create-uuid @selected-rolon) arg))
 
 (defn red [] "color:red")
@@ -502,7 +504,7 @@
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
-#_(defn display-path
+(defn display-path
   [display ark-record path]
   (let [display (add-display display "[")
         [display _] (reduce
@@ -524,44 +526,19 @@
                                                (clickable-styles k)
                                                uuid-click
                                                (str k)))
-                                (add-display display (pr-str k)))])
-                        [display true])
+                                (add-display display (pr-str k)))]
+                        [display true]))
                       [display false]
                       path)]
     (add-display display "]")))
 
-#_(defn output-path!
+(defn output-path!
   [ark-record path]
   (display-output! (display-path [] ark-record path)))
 
-#_(defn history-path!
-  [ark-record path]
-  (display-history! (display-path [] ark-record path)))
-
-(defn display-path [ark-record path add!]
-  (add! "[")
-  (reduce
-    (fn [space k]
-      (if space (add! ", "))
-      (if (clickable? k)
-        (if (instance? suuid/Timestamp k)
-          (add! (pretty-value ark-record k)
-                (clickable-styles k)
-                uuid-click
-                (str (arkRecord/get-journal-entry-uuid ark-record k)))
-          (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k)))
-        (add! (pr-str k)))
-      true)
-    false path)
-  (add! "]"))
-
-(defn output-path!
-  [ark-record path]
-  (display-path ark-record path add-output!))
-
 (defn history-path!
   [ark-record path]
-  (display-path ark-record path add-history!))
+  (display-history! (display-path [] ark-record path)))
 
 (defn selected-path-space
   [v]

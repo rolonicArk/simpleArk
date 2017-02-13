@@ -180,19 +180,23 @@
   ([display txt] (add-display display txt default-style))
   ([display txt style] (add-display display txt style no-click nil))
   ([display txt style on-click arg]
-   (conj display [(str "his" (count display)) txt (style) on-click arg])))
+   (conj display [txt (style) on-click arg])))
+
+(defn display-history!
+  [display]
+  (scroll-history
+    (swap! history
+           (fn [old]
+             (reduce
+               (fn [old item]
+                 (conj old (conj item (str "his" (count old)))))
+               old display)))))
 
 (defn add-history!
   ([txt] (add-history! txt default-style))
   ([txt style] (add-history! txt style no-click nil))
   ([txt style on-click arg]
-   (swap! history (fn [old]
-                    (scroll-history (add-display old txt style on-click arg))))))
-
-(defn display-history!
-  [display]
-  (swap! history (fn [old]
-                   (scroll-history (into old display)))))
+   (display-history! (add-display [] txt style on-click arg))))
 
 (defn display-mode-change
   [_ _ _ _]
@@ -216,19 +220,21 @@
         (.scrollIntoView b true))
       )))
 
+(defn display-output!
+  [display]
+  (swap! output
+         (fn [old]
+           (reduce
+             (fn [old item]
+               (conj old (conj item (str "out" (count old)))))
+             old display))
+         (scroll-output)))
+
 (defn add-output!
   ([txt] (add-output! txt default-style))
   ([txt style] (add-output! txt style no-click nil))
   ([txt style on-click arg]
-   (swap! output (fn [old]
-                   (add-display old txt style on-click arg)))
-   (scroll-output)))
-
-(defn display-output!
-  [display]
-  (swap! output (fn [old]
-                  (into old display)))
-  (scroll-output))
+   (display-output! (add-display [] txt style on-click arg))))
 
 (defn replace-output!
   [display]
@@ -496,27 +502,58 @@
 
 (add-watch my-ark-record :my-ark-record my-ark-record-updated)
 
+#_(defn display-path
+  [display ark-record path]
+  (let [display (add-display display "[")
+        [display _] (reduce
+                      (fn [[display space] k]
+                        (mapish/debug [:k k])
+                        (let [display (if space
+                                        (add-display display ", ")
+                                        display)
+                              display
+                              (if (clickable? k)
+                                (if (instance? suuid/Timestamp k)
+                                  (add-display display
+                                               (pretty-value ark-record k)
+                                               (clickable-styles k)
+                                               uuid-click
+                                               (str (arkRecord/get-journal-entry-uuid ark-record k)))
+                                  (add-display display
+                                               (pretty-value ark-record k)
+                                               (clickable-styles k)
+                                               uuid-click
+                                               (str k)))
+                                (add-display display (pr-str k)))])
+                        [display true])
+                      [display false]
+                      path)]
+    (add-display display "]")))
+
+#_(defn output-path!
+  [ark-record path]
+  (display-output! (display-path [] ark-record path)))
+
+#_(defn history-path!
+  [ark-record path]
+  (display-history! (display-path [] ark-record path)))
+
 (defn display-path [ark-record path add!]
-  (let [fk (first path)
-        rel (or
-              (mapish/bi-rel? fk)
-              (mapish/rel? fk)
-              (mapish/inv-rel? fk))]
-    (add! "[")
-    (reduce
-      (fn [space k]
-        (if space (add! ", "))
-        (if (clickable? k)
-          (if (instance? suuid/Timestamp k)
-            (add! (pretty-value ark-record k)
-                  (clickable-styles k)
-                  uuid-click
-                  (str (arkRecord/get-journal-entry-uuid ark-record k)))
-            (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k)))
-          (add! (pr-str k)))
-        true)
-      false path)
-    (add! "]")))
+  (add! "[")
+  (reduce
+    (fn [space k]
+      (if space (add! ", "))
+      (if (clickable? k)
+        (if (instance? suuid/Timestamp k)
+          (add! (pretty-value ark-record k)
+                (clickable-styles k)
+                uuid-click
+                (str (arkRecord/get-journal-entry-uuid ark-record k)))
+          (add! (pretty-value ark-record k) (clickable-styles k) uuid-click (str k)))
+        (add! (pr-str k)))
+      true)
+    false path)
+  (add! "]"))
 
 (defn output-path!
   [ark-record path]

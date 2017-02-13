@@ -7,7 +7,7 @@
   []
   (h/div
     :style "white-space:pre-wrap; font-family:monospace"
-    (h/for-tpl [[txt-id txt style on-click arg] client/output]
+    (h/for-tpl [[txt style on-click arg txt-id] client/output]
                (h/output
                  :id txt-id
                  :style style

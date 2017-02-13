@@ -301,22 +301,26 @@
 
 (defn red [] "color:red")
 
-(defn history-value!
-  [ark-record pval]
-  (add-history!
+(defn display-value
+  [display ark-record pval]
+  (add-display
+    display
     (pretty-value ark-record pval)
     (clickable-styles pval)
     uuid-click
     (str pval))
   )
 
+(defn history-value!
+  [ark-record pval]
+  (display-history!
+    (display-value [] ark-record pval))
+  )
+
 (defn output-value!
   [ark-record pval]
-  (add-output!
-    (pretty-value ark-record pval)
-    (clickable-styles pval)
-    uuid-click
-    (str pval))
+  (display-output!
+    (display-value [] ark-record pval))
   )
 
 (defn output-local!

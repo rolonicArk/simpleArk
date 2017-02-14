@@ -334,10 +334,6 @@
     display
     local))
 
-(defn output-local!
-  [ark-record local]
-  (display-output! (display-local [] ark-record local)))
-
 (defn display-actions
   [display ark-record actions]
   (first
@@ -349,22 +345,21 @@
            (add-display "\n"))
        (+ 1 line-nbr)])
     [display 1]
-    actions))
-  )
+    actions)))
 
-(defn output-actions!
-  [ark-record actions]
-  (display-output! (display-actions [] ark-record actions)))
+(defn display-tran
+  [display ark-record tran]
+  (let [[local actions] tran]
+    (-> display
+        (add-display "\n\nparameters: ")
+        (add-display "\n")
+        (display-local ark-record (into (sorted-map) local))
+        (add-display "\nactions:\n")
+        (display-actions ark-record actions))))
 
 (defn output-tran!
   [ark-record tran]
-  (let [[local actions] tran]
-    (add-output! "\n\nparameters: ")
-    (add-output! "\n")
-    #_(mapish/debug [:local local])
-    (output-local! ark-record (into (sorted-map) local))
-    (add-output! "\nactions:\n")
-    (output-actions! ark-record actions)))
+  (display-output! (display-tran [] ark-record tran)))
 
 (defn output-property!
   [ark-record path pval]

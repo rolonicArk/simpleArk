@@ -338,17 +338,23 @@
   [ark-record local]
   (display-output! (display-local [] ark-record local)))
 
+(defn display-actions
+  [display ark-record actions]
+  (first
+  (reduce
+    (fn [[display line-nbr] a]
+      [(-> display
+           (add-display (str line-nbr ": "))
+           (add-display (builder/pretty-action a))
+           (add-display "\n"))
+       (+ 1 line-nbr)])
+    [display 1]
+    actions))
+  )
+
 (defn output-actions!
   [ark-record actions]
-  (reduce
-    (fn [line-nbr a]
-      (add-output! (str line-nbr ": "))
-      (add-output! (builder/pretty-action a))
-      (add-output! "\n")
-      (+ 1 line-nbr))
-    1
-    actions)
-  )
+  (display-output! (display-actions [] ark-record actions)))
 
 (defn output-tran!
   [ark-record tran]

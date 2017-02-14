@@ -314,27 +314,29 @@
 (defn history-value!
   [ark-record pval]
   (display-history!
-    (display-value [] ark-record pval))
-  )
+    (display-value [] ark-record pval)))
 
 (defn output-value!
   [ark-record pval]
   (display-output!
-    (display-value [] ark-record pval))
-  )
+    (display-value [] ark-record pval)))
+
+(defn display-local
+  [display ark-record local]
+  (reduce
+    (fn [display e]
+      (let [k (key e)
+            v (val e)]
+        (-> display
+        (add-display (str k " "))
+        (display-value ark-record v)
+        (add-display "\n"))))
+    display
+    local))
 
 (defn output-local!
   [ark-record local]
-  (reduce
-    (fn [_ e]
-      (let [k (key e)
-            v (val e)]
-        (add-output! (str k " "))
-        (output-value! ark-record v)
-        (add-output! "\n")
-        ))
-    nil
-    local))
+  (display-output! (display-local [] ark-record local)))
 
 (defn output-actions!
   [ark-record actions]

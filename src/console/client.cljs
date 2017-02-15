@@ -236,11 +236,6 @@
   ([txt style on-click arg]
    (display-output! (add-display [] txt style on-click arg))))
 
-(defn replace-output!
-  [display]
-  (reset! output display)
-  (scroll-output))
-
 (defn clickable? [value]
   (or
     (uuid? value)
@@ -351,79 +346,95 @@
   [display ark-record tran]
   (let [[local actions] tran]
     (-> display
-        (add-display "\n\nparameters: ")
-        (add-display "\n")
+        (add-display "parameters:\n")
         (display-local ark-record (into (sorted-map) local))
-        (add-display "\nactions:\n")
+        (add-display "\n   actions:\n")
         (display-actions ark-record actions))))
 
 (defn output-tran!
   [ark-record tran]
   (display-output! (display-tran [] ark-record tran)))
 
-(defn output-property!
-  [ark-record path pval]
-  (output-path! ark-record path)
-  (add-output! " = ")
+(defn display-property
+  [display ark-record path pval]
+  (display-path display ark-record path)
+  (add-display display " = ")
   (let [kw (first path)]
     (if (= kw :edn-transaction/transaction-argument)
-      (output-tran! ark-record (reader/read-string pval))
-      (output-value! ark-record pval))))
+      (display-tran display ark-record (reader/read-string pval))
+      (display-value display ark-record pval))))
+
+(defn output-property!
+  [ark-record path pval]
+  (display-output! (display-property [] ark-record path pval)))
 
 (defn explore
   [ark-record uuid path]
   (if (= "" @selected-rolon)
     (add-history! "No Rolon selected." red)
     (do
-      (add-prompt!)
-      (add-history! ">")
-      (add-history! "explore " command-prefix-style)
-      (history-path! ark-record path)
-      (add-history! " in ")
-      (add-history!
-        (pretty-value ark-record uuid)
-        (clickable-styles uuid)
-        uuid-click
-        @selected-rolon)
-      (add-history! "\n")
+      (display-history!
+        (-> []
+            (add-prompt)
+            (add-display ">")
+            (add-display "explore " command-prefix-style)
+            (display-path ark-record path)
+            (add-display " in ")
+            (add-display
+              (pretty-value ark-record uuid)
+              (clickable-styles uuid)
+              uuid-click
+              @selected-rolon)
+            (add-display "\n")))
       (clear-output!)
-      (add-output! "explore ")
-      (output-path! ark-record path)
-      (add-output! " in ")
-      (add-output!
-        (pretty-value ark-record uuid)
-        (clickable-styles uuid)
-        uuid-click
-        @selected-rolon)
-      (add-output! "\n")
-      (let [ptree (arkRecord/get-property-tree ark-record uuid path)
+      (let [display
+            (-> []
+                (add-display "explore ")
+                (display-path ark-record path)
+                (add-display " in ")
+                (add-display
+                  (pretty-value ark-record uuid)
+                  (clickable-styles uuid)
+                  uuid-click
+                  @selected-rolon)
+                (add-display "\n"))
+            ptree (arkRecord/get-property-tree ark-record uuid path)
             pm (first ptree)
             pval (if (= 0 (count path))
                    nil
-                   (arkRecord/get-property-value ark-record uuid path))]
-        (when (some? pval)
-          (add-output! "\n   ")
-          (output-property! ark-record path pval))
-        (when (some? pm)
-          (reduce
-            (fn [_ e]
-              (let [k (key e)
-                    e-path (into path k)
-                    pt (val e)
-                    count (if (vector? pt)
-                            (arkRecord/tree-count ark-record uuid e-path pt)
-                            (arkRecord/tree-count ark-record uuid e-path e))]
-                (if (< 0 count)
-                  (do
-                    (add-output! "\n")
-                    (add-output! "=" micro-property-style micro-property-click e-path)
-                    (add-output! " ")
-                    (output-path! ark-record e-path)
-                    (add-output! (str " : " count)))))
-              nil)
-            nil
-            pm)
-          (add-output! (str "\n\ntotal: " (arkRecord/tree-count ark-record uuid path ptree))))))))
+                   (arkRecord/get-property-value ark-record uuid path))
+            display (if (some? pval)
+                      (-> display
+                          (add-display "\n   ")
+                          (display-property ark-record path pval))
+                      display)
+            display
+            (if (some? pm)
+              (reduce
+                    (fn [display e]
+                      (let [k (key e)
+                            e-path (into path k)
+                            pt (val e)
+                            count (if (vector? pt)
+                                    (arkRecord/tree-count ark-record uuid e-path pt)
+                                    (arkRecord/tree-count ark-record uuid e-path e))
+                            display
+                            (if (< 0 count)
+                              (-> display
+                                  (add-display "\n")
+                                  (add-display "=" micro-property-style micro-property-click e-path)
+                                  (add-display " ")
+                                  (display-path ark-record e-path)
+                                  (add-display (str " : " count)))
+                              display)]
+                      display))
+                    display
+                    pm)
+              display)
+            display (if (some? pm)
+                      (add-display display (str "\n\ntotal: " (arkRecord/tree-count ark-record uuid path ptree)))
+                      display)]
+        (display-output! display)))))
 
 (defn rolon-click [ark-record arg]
   (let [uuid (suuid/create-uuid arg)]
@@ -516,7 +527,6 @@
   (let [display (add-display display "[")
         [display _] (reduce
                       (fn [[display space] k]
-                        (mapish/debug [:k k])
                         (let [display (if space
                                         (add-display display ", ")
                                         display)

@@ -437,18 +437,18 @@
         (display-output! display)))))
 
 (defn rolon-click [ark-record arg]
-  (let [uuid (suuid/create-uuid arg)]
-    (reset! display-mode 0)
-    (reset! selected-rolon arg)
-    (add-prompt!)
-    (add-history! " ")
-    (if (= "" arg)
-      (do
-        (add-history! "cleared selected rolon\n" selection-style))
-      (do
-        (add-history! "selected rolon:" selection-style)
-        (add-history! " ")
-        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))
+  (reset! display-mode 0)
+  (reset! selected-rolon arg)
+  (let [uuid (suuid/create-uuid arg)
+        display (add-prompt [])
+        display (add-display display " ")
+        display (if (= "" arg)
+                  (add-display display "cleared selected rolon\n" selection-style)
+                  (-> display
+                    (add-display "selected rolon:" selection-style)
+                    (add-display " ")
+                    (add-display (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))]
+    (display-history! display)
     (reset! selected-path [])
     (explore ark-record uuid [])))
 

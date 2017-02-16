@@ -9,23 +9,26 @@
 
 (defn list-all-micro-properties
   [ark-record]
-  (client/add-prompt!)
-  (client/add-history! ">")
-  (client/add-history! "list paths of all micro-properties\n" client/command-prefix-style)
+  (client/display-history!
+    (-> []
+        (client/add-prompt)
+        (client/add-display ">")
+        (client/add-display "list paths of all micro-properties\n" client/command-prefix-style)))
   (client/clear-output!)
-  (client/add-output! "all micro-property paths of ")
   (let [uuid (suuid/create-uuid @client/selected-rolon)
-        properties (arkRecord/get-changes-by-property ark-record uuid)]
-    (client/output-value! ark-record uuid)
-    (client/add-output! ":\n\n")
-    (reduce
-      (fn [_ [path _]]
-        (client/add-output! "=" client/micro-property-style client/micro-property-click path)
-        (client/add-output! " ")
-        (client/output-path! ark-record path)
-        (client/add-output! "\n\n"))
-      nil properties)
-    ))
+        properties (arkRecord/get-changes-by-property ark-record uuid)
+        display (client/add-display [] "all micro-property paths of ")
+        display (client/display-value display ark-record uuid)
+        display (client/add-display display ":\n\n")]
+    (client/display-output!
+      (reduce
+        (fn [display [path _]]
+          (-> display
+              (client/add-display "=" client/micro-property-style client/micro-property-click path)
+              (client/add-display " ")
+              (client/display-path ark-record path)
+              (client/add-display "\n\n")))
+      display properties))))
 
 (defn list-modified-micro-properties
   [ark-record]

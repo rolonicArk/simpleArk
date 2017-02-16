@@ -323,24 +323,24 @@
       (let [k (key e)
             v (val e)]
         (-> display
-        (add-display (str k " "))
-        (display-value ark-record v)
-        (add-display "\n"))))
+            (add-display (str k " "))
+            (display-value ark-record v)
+            (add-display "\n"))))
     display
     local))
 
 (defn display-actions
   [display ark-record actions]
   (first
-  (reduce
-    (fn [[display line-nbr] a]
-      [(-> display
-           (add-display (str line-nbr ": "))
-           (add-display (builder/pretty-action a))
-           (add-display "\n"))
-       (+ 1 line-nbr)])
-    [display 1]
-    actions)))
+    (reduce
+      (fn [[display line-nbr] a]
+        [(-> display
+             (add-display (str line-nbr ": "))
+             (add-display (builder/pretty-action a))
+             (add-display "\n"))
+         (+ 1 line-nbr)])
+      [display 1]
+      actions)))
 
 (defn display-tran
   [display ark-record tran]
@@ -411,25 +411,25 @@
             display
             (if (some? pm)
               (reduce
-                    (fn [display e]
-                      (let [k (key e)
-                            e-path (into path k)
-                            pt (val e)
-                            count (if (vector? pt)
-                                    (arkRecord/tree-count ark-record uuid e-path pt)
-                                    (arkRecord/tree-count ark-record uuid e-path e))
-                            display
-                            (if (< 0 count)
-                              (-> display
-                                  (add-display "\n")
-                                  (add-display "=" micro-property-style micro-property-click e-path)
-                                  (add-display " ")
-                                  (display-path ark-record e-path)
-                                  (add-display (str " : " count)))
-                              display)]
-                      display))
-                    display
-                    pm)
+                (fn [display e]
+                  (let [k (key e)
+                        e-path (into path k)
+                        pt (val e)
+                        count (if (vector? pt)
+                                (arkRecord/tree-count ark-record uuid e-path pt)
+                                (arkRecord/tree-count ark-record uuid e-path e))
+                        display
+                        (if (< 0 count)
+                          (-> display
+                              (add-display "\n")
+                              (add-display "=" micro-property-style micro-property-click e-path)
+                              (add-display " ")
+                              (display-path ark-record e-path)
+                              (add-display (str " : " count)))
+                          display)]
+                    display))
+                display
+                pm)
               display)
             display (if (some? pm)
                       (add-display display (str "\n\ntotal: " (arkRecord/tree-count ark-record uuid path ptree)))
@@ -452,27 +452,30 @@
     (reset! selected-path [])
     (explore! ark-record uuid [])))
 
-(defn display-index!
-  [ark-record content-index index-uuid]
+(defn display-index
+  [display ark-record content-index index-uuid]
   (let [name (arkRecord/get-property-value ark-record index-uuid [:index/index.name])]
-    (doall (map (fn [kv]
-                  (let [k (str (key kv) " ")
-                        v (val kv)]
-                    (case name
-                      "index.name" ()
-                      "name" ()
-                      (add-output! k bold-style))
-                    (add-output! (pretty-value ark-record v)
-                                 (clickable-styles v) uuid-click! (str v))
-                    (if (not= name "headline")
-                      (let [headline (arkRecord/get-property-value
-                                       ark-record
-                                       (suuid/create-uuid v)
-                                       [:index/headline])]
-                        (if (some? headline)
-                          (add-output! (str " - " headline)))))
-                    (add-output! "\n")))
-                content-index))))
+    (reduce (fn [display kv]
+              (let [k (str (key kv) " ")
+                    v (val kv)
+                    display (case name
+                              "index.name" display
+                              "name" display
+                              (add-display display k bold-style))
+                    display (add-display display (pretty-value ark-record v)
+                                         (clickable-styles v) uuid-click! (str v))
+                    display (if (not= name "headline")
+                              (let [headline (arkRecord/get-property-value
+                                               ark-record
+                                               (suuid/create-uuid v)
+                                               [:index/headline])]
+                                (if (some? headline)
+                                  (add-display display (str " - " headline))
+                                  display))
+                              display)]
+                (add-display display "\n")))
+            display
+            content-index)))
 
 (defn list-index-content! [ark-record index-uuid]
   (add-prompt!)
@@ -487,7 +490,8 @@
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (display-index! ark-record content-index index-uuid)))
+    (display-output!
+      (display-index [] ark-record content-index index-uuid))))
 
 (defn uuid-click! [ark-record arg]
   (if (< 1 @display-mode)
@@ -544,7 +548,7 @@
                                                uuid-click!
                                                (str k)))
                                 (add-display display (pr-str k)))]
-                        [display true]))
+                          [display true]))
                       [display false]
                       path)]
     (add-display display "]")))

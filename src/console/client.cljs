@@ -478,20 +478,26 @@
             content-index)))
 
 (defn list-index-content! [ark-record index-uuid]
-  (add-prompt!)
-  (add-history! ">")
-  (add-history! "list index content\n" command-prefix-style)
+  (display-history!
+    (-> []
+        (add-prompt)
+        (add-display ">")
+        (add-display "list index content\n" command-prefix-style)))
   (clear-output!)
-  (add-output! "index: ")
-  (add-output! (str (pretty-value ark-record index-uuid) "\n")
-               (clickable-styles index-uuid)
-               uuid-click!
-               (str index-uuid))
-  (let [content-index (arkRecord/get-content-index
-                        ark-record
-                        index-uuid)]
-    (display-output!
-      (display-index [] ark-record content-index index-uuid))))
+  (display-output!
+    (-> []
+        (add-display "index: ")
+        (add-display
+          (str (pretty-value ark-record index-uuid) "\n")
+          (clickable-styles index-uuid)
+          uuid-click!
+          (str index-uuid))
+        (display-index
+          ark-record
+          (arkRecord/get-content-index
+            ark-record
+            index-uuid)
+          index-uuid))))
 
 (defn uuid-click! [ark-record arg]
   (if (< 1 @display-mode)

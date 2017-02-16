@@ -507,19 +507,23 @@
       (suuid/index-uuid? uuid)
       (do
         (reset! selected-index arg)
-        (add-prompt!)
-        (add-history! " ")
-        (add-history! "selected index:" selection-style)
-        (add-history! " ")
-        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)
+        (display-history!
+          (-> []
+              (add-prompt)
+              (add-display " ")
+              (add-display "selected index:" selection-style)
+              (add-display " ")
+              (add-display (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)))
         (list-index-content! ark-record uuid))
       (suuid/journal-entry-uuid? uuid)
       (do
-        (add-prompt!)
-        (add-history! " ")
-        (add-history! "selected time:" selection-style)
-        (add-history! " ")
-        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)
+        (display-history!
+          (-> []
+              (add-prompt)
+              (add-display " ")
+              (add-display "selected time:" selection-style)
+              (add-display " ")
+              (add-display (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)))
         (reset! old-ark-record (:console @login/common-data))
         (reset! selected-time arg))
       (suuid/random-uuid? uuid)

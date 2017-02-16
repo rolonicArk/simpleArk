@@ -34,8 +34,8 @@
   [kw label f t value]
   (and
     (valid1 kw)
-    (client/error (not (validate-kw (client/reader kw)))
-                  "Not a valid relation keyword")
+    (client/error! (not (validate-kw (client/reader kw)))
+                   "Not a valid relation keyword")
     (valid1 label)
     (or (client/valid-parameter f)(= f "je"))
     (or (client/valid-parameter t)(= t "je"))
@@ -52,7 +52,7 @@
                        (keyword "local" @relation-from)
                        (keyword "local" @relation-to)
                        (client/read-cell relation-value)))
-              (client/display-composition))
+              (client/output-composition!))
     (h/label "Add a relation")
     (h/div
       (h/label "Relation keyword: ")

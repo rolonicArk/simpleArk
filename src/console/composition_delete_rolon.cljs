@@ -18,7 +18,7 @@
               (if (valid @delete-uuid)
                 (swap! client/actions builder/build-delete-rolon
                        (keyword "local" @delete-uuid)))
-              (client/display-composition))
+              (client/output-composition!))
     (h/label "Delete Rolon :local/")
     (h/input :type "text"
              :css {:background-color "LightYellow"}

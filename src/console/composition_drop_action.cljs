@@ -36,7 +36,7 @@
                         right (subvec actions j)]
                     (reset! client/actions
                             (into left right))))
-                  (client/display-composition))
+                  (client/output-composition!))
       (h/label "Drop action# ")
       (h/input :type "text"
                :css {:background-color "LightYellow"}

@@ -51,7 +51,7 @@
                         right (subvec both k)
                         both (into left right)]
                     (reset! client/actions both)))
-                (client/display-composition))
+                (client/output-composition!))
       (h/label "Move action# ")
       (h/input :type "text"
                :css {:background-color "LightYellow"}

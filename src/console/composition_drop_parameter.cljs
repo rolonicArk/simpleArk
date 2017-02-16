@@ -25,7 +25,7 @@
                 (if (valid @parameter-name)
                   (swap! client/local
                          dissoc (keyword "local" @parameter-name)))
-                (client/display-composition))
+                (client/output-composition!))
       (h/label "Drop parameter :local/")
       (h/input :type "text"
                :css {:background-color "PowderBlue"}

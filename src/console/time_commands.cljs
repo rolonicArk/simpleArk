@@ -18,7 +18,7 @@
                           ""
                           "color:YellowGreen;cursor:pointer"
                           ))
-        :click #(client/rolon-click @client/my-ark-record @client/selected-time)
+        :click #(client/rolon-click! @client/my-ark-record @client/selected-time)
         (h/text
           (if (= "" client/selected-time)
             "now"
@@ -63,7 +63,7 @@
         (h/strong "My last Transaction: "))
       (h/span
         :style "color:orange;cursor:pointer"
-        :click #(client/uuid-click @client/my-ark-record @client/transaction-je-uuid-string)
+        :click #(client/uuid-click! @client/my-ark-record @client/transaction-je-uuid-string)
         (h/text (client/pretty-value client/my-ark-record (suuid/create-uuid client/transaction-je-uuid-string)))))
 
     (h/div
@@ -73,7 +73,7 @@
         (h/strong "Latest Transaction: "))
       (h/span
         :style "color:orange;cursor:pointer"
-        :click #(client/uuid-click @client/my-ark-record (str @client/latest-journal-entry-uuid))
+        :click #(client/uuid-click! @client/my-ark-record (str @client/latest-journal-entry-uuid))
         (h/text
           (client/pretty-value client/my-ark-record client/latest-journal-entry-uuid)))
       )

@@ -263,13 +263,13 @@
         (ftime/unparse format-date-time ldt))
       (pr-str value))))
 
-(declare uuid-click)
+(declare uuid-click!)
 
 (defn add-prompt
   [display]
   (let [t (prompt-time)]
     (if t
-      (add-display display t clickable-je-style uuid-click (str (ark-time)))
+      (add-display display t clickable-je-style uuid-click! (str (ark-time)))
       display)))
 
 (defn add-prompt!
@@ -278,7 +278,7 @@
 
 (defn micro-property-style [] "color:chocolate;cursor:pointer")
 
-(declare history-path! display-path output-path! explore)
+(declare history-path! display-path output-path! explore!)
 
 (defn micro-property-click [ark-record arg]
   (if (< 1 @display-mode)
@@ -292,7 +292,7 @@
         (add-display " ")
         (display-path ark-record arg)
         (add-display "\n")))
-  (explore ark-record (suuid/create-uuid @selected-rolon) arg))
+  (explore! ark-record (suuid/create-uuid @selected-rolon) arg))
 
 (defn red [] "color:red")
 
@@ -302,7 +302,7 @@
     display
     (pretty-value ark-record pval)
     (clickable-styles pval)
-    uuid-click
+    uuid-click!
     (str pval))
   )
 
@@ -368,7 +368,7 @@
   [ark-record path pval]
   (display-output! (display-property [] ark-record path pval)))
 
-(defn explore
+(defn explore!
   [ark-record uuid path]
   (if (= "" @selected-rolon)
     (add-history! "No Rolon selected." red)
@@ -383,7 +383,7 @@
             (add-display
               (pretty-value ark-record uuid)
               (clickable-styles uuid)
-              uuid-click
+              uuid-click!
               @selected-rolon)
             (add-display "\n")))
       (clear-output!)
@@ -395,7 +395,7 @@
                 (add-display
                   (pretty-value ark-record uuid)
                   (clickable-styles uuid)
-                  uuid-click
+                  uuid-click!
                   @selected-rolon)
                 (add-display "\n"))
             ptree (arkRecord/get-property-tree ark-record uuid path)
@@ -436,7 +436,7 @@
                       display)]
         (display-output! display)))))
 
-(defn rolon-click [ark-record arg]
+(defn rolon-click! [ark-record arg]
   (reset! display-mode 0)
   (reset! selected-rolon arg)
   (let [uuid (suuid/create-uuid arg)
@@ -445,14 +445,14 @@
         display (if (= "" arg)
                   (add-display display "cleared selected rolon\n" selection-style)
                   (-> display
-                    (add-display "selected rolon:" selection-style)
-                    (add-display " ")
-                    (add-display (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)))]
+                      (add-display "selected rolon:" selection-style)
+                      (add-display " ")
+                      (add-display (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)))]
     (display-history! display)
     (reset! selected-path [])
-    (explore ark-record uuid [])))
+    (explore! ark-record uuid [])))
 
-(defn display-index
+(defn display-index!
   [ark-record content-index index-uuid]
   (let [name (arkRecord/get-property-value ark-record index-uuid [:index/index.name])]
     (doall (map (fn [kv]
@@ -463,7 +463,7 @@
                       "name" ()
                       (add-output! k bold-style))
                     (add-output! (pretty-value ark-record v)
-                                 (clickable-styles v) uuid-click (str v))
+                                 (clickable-styles v) uuid-click! (str v))
                     (if (not= name "headline")
                       (let [headline (arkRecord/get-property-value
                                        ark-record
@@ -474,7 +474,7 @@
                     (add-output! "\n")))
                 content-index))))
 
-(defn list-index-content [ark-record index-uuid]
+(defn list-index-content! [ark-record index-uuid]
   (add-prompt!)
   (add-history! ">")
   (add-history! "list index content\n" command-prefix-style)
@@ -482,14 +482,14 @@
   (add-output! "index: ")
   (add-output! (str (pretty-value ark-record index-uuid) "\n")
                (clickable-styles index-uuid)
-               uuid-click
+               uuid-click!
                (str index-uuid))
   (let [content-index (arkRecord/get-content-index
                         ark-record
                         index-uuid)]
-    (display-index ark-record content-index index-uuid)))
+    (display-index! ark-record content-index index-uuid)))
 
-(defn uuid-click [ark-record arg]
+(defn uuid-click! [ark-record arg]
   (if (< 1 @display-mode)
     (reset! display-mode 1))
   (let [uuid (suuid/create-uuid arg)]
@@ -501,26 +501,26 @@
         (add-history! " ")
         (add-history! "selected index:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
-        (list-index-content ark-record uuid))
+        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)
+        (list-index-content! ark-record uuid))
       (suuid/journal-entry-uuid? uuid)
       (do
         (add-prompt!)
         (add-history! " ")
         (add-history! "selected time:" selection-style)
         (add-history! " ")
-        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click arg)
+        (add-history! (str (pretty-value ark-record uuid) "\n") (clickable-styles uuid) uuid-click! arg)
         (reset! old-ark-record (:console @login/common-data))
         (reset! selected-time arg))
       (suuid/random-uuid? uuid)
-      (rolon-click ark-record arg))))
+      (rolon-click! ark-record arg))))
 
-(defn my-ark-record-updated [_ _ _ n]
+(defn my-ark-record-updated! [_ _ _ n]
   (if (and (= "" @selected-time)
            (not (identical? n @old-ark-record)))
     (add-history! "***ark updated***" event-style)))
 
-(add-watch my-ark-record :my-ark-record my-ark-record-updated)
+(add-watch my-ark-record :my-ark-record my-ark-record-updated!)
 
 (defn display-path
   [display ark-record path]
@@ -536,12 +536,12 @@
                                   (add-display display
                                                (pretty-value ark-record k)
                                                (clickable-styles k)
-                                               uuid-click
+                                               uuid-click!
                                                (str (arkRecord/get-journal-entry-uuid ark-record k)))
                                   (add-display display
                                                (pretty-value ark-record k)
                                                (clickable-styles k)
-                                               uuid-click
+                                               uuid-click!
                                                (str k)))
                                 (add-display display (pr-str k)))]
                         [display true]))
@@ -594,24 +594,24 @@
           (selected-path-pretty my-ark-record selected-path v))))
     "]"))
 
-(defn clear-error
+(defn clear-error!
   []
   (reset! transaction-error false)
   (reset! transaction-error-msg ""))
 
-(defn set-error
+(defn set-error!
   [m]
   (reset! transaction-error true)
   (reset! transaction-error-msg m))
 
-(defn error
+(defn error!
   [f m]
   (if f
-    (set-error m)
-    (clear-error))
+    (set-error! m)
+    (clear-error!))
   (not f))
 
-(defn display-composition
+(defn output-composition!
   []
   (reset! display-mode 0)
   (clear-output!)
@@ -622,10 +622,10 @@
   [edn-string]
   (try
     (let [v (reader/read-string edn-string)]
-      (clear-error)
+      (clear-error!)
       v)
     (catch :default e
-      (set-error (str "Unable to read " edn-string))
+      (set-error! (str "Unable to read " edn-string))
       (throw e))))
 
 (defn read-cell

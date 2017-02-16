@@ -24,7 +24,7 @@
     :submit (fn []
               (if (valid @edn-cell)
                   (swap! client/actions builder/build-println (client/read-cell edn-cell)))
-              (client/display-composition))
+              (client/output-composition!))
     (h/label "Add println of edn string ")
     (h/input :type "text"
              :css {:background-color "PowderBlue"}

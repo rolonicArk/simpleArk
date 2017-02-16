@@ -9,13 +9,13 @@
   (h/div
     (h/button
       :css {:background-color "MistyRose"}
-      :click client/display-composition
+      :click client/output-composition!
       "display")
     (h/button
       :css {:background-color "MistyRose"}
       :click (fn []
                (resets)
-               (client/display-composition))
+               (client/output-composition!))
       "reset")
     (h/button
       :css {:background-color "MistyRose"}

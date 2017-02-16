@@ -19,7 +19,7 @@
                          assoc
                          (keyword "local" @parameter-name)
                          (suuid/create-uuid @client/selected-rolon)))
-                (client/display-composition))
+                (client/output-composition!))
       (h/label (h/text (str "Add selected Rolon " (client/pretty-value client/my-ark-record (suuid/create-uuid client/selected-rolon)) " as parameter :local/")))
       (h/input :type "text"
                :css {:background-color "LightYellow"}

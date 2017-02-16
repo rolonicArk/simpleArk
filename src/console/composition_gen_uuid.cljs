@@ -13,7 +13,7 @@
     :submit (fn []
               (if (client/valid-parameter @action-name)
                 (swap! client/actions builder/build-gen-uuid (keyword "local" @action-name)))
-              (client/display-composition))
+              (client/output-composition!))
     (h/label "Add gen-uuid to :local/")
     (h/input :type "text"
              :css {:background-color "LightYellow"}

@@ -23,18 +23,18 @@
 
 (defn validate-path
   [v]
-  (if (not (client/error (not (vector? v)) "path is not a vector"))
+  (if (not (client/error! (not (vector? v)) "path is not a vector"))
     false
     (try
       (mapish/validate-property-path v)
-      (client/clear-error)
+      (client/clear-error!)
       true
       (catch :default e
-        (client/set-error (str e))
+        (client/set-error! (str e))
         false)))
-  (client/error (not (or (mapish/index? (first v))
-                         (mapish/content? (first v))))
-                "not an index or content"))
+  (client/error! (not (or (mapish/index? (first v))
+                          (mapish/content? (first v))))
+                 "not an index or content"))
 
   (defn valid
     [uuid path value]
@@ -53,7 +53,7 @@
                          (keyword "local" @property-uuid)
                          (client/read-cell property-path)
                          (client/read-cell property-value)))
-                (client/display-composition))
+                (client/output-composition!))
       (h/label "Add a property")
       (h/div
         (h/label "Rolon :local/")

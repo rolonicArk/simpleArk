@@ -17,7 +17,7 @@
                           ""
                           "color:YellowGreen;cursor:pointer"
                           ))
-        :click #(client/rolon-click @client/my-ark-record @client/selected-index)
+        :click #(client/rolon-click! @client/my-ark-record @client/selected-index)
         (h/text
           (if (= "" client/selected-index)
             "none"
@@ -46,7 +46,7 @@
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/list-index-content @client/my-ark-record arkRecord/index-name-uuid))
+                 (client/list-index-content! @client/my-ark-record arkRecord/index-name-uuid))
         "list indexes")
 
       (h/button
@@ -65,7 +65,7 @@
         :toggle (j/cell= (not= "" client/selected-index))
         :click (fn []
                  (reset! client/display-mode 0)
-                 (client/list-index-content @client/my-ark-record
-                                            (suuid/create-uuid @client/selected-index)))
+                 (client/list-index-content! @client/my-ark-record
+                                             (suuid/create-uuid @client/selected-index)))
         "list index content"))
     ))

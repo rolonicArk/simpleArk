@@ -28,7 +28,7 @@
               (client/add-display " ")
               (client/display-path ark-record path)
               (client/add-display "\n\n")))
-      display properties))))
+        display properties))))
 
 (defn list-modified-micro-properties
   [ark-record]
@@ -40,48 +40,53 @@
   (client/clear-output!)
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         properties (arkRecord/get-changes-by-property ark-record uuid)
-    display (client/add-display [] "modified micro-properties of ")
-    display (client/display-value display ark-record uuid)
-    display (client/add-display display ":\n\n")]
+        display (client/add-display [] "modified micro-properties of ")
+        display (client/display-value display ark-record uuid)
+        display (client/add-display display ":\n\n")]
     (client/display-output!
-    (reduce
-      (fn [display [path value]]
-        (let [[[k] v] (first value)
-              st (suuid/rolon-key (suuid/create-uuid @client/selected-time))]
-          (if (= k st)
-            (-> display
-                (client/add-display "=" client/micro-property-style client/micro-property-click path)
-                (client/add-display " ")
-                (client/display-property ark-record path v)
-                (client/add-display "\n\n"))
-            display)))
-      display properties))))
+      (reduce
+        (fn [display [path value]]
+          (let [[[k] v] (first value)
+                st (suuid/rolon-key (suuid/create-uuid @client/selected-time))]
+            (if (= k st)
+              (-> display
+                  (client/add-display "=" client/micro-property-style client/micro-property-click path)
+                  (client/add-display " ")
+                  (client/display-property ark-record path v)
+                  (client/add-display "\n\n"))
+              display)))
+        display properties))))
 
 (defn list-modifying-transactions
   [ark-record]
-  (client/add-prompt!)
-  (client/add-history! ">")
-  (client/add-history! "list modifying transactions\n" client/command-prefix-style)
+  (client/display-history!
+    (-> []
+        (client/add-prompt)
+        (client/add-display ">")
+        (client/add-display "list modifying transactions\n" client/command-prefix-style)))
   (client/clear-output!)
-  (client/add-output! "transactions that modifified ")
   (let [uuid (suuid/create-uuid @client/selected-rolon)
         all-properties (arkRecord/get-property-values ark-record uuid)
-        properties (mapish/mi-sub all-properties [:inv-rel/modified])]
-    (client/output-value! ark-record uuid)
-    (client/add-output! "\n\n")
-    (reduce
-      (fn [_ [path value]]
-        (let [k (second path)
-              u (arkRecord/get-journal-entry-uuid ark-record k)]
-          (client/output-value! ark-record u)
-          (let [headline (arkRecord/get-property-value
+        properties (mapish/mi-sub all-properties [:inv-rel/modified])
+        display (client/add-display [] "transactions that modifified ")
+        display (client/display-value display ark-record uuid)
+        display (client/add-display display "\n\n")]
+    (client/display-output!
+      (reduce
+        (fn [display [path value]]
+          (let [k (second path)
+                u (arkRecord/get-journal-entry-uuid ark-record k)
+                display (client/display-value display ark-record u)
+                headline (arkRecord/get-property-value
                            ark-record
                            u
-                           [:index/headline])]
-            (if (some? headline)
-              (client/add-output! (str " - " headline)))))
-        (client/add-output! "\n"))
-      nil properties)))
+                           [:index/headline])
+                display (if (some? headline)
+                          (client/add-display display (str " - " headline))
+                          display)
+                display (client/add-display display "\n")]
+            display))
+        display properties))))
 
 (defn do-rolon-commands
   []

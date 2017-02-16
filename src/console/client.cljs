@@ -357,9 +357,9 @@
 
 (defn display-property
   [display ark-record path pval]
-  (display-path display ark-record path)
-  (add-display display " = ")
-  (let [kw (first path)]
+  (let [display (display-path display ark-record path)
+        display (add-display display " = ")
+        kw (first path)]
     (if (= kw :edn-transaction/transaction-argument)
       (display-tran display ark-record (reader/read-string pval))
       (display-value display ark-record pval))))

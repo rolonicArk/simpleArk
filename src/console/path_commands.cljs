@@ -8,32 +8,37 @@
     [simpleArk.mapish :as mapish]
     [console.rolon-commands :as rolon-commands]))
 
-(defn list-changes
+(defn list-changes!
   [ark-record]
-  (client/add-prompt!)
-  (client/add-history! ">")
-  (client/add-history! "list property changes over time for " client/command-prefix-style)
   (let [path @client/selected-path
         uuid (suuid/create-uuid @client/selected-rolon)
         changes (arkRecord/get-changes-by-property ark-record uuid path)]
-    (client/history-path! ark-record path)
-    (client/add-history! " in ")
-    (client/history-value! ark-record uuid)
-    (client/add-history! "\n")
+    (client/display-history!
+      (-> []
+          (client/add-prompt)
+          (client/add-display ">")
+          (client/add-display "list property changes over time for " client/command-prefix-style)
+          (client/display-path ark-record path)
+          (client/add-display " in ")
+          (client/display-value ark-record uuid)
+          (client/add-display "\n")))
     (client/clear-output!)
-    (client/add-output! "changes over time for ")
-    (client/output-path! ark-record path)
-    (client/add-output! " in ")
-    (client/output-value! ark-record uuid)
-    (client/add-output! "\n\n")
-    (reduce
-      (fn [_ [[ts] v]]
-        (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record ts)]
-          (client/output-value! ark-record je-uuid)
-          (client/add-output! " ")
-          (client/output-value! ark-record v)
-          (client/add-output! "\n")))
-      nil changes)))
+    (let [display (-> []
+                      (client/add-display "changes over time for ")
+                      (client/display-path ark-record path)
+                      (client/add-display " in ")
+                      (client/display-value ark-record uuid)
+                      (client/add-display "\n\n"))]
+      (client/display-output!
+        (reduce
+          (fn [display [[ts] v]]
+            (let [je-uuid (arkRecord/get-journal-entry-uuid ark-record ts)]
+              (-> display
+                  (client/display-value ark-record je-uuid)
+                  (client/add-display " ")
+                  (client/display-value ark-record v)
+                  (client/add-display "\n"))))
+          display changes)))))
 
 (defn do-path-commands
   []
@@ -87,6 +92,6 @@
                              client/selected-path))))
       :click (fn []
                (reset! client/display-mode 0)
-               (list-changes @client/my-ark-record))
+               (list-changes! @client/my-ark-record))
       "list property changes over time")
     ))

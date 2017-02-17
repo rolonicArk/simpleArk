@@ -7,7 +7,7 @@
     [simpleArk.arkRecord :as arkRecord]
     [console.client :as client]))
 
-(defn list-all-micro-properties
+(defn list-all-micro-properties!
   [ark-record]
   (client/display-history!
     (-> []
@@ -30,7 +30,7 @@
               (client/add-display "\n\n")))
         display properties))))
 
-(defn list-modified-micro-properties
+(defn list-modified-micro-properties!
   [ark-record]
   (client/display-history!
     (-> []
@@ -57,7 +57,7 @@
               display)))
         display properties))))
 
-(defn list-modifying-transactions
+(defn list-modifying-transactions!
   [ark-record]
   (client/display-history!
     (-> []
@@ -137,14 +137,14 @@
         :toggle (j/cell= (not (suuid/journal-entry-uuid? (suuid/create-uuid client/selected-rolon))))
         :click (fn []
                  (reset! client/display-mode 0)
-                 (list-modifying-transactions @client/my-ark-record))
+                 (list-modifying-transactions! @client/my-ark-record))
         "list modifying transactions")
 
       (h/button
         :style "background-color:MistyRose"
         :click (fn []
                  (reset! client/display-mode 0)
-                 (list-all-micro-properties @client/my-ark-record))
+                 (list-all-micro-properties! @client/my-ark-record))
         "list paths of all micro-properties")
 
       (h/button
@@ -154,7 +154,7 @@
                            (not= "" client/selected-time)))
         :click (fn []
                  (reset! client/display-mode 0)
-                 (list-modified-micro-properties @client/my-ark-record))
+                 (list-modified-micro-properties! @client/my-ark-record))
         "list modified micro-properties")
       )
     ))

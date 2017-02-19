@@ -1,6 +1,6 @@
 (set-env!
   :dependencies '[
-                  [org.clojure/clojure                       "1.9.0-alpha10"  :scope "provided"]
+                  [org.clojure/clojure                       "1.9.0-alpha14"  :scope "provided"]
                   [org.clojure/core.async                    "0.2.385"]
                   [org.clojure/clojurescript "1.9.473"]
                   [org.clojure/data.priority-map "0.0.7"]
@@ -21,7 +21,7 @@
                   [com.cemerick/piggieback   "0.2.1" :scope "test"]
                   [weasel                    "0.7.0" :scope "test"]
                   [compojure                 "1.6.0-beta1"]
-                  [hoplon/boot-hoplon        "0.2.2"]
+                  [hoplon/boot-hoplon        "0.3.0"]
                   [hoplon                    "6.0.0-alpha16"]
                   [pandeiro/boot-http        "0.7.3"]
                   [http-kit                  "2.2.0"]

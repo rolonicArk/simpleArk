@@ -18,7 +18,7 @@
           users/ark-db
           user-uuid
           :contacts
-          {:fix nil :local/contacts-capability contacts-capability}
+          {:local/contacts-capability contacts-capability}
           (-> []
               (builder/build-je-property [:index/headline] "Delete contact")
               (demo-builds/update-contact contact nil))))
@@ -35,7 +35,7 @@
           users/ark-db
           user-uuid
           :contacts
-          {:fix nil :local/contacts-capability contacts-capability}
+          {:local/contacts-capability contacts-capability}
           (-> []
               (builder/build-je-property [:index/headline] "Add contact")
               (demo-builds/update-contact contact true))))

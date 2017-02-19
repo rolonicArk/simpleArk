@@ -9,6 +9,7 @@
                   [org.clojure/tools.reader  "1.0.0-beta4"]
                   [org.clojure/tools.nrepl   "0.2.12" :scope "test"]
                   [danlentz/clj-uuid                         "0.1.6"]
+
                   [adzerk/boot-test                          "1.1.2"         :scope "test"]
                   [adzerk/boot-cljs          "1.7.228-1"]
                   [adzerk/boot-cljs-repl     "0.3.3" :scope "test"]
@@ -21,13 +22,18 @@
                   [com.cemerick/piggieback   "0.2.1" :scope "test"]
                   [weasel                    "0.7.0" :scope "test"]
                   [compojure                 "1.6.0-beta1"]
+
                   [hoplon/boot-hoplon        "0.3.0"]
+
                   [hoplon                    "6.0.0-alpha16"]
                   [pandeiro/boot-http        "0.7.3"]
                   [http-kit                  "2.2.0"]
-                  [com.taoensso/sente        "1.10.0"]
+
+                  [com.taoensso/sente        "1.11.0"]
                   [com.rpl/specter           "0.13.2"]
+
                   [com.andrewmcveigh/cljs-time "0.4.0"]
+
                   ]
   :source-paths #{"src" "test"}
   :resource-paths #{"assets"})

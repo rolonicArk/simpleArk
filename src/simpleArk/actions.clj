@@ -26,10 +26,10 @@
   (let [[local actions] (read-string s)]
     (second (eval-actions [local ark-record] ark-db actions))))
 
-(defn process-actions!
-  [ark-db local actions]
+#_(defn process-actions!
+  [ark-db user-uuid capability local actions]
   (let [s (pr-str [local actions])]
-    (ark-db/process-transaction! ark-db :actions-transaction! s)))
+    (ark-db/process-transaction! ark-db user-uuid capability :actions-transaction! s)))
 
 (defn fetch
   [ark-record local s]

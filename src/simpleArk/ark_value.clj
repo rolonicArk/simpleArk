@@ -276,7 +276,7 @@
 
 (defn reprocess-trans
   [m seq]
-  (reduce (fn [_ [je-uuid transaction-name s _]]
-            (ark-db/process-transaction! m je-uuid transaction-name s))
+  (reduce (fn [_ [user-uuid capability je-uuid transaction-name s _]]
+            (ark-db/process-transaction! m user-uuid capability je-uuid transaction-name s))
           nil
           seq))

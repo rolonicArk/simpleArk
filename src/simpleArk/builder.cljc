@@ -78,12 +78,13 @@
 #?(:clj
    (defn transaction!
      ([ark-db local actions]
-      (transaction! ark-db nil local actions))
-     ([ark-db user-uuid local actions]
+      (transaction! ark-db nil nil local actions))
+     ([ark-db user-uuid capability local actions]
       (let [je-uuid
             (ark-db/process-transaction!
               ark-db
               user-uuid
+              capability
               :actions-transaction!
               (pr-str [local actions]))]
         (console/notify-colsole)

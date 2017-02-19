@@ -364,10 +364,6 @@
       (display-tran display ark-record (reader/read-string pval))
       (display-value display ark-record pval))))
 
-(defn output-property!
-  [ark-record path pval]
-  (display-output! (display-property [] ark-record path pval)))
-
 (defn explore!
   [ark-record uuid path]
   (if (= "" @selected-rolon)

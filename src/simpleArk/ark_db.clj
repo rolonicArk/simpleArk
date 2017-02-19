@@ -18,10 +18,10 @@
   "process a transaction with an (edn) string,
     returning the new journal-entry uuid"
   ([ark-db transaction-name s]
-   ((:ark-db/process-transaction! ark-db) ark-db nil transaction-name s))
-  ([ark-db user-uuid transaction-name s]
+   ((:ark-db/process-transaction! ark-db) ark-db nil nil transaction-name s))
+  ([ark-db user-uuid capability transaction-name s]
    ((:ark-db/process-transaction! ark-db) ark-db user-uuid transaction-name s))
-  ([ark-db user-uuid je-uuid transaction-name s]
+  ([ark-db user-uuid capability je-uuid transaction-name s]
    ((:ark-db/process-transaction! ark-db) ark-db user-uuid je-uuid transaction-name s)))
 
 (defn update-ark-db

@@ -1,7 +1,7 @@
 (set-env!
   :dependencies '[
                   [org.clojure/clojure                       "1.9.0-alpha14"  :scope "provided"]
-                  [org.clojure/core.async                    "0.2.385"]
+                  [org.clojure/core.async                    "0.2.395"]
                   [org.clojure/clojurescript "1.9.473"]
                   [org.clojure/data.priority-map "0.0.7"]
                   ;[org.clojure/google-closure-library "0.0-20160609-f42b4a24"]
@@ -26,7 +26,7 @@
                   [pandeiro/boot-http        "0.7.3"]
                   [http-kit                  "2.2.0"]
                   [com.taoensso/sente        "1.10.0"]
-                  [com.rpl/specter           "0.13.0"]
+                  [com.rpl/specter           "0.13.2"]
                   [com.andrewmcveigh/cljs-time "0.4.0"]
                   ]
   :source-paths #{"src" "test"}

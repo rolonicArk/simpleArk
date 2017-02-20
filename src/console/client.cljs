@@ -346,7 +346,7 @@
   [display ark-record tran]
   (let [[local actions] tran]
     (-> display
-        (add-display "parameters:\n")
+        (add-display "\n\n   parameters:\n")
         (display-local ark-record (into (sorted-map) local))
         (add-display "\n   actions:\n")
         (display-actions ark-record actions))))

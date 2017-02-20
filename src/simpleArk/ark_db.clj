@@ -20,9 +20,9 @@
   ([ark-db transaction-name s]
    ((:ark-db/process-transaction! ark-db) ark-db nil nil transaction-name s))
   ([ark-db user-uuid capability transaction-name s]
-   ((:ark-db/process-transaction! ark-db) ark-db user-uuid transaction-name s))
+   ((:ark-db/process-transaction! ark-db) ark-db user-uuid capability transaction-name s))
   ([ark-db user-uuid capability je-uuid transaction-name s]
-   ((:ark-db/process-transaction! ark-db) ark-db user-uuid je-uuid transaction-name s)))
+   ((:ark-db/process-transaction! ark-db) ark-db user-uuid capability je-uuid transaction-name s)))
 
 (defn update-ark-db
   "applies a transaction to the ark-atom"

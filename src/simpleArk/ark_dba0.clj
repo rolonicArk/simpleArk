@@ -43,7 +43,7 @@
   (async/>!! (::tran-chan ark-db) [user-uuid transaction-name s rsp-chan]))
 
 (defn process-transaction!
-  ([ark-db user-uuid transaction-name s]
+  ([ark-db user-uuid capability transaction-name s]
    (let [rsp-chan (async/chan)
          _ (async-process-transaction! ark-db user-uuid transaction-name s rsp-chan)
          rsp (async/<!! rsp-chan)]
@@ -52,7 +52,7 @@
        (do
          (ark-db/process-notifications ark-db rsp)
          rsp))))
-  ([ark-db user-uuid je-uuid transaction-name s]
+  ([ark-db user-uuid capability je-uuid transaction-name s]
    (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
    (log/info! ark-db :transaction transaction-name s)
    je-uuid))

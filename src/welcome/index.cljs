@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [tiples.client :as tiples]
     [tiples.login :as login]
+    [hoplon.jquery]
     [welcome.client]
     [profile.client]
     [contacts.client]

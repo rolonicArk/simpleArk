@@ -23,9 +23,9 @@
                   [weasel                    "0.7.0" :scope "test"]
                   [compojure                 "1.6.0-beta1"]
 
-                  [hoplon/boot-hoplon        "0.3.0"]
+                  ;[hoplon/boot-hoplon        "0.3.0"]
+                  [hoplon                    "6.0.0-alpha17"]
 
-                  [hoplon                    "6.0.0-alpha16"]
                   [pandeiro/boot-http        "0.7.3"]
                   [http-kit                  "2.2.0"]
 

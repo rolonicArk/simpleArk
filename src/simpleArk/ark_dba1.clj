@@ -27,7 +27,7 @@
           (tlog/add-tran! ark-db je-uuid transaction-name s rsp-chan
                           (ark-db/get-ark-record ark-db))
           (catch Exception e
-            (log/warn! ark-db "transaction failure" transaction-name s
+            (log/warn! ark-db "transaction failure" user-uuid capability transaction-name s
                        (.toString e))
             (async/>!! rsp-chan e))))
       (recur ark-db))))
@@ -55,7 +55,7 @@
          rsp))))
   ([ark-db user-uuid capability je-uuid transaction-name s]
    (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
-   (log/info! ark-db :transaction transaction-name s)
+   (log/info! ark-db :transaction user-uuid capability transaction-name s)
    je-uuid))
 
 (defn builder

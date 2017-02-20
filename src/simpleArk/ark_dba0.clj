@@ -23,10 +23,10 @@
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
           (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
-          (log/info! ark-db :transaction transaction-name s)
+          (log/info! ark-db :transaction user-uuid capability transaction-name s)
           (async/>!! rsp-chan je-uuid)
           (catch Exception e
-            (log/warn! ark-db "transaction failure" transaction-name s
+            (log/warn! ark-db "transaction failure" user-uuid capability transaction-name s
                        (.toString e))
             (async/>!! rsp-chan e))))
       (recur ark-db))))
@@ -54,7 +54,7 @@
          rsp))))
   ([ark-db user-uuid capability je-uuid transaction-name s]
    (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
-   (log/info! ark-db :transaction transaction-name s)
+   (log/info! ark-db :transaction user-uuid capability transaction-name s)
    je-uuid))
 
 (defn builder

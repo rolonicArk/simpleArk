@@ -20,7 +20,7 @@
   [ark-db]
   (let [tran (async/<!! (::tran-chan ark-db))]
     (when tran
-      (let [[user-uuid transaction-name s rsp-chan] tran
+      (let [[user-uuid capability transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
           (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
@@ -40,13 +40,13 @@
   )
 
 (defn async-process-transaction!
-  [ark-db user-uuid transaction-name s rsp-chan]
-  (async/>!! (::tran-chan ark-db) [user-uuid transaction-name s rsp-chan]))
+  [ark-db user-uuid capability transaction-name s rsp-chan]
+  (async/>!! (::tran-chan ark-db) [user-uuid capability transaction-name s rsp-chan]))
 
 (defn process-transaction!
   ([ark-db user-uuid capability transaction-name s]
    (let [rsp-chan (async/chan)
-         _ (async-process-transaction! ark-db user-uuid transaction-name s rsp-chan)
+         _ (async-process-transaction! ark-db user-uuid capability transaction-name s rsp-chan)
          rsp (async/<!! rsp-chan)]
      (if (instance? Exception rsp)
        (throw rsp)

@@ -26,7 +26,7 @@
 
 (defn update-ark-db
   "applies a transaction to the ark-atom"
-  [ark-db user-uuid je-uuid transaction-name s]
+  [ark-db user-uuid capability je-uuid transaction-name s]
   (swap! (::ark-atom ark-db)
          (fn [ark-value]
            ((:ark-value/update-ark ark-db) ark-value ark-db user-uuid je-uuid transaction-name s))))

@@ -23,7 +23,7 @@
       (let [[user-uuid capability transaction-name s rsp-chan] tran
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
-          (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
+          (ark-db/update-ark-db ark-db user-uuid capability je-uuid transaction-name s)
           (tlog/add-tran! ark-db je-uuid transaction-name s rsp-chan
                           (ark-db/get-ark-record ark-db))
           (catch Exception e
@@ -54,7 +54,7 @@
          (ark-db/process-notifications ark-db rsp)
          rsp))))
   ([ark-db user-uuid capability je-uuid transaction-name s]
-   (ark-db/update-ark-db ark-db user-uuid je-uuid transaction-name s)
+   (ark-db/update-ark-db ark-db user-uuid capability je-uuid transaction-name s)
    (log/info! ark-db :transaction user-uuid capability transaction-name s)
    je-uuid))
 

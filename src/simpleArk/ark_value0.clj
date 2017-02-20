@@ -9,7 +9,7 @@
   (apply miMap/new-MI-map keyvals))
 
 (defn update-ark
-  [ark-record ark-db user-uuid je-uuid transaction-name s]
+  [ark-record ark-db user-uuid capability je-uuid transaction-name s]
   (let [ark-record (assoc ark-record :latest-journal-entry-uuid je-uuid)
         ark-record (ark-value/make-rolon
                     ark-record

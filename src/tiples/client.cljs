@@ -20,9 +20,13 @@
           (event-msg-handler ev-msg))
 
 (defmethod event-msg-handler :default ; Fallback
-           [{:as ev-msg :keys [id event]}]
-         (.log js/console (str "Unhandled event: " id))
-         )
+  [{:as ev-msg :keys [id]}]
+  (.log js/console (str "Unhandled event: " id))
+  )
+
+(defmethod event-msg-handler :chsk/ws-ping
+  [{:as ev-msg :keys [id]}]
+  )
 
 (defmethod event-msg-handler :chsk/handshake
            [{:as ev-msg :keys [?data]}]

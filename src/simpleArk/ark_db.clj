@@ -28,8 +28,8 @@
   "applies a transaction to the ark-atom"
   [ark-db user-uuid capability je-uuid transaction-name s]
   (swap! (::ark-atom ark-db)
-         (fn [ark-value]
-           ((:ark-value/update-ark ark-db) ark-value ark-db user-uuid capability je-uuid transaction-name s))))
+         (fn [ark-record]
+           ((:ark-value/update-ark ark-db) ark-record ark-db user-uuid capability je-uuid transaction-name s))))
 
 (defmulti notification
           (fn [label je-uuid watcher modified]

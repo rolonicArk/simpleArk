@@ -174,10 +174,24 @@
   [ark-record index-name]
   (first (index-lookup ark-record index-name-uuid index-name)))
 
+(defn lookup
+  [ark-record index-name value]
+  (if (nil? value)
+    nil
+    (let [index-uuid (get-index-uuid ark-record index-name)]
+      (if (nil? index-uuid)
+        nil
+        (index-lookup ark-record index-uuid value)))))
+
 (defn name-lookup
   [ark-record rolon-name]
-  (let [name-index-uuid (get-index-uuid ark-record "name")]
-    (index-lookup ark-record name-index-uuid rolon-name)))
+  (lookup ark-record "name" rolon-name))
+
+(defn capability-uuid
+  [ark-record capability-kw]
+  (if (nil? capability-kw)
+    nil
+    (first (lookup ark-record "capability-name" (name capability-kw)))))
 
 (defn get-content-index
   "returns a seq of [value uuid]"

@@ -21,7 +21,7 @@
 
 (h/html
   (h/head
-    (h/link :href "main.css" :rel "stylesheet"))
+    #_(h/link :href "main.css" :rel "stylesheet"))
   (h/body
     (h/div
       :css {:display "none"}

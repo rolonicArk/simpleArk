@@ -1,4 +1,4 @@
-(ns simpleArk.ark-dba1
+(ns simpleArk.arkDb.ark-dba1
   (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.tlog :as tlog]

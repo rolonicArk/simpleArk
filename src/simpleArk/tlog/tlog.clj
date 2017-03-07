@@ -1,4 +1,4 @@
-(ns simpleArk.tlog)
+(ns simpleArk.tlog.tlog)
 
 (defn add-tran!
   "appends to the transaction logger and returns the position.

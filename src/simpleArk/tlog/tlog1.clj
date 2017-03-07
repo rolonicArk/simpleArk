@@ -1,4 +1,4 @@
-(ns simpleArk.tlog1
+(ns simpleArk.tlog.tlog1
   (:require [simpleArk.log.log :as log]
             [simpleArk.pub.pub :as pub]))
 

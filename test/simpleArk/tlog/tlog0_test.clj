@@ -1,19 +1,17 @@
-(ns simpleArk.tlog1-test
+(ns simpleArk.tlog.tlog0-test
   (:require [clojure.test :refer :all]
             [simpleArk.arkDb.ark-db :as ark-db]
-            [simpleArk.tlog :as tlog]
-            [simpleArk.tlog1 :as tlog1]
+            [simpleArk.tlog.tlog :as tlog]
+            [simpleArk.tlog.tlog0 :as tlog0]
             [simpleArk.log.log0 :as log0]
-            [simpleArk.pub.pub0 :as pub0]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)
 
-(deftest tlog1
+(deftest tlog0
   (let [c ((comp
              (ark-db/builder)
-             (tlog1/builder)
-             (pub0/builder)
+             (tlog0/builder)
              (log0/builder))
             {})
         rsp-chan (async/chan 1)]

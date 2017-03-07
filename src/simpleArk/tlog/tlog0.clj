@@ -1,4 +1,4 @@
-(ns simpleArk.tlog0
+(ns simpleArk.tlog.tlog0
   (:require [clojure.core.async :as async]
             [simpleArk.log.log :as log]
             [simpleArk.arkDb.ark-db :as ark-db]))

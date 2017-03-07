@@ -1,4 +1,4 @@
-(ns simpleArk.logt-test
+(ns simpleArk.log.logt-test
   (:require [clojure.test :refer :all]
             [clojure.core.async :as async]
             [simpleArk.log.log :refer :all]

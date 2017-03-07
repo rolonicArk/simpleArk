@@ -1,4 +1,4 @@
-(ns simpleArk.log0-test
+(ns simpleArk.log.log0-test
   (:require [clojure.test :refer :all]
             [simpleArk.log.log :refer :all]
             [simpleArk.log.log0 :as log0]))

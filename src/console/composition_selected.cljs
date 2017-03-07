@@ -3,7 +3,7 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [console.client :as client]
-    [simpleArk.uuid :as suuid]))
+    [simpleArk.uuid.uuid :as suuid]))
 
 (def parameter-name (j/cell ""))
 

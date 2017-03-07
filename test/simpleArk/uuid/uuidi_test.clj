@@ -1,7 +1,7 @@
-(ns simpleArk.uuidi-test
+(ns simpleArk.uuid.uuidi-test
   (:require [clojure.test :refer :all]
-            [simpleArk.uuid :refer :all]
-            [simpleArk.uuidi :as uuidi]))
+            [simpleArk.uuid.uuid :refer :all]
+            [simpleArk.uuid.uuidi :as uuidi]))
 
 (set! *warn-on-reflection* true)
 

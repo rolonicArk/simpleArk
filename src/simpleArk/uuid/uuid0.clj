@@ -1,4 +1,4 @@
-(ns simpleArk.uuid0
+(ns simpleArk.uuid.uuid0
   (:require [simpleArk.mapish :as mapish]
             [clj-uuid :refer [v1 v4 v5 +null+]]))
 

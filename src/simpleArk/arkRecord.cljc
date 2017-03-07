@@ -5,7 +5,7 @@
                [cljs.reader :as reader])
                 [simpleArk.miView :as miView]
                 [simpleArk.mapish :as mapish]
-                [simpleArk.uuid :as suuid]
+                [simpleArk.uuid.uuid :as suuid]
                 [simpleArk.rolonRecord :as rolonRecord]))
 
 #?(:clj

@@ -5,7 +5,7 @@
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.miMap :as miMap]
-            [simpleArk.uuid :as uuid]))
+            [simpleArk.uuid.uuid :as uuid]))
 
 (defn initializer
   []

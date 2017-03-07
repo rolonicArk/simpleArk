@@ -3,7 +3,7 @@
     [hoplon.core :as h]
     [javelin.core :as j]
     [simpleArk.mapish :as mapish]
-    [simpleArk.uuid :as suuid]
+    [simpleArk.uuid.uuid :as suuid]
     [simpleArk.arkRecord :as arkRecord]
     [console.client :as client]))
 

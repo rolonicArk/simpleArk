@@ -3,7 +3,7 @@
             [simpleArk.arkValue.ark-value0 :as ark-value0]
             [simpleArk.log.log :as log]
             [simpleArk.log.logt :as logt]
-            [simpleArk.uuidi :as uuidi]
+            [simpleArk.uuid.uuidi :as uuidi]
             [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkDb.ark-db0 :as ark-db0]
             [simpleArk.closer :as closer]
@@ -15,7 +15,7 @@
             [welcome.demo-actions]
             [simpleArk.builder :as builder]
             [welcome.demo-builds :as demo-builds]
-            [simpleArk.uuid :as uuid]))
+            [simpleArk.uuid.uuid :as uuid]))
 
 (set! *warn-on-reflection* true)
 

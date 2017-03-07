@@ -1,4 +1,4 @@
-(ns simpleArk.uuid
+(ns simpleArk.uuid.uuid
   #?(:clj
            (:require
              [clj-uuid :refer [get-version get-instant]]

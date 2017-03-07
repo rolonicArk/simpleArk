@@ -55,9 +55,9 @@
                                 simpleArk.log.log0-test
                                 simpleArk.log.logt-test
                                 simpleArk.closer-test
-                                simpleArk.uuid-test
-                                simpleArk.uuid0-test
-                                simpleArk.uuidi-test
+                                simpleArk.uuid.uuid-test
+                                simpleArk.uuid.uuid0-test
+                                simpleArk.uuid.uuidi-test
                                 simpleArk.arkDb.ark-db0-test
                                 simpleArk.arkDb.ark-dba0-test
                                 simpleArk.arkDb.ark-dba1-test

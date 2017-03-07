@@ -1,5 +1,5 @@
-(ns simpleArk.uuidi
-  (:require [simpleArk.uuid0 :as uuid0]
+(ns simpleArk.uuid.uuidi
+  (:require [simpleArk.uuid.uuid0 :as uuid0]
             [clj-uuid :refer [v4]]))
 
 (set! *warn-on-reflection* true)

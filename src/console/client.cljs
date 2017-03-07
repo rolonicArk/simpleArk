@@ -2,7 +2,7 @@
   (:require
     [hoplon.core :as h]
     [javelin.core :as j]
-    [simpleArk.uuid :as suuid]
+    [simpleArk.uuid.uuid :as suuid]
     [simpleArk.miMap]
     [simpleArk.rolonRecord]
     [simpleArk.arkRecord :as arkRecord]

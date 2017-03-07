@@ -1,4 +1,4 @@
-(ns simpleArk.pub)
+(ns simpleArk.pub.pub)
 
 (defn publish!
   "publishs the updated ark value and returns the je-uuids,

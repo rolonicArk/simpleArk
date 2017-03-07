@@ -62,7 +62,7 @@
                                 simpleArk.arkDb.ark-dba0-test
                                 simpleArk.arkDb.ark-dba1-test
                                 simpleArk.tlog0-test
-                                simpleArk.pub0-test
+                                simpleArk.pub.pub0-test
                                 simpleArk.tlog1-test
                                 simpleArk.mapish-test
                                 simpleArk.action-test

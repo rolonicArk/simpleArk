@@ -4,7 +4,7 @@
             [simpleArk.tlog :as tlog]
             [simpleArk.tlog1 :as tlog1]
             [simpleArk.log.log0 :as log0]
-            [simpleArk.pub0 :as pub0]
+            [simpleArk.pub.pub0 :as pub0]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)

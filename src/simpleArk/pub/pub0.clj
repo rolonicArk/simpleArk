@@ -1,4 +1,4 @@
-(ns simpleArk.pub0
+(ns simpleArk.pub.pub0
   (:require [clojure.core.async :as async]
             [simpleArk.arkDb.ark-db :as ark-db]))
 

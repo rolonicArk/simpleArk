@@ -5,7 +5,7 @@
             [simpleArk.log0 :as log0]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.arkDb.ark-db :as ark-db]
-            [simpleArk.ark-dba0 :as ark-dba0]
+            [simpleArk.arkDb.ark-dba0 :as ark-dba0]
             [simpleArk.closer :as closer]
             [simpleArk.arkRecord :as arkRecord]))
 

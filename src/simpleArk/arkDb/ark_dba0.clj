@@ -1,11 +1,10 @@
-(ns simpleArk.ark-dba0
+(ns simpleArk.arkDb.ark-dba0
   (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
             [simpleArk.arkDb.ark-db :as ark-db]
             [clojure.core.async :as async]
-            [simpleArk.closer :as closer]
-            [simpleArk.arkRecord :as arkRecord]))
+            [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)
 

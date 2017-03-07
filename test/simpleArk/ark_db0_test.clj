@@ -7,7 +7,7 @@
             [simpleArk.uuid :as suuid]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.arkDb.ark-db :as ark-db]
-            [simpleArk.ark-db0 :as ark-db0]
+            [simpleArk.arkDb.ark-db0 :as ark-db0]
             [simpleArk.closer :as closer]
             [simpleArk.mapish :as mapish]
             [simpleArk.reader :as reader]

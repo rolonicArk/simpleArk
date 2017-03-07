@@ -1,9 +1,8 @@
-(ns simpleArk.ark-db0
+(ns simpleArk.arkDb.ark-db0
   (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
-            [simpleArk.arkDb.ark-db :as ark-db]
-            [simpleArk.arkRecord :as arkRecord]))
+            [simpleArk.arkDb.ark-db :as ark-db]))
 
 (set! *warn-on-reflection* true)
 

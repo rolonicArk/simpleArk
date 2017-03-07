@@ -52,8 +52,8 @@
    []
    (comp
      (run-tests :namespaces '#{
-                                simpleArk.log0-test
-                                simpleArk.logt-test
+                                simpleArk.log.log0-test
+                                simpleArk.log.logt-test
                                 simpleArk.closer-test
                                 simpleArk.uuid-test
                                 simpleArk.uuid0-test
@@ -61,9 +61,9 @@
                                 simpleArk.arkDb.ark-db0-test
                                 simpleArk.arkDb.ark-dba0-test
                                 simpleArk.arkDb.ark-dba1-test
-                                simpleArk.tlog0-test
+                                simpleArk.tlog.tlog0-test
+                                simpleArk.tlog.tlog1-test
                                 simpleArk.pub.pub0-test
-                                simpleArk.tlog1-test
                                 simpleArk.mapish-test
                                 simpleArk.action-test
                                 })))

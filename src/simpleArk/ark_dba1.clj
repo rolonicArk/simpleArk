@@ -3,7 +3,7 @@
             [simpleArk.log :as log]
             [simpleArk.tlog :as tlog]
             [simpleArk.uuid :as uuid]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [clojure.core.async :as async]
             [simpleArk.closer :as closer]
             [simpleArk.arkRecord :as arkRecord]))

@@ -2,7 +2,7 @@
   (:require [simpleArk.ark-value :as ark-value]
             [simpleArk.log :as log]
             [simpleArk.uuid :as uuid]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkRecord :as arkRecord]))
 
 (set! *warn-on-reflection* true)

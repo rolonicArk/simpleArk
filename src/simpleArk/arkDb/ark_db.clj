@@ -1,4 +1,4 @@
-(ns simpleArk.ark-db
+(ns simpleArk.arkDb.ark-db
   (:require [simpleArk.arkRecord :as arkRecord]
             [simpleArk.mapish :as mapish]
             [simpleArk.log :as log]))

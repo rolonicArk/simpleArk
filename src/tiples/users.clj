@@ -1,7 +1,7 @@
 (ns tiples.users
   (:require [tiples.server :as tiples]
             [com.rpl.specter :as s]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.reader :as reader]
             [simpleArk.logt :as logt]

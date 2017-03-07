@@ -3,7 +3,7 @@
             [profile.server]
             [console.server :as console]
             [tiples.users :as users]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.builder :as builder]
             [welcome.demo-builds :as demo-builds]
             [welcome.demo-actions]))

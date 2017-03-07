@@ -1,7 +1,7 @@
 (ns simpleArk.builder
   #?(:clj
      (:require
-       [simpleArk.ark-db :as ark-db]
+       [simpleArk.arkDb.ark-db :as ark-db]
        [console.server :as console]
        [simpleArk.mapish :as mapish])
      :cljs

@@ -1,7 +1,7 @@
 (ns console.server
   (:require [tiples.users :as users]
             [tiples.server :as tiples]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.ark-db0 :as ark-db0]
             [simpleArk.ark-value0 :as ark-value0]
             [simpleArk.uuidi :as uuidi]

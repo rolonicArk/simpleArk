@@ -1,6 +1,6 @@
 (ns simpleArk.pub0-test
   (:require [clojure.test :refer :all]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.pub :as pub]
             [simpleArk.pub0 :as pub0]
             [clojure.core.async :as async]))

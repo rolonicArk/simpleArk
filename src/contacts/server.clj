@@ -1,7 +1,7 @@
 (ns contacts.server
   (:require [tiples.users :as users]
             [tiples.server :as tiples]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.mapish :as mapish]
             [simpleArk.builder :as builder]

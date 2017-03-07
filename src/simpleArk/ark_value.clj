@@ -1,6 +1,6 @@
 (ns simpleArk.ark-value
   (:require [simpleArk.uuid :as suuid]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.mapish :as mapish]
             [simpleArk.rolonRecord :as rolonRecord]
             [simpleArk.arkRecord :as arkRecord]))

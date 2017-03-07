@@ -1,6 +1,6 @@
 (ns simpleArk.tlog1-test
   (:require [clojure.test :refer :all]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.tlog :as tlog]
             [simpleArk.tlog1 :as tlog1]
             [simpleArk.log0 :as log0]

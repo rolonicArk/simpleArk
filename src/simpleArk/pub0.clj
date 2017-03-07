@@ -1,6 +1,6 @@
 (ns simpleArk.pub0
   (:require [clojure.core.async :as async]
-            [simpleArk.ark-db :as ark-db]))
+            [simpleArk.arkDb.ark-db :as ark-db]))
 
 (set! *warn-on-reflection* true)
 

@@ -3,7 +3,7 @@
             [simpleArk.ark-value :as ark-value]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.rolonRecord :as rolonRecord]
-            [simpleArk.ark-db :as ark-db]
+            [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.uuid :as suuid]))
 
 (set! *warn-on-reflection* true)

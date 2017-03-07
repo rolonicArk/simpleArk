@@ -1,7 +1,7 @@
 (ns simpleArk.arkDb.ark-db0-test
   (:require [clojure.test :refer :all]
-            [simpleArk.ark-value :as ark-value]
-            [simpleArk.ark-value0 :as ark-value0]
+            [simpleArk.arkValue.ark-value :as ark-value]
+            [simpleArk.arkValue.ark-value0 :as ark-value0]
             [simpleArk.log :as log]
             [simpleArk.logt :as logt]
             [simpleArk.uuid :as suuid]

@@ -1,5 +1,5 @@
-(ns simpleArk.ark-value0
-  (:require [simpleArk.ark-value :as ark-value]
+(ns simpleArk.arkValue.ark-value0
+  (:require [simpleArk.arkValue.ark-value :as ark-value]
             [simpleArk.miMap :as miMap]
             [simpleArk.arkRecord :as arkRecord]))
 

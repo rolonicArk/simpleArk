@@ -1,6 +1,6 @@
 (ns simpleArk.arkDb.ark-dba0
   (:require [simpleArk.arkValue.ark-value :as ark-value]
-            [simpleArk.log :as log]
+            [simpleArk.log.log :as log]
             [simpleArk.uuid :as uuid]
             [simpleArk.arkDb.ark-db :as ark-db]
             [clojure.core.async :as async]

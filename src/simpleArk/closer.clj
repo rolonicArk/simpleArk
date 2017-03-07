@@ -1,5 +1,5 @@
 (ns simpleArk.closer
-  (:require [simpleArk.log :as log]))
+  (:require [simpleArk.log.log :as log]))
 
 (set! *warn-on-reflection* true)
 

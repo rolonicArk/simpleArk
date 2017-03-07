@@ -3,7 +3,7 @@
             [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.reader :as reader]
-            [simpleArk.logt :as logt]
+            [simpleArk.log.logt :as logt]
             [simpleArk.arkDb.ark-db0 :as ark-db0]
             [simpleArk.arkValue.ark-value0 :as ark-value0]
             [simpleArk.uuidi :as uuidi]

@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [simpleArk.arkValue.ark-value :as ark-value]
             [simpleArk.arkValue.ark-value0 :as ark-value0]
-            [simpleArk.log0 :as log0]
+            [simpleArk.log.log0 :as log0]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkDb.ark-dba0 :as ark-dba0]

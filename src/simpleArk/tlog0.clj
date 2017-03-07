@@ -1,6 +1,6 @@
 (ns simpleArk.tlog0
   (:require [clojure.core.async :as async]
-            [simpleArk.log :as log]
+            [simpleArk.log.log :as log]
             [simpleArk.arkDb.ark-db :as ark-db]))
 
 (set! *warn-on-reflection* true)

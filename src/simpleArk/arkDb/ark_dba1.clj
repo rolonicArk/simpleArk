@@ -1,6 +1,6 @@
 (ns simpleArk.arkDb.ark-dba1
   (:require [simpleArk.arkValue.ark-value :as ark-value]
-            [simpleArk.log :as log]
+            [simpleArk.log.log :as log]
             [simpleArk.tlog :as tlog]
             [simpleArk.uuid :as uuid]
             [simpleArk.arkDb.ark-db :as ark-db]

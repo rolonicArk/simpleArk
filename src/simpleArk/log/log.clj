@@ -1,5 +1,5 @@
 ;;Log component api
-(ns simpleArk.log
+(ns simpleArk.log.log
   (:require [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)

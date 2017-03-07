@@ -1,9 +1,9 @@
 (ns simpleArk.logt-test
   (:require [clojure.test :refer :all]
             [clojure.core.async :as async]
-            [simpleArk.log :refer :all]
-            [simpleArk.log :as log]
-            [simpleArk.logt :as logt]))
+            [simpleArk.log.log :refer :all]
+            [simpleArk.log.log :as log]
+            [simpleArk.log.logt :as logt]))
 
 (set! *warn-on-reflection* true)
 

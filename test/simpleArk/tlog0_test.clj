@@ -3,7 +3,7 @@
             [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.tlog :as tlog]
             [simpleArk.tlog0 :as tlog0]
-            [simpleArk.log0 :as log0]
+            [simpleArk.log.log0 :as log0]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)

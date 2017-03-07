@@ -1,5 +1,5 @@
-(ns simpleArk.logt
-  (:require [simpleArk.log :as log]
+(ns simpleArk.log.logt
+  (:require [simpleArk.log.log :as log]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)

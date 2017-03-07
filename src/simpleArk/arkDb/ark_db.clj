@@ -1,7 +1,7 @@
 (ns simpleArk.arkDb.ark-db
   (:require [simpleArk.arkRecord :as arkRecord]
             [simpleArk.mapish :as mapish]
-            [simpleArk.log :as log]))
+            [simpleArk.log.log :as log]))
 
 (set! *warn-on-reflection* true)
 

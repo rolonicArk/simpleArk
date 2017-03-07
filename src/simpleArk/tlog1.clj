@@ -1,5 +1,5 @@
 (ns simpleArk.tlog1
-  (:require [simpleArk.log :as log]
+  (:require [simpleArk.log.log :as log]
             [simpleArk.pub :as pub]))
 
 (set! *warn-on-reflection* true)

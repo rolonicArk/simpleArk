@@ -1,8 +1,8 @@
 (ns simpleArk.action-test
   (:require [clojure.test :refer :all]
             [simpleArk.arkValue.ark-value0 :as ark-value0]
-            [simpleArk.log :as log]
-            [simpleArk.logt :as logt]
+            [simpleArk.log.log :as log]
+            [simpleArk.log.logt :as logt]
             [simpleArk.uuidi :as uuidi]
             [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.arkDb.ark-db0 :as ark-db0]

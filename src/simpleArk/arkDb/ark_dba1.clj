@@ -24,7 +24,7 @@
             je-uuid (uuid/journal-entry-uuid ark-db)]
         (try
           (ark-db/update-ark-db ark-db user-uuid capability je-uuid transaction-name s)
-          (tlog/add-tran! ark-db je-uuid transaction-name s rsp-chan
+          (tlog/add-tran! ark-db user-uuid capability je-uuid transaction-name s rsp-chan
                           (ark-db/get-ark-record ark-db))
           (catch Exception e
             (log/warn! ark-db "transaction failure" user-uuid capability transaction-name s

@@ -5,8 +5,8 @@
 (set! *warn-on-reflection* true)
 
 (defn add-tran!
-  [m je-uuid transaction-name s rsp-chan ark]
-  (swap! (::va m) conj [je-uuid transaction-name s])
+  [m user-uuid capability je-uuid transaction-name s rsp-chan ark]
+  (swap! (::va m) conj [user-uuid capability je-uuid transaction-name s])
   (log/info! m :transaction transaction-name s)
   (pub/publish! m ark [[rsp-chan je-uuid]]))
 

@@ -4,8 +4,8 @@
   "appends to the transaction logger and returns the position.
   Publishes the updated ark and
   asynchronously replys with the je-uuid once a transaction is flushed"
-  [m je-uuid transaction-name s rsp-chan ark]
-  ((:tran-logger/add-tran m) m je-uuid transaction-name s rsp-chan ark))
+  [m user-uuid capability je-uuid transaction-name s rsp-chan ark]
+  ((:tran-logger/add-tran m) m user-uuid capability je-uuid transaction-name s rsp-chan ark))
 
 (defn tran-seq
   "returns a sequence of transactions with the position of the next transaction,

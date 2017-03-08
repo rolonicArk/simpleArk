@@ -14,8 +14,8 @@
             {})
         rsp-chan (async/chan 10)]
     (ark-db/init-ark-db! c "_")
-    (pub/publish! c "x" [[rsp-chan 1]])
+    (pub/publish! c "x" [[rsp-chan nil nil 1]])
     (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
-    (pub/publish! c "z" [[rsp-chan 2] [rsp-chan 3]])
+    (pub/publish! c "z" [[rsp-chan nil nil 2] [rsp-chan nil nil 3]])
     (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
     (println (async/<!! rsp-chan) (ark-db/get-ark-record c))))

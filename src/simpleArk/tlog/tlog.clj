@@ -9,7 +9,7 @@
 
 (defn tran-seq
   "returns a sequence of transactions with the position of the next transaction,
-  e.g. [je-uuid, transaction-name, s, position].
+  e.g. [user-uuid, capability, je-uuid, transaction-name, s, position].
   The optional position parameter allows you to resume the sequence at any point"
   ([m] (tran-seq m 0))
   ([m position]

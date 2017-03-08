@@ -4,8 +4,9 @@
             [simpleArk.arkRecord :as arkRecord]
             [simpleArk.reader :as reader]
             [simpleArk.log.logt :as logt]
-            [simpleArk.tlog.tlog0 :as tlog0]
-            [simpleArk.arkDb.ark-dba0 :as ark-dba1]
+            [simpleArk.pub.pub0 :as pub0]
+            [simpleArk.tlog.tlog1 :as tlog1]
+            [simpleArk.arkDb.ark-dba1 :as ark-dba1]
             [simpleArk.arkValue.ark-value0 :as ark-value0]
             [simpleArk.uuid.uuidi :as uuidi]
             [simpleArk.closer :as closer]
@@ -13,7 +14,8 @@
 
 (def ark-db ((comp
                (ark-db/builder)
-               (tlog0/builder)
+               (pub0/builder)
+               (tlog1/builder)
                (ark-dba1/builder)
                (ark-value0/builder)
                (uuidi/builder)

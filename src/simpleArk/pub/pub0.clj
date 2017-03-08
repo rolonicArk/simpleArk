@@ -7,8 +7,8 @@
 (defn publish!
   [ark-db ark-value v]
   (ark-db/init-ark-db! ark-db ark-value)
-  (reduce (fn [_ [chan user-uuid capability je-uuid]]
-            (async/>!! chan [user-uuid capability je-uuid])
+  (reduce (fn [_ [chan je-uuid]]
+            (async/>!! chan je-uuid)
             nil)
           nil v))
 

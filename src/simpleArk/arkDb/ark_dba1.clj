@@ -5,8 +5,7 @@
             [simpleArk.uuid.uuid :as uuid]
             [simpleArk.arkDb.ark-db :as ark-db]
             [clojure.core.async :as async]
-            [simpleArk.closer :as closer]
-            [simpleArk.arkRecord :as arkRecord]))
+            [simpleArk.closer :as closer]))
 
 (set! *warn-on-reflection* true)
 

@@ -7,8 +7,8 @@
 (defn add-tran!
   [m user-uuid capability je-uuid transaction-name s rsp-chan ark]
   (swap! (::va m) conj [user-uuid capability je-uuid transaction-name s])
-  (log/info! m :transaction transaction-name s)
-  (pub/publish! m ark [[rsp-chan user-uuid capability je-uuid]]))
+  (log/info! m :transaction user-uuid capability transaction-name s)
+  (pub/publish! m ark [[rsp-chan je-uuid]]))
 
 (defn tran-seq
   [m position]

@@ -9,7 +9,7 @@
   [ark-db user-uuid capability je-uuid transaction-name s rsp-chan ark]
   (swap! (::va ark-db) conj [user-uuid capability je-uuid transaction-name s])
   (ark-db/init-ark-db! ark-db ark)
-  (log/info! ark-db :transaction transaction-name s)
+  (log/info! ark-db :transaction user-uuid capability transaction-name s)
   (async/>!! rsp-chan je-uuid))
 
 (defn tran-seq

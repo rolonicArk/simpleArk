@@ -16,5 +16,4 @@
   []
   (fn [m]
     (-> m
-        (assoc ::va (atom []))
         (assoc :pub/publish! publish!))))

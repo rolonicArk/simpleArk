@@ -16,7 +16,7 @@
   )
 
 (defn notify-colsole
-  []
+  [je-uuid]
   (users/broadcast! :console/update (ark-db/get-ark-record users/ark-db)))
 
 (defmethod tiples/event-msg-handler :console/process-transaction
@@ -33,7 +33,6 @@
         (println :transaction tran-keyword tran-data)
         (let [je-uuid (ark-db/process-transaction! users/ark-db user-uuid :console tran-keyword tran-data)]
           ;(update-ark-record! (ark-db/get-ark-record users/ark-db))
-          (notify-colsole)
           (tiples/chsk-send! client-id [:console/transaction-response (str je-uuid)]))
         (catch Exception e
           (tiples/chsk-send! client-id [:console/error (.getMessage e)]))))))

@@ -87,5 +87,4 @@
               capability
               :actions-transaction!
               (pr-str [local actions]))]
-        (console/notify-colsole)
         je-uuid))))

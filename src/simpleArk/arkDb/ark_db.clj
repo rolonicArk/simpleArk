@@ -66,10 +66,10 @@
       nil
       (mapish/mi-sub properties [:rel/modified]))))
 
-(defn init-ark-db!
-  "initializes the ark-atom with the value of the ark."
-  [ark-db ark-value]
-  (reset! (::ark-atom ark-db) ark-value))
+(defn update-ark-db!
+  "updates the ark-atom with the value of the ark."
+  [ark-db arkRecord]
+  (reset! (::ark-atom ark-db) arkRecord))
 
 (defn get-ark-record
   "returns the value of the ark"

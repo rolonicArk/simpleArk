@@ -8,7 +8,7 @@
 
 (defn open-ark!
   [ark-db]
-  (ark-db/init-ark-db! ark-db (ark-value/create-ark ark-db)))
+  (ark-db/update-ark-db! ark-db (ark-value/create-ark ark-db)))
 
 (defn process-transaction!
   ([ark-db user-uuid capability transaction-name s]

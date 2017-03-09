@@ -15,7 +15,7 @@
              (log0/builder))
             {})
         rsp-chan (async/chan 1)]
-    (ark-db/init-ark-db! c "_")
+    (ark-db/update-ark-db! c "_")
     (tlog/add-tran! c nil nil 1 "a" "-" rsp-chan "x")
     (println (async/<!! rsp-chan) (ark-db/get-ark-record c))
     (tlog/add-tran! c nil nil 2 "b" "-" rsp-chan "y")

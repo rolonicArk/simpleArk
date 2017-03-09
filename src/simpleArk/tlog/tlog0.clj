@@ -6,9 +6,9 @@
 (set! *warn-on-reflection* true)
 
 (defn add-tran!
-  [ark-db user-uuid capability je-uuid transaction-name s rsp-chan ark]
+  [ark-db user-uuid capability je-uuid transaction-name s rsp-chan arkRecord]
   (swap! (::va ark-db) conj [user-uuid capability je-uuid transaction-name s])
-  (ark-db/init-ark-db! ark-db ark)
+  (ark-db/update-ark-db! ark-db arkRecord)
   (log/info! ark-db :transaction user-uuid capability transaction-name s)
   (async/>!! rsp-chan je-uuid))
 

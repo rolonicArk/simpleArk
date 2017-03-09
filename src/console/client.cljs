@@ -652,3 +652,10 @@
       true
       (catch :default e
         false))))
+
+(defn transaction!
+  [local actions]
+  (tiples/chsk-send!
+    [:console/process-transaction
+     {:tran-keyword :actions-transaction!
+      :tran-data    (pr-str [local actions])}]))

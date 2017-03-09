@@ -6,7 +6,7 @@
     [simpleArk.builder :as builder]))
 
 (defn invalid []
-  (builder/transaction!
+  (client/transaction!
     {}
     (builder/build-invalid [])))
 

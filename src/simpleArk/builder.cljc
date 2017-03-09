@@ -88,11 +88,4 @@
               :actions-transaction!
               (pr-str [local actions]))]
         (console/notify-colsole)
-        je-uuid)))
-   :cljs
-   (defn transaction!
-     [local actions]
-     (tiples/chsk-send!
-       [:console/process-transaction
-        {:tran-keyword :actions-transaction!
-         :tran-data    (pr-str [local actions])}])))
+        je-uuid))))

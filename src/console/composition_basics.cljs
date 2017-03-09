@@ -24,5 +24,5 @@
                (client/add-prompt!)
                (client/add-history! ">")
                (client/add-history! "Composition! transaction\n" client/command-prefix-style)
-               (builder/transaction! @client/local @client/actions))
+               (client/transaction! @client/local @client/actions))
       "Submit Composition! transaction")))

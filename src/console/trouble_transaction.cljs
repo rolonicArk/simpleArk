@@ -6,7 +6,7 @@
     [simpleArk.builder :as builder]))
 
 (defn trouble [msg]
-  (builder/transaction!
+  (client/transaction!
     {}
     (builder/build-exception [] msg)))
 

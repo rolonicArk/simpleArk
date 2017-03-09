@@ -7,7 +7,7 @@
 
 (defn make-transaction
   []
-  (builder/transaction!
+  (client/transaction!
     {}
     (-> []
         (builder/build-je-property

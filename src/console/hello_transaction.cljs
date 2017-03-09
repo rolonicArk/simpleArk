@@ -6,7 +6,7 @@
     [simpleArk.builder :as builder]))
 
 (defn hello-transaction [name]
-  (builder/transaction!
+  (client/transaction!
     {:local/name name}
     (-> []
         (builder/build-println

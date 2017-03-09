@@ -4,8 +4,8 @@
 
 (defn subscribe!
   "register a function to receive a stream of je-uuids"
-  [ark-db f]
-  ((:sub/subscribe ark-db) ark-db f))
+  [ark-db id f]
+  ((:sub/subscribe ark-db) ark-db id f))
 
 (defn notify!
   "send a je-uuid to all subscribers"

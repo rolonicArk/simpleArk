@@ -5,6 +5,7 @@
             [simpleArk.reader :as reader]
             [simpleArk.log.logt :as logt]
             [simpleArk.pub.pub0 :as pub0]
+            [simpleArk.sub.sub0 :as sub0]
             [simpleArk.tlog.tlog1 :as tlog1]
             [simpleArk.arkDb.ark-dba1 :as ark-dba1]
             [simpleArk.arkValue.ark-value0 :as ark-value0]
@@ -14,6 +15,7 @@
 
 (def ark-db ((comp
                (ark-db/builder)
+               (sub0/builder)
                (pub0/builder)
                (tlog1/builder)
                (ark-dba1/builder)

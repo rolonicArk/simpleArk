@@ -5,6 +5,7 @@
             [simpleArk.tlog.tlog1 :as tlog1]
             [simpleArk.log.log0 :as log0]
             [simpleArk.pub.pub0 :as pub0]
+            [simpleArk.sub.sub0 :as sub0]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)
@@ -13,6 +14,7 @@
   (let [c ((comp
              (ark-db/builder)
              (tlog1/builder)
+             (sub0/builder)
              (pub0/builder)
              (log0/builder))
             {})

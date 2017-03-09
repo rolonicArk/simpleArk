@@ -5,7 +5,7 @@
 (defn subscribe!
   "register a function to receive a stream of je-uuids"
   [ark-db id f]
-  (swap! (::sa ark-db) assoc old id f))
+  (swap! (::sa ark-db) assoc id f))
 
 (defn notify!
   "send a je-uuid to all subscribers"

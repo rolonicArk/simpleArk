@@ -3,6 +3,7 @@
             [simpleArk.arkDb.ark-db :as ark-db]
             [simpleArk.pub.pub :as pub]
             [simpleArk.pub.pub0 :as pub0]
+            [simpleArk.sub.sub0 :as sub0]
             [clojure.core.async :as async]))
 
 (set! *warn-on-reflection* true)
@@ -10,6 +11,7 @@
 (deftest pub0
   (let [c ((comp
              (ark-db/builder)
+             (sub0/builder)
              (pub0/builder))
             {})
         rsp-chan (async/chan 10)]

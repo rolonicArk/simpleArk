@@ -48,9 +48,7 @@
          rsp (async/<!! rsp-chan)]
      (if (instance? Exception rsp)
        (throw rsp)
-       (do
-         (ark-db/process-notifications ark-db rsp)
-         rsp))))
+       rsp)))
   ([ark-db user-uuid capability je-uuid transaction-name s]
    (ark-db/update-ark-db ark-db user-uuid capability je-uuid transaction-name s)
    (log/info! ark-db :transaction user-uuid capability transaction-name s)

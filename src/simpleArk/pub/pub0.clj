@@ -8,11 +8,11 @@
 (defn publish!
   [ark-db arkRecord v]
   (ark-db/update-ark-db! ark-db arkRecord)
-  (reduce (fn [_ [chan je-uuid]]
+  (reduce (fn [_ [chan capability je-uuid je-uuid]]
             (async/>!! chan je-uuid)
             nil)
           nil v)
-  (sub/notify! ark-db [nth v 1]))
+  (sub/notify! ark-db [nth v 3]))
 
 (defn builder
   []

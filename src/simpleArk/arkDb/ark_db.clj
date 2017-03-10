@@ -32,12 +32,12 @@
            ((:ark-value/update-ark ark-db) ark-record ark-db user-uuid capability je-uuid transaction-name s))))
 
 (defmulti notification
-          (fn [label je-uuid watcher modified]
+          (fn [label user-uuid capability je-uuid watcher modified]
             label))
 
 (defmethod notification :default
-  [label je-uuid watcher modified]
-  (println :default-notification label je-uuid watcher modified))
+  [label user-uuid capability je-uuid watcher modified]
+  (println :default-notification label user-uuid capability je-uuid watcher modified))
 
 (declare get-ark-record)
 
@@ -56,7 +56,7 @@
                     label (nth path 1)
                     watcher (nth path 2)]
                 (try
-                  (notification label je-uuid watcher modified)
+                  (notification label user-uuid capability je-uuid watcher modified)
                   (catch Exception e
                     (log/error! (str e)))
                   )

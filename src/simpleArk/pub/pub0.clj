@@ -6,13 +6,16 @@
 (set! *warn-on-reflection* true)
 
 (defn publish!
-  [ark-db arkRecord v]
-  (ark-db/update-ark-db! ark-db arkRecord)
-  (reduce (fn [_ [chan capability je-uuid je-uuid]]
-            (async/>!! chan je-uuid)
-            nil)
-          nil v)
-  (sub/notify! ark-db [nth v 3]))
+  [ark-db arkRecord [chan user-uuid capability je-uuid]]
+    (if (instance? Exception je-uuid)
+      (sub/notify! ark-db je-uuid)
+      (do
+        (ark-db/update-ark-db! ark-db arkRecord)
+        (sub/notify! ark-db je-uuid)
+        (println :publish je-uuid)
+        ;(ark-db/process-notifications ark-db je-uuid)
+        (async/>!! chan je-uuid)
+        )))
 
 (defn builder
   []

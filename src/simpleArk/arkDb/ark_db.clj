@@ -42,7 +42,7 @@
 (declare get-ark-record)
 
 (defn process-notifications
-  [ark-db je-uuid]
+  [ark-db user-uuid capability je-uuid]
   (let [ark-record (get-ark-record ark-db)
         properties (arkRecord/get-property-values ark-record je-uuid)]
     (reduce

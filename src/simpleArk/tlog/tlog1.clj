@@ -8,7 +8,7 @@
   [m user-uuid capability je-uuid transaction-name s rsp-chan arkRecord]
   (swap! (::va m) conj [user-uuid capability je-uuid transaction-name s])
   (log/info! m :transaction user-uuid capability transaction-name s)
-  (pub/publish! m arkRecord [[rsp-chan capability je-uuid je-uuid]]))
+  (pub/publish! m arkRecord [[rsp-chan user-uuid capability je-uuid]]))
 
 (defn tran-seq
   [m position]

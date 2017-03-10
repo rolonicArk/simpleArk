@@ -12,8 +12,7 @@
       (do
         (ark-db/update-ark-db! ark-db arkRecord)
         (sub/notify! ark-db je-uuid)
-        (println :publish je-uuid)
-        ;(ark-db/process-notifications ark-db je-uuid)
+        (ark-db/process-notifications ark-db je-uuid)
         (async/>!! chan je-uuid)
         )))
 
